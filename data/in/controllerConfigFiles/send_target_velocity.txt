@@ -1,0 +1,12 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the sendTargetVelocity function
+# is called in controller.cpp
+
+# NOTE: The current data is out of date:
+
+#-------------------------------------------------------------------------------------#
+
+# Send 32 bit integer in Little Edian bytes
+>Controller %d: Updating target velocity to %d
+0x23 0xFF 0x60 0x00 0x00 0x00 0x00 0x00

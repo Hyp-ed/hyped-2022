@@ -1,0 +1,24 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the enterOperational function
+# is called in controller.cpp
+
+#-------------------------------------------------------------------------------------#
+
+# Enable velocity mode
+>Controller %d: Enabling velocity mode              
+0x2F 0x60 0x60 0x00 0x09 0x00 0x00 0x00
+
+# Apply brake
+>Controller %d: Applying brake
+0x2B 0x40 0x60 0x00 0x80 0x00 0x00 0x00
+
+# Send shutdown message to transition from state 1 (Switch on disabled) 
+# to state 2 (Ready to switch on)
+>Controller %d: Shutdown command sent
+0x2B 0x40 0x60 0x00 0x06 0x00 0x00 0x00
+
+# Send enter operational message to transition from state 2 (Ready to switch on)
+# to state 4 (Operation enabled)
+>Controller %d: Enabling drive function 
+0x2B 0x40 0x60 0x00 0x0F 0x00 0x00 0x00

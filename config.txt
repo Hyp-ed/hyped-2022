@@ -1,0 +1,30 @@
+# configuration file
+# line starting with '#' characters are ignored, i.e. comments
+# lines cannot be longer than 250 characters, else the world breaks
+
+# lines starting with '>' start a new parsing section for a new module
+# e.g. "> Navigation" line indicates all following lines will be parse by
+# ParseNavigation() function
+
+> Telemetry
+IP      localhost
+Port    9090
+
+> Navigation
+
+> StateMachine
+Timeout        23000000
+
+> Sensors
+ChipSelect  47,22,27,86
+KeyenceL    68
+KeyenceR    67
+Thermistor  3
+HPMaster    65
+HPSSR       46,26
+IMDOut      20
+Embrakes    44
+
+> Embrakes
+Command     87,10,9,8
+Button      66,69,45,23

@@ -1,0 +1,10 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the sendTargetTorque function
+# is called in controller.cpp
+
+#-------------------------------------------------------------------------------------#
+
+# Send 32 bit integer in Little Edian bytes
+>Controller %d: Updating target torque to %d
+0x23 0x71 0x60 0x00 0x00 0x00 0x00 0x00

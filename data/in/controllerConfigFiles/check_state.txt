@@ -1,0 +1,10 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the checkState function
+# is called in controller.cpp
+
+#-------------------------------------------------------------------------------------#
+
+# Check the Status word in object dictionary
+>Controller %d: Checking Status
+0x40 0x41 0x60 0x00 0x00 0x00 0x00 0x00

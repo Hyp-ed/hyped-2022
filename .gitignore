@@ -1,0 +1,28 @@
+# binaries
+bin
+
+# Executables
+*.exe
+hyped
+
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Other rubbish
+.cpplint-cache
+.vscode
+.idea
+.ipynb_checkpoints
+*.ipch
+*.ipch.icloud

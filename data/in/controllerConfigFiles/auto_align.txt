@@ -1,0 +1,10 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the enterOperational function
+# is called in controller.cpp
+
+#-------------------------------------------------------------------------------------#
+
+# Write -4 to the modes of operation 
+>Controller %d: Auto aligning motor position
+0x2F 0x60 0x60 0x00 -0x04 0x00 0x00 0x00

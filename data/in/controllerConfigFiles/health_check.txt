@@ -1,0 +1,14 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the updateActualTorque function
+# is called in controller.cpp
+
+#-------------------------------------------------------------------------------------#
+
+# Check warning status
+>Controller %d: Checking for warnings
+0x40 0x27 0x20 0x00 0x00 0x00 0x00 0x00
+
+# Check error status
+>Controller %d: Checking for errors
+0x40 0x3F 0x60 0x00 0x00 0x00 0x00 0x00

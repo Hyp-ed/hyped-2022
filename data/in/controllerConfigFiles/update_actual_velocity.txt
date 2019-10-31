@@ -1,0 +1,10 @@
+# Author: Iain Macpherson
+
+# File containing data to send to the controllers when the updateActualVelocity function
+# is called in controller.cpp
+
+#-------------------------------------------------------------------------------------#
+
+# Check actual velocity in object dictionary
+>Controller %d: Reading actual velocity
+0x40 0x6C 0x60 0x00 0x00 0x00 0x00 0x00

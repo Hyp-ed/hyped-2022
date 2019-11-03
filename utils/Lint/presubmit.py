@@ -400,7 +400,12 @@ def Main():
   # workspace = abspath(join(dirname(sys.argv[0]), '../../src/'))
   workspace = relpath(join(dirname(sys.argv[0]), '../../src/'))
   if options.workspace:
-    workspace = options.workspace
+    # default behavior:
+    # workspace = options.workspace
+
+    # usage: python ... --workspace='src' 
+    # lints directories in hyped_paths var (line 53) in repo/src/ 
+    workspace = relpath(join(dirname(sys.argv[0]), '../../' + options.workspace))
   if not options.no_lint:
     success = CppLintProcessor().Run(workspace, options) and success
   if not options.no_sanity:

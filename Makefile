@@ -15,6 +15,7 @@ LFLAGS:=-lpthread -pthread
 CROSS=0
 NOLINT=0
 PROTOBUF=0
+EIGEN=$(LIBS_DIR)/Eigen
 
 ifeq ($(CROSS), 0)
 	CC:=g++
@@ -58,7 +59,7 @@ OBJS := $(patsubst %,$(OBJS_DIR)/%,$(OBJS))
 
 DEP_DIR := $(OBJS_DIR)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
-INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR)/eigen-git-mirror
+INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR)
 
 # run "make VERBOSE=1" to see all commands
 ifndef VERBOSE
@@ -70,7 +71,7 @@ Echo := $(Verb)echo
 
 default: lint $(TARGET)
 
-$(TARGET): $(OBJS)
+$(TARGET): $(EIGEN) $(OBJS)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS)
 
@@ -107,6 +108,13 @@ protoc:
 	-$(Verb) mkdir -p src/telemetry/telemetrydata
 	$(Verb) protoc -I=src/telemetry --cpp_out=src/telemetry/telemetrydata message.proto
 	$(Verb) mv src/telemetry/telemetrydata/message.pb.cc src/telemetry/telemetrydata/message.pb.cpp
+
+
+# Re-install eigen library if the tar file changes
+$(EIGEN): $(EIGEN).tar.gz
+	$(Echo) Unpacking Eigen library $@
+	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
+	$(Verb) touch $@
 
 info:
 	$(call echo_var,CC)

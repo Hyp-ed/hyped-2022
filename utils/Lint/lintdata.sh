@@ -75,7 +75,7 @@ function countlines
     incomment=1 # 0 if in /* ... */ comment, 1 otherwise
     while read line 
     do 
-        trimmed="$(echo $line | sed -e 's/^[:space:]*//')"
+        trimmed="$(echo $line | sed -e 's/^[[:space:]]*//')"
         if [[ "$trimmed" == "//"* ]]
         then
             continue 

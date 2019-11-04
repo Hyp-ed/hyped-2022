@@ -1,20 +1,20 @@
 
-
 # define VERBOSE to see executed commands
-
+# default build configuration
 TARGET=hyped
-MAIN=main.cpp
+MAIN=run/main.cpp
+CROSS=0
+NOLINT=0
+
 SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin
 
+# TODO: fix use -std=gnu++11 for Windows/cygwin
 CFLAGS:=-pthread -std=c++11 -O2 -Wall -Wno-unused-result
 LFLAGS:=-lpthread -pthread
 
-# default configuration
-CROSS=0
-NOLINT=0
-PROTOBUF=0
+# libaries for generating TARGET
 EIGEN=$(LIBS_DIR)/Eigen
 
 ifeq ($(CROSS), 0)
@@ -42,20 +42,11 @@ $(error compiler $(CC) is not installed)
 endif
 LL:=$(CC)
 
-
-include $(SRCS_DIR)/Source.files
-
-ifeq ($(PROTOBUF), 1)
-	CFLAGS:=$(CFLAGS) $(shell pkg-config --cflags protobuf)
-	LFLAGS:=$(LFLAGS) $(shell pkg-config --libs protobuf)
-	SRCS:=$(SRCS) $(shell find src/telemetry -type f -name '*.cpp' | sed 's|^src/||')
-endif
-
-SRCS := $(SRCS) $(MAIN)
-OBJS := $(SRCS:.cpp=.o)
-
-SRCS := $(patsubst %,$(SRCS_DIR)/%,$(SRCS))
-OBJS := $(patsubst %,$(OBJS_DIR)/%,$(OBJS))
+# auto-discover all sources
+# TODO: include telemetry once protobuf dependency removed
+SRCS := $(shell find $(SRCS_DIR) -name '*.cpp'  -not -path 'src/telemetry/*')
+OBJS := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DIR)%.o,$(SRCS))
+MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_DIR)%.o, $(MAIN))
 
 DEP_DIR := $(OBJS_DIR)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
@@ -67,14 +58,22 @@ ifndef VERBOSE
 endif
 Echo := $(Verb)echo
 
-
-
 default: lint $(TARGET)
 
-$(TARGET): $(EIGEN) $(OBJS)
+$(TARGET): all-objects $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS)
+	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
+$(MAIN_OBJ): $(MAIN)
+ifeq (,$(wildcard $(MAIN)))
+$(error file $(MAIN) does not exist)
+else
+	$(Echo) "Compiling $<"
+	$(Verb) mkdir -p $(dir $@)
+	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+endif
+
+all-objects: $(EIGEN) | $(OBJS)
 
 $(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(Echo) "Compiling $<"
@@ -93,12 +92,11 @@ libtest: $(EIGEN) $(OBJS)
 	$(Echo) "Making library"
 	$(Verb) ar -cvq test/$@.a $(OBJS)
 
-clean: cleanlint cleantest
+clean-all: cleanlint cleantest clean
+
+clean:
 	$(Verb) rm -rf $(OBJS_DIR)/
 	$(Verb) rm -f $(TARGET)
-	$(Verb) rm -f $(MAINS)
-	$(Verb) find src | xargs touch
-	$(Verb) touch Makefile
 
 cleanlint:
 	$(Verb) rm -f .cpplint-cache
@@ -114,12 +112,6 @@ cleantest:
 .PHONY: doc
 doc:
 	$(Verb) doxygen Doxyfile
-
-protoc:
-	-$(Verb) mkdir -p src/telemetry/telemetrydata
-	$(Verb) protoc -I=src/telemetry --cpp_out=src/telemetry/telemetrydata message.proto
-	$(Verb) mv src/telemetry/telemetrydata/message.pb.cc src/telemetry/telemetrydata/message.pb.cpp
-
 
 # Re-install eigen library if the tar file changes
 $(EIGEN): $(EIGEN).tar.gz

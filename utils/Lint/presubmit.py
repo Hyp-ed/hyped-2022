@@ -206,7 +206,7 @@ class SourceFileProcessor(object):
         all_files += self.FindFilesIn(join(path, file))
     # print all_files
     # Add main.cpp
-    all_files.append('src/main.cpp')
+    # all_files.append('src/main.cpp')
     if not self.ProcessFiles(all_files, path, options):
       return False
     return True
@@ -403,8 +403,8 @@ def Main():
     # default behavior:
     # workspace = options.workspace
 
-    # usage: python ... --workspace='src' 
-    # lints directories in hyped_paths var (line 53) in repo/src/ 
+    # usage: python ... --workspace='src'
+    # lints directories in hyped_paths var (line 53) in repo/src/
     workspace = relpath(join(dirname(sys.argv[0]), '../../' + options.workspace))
   if not options.no_lint:
     success = CppLintProcessor().Run(workspace, options) and success

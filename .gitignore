@@ -31,3 +31,6 @@ testrunner
 .ipynb_checkpoints
 *.ipch
 *.ipch.icloud
+
+# libraries
+lib/Eigen

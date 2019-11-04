@@ -35,7 +35,7 @@ OBJS := $(patsubst %,$(OBJS_DIR)/%,$(OBJS))
 
 DEP_DIR := $(OBJS_DIR)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
-INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR)/eigen-git-mirror -I../src/*
+INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR) -I../src/
 
 # run "make VERBOSE=1" to see all commands
 ifndef VERBOSE
@@ -64,7 +64,7 @@ clean:
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)
 	$(Verb) rm -rf googletest
-	$(Verb) rm -f libtest.a 
+	$(Verb) rm -f libtest.a
 
 define echo_var
 	@echo $(1) = $($1)

@@ -20,6 +20,10 @@ testrunner
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 
+# Testing
+/test/googletest
+/test/libtest.a
+
 # Other rubbish
 .cpplint-cache
 .vscode

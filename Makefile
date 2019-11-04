@@ -91,9 +91,9 @@ testrunner: libtest
 
 libtest: $(OBJS)
 	$(Echo) "Making library"
-	$(Verb) ar -cvq lib/$@.a $(OBJS)
+	$(Verb) ar -cvq test/$@.a $(OBJS)
 
-clean: cleanlint
+clean: cleanlint cleantest
 	$(Verb) rm -rf $(OBJS_DIR)/
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)
@@ -106,6 +106,10 @@ cleanlint:
 define echo_var
 	@echo $(1) = $($1)
 endef
+
+cleantest:
+	cd test && $(MAKE) clean
+	$(Verb) rm -f testrunner
 
 .PHONY: doc
 doc:

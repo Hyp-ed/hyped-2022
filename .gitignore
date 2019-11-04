@@ -4,6 +4,7 @@ bin
 # Executables
 *.exe
 hyped
+testrunner
 
 ### macOS ###
 .DS_Store

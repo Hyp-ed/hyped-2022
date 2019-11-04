@@ -49,7 +49,7 @@ $(TARGET): $(OBJS)
 	$(Echo) "Building GTest Suite"
 	./setup.sh
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL) $(LFLAGS) -o $@ $(OBJS)
+	$(Verb) $(LL) $(LFLAGS) -o ../$@ $(OBJS)
 	# $(Verb) $(LL)  -o $@ $(OBJS)
 
 
@@ -63,7 +63,8 @@ clean:
 	$(Verb) rm -rf $(OBJS_DIR)/*
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)
-
+	$(Verb) rm -rf googletest
+	$(Verb) rm -f libtest.a 
 
 define echo_var
 	@echo $(1) = $($1)

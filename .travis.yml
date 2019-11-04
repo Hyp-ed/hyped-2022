@@ -1,0 +1,6 @@
+language: cpp
+compiler: gcc
+os: osx
+script: "make testrunner && ./testrunner"
+rvm:
+  - 9.00

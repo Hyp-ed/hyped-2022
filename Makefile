@@ -70,6 +70,7 @@ Echo := $(Verb)echo
 
 default: lint $(TARGET)
 
+
 $(TARGET): $(OBJS)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS)
@@ -84,6 +85,13 @@ lint:
 ifeq ($(NOLINT), 0)
 	$(Verb) python2.7 utils/Lint/presubmit.py
 endif
+
+testrunner: libtest
+	$(VERB) $(MAKE) -C test
+
+libtest: $(OBJS)
+	$(Echo) "Making library"
+	$(Verb) ar -cvq lib/$@.a $(OBJS)
 
 clean: cleanlint
 	$(Verb) rm -rf $(OBJS_DIR)/

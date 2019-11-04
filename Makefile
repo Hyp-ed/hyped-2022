@@ -89,7 +89,7 @@ endif
 testrunner: libtest
 	$(VERB) $(MAKE) -C test
 
-libtest: $(OBJS)
+libtest: $(EIGEN) $(OBJS)
 	$(Echo) "Making library"
 	$(Verb) ar -cvq test/$@.a $(OBJS)
 

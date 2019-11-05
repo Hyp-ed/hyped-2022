@@ -1,5 +1,5 @@
-mkdir googletest
+cd lib && mkdir -p googletest
 tar -xf gtest.tar.gz -C googletest --strip-components 1
-cd googletest && mkdir build
+cd googletest && mkdir -p build
 cd build && cmake -DCMAKE_CXX_COMPILER="c++" -DCMAKE_CXX_FLAGS="-std=c++11 -stdlib=libc++"  ..
-make && make install
+make

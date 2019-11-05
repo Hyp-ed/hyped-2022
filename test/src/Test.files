@@ -3,4 +3,4 @@
 # add .cpp files using complete path the following format: "<file>.cpp \"
 
 SRCS := \
-  dummy.test.cpp \
+  state_machine/dummy.test.cpp \

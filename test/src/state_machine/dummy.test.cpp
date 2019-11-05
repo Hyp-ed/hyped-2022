@@ -10,6 +10,8 @@
   TEST(dummy_test, f) {
     //Data &d = Data::getInstance();
     ASSERT_EQ(2,1+1);
+    // ASSERT_EQ(3,1+1);
+
   }
   /* struct stateMachineTest : public ::testing::Test {
     protected:

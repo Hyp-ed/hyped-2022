@@ -90,7 +90,7 @@ testrunner: libtest
 
 libtest: all-objects
 	$(Echo) "Making library"
-	$(Verb) ar -cvq test/$@.a $(OBJS)
+	$(Verb) ar -cvq test/lib/$@.a $(OBJS) > /dev/null
 
 clean-all: cleanlint cleantest clean
 

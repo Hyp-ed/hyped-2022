@@ -21,8 +21,9 @@ testrunner
 .com.apple.timemachine.donotpresent
 
 # Testing
-/test/googletest
-/test/libtest.a
+/test/lib/googletest
+/test/lib/libtest.a
+binmain.o
 
 # Other rubbish
 .cpplint-cache

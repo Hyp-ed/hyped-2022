@@ -46,7 +46,7 @@ LL:=$(CC)
 # TODO: include telemetry once protobuf dependency removed
 SRCS := $(shell find $(SRCS_DIR) -name '*.cpp'  -not -path 'src/telemetry/*')
 OBJS := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DIR)%.o,$(SRCS))
-MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_DIR)%.o, $(MAIN))
+MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_DIR)/%.o, $(MAIN))
 
 DEP_DIR := $(OBJS_DIR)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
@@ -64,7 +64,7 @@ $(TARGET): all-objects $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
-$(MAIN_OBJ): $(MAIN)
+$(MAIN_OBJ): $(OBJS_DIR)/%.o: $(MAIN)
 ifeq (,$(wildcard $(MAIN)))
 $(error file $(MAIN) does not exist)
 else

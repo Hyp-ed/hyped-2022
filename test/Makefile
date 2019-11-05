@@ -5,7 +5,7 @@
 TARGET=testrunner
 MAIN=main.test.cpp
 SRCS_DIR:=src
-OBJS_DIR:=../bin
+OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/gtest
 
@@ -69,7 +69,6 @@ clean:
 	$(Verb) rm -rf $(OBJS_DIR)/*
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)
-	$(Verb) rm -rf lib/googletest
 	$(Verb) rm -f lib/libtest.a
 	$(Verb) rm -f lib/gtest
 

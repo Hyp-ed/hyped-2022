@@ -70,7 +70,6 @@ clean:
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)
 	$(Verb) rm -f lib/libtest.a
-	$(Verb) rm -f lib/gtest
 
 define echo_var
 	@echo $(1) = $($1)

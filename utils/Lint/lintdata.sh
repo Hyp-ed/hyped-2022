@@ -6,12 +6,14 @@
 #   non-comment, non-empty lines scanned, 
 #   as well as how many of them were in passed source/header files
 
-# Note that this significantly slower than just calling presubmit
+# Note that this significantly slower than just calling 'python presubmit.py'
 #   only use this if you need the extra data
 
 # Call with --verbose to print all messages from linter
 # Call with --dir={name} to lint files in ./{name}
-#TODO(New-Anu.) add option --onlyerr that only prints messages when file fails linter
+# Call with --onlyerr to only print error messages when file fails linter
+
+# If both --verbose and --onlyerr are called, the last option passed will be used
 
 
 
@@ -48,6 +50,7 @@ passedlineshpp=0     # lines in passed header files PASSED, DOES NOT COUNT COMME
 checked=""           # string containing files checked
 ruleson="--filter=-" # string containing all enabled lint rules, other rules disabled
 verbosemode=1        # changes to 0 (True) if called with --verbose
+onlyerrmode=1        # changes to 1 (True) if called with --onlyerr
 
 
 
@@ -202,15 +205,13 @@ function lintalldir
             # extracts number of errors from final line of linter
             errfound=$(echo $errline | awk '{print $NF}')
 
-            if [[ $verbosemode -eq 0 ]] 
+            if [[ $verbosemode -eq 0 ]]
             then 
-                local IFS=$'\n'
-                for line in $errmsg 
-                do 
-                    echo $line
-                done 
-                unset IFS # local in func, not local in if block
-            fi
+                printf "$errmsg\n\n" 
+            elif [[ $onlyerrmode -eq 0 ]] && [[ $lintfailed -eq 0 ]]
+            then 
+                printf "$errmsg\n"
+            fi 
 
             if [[ "${file: -4}" == ".cpp" ]]
             then
@@ -243,6 +244,11 @@ do
     if [[ $opt == '--verbose' ]] 
     then 
         verbosemode=0
+        onlyerrmode=1
+    elif [[ $opt == '--onlyerr' ]]
+    then 
+        onlyerrmode=0
+        verbosemode=1
     elif [[ $opt == '--dir='* ]]
     then 
         floc="./${opt#--dir=}"

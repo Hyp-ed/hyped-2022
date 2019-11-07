@@ -7,13 +7,15 @@ MAIN=main.test.cpp
 SRCS_DIR:=src
 OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
-GTEST:=$(LIBS_DIR)/gtest
+GTEST:=$(LIBS_DIR)/googletest
 
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib
 
 VPATH=../src
-
+# change to gnu++1 for windows using uname 
 CFLAGS:= -pthread -std=c++11 -O2 -Wall -Wno-unused-result 
+CFLAGS:= -pthread -std=+11 -O2 -Wall -Wno-unused-result 
+
 LFLAGS:= ${GOOGLE_TEST_LIBS} lib/libtest.a
 
 CC:="g++"
@@ -47,9 +49,9 @@ Echo := $(Verb)echo
 default: $(TARGET)
 
 $(TARGET): $(OBJS)
-	
+	# TODO: put lflags last <- neexed for some compiler targets
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL) $(LFLAGS) -o ../$@ $(OBJS)
+	$(Verb) $(LL) -o ../$@ $(OBJS) $(LFLAGS)
 	# $(Verb) $(LL)  -o $@ $(OBJS)
 
 

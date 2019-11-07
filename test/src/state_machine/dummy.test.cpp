@@ -13,20 +13,21 @@
     // ASSERT_EQ(3,1+1);
 
   }
-  /* struct stateMachineTest : public ::testing::Test {
+
+  struct stateMachineTest : public ::testing::Test {
     protected:
-      utils::Logger _log;
-      data::StateMachine _sm;
+      hyped::utils::Logger _log;
+      hyped::data::StateMachine _sm;
       Data *_d;
       void SetUp() {
         _d = &Data::getInstance(); 
         _sm = _d->getStateMachineData();
       }
-      void TearDown() {delete &_sm;}
+      void TearDown() {}
   };
+  //Test fixture for 'accelerating' state
   TEST_F(stateMachineTest, state_machine_init) {
-    _sm.current_state = data::State::kAccelerating;
+    _sm.current_state = hyped::data::State::kAccelerating;
     _d->setStateMachineData(_sm);
-    ASSERT_EQ(_d->getStateMachineData().current_state, data::State::kAccelerating);
-
-  } */
+    ASSERT_EQ(_d->getStateMachineData().current_state, hyped::data::State::kAccelerating);
+  }

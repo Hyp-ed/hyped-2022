@@ -70,6 +70,7 @@
 #   Line         Explanation
 #   
 #   1887         (Partially)Add try-catch to control structures 
+#   2595         Relax constraints on try-catch until specified by styleguide
 #
 
 """Does google-lint on c++ files.
@@ -2589,7 +2590,10 @@ def CheckBraces(filename, clean_lines, linenum, error):
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
     if (not Search(r'[;}{]\s*$', prevline) and
         not Match(r'\s*#', prevline) and 
-          Search(r'\s((if|else|switch|for|while|try|catch|case)\s)|default:', prevline)
+
+        # MODIFIED FOR HYPED - removed try-catch here until 
+        #  styleguide specifies how to format them (Nov 2019)
+          Search(r'\s((if|else|switch|for|while|case)\s)|default:', prevline)
         ):
       error(filename, linenum, 'whitespace/braces', 4,
             '{ should almost always be at the end of the previous line')

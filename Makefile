@@ -82,8 +82,16 @@ $(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 
 lint:
 ifeq ($(NOLINT), 0)
-	$(Verb) python2.7 utils/Lint/presubmit.py
+	$(Verb) python2.7 utils/Lint/presubmit.py --workspace=src
 endif
+
+lintall:
+	$(Echo) "Linting /src\n"
+	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
+	$(Echo) "\nLinting /run\n"
+	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run 
+	$(Echo) "\nLinting /test\n"
+	$(Verb) $(MAKE) -C test lint
 
 testrunner: libtest
 	$(VERB) $(MAKE) -C test

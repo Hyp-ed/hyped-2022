@@ -62,6 +62,16 @@
 #    ctor(s?), dtor, friend declarations, methods, member vars)
 #
 
+# This file has been modified to more closely enforce
+#   HYPED's style-guide, which is itself adopted from
+#   Google's own c++ style guide.
+#
+# Changes tracked so far:
+#   Line         Explanation
+#   
+#   1887         (Partially)Add try-catch to control structures 
+#
+
 """Does google-lint on c++ files.
 
 The goal of this script is to identify places in the code that *may*
@@ -1871,7 +1881,10 @@ def CheckSpacingForFunctionCall(filename, line, linenum, error):
   # Note that we assume the contents of [] to be short enough that
   # they'll never need to wrap.
   if (  # Ignore control structures.
-      not Search(r'\b(if|for|while|switch|return|delete)\b', fncall) and
+
+      # MODIFIED FOR HYPED - added 'try', 'catch' as a control structure to ignore 
+      #  currently (Nov 2019) HYPED's styleguide does not specify any restriction on its usage
+      not Search(r'\b(if|for|while|switch|return|delete|try|catch)\b', fncall) and
       # Ignore pointers/references to functions.
       not Search(r' \([^)]+\)\([^)]*(\)|,$)', fncall) and
       # Ignore pointers/references to arrays.

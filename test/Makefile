@@ -8,6 +8,7 @@ SRCS_DIR:=src
 OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/googletest
+GTEST_LIB_DIR:=$(GTEST)/build/lib/libgtest.a
 LINT:=../utils/Lint/presubmit.py
 
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
@@ -63,12 +64,12 @@ $(TARGET): $(OBJS)
 
 
 
-$(OBJS):  $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(GTEST)
+$(OBJS):  $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(GTEST_LIB_DIR)
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
 	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -I../src -Ilib/googletest/googletest/include -o $@ -c $(INC_DIR) $<
 
-$(GTEST): $(GTEST).tar.gz
+$(GTEST_LIB_DIR): $(GTEST).tar.gz
 	$(Echo) "Building GTest Suite"
 	$(Verb) ./setup.sh
 	$(Verb) touch $@

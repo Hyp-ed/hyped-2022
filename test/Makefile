@@ -55,14 +55,16 @@ ifndef VERBOSE
 endif
 Echo := $(Verb)echo
 
-default: $(TARGET)
+default: runner
+
+.PHONY: runner
+runner: $(TARGET)
+	chmod u+x testrunner
+	./testrunner
 
 $(TARGET): $(OBJS)
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL)  -o ../$@ $(OBJS) $(LFLAGS)
-# $(Verb) $(LL)  -o $@ $(OBJS)
-
-
+	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS)
 
 $(OBJS):  $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(GTEST_LIB_DIR)
 	$(Echo) "Compiling $<"

@@ -8,6 +8,7 @@ SRCS_DIR:=src
 OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/googletest
+LINT:=../utils/Lint/presubmit.py
 
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
@@ -72,6 +73,9 @@ $(GTEST): $(GTEST).tar.gz
 	$(Verb) ./setup.sh
 	$(Verb) touch $@
 
+
+lint: 
+	$(Verb) python2.7 $(LINT) --workspace=test/src
 
 clean:
 	$(Verb) rm -rf $(OBJS_DIR)/*

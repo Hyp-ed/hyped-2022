@@ -15,7 +15,7 @@ GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 VPATH=../src
 # change to gnu++1 for windows using uname 
-CFLAGS:= -pthread  -O2 -Wall -Wno-unused-result 
+include ../utils/build/config.mk
 
 ifneq ($(UNAME),Window)
 	# assume Linux
@@ -28,8 +28,6 @@ endif
 
 
 LFLAGS:= ${GOOGLE_TEST_LIBS} lib/libtest.a
-
-CC:="g++"
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )

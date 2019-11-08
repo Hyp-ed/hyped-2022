@@ -10,17 +10,15 @@ SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin
 
+include utils/build/config.mk
 
 # TODO: fix use -std=gnu++11 for Windows/cygwin
-CFLAGS:=-pthread -O2 -Wall -Wno-unused-result 
 LFLAGS:=-lpthread -pthread
 
 # libaries for generating TARGET
 EIGEN=$(LIBS_DIR)/Eigen
 
 ifeq ($(CROSS), 0)
-	CC:=g++
-	UNAME=$(shell uname)
 	ifneq ($(UNAME),Linux)
 		# assume Windows
 		UNAME='Windows'

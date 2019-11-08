@@ -10,5 +10,5 @@ if [$UNAME = "Windows"]; then
 else
    COMPILER="c"
 fi
-cd build && cmake -DCMAKE_CXX_COMPILER="g++" -DCMAKE_CXX_FLAGS="-std=$COMPILER++11 -stdlib=libc++" ..
+cd build && cmake -DCMAKE_CXX_COMPILER="g++" -DCMAKE_CXX_FLAGS="-std=$COMPILER++11 ..
 make

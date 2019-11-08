@@ -10,8 +10,9 @@ SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin
 
+
 # TODO: fix use -std=gnu++11 for Windows/cygwin
-CFLAGS:=-pthread -std=c++11 -O2 -Wall -Wno-unused-result
+CFLAGS:=-pthread -O2 -Wall -Wno-unused-result 
 LFLAGS:=-lpthread -pthread
 
 # libaries for generating TARGET
@@ -23,7 +24,9 @@ ifeq ($(CROSS), 0)
 	ifneq ($(UNAME),Linux)
 		# assume Windows
 		UNAME='Windows'
-		CFLAGS:=$(CFLAGS) -DWIN
+		CFLAGS:=$(CFLAGS) -DWIN -std=gnu++11
+	else
+		CFLAGS:=$(CFLAGS) -std=c++11
 	endif
 	ARCH=$(shell uname -m)
 	ifneq (,$(findstring 64,$(ARCH)))
@@ -88,7 +91,7 @@ endif
 testrunner: libtest
 	$(VERB) $(MAKE) -C test
 
-libtest: all-objects
+libtest:  $(EIGEN) | $(OBJS)
 	$(Echo) "Making library"
 	$(Verb) ar -cvq test/lib/$@.a $(OBJS) > /dev/null
 

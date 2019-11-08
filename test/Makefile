@@ -9,12 +9,21 @@ OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/googletest
 
-GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib
+GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 VPATH=../src
 # change to gnu++1 for windows using uname 
-CFLAGS:= -pthread -std=c++11 -O2 -Wall -Wno-unused-result 
-CFLAGS:= -pthread -std=+11 -O2 -Wall -Wno-unused-result 
+CFLAGS:= -pthread  -O2 -Wall -Wno-unused-result 
+
+ifneq ($(UNAME),Window)
+	# assume Linux
+	UNAME='Windows'
+	CFLAGS:=$(CFLAGS) -std=c++11
+else
+	CFLAGS:=$(CFLAGS) -std=gnu++11
+endif
+
+
 
 LFLAGS:= ${GOOGLE_TEST_LIBS} lib/libtest.a
 
@@ -27,13 +36,11 @@ endif
 LL:=$(CC)
 
 
+#SRCS:= $(shell find $(SRCS_DIR) -name '*.test.cpp')
 include $(SRCS_DIR)/Test.files
-
-
 SRCS := $(SRCS) $(MAIN)
 OBJS := $(SRCS:.cpp=.o)
 
-SRCS := $(patsubst %,$(SRCS_DIR)/%,$(SRCS))
 OBJS := $(patsubst %,$(OBJS_DIR)/%,$(OBJS))
 
 DEP_DIR := $(OBJS_DIR)
@@ -49,10 +56,9 @@ Echo := $(Verb)echo
 default: $(TARGET)
 
 $(TARGET): $(OBJS)
-	# TODO: put lflags last <- neexed for some compiler targets
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL) -o ../$@ $(OBJS) $(LFLAGS)
-	# $(Verb) $(LL)  -o $@ $(OBJS)
+	$(Verb) $(LL)  -o ../$@ $(OBJS) $(LFLAGS)
+# $(Verb) $(LL)  -o $@ $(OBJS)
 
 
 
@@ -80,7 +86,7 @@ endef
 info:
 	$(call echo_var,CC)
 	$(call echo_var,TOP)
-#	$(call echo_var,SRCS)
+	$(call echo_var,SRCS)
 	$(call echo_var,OBJS)
 #	$(call echo_var,MAINS)
 	$(call echo_var,UNAME)

@@ -21,6 +21,7 @@ testrunner
 .com.apple.timemachine.donotpresent
 
 # Testing
+/utils/Lint/lintresults.txt
 /test/lib/googletest
 /test/lib/libtest.a
 binmain.o

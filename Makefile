@@ -10,10 +10,10 @@ SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin
 
-include utils/build/config.mk
+include utils/config.mk
 
 # TODO: fix use -std=gnu++11 for Windows/cygwin
-LFLAGS:=-lpthread -pthread
+# LFLAGS:=-lpthread -pthread
 
 # libaries for generating TARGET
 EIGEN=$(LIBS_DIR)/Eigen

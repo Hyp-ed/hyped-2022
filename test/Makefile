@@ -15,9 +15,9 @@ GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 VPATH=../src
 # change to gnu++1 for windows using uname
-include ../utils/build/config.mk
+include ../utils/config.mk
 
-LFLAGS:= ${GOOGLE_TEST_LIBS} lib/libtest.a
+LFLAGS:= $(LFLAGS) ${GOOGLE_TEST_LIBS} lib/libtest.a
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )

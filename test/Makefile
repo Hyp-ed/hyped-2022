@@ -14,7 +14,7 @@ LINT:=../utils/Lint/presubmit.py
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 VPATH=../src
-# change to gnu++1 for windows using uname 
+# change to gnu++1 for windows using uname
 include ../utils/build/config.mk
 
 LFLAGS:= ${GOOGLE_TEST_LIBS} lib/libtest.a
@@ -47,10 +47,10 @@ default: runner
 
 .PHONY: runner
 runner: $(TARGET)
-	chmod u+x testrunner
-	./testrunner
+	$(Verb) chmod u+x testrunner
+	$(Verb) ./testrunner
 
-$(TARGET): $(OBJS)
+$(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS)
 
@@ -64,8 +64,10 @@ $(GTEST_LIB_TARGET): $(GTEST).tar.gz
 	$(Verb) ./setup.sh
 	$(Verb) touch $@
 
+lib/libtest.a:
+	$(Verb) make -C .. test/lib/libtest.a
 
-lint: 
+lint:
 	$(Verb) python2.7 $(LINT) --workspace=test/src
 
 clean:

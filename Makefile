@@ -97,7 +97,7 @@ lintall:
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test
 
-test/lib/libtest.a:  $(EIGEN) | $(OBJS)
+test/lib/libtest.a:  $(EIGEN) $(OBJS)
 	$(Echo) "Making library"
 	$(Verb) ar -cvq $@ $(OBJS) > /dev/null
 

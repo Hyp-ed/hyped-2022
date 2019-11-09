@@ -17,16 +17,6 @@ VPATH=../src
 # change to gnu++1 for windows using uname 
 include ../utils/build/config.mk
 
-ifneq ($(UNAME),Window)
-	# assume Linux
-	UNAME='Windows'
-	CFLAGS:=$(CFLAGS) -std=c++11
-else
-	CFLAGS:=$(CFLAGS) -std=gnu++11
-endif
-
-
-
 LFLAGS:= ${GOOGLE_TEST_LIBS} lib/libtest.a
 
 # test if compiler is installed

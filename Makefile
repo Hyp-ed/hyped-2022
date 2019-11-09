@@ -12,9 +12,6 @@ OBJS_DIR:=bin
 
 include utils/config.mk
 
-# TODO: fix use -std=gnu++11 for Windows/cygwin
-# LFLAGS:=-lpthread -pthread
-
 # libaries for generating TARGET
 EIGEN=$(LIBS_DIR)/Eigen
 

@@ -90,16 +90,16 @@ lintall:
 	$(Echo) "Linting /src\n"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
 	$(Echo) "\nLinting /run\n"
-	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run 
+	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
 	$(Echo) "\nLinting /test\n"
 	$(Verb) $(MAKE) -C test lint
 
-testrunner: libtest
+testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test
 
-libtest:  $(EIGEN) | $(OBJS)
+test/lib/libtest.a:  $(EIGEN) | $(OBJS)
 	$(Echo) "Making library"
-	$(Verb) ar -cvq test/lib/$@.a $(OBJS) > /dev/null
+	$(Verb) ar -cvq $@ $(OBJS) > /dev/null
 
 clean-all: cleanlint cleantest clean
 

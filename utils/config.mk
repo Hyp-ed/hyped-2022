@@ -1,4 +1,6 @@
 CFLAGS:=-pthread -O2 -Wall -Wno-unused-result 
+LFLAGS:=-lpthread -pthread
+
 CC:="g++"
 UNAME=$(shell uname)
 ifneq ($(UNAME),Linux)

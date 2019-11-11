@@ -31,3 +31,4 @@ TEST_F(stateMachineTest, state_machine_init) {
   _d->setStateMachineData(_sm);
   ASSERT_EQ(_d->getStateMachineData().current_state, hyped::data::State::kAccelerating);
 }
+

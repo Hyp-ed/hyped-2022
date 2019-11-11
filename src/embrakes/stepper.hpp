@@ -36,7 +36,7 @@ using data::ModuleStatus;
 namespace embrakes {
 
 class Stepper {
-  public:
+ public:
   /**
    * @brief Construct a new Stepper object
    * @param log, node id
@@ -67,17 +67,15 @@ class Stepper {
 
   bool checkClamped();
 
-  private:
-
-    utils::Logger&        log_;
-    data::Data&           data_;
-    data::EmergencyBrakes em_brakes_data_;
-    GPIO                  command_pin_;
-    GPIO                  button_;
-    uint8_t               brake_id_;
-    uint8_t               is_clamped_;
-    uint64_t              timer;
-
+ private:
+  utils::Logger&        log_;
+  data::Data&           data_;
+  data::EmergencyBrakes em_brakes_data_;
+  GPIO                  command_pin_;
+  GPIO                  button_;
+  uint8_t               brake_id_;
+  uint8_t               is_clamped_;
+  uint64_t              timer;
 };
 
 }}  // namespace hyped::embrakes

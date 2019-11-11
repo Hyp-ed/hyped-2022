@@ -35,9 +35,9 @@ using data::ModuleStatus;
 
 namespace embrakes {
 /*
- * @description This module handles the interaction with the embrakes. 
+ * @description This module handles the interaction with the embrakes.
 */
-class Main : public Thread 
+class Main : public Thread
 {
   public:
     /*

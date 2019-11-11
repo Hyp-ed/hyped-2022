@@ -62,6 +62,11 @@
 #    ctor(s?), dtor, friend declarations, methods, member vars)
 #
 
+# This file has been modified to more closely enforce
+#   HYPED's style-guide, which is itself adopted from
+#   Google's own c++ style guide.
+#
+
 """Does google-lint on c++ files.
 
 The goal of this script is to identify places in the code that *may*
@@ -1871,7 +1876,10 @@ def CheckSpacingForFunctionCall(filename, line, linenum, error):
   # Note that we assume the contents of [] to be short enough that
   # they'll never need to wrap.
   if (  # Ignore control structures.
-      not Search(r'\b(if|for|while|switch|return|delete)\b', fncall) and
+
+      # MODIFIED FOR HYPED - added 'try', 'catch' as a control structure to ignore 
+      #  currently (Nov 2019) HYPED's styleguide does not specify any restriction on its usage
+      not Search(r'\b(if|for|while|switch|return|delete|try|catch)\b', fncall) and
       # Ignore pointers/references to functions.
       not Search(r' \([^)]+\)\([^)]*(\)|,$)', fncall) and
       # Ignore pointers/references to arrays.
@@ -2576,7 +2584,10 @@ def CheckBraces(filename, clean_lines, linenum, error):
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
     if (not Search(r'[;}{]\s*$', prevline) and
         not Match(r'\s*#', prevline) and 
-          Search(r'\s((if|else|switch|for|while|try|catch|case)\s)|default:', prevline)
+
+        # MODIFIED FOR HYPED - removed try-catch here until 
+        #  styleguide specifies how to format them (Nov 2019)
+          Search(r'\s((if|else|switch|for|while|case)\s)|default:', prevline)
         ):
       error(filename, linenum, 'whitespace/braces', 4,
             '{ should almost always be at the end of the previous line')

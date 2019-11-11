@@ -4,6 +4,7 @@ bin
 # Executables
 *.exe
 hyped
+testrunner
 
 ### macOS ###
 .DS_Store
@@ -18,6 +19,12 @@ hyped
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+# Testing
+/utils/Lint/lintresults.txt
+/test/lib/googletest
+/test/lib/libtest.a
+binmain.o
 
 # Other rubbish
 .cpplint-cache

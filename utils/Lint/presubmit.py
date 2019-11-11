@@ -50,7 +50,7 @@ import subprocess
 import multiprocessing
 from subprocess import PIPE
 
-hyped_paths =  ['data/', 'navigation/', 'propulsion/', 'sensors/', 'state_machine/', 'telemetry/', 'utils/']
+cpplint_path = join( relpath(dirname(sys.argv[0])), 'cpplint.py' )
 
 # Disabled LINT rules and reason.
 # readability/streams: are we using streams?
@@ -195,18 +195,11 @@ class SourceFileProcessor(object):
 
   def Run(self, path, options):
     all_files = []
-    if exists(join(path, "Lint.files")):
-      all_files += [join(path, line.rstrip('\n')) for line in open(join(path, "Lint.files"), "r") if line.strip() is not '']
-    else:
 
-      if exists(join(path, "Lint_IGNORE_DIRS.files")):
-        SourceFileProcessor.dic['IGNORE_DIRS'] += [line.rstrip('\n') for line in open(join(path, "Lint_IGNORE_DIRS.files"), "r") if line.strip() is not '']
+    if exists(join(path, "Lint_IGNORE_DIRS.files")):
+      SourceFileProcessor.dic['IGNORE_DIRS'] += [line.rstrip('\n') for line in open(join(path, "Lint_IGNORE_DIRS.files"), "r") if line.strip() is not '']
 
-      for file in self.GetPathsToSearch():
-        all_files += self.FindFilesIn(join(path, file))
-    # print all_files
-    # Add main.cpp
-    all_files.append('src/main.cpp')
+    all_files += self.FindFilesIn(path)
     if not self.ProcessFiles(all_files, path, options):
       return False
     return True
@@ -270,10 +263,7 @@ class CppLintProcessor(SourceFileProcessor):
       return True
 
     filt = '-,' + ",".join(['+' + n for n in ENABLED_LINT_RULES])
-    command = ['cpplint.py', '--filter', filt]
-    local_cpplint = join(path, "../utils/Lint", "cpplint.py")
-    if exists(local_cpplint):
-      command = ['python2.7', local_cpplint, '--filter', filt]
+    command = ['python2.7', cpplint_path, '--filter', filt]
 
     commands = join([command + [file] for file in files])
     count = multiprocessing.cpu_count()
@@ -400,7 +390,11 @@ def Main():
   # workspace = abspath(join(dirname(sys.argv[0]), '../../src/'))
   workspace = relpath(join(dirname(sys.argv[0]), '../../src/'))
   if options.workspace:
-    workspace = options.workspace
+    # default behavior:
+    # workspace = options.workspace
+
+    # usage: python ... --workspace='src'
+    workspace = relpath(join(dirname(sys.argv[0]), '../../' + options.workspace))
   if not options.no_lint:
     success = CppLintProcessor().Run(workspace, options) and success
   if not options.no_sanity:

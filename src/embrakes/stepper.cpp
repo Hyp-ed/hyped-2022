@@ -34,55 +34,61 @@ Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger& log, uint8_t id
   GPIO button_(button_pin, utils::io::gpio::kIn, log_);
 }
 
-void Stepper::checkHome() {
-  if(button_.read() && !em_brakes_data_.brakes_retracted[brake_id_-1]){
+void Stepper::checkHome()
+{
+  if (button_.read() && !em_brakes_data_.brakes_retracted[brake_id_-1]) {
     em_brakes_data_.brakes_retracted[brake_id_-1] = true;
     data_.setEmergencyBrakesData(em_brakes_data_);
-  } else if(!button_.read() && em_brakes_data_.brakes_retracted[brake_id_-1]){
+  } else if (!button_.read() && em_brakes_data_.brakes_retracted[brake_id_-1]) {
     em_brakes_data_.brakes_retracted[brake_id_-1] = false;
     data_.setEmergencyBrakesData(em_brakes_data_);
   }
 }
 
-void Stepper::sendRetract() {
+void Stepper::sendRetract()
+{
   log_.INFO("Brakes", "Sending a retract message to brake %i", brake_id_);
   command_pin_.clear();
   is_clamped_ = false;
 }
 
-void Stepper::sendClamp() {
+void Stepper::sendClamp()
+{
   log_.INFO("Brakes", "Sending a retract message to brake %i", brake_id_);
   command_pin_.set();
   is_clamped_ = true;
 }
 
-void Stepper::checkAccFailure() {
-  if(!button_.read()){
+void Stepper::checkAccFailure()
+{
+  if (!button_.read()) {
     timer = utils::Timer::getTimeMicros();
-    if((utils::Timer::getTimeMicros() - timer > 200000) && !button_.read()){
+    if ((utils::Timer::getTimeMicros() - timer > 200000) && !button_.read()) {
       log_.ERR("Brakes", "Brake %b failure", brake_id_);
       em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
       data_.setEmergencyBrakesData(em_brakes_data_);
-    } else{
+    } else {
       return;
     }
   }
 }
 
-void Stepper::checkBrakingFailure() {
-  if(button_.read()){
+void Stepper::checkBrakingFailure()
+{
+  if (button_.read()) {
     timer = utils::Timer::getTimeMicros();
-    if((utils::Timer::getTimeMicros() - timer > 200000) && button_.read()){
+    if ((utils::Timer::getTimeMicros() - timer > 200000) && button_.read()) {
       log_.ERR("Brakes", "Brake %b failure", brake_id_);
       em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
       data_.setEmergencyBrakesData(em_brakes_data_);
-    } else{
+    } else {
       return;
     }
   }
 }
 
-bool Stepper::checkClamped() {
+bool Stepper::checkClamped()
+{
   return is_clamped_;
 }
 

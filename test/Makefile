@@ -70,6 +70,9 @@ lib/libtest.a:
 lint:
 	$(Verb) python2.7 $(LINT) --workspace=test/src
 
+cleanlint:
+	$(Verb) rm -f .cpplint-cache
+
 clean:
 	$(Verb) rm -rf $(OBJS_DIR)/*
 	$(Verb) rm -f $(TARGET)

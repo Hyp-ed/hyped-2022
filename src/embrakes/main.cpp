@@ -19,18 +19,15 @@
 #include "main.hpp"
 #include "utils/config.hpp"
 
-namespace hyped
-{
+namespace hyped {
+namespace embrakes {
 
-namespace embrakes
-{
 Main::Main(uint8_t id, Logger &log)
   : Thread(id, log),
     log_(log),
     data_(data::Data::getInstance()),
     sys_(utils::System::getSystem())
 {
-
   // parse GPIO pins from config.txt file
   for (int i = 0; i < 4; i++) {
     command_pins_[i] = sys_.config->embrakes.command[i];
@@ -40,10 +37,10 @@ Main::Main(uint8_t id, Logger &log)
   // Stepper brake_2(command_pins_[1], button_pins_[1], log_, 2);
   // Stepper brake_3(command_pins_[2], button_pins_[2], log_, 3);
   // Stepper brake_4(command_pins_[3], button_pins_[3], log_, 4);
-
 }
 
-void Main::run() {
+void Main::run()
+{
   log_.INFO("Brakes", "Thread started");
 
   System &sys = System::getSystem();
@@ -53,12 +50,12 @@ void Main::run() {
     em_brakes_ = data_.getEmergencyBrakesData();
     sm_data_ = data_.getStateMachineData();
     tlm_data_ = data_.getTelemetryData();
-    
+
     switch (sm_data_.current_state) {
       case data::State::kIdle:
-        if(!tlm_data_.nominal_braking_command) {
+        if (!tlm_data_.nominal_braking_command) {
           log_.INFO("Brakes", "RETRACT COMMAND");
-          if(brake_1->checkClamped()){
+          if (brake_1->checkClamped()) {
             brake_1->sendRetract();
           }
           // if(brake_2->checkClamped()){
@@ -76,9 +73,9 @@ void Main::run() {
           // brake_3->checkHome();
           // brake_4->checkHome();
 
-        } else if(tlm_data_.nominal_braking_command) {
+        } else if (tlm_data_.nominal_braking_command) {
           log_.INFO("Brakes", "ENGAGE COMMAND");
-          if(!brake_1->checkClamped()){
+          if (!brake_1->checkClamped()) {
             brake_1->sendClamp();
           }
           // if(!brake_2->checkClamped()){
@@ -95,11 +92,10 @@ void Main::run() {
           // brake_2->checkHome();
           // brake_3->checkHome();
           // brake_4->checkHome();
-
         }
         break;
       case data::State::kCalibrating:
-        if(brake_1->checkClamped()){
+        if (brake_1->checkClamped()) {
           brake_1->sendRetract();
         }
         // if(brake_2->checkClamped()){
@@ -111,7 +107,7 @@ void Main::run() {
         // if(brake_4->checkClamped()){
         //   brake_4->sendRetract();
         // }
-        if(!brake_1->checkClamped()) {
+        if (!brake_1->checkClamped()) {
           em_brakes_.module_status = ModuleStatus::kReady;
           data_.setEmergencyBrakesData(em_brakes_);
         }
@@ -128,7 +124,7 @@ void Main::run() {
         // brake_4->checkAccFailure();
         break;
       case data::State::kNominalBraking:
-        if (!brake_1->checkClamped()){
+        if (!brake_1->checkClamped()) {
           brake_1->sendClamp();
         }
         // if(!brake_2->checkClamped()){
@@ -152,9 +148,8 @@ void Main::run() {
         // brake_4->checkBrakingFailure();
         break;
       case data::State::kFinished:
-        if(tlm_data_.nominal_braking_command) {
-          
-          if(brake_1->checkClamped()){
+        if (tlm_data_.nominal_braking_command) {
+          if (brake_1->checkClamped()) {
             brake_1->sendRetract();
           }
           // if(brake_2->checkClamped()){
@@ -171,10 +166,8 @@ void Main::run() {
           // brake_2->checkHome();
           // brake_3->checkHome();
           // brake_4->checkHome();
-
-        } else if(!tlm_data_.nominal_braking_command) {
-
-          if(!brake_1->checkClamped()){
+        } else if (!tlm_data_.nominal_braking_command) {
+          if (!brake_1->checkClamped()) {
             brake_1->sendClamp();
           }
           // if(!brake_2->checkClamped()){
@@ -191,7 +184,6 @@ void Main::run() {
           // brake_2->checkHome();
           // brake_3->checkHome();
           // brake_4->checkHome();
-
         }
         break;
       default:
@@ -200,5 +192,6 @@ void Main::run() {
   }
   log_.INFO("Brakes", "Thread shutting down");
 }
+
 }  // namespace embrakes
 }  // namespace hyped

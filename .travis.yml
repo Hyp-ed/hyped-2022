@@ -4,7 +4,6 @@ os: osx
 before_install:
   - cd test && sudo chmod u+x setup.sh && ./setup.sh
   - cd "${TRAVIS_BUILD_DIR}"
-script: "make testrunner"
+script: "make testrunner lintall"
 rvm:
   - 9.00
-  

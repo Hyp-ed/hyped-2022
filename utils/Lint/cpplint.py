@@ -2637,7 +2637,9 @@ def CheckBraces(filename, clean_lines, linenum, error):
       break
   if (Search(r'{.*}\s*;', line) and
       line.count('{') == line.count('}') and
-      not Search(r'struct|class|enum|\s*=\s*{', line)):
+      # MODIFIED FOR HYPED - Fix false-positive on braced initializer list declarations
+      #  Allow Declaration of form: "type_name var_name {...};"
+      not Search(r'struct|class|enum|\s*=\s*{|\b.*\b\s*\b.*\b\s*{.*}\s*;', line)):
     error(filename, linenum, 'readability/braces', 4,
           "You don't need a ; after a }")
 

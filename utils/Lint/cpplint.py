@@ -66,12 +66,6 @@
 #   HYPED's style-guide, which is itself adopted from
 #   Google's own c++ style guide.
 #
-# Changes tracked so far:
-#   Line         Explanation
-#   
-#   1887         (Partially)Add try-catch to control structures 
-#   2595         Relax constraints on try-catch until specified by styleguide
-#
 
 """Does google-lint on c++ files.
 

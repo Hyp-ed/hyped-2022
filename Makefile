@@ -84,11 +84,11 @@ ifeq ($(NOLINT), 0)
 endif
 
 lintall:
-	$(Echo) "Linting src/"
+	$(Echo) "\nLinting src/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
-	$(Echo) "Linting run/"
+	$(Echo) "\nLinting run/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
-	$(Echo) "Linting test/"
+	$(Echo) "\nLinting test/"
 	$(Verb) $(MAKE) -C test lint --no-print-directory
 
 testrunner: test/lib/libtest.a

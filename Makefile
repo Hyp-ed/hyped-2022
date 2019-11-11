@@ -84,12 +84,12 @@ ifeq ($(NOLINT), 0)
 endif
 
 lintall:
-	$(Echo) "Linting /src\n"
+	$(Echo) "Linting src/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
-	$(Echo) "\nLinting /run\n"
+	$(Echo) "Linting run/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
-	$(Echo) "\nLinting /test\n"
-	$(Verb) $(MAKE) -C test lint
+	$(Echo) "Linting test/"
+	$(Verb) $(MAKE) -C test lint --no-print-directory
 
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test
@@ -106,6 +106,7 @@ clean:
 
 cleanlint:
 	$(Verb) rm -f .cpplint-cache
+	$(Verb) $(MAKE) -C test cleanlint --no-print-directory
 
 define echo_var
 	@echo $(1) = $($1)

@@ -1,6 +1,6 @@
 language: cpp
 compiler: gcc
-os: osx
+os: linux
 before_install:
   - cd test && sudo chmod u+x setup.sh && ./setup.sh
   - cd "${TRAVIS_BUILD_DIR}"

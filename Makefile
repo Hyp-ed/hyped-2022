@@ -46,6 +46,8 @@ SRCS := $(shell find $(SRCS_DIR) -name '*.cpp'  -not -path 'src/telemetry/*')
 OBJS := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DIR)%.o,$(SRCS))
 MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_DIR)/%.o, $(MAIN))
 
+TEST_OBJS:=${OBJS}
+
 DEP_DIR := $(OBJS_DIR)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
 INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR)
@@ -76,8 +78,13 @@ all-objects: $(EIGEN) | $(OBJS)
 $(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
-	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $< 
 
+
+$(TEST_OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
+		$(Echo) "Compiling $<"
+		$(Verb) mkdir -p $(dir $@)
+		$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $< --coverage
 lint:
 ifeq ($(NOLINT), 0)
 	$(Verb) python2.7 utils/Lint/presubmit.py --workspace=src
@@ -94,7 +101,10 @@ lintall:
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test
 
-test/lib/libtest.a:  $(EIGEN) $(OBJS)
+coverage: testrunner
+	$(Verb) ./test/get_code_cov.sh
+
+test/lib/libtest.a:  $(EIGEN) $(TEST_OBJS)
 	$(Echo) "Making library"
 	$(Verb) ar -cvq $@ $(OBJS) > /dev/null
 

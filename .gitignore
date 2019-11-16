@@ -24,8 +24,9 @@ testrunner
 /utils/Lint/lintresults.txt
 /test/lib/googletest
 /test/lib/libtest.a
+/test/coverage_html
+/test/covdata
 binmain.o
-
 # Other rubbish
 .cpplint-cache
 .vscode

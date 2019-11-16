@@ -1,5 +1,5 @@
-CFLAGS:=-pthread -O2 -Wall -Wno-unused-result 
-LFLAGS:=-lpthread -pthread
+CFLAGS:=-pthread -O0 -g -Wall -Wno-unused-result 
+LFLAGS:=-lpthread -pthread --verbose
 
 CC:="g++"
 UNAME=$(shell uname)

@@ -8,9 +8,10 @@ SRCS_DIR:=src
 OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/googletest
+CPPCHECK:=$(LIBS_DIR)/cppcheck
 GTEST_LIB_TARGET:=$(GTEST)/build/lib/libgtest.a
 LINT:=../utils/Lint/presubmit.py
-
+CPPCHECK_EXC_TARGET:=$(CPPCHECK)/cppcheck
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 VPATH=../src
@@ -50,6 +51,10 @@ runner: $(TARGET)
 	$(Verb) chmod u+x testrunner
 	$(Verb) ./testrunner
 
+staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
+	$(Echo) "Starting Static Checker"
+	$(Verb) ./$(CPPCHECK_EXC_TARGET) ./src
+
 $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS)
@@ -61,8 +66,16 @@ $(OBJS):  $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(GTEST_LIB_TARGET)
 
 $(GTEST_LIB_TARGET): $(GTEST).tar.gz
 	$(Echo) "Building GTest Suite"
-	$(Verb) ./setup.sh
+	$(Verb) chmod u+x ./lib/googletestsetup.sh
+	$(Verb) ./lib/googletestsetup.sh
 	$(Verb) touch $@
+
+$(CPPCHECK_EXC_TARGET): $(CPPCHECK).tar.gz
+	$(Echo) "Building CPPCheck Analyzer"
+	$(Verb) chmod u+x ./lib/cppchecksetup.sh
+	$(Verb) ./lib/cppchecksetup.sh
+	$(Verb) touch $@
+
 
 lib/libtest.a:
 	$(Verb) make -C .. test/lib/libtest.a

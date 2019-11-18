@@ -1,4 +1,4 @@
-CFLAGS:=-pthread -O2 -Wall -Wno-unused-result 
+CFLAGS:=-pthread -O2 -Wall -Wno-unused-result -Werror
 LFLAGS:=-lpthread -pthread
 
 CC:="g++"

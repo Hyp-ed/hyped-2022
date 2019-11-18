@@ -205,7 +205,7 @@ System::System(int argc, char* argv[])
         else        verbose_embrakes = true;
         break;
       case 'C':
-        strncpy(config_file, optarg, 250);
+        strncpy(config_file, optarg, 250-1);
         break;
       case 'e':   // debug_motor
         if (optarg) debug_motor = atoi(optarg);

@@ -1,0 +1,5 @@
+
+> Telemetry
+Port    9090
+
+$ config.txt

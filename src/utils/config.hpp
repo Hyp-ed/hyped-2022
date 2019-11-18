@@ -27,6 +27,7 @@
 #define UTILS_CONFIG_HPP_
 
 #include <string>
+#include <vector>
 #include "data/data.hpp"
 
 namespace hyped {
@@ -34,6 +35,7 @@ namespace utils {
 
 // forward declaration
 class System;
+class Logger;
 struct ModuleEntry;
 
 enum Submodule {
@@ -90,10 +92,14 @@ class Config {
 
  private:
   explicit Config(char* config_file);
+  void readFile(char* config_file);   // recursively called for nested configs
   Config();
   ~Config();
   explicit Config(Config const&);
   Config& operator=(Config const&);
+
+  std::vector<char*> config_files_;
+  Logger& log_;
 };
 
 }}  // namespace hyped::utils

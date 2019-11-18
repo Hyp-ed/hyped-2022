@@ -23,6 +23,7 @@
 #include <cstring>
 #include <string>  // redundant includes to make linter stop complaining
 #include <vector>
+#include <stack>
 #include <sstream>
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
@@ -199,18 +200,30 @@ void Config::ParseSensors(char* line)
   }
 }
 
-Config::Config(char* config_file)
-{
-  Logger& log = System::getLogger();
 
+const char config_dir_name[] = "configurations/";
+
+void Config::readFile(char* config_file) {
+  // check if config_file already in config_files_
+  for (char* file : config_files_) {
+    if (std::strcmp(file, config_file) == 0) {
+      log_.ERR("CONFIG", "circular config include, ignore reading %s", config_file);
+      return;
+    }
+  }
+  config_files_.push_back(config_file);
+
+  char file_name[BUFFER_SIZE];
+  std::strcpy(file_name, config_dir_name);
+  std::strcpy(file_name+std::strlen(config_dir_name), config_file);
   // load config file, parse it into data structure
-  FILE* file = fopen(config_file, "r");
+  FILE* file = fopen(file_name, "r");
   if (!file) {
-    log.ERR("CONFIG", "no configuration file %s found, exiting", config_file);
+    log_.ERR("CONFIG", "no configuration file %s found, exiting", file_name);
     return;
   }
 
-  log.INFO("CONFIG", "loading configuration file %s", config_file);
+  log_.INFO("CONFIG", "loading configuration file %s", file_name);
 
   // allocate line buffer, read and parse file line by line
   char line[BUFFER_SIZE];
@@ -223,6 +236,7 @@ Config::Config(char* config_file)
     }
 
     // '>' character marks change for submodule
+    // '$' character marks an include of a different config file, step into parsing that file
     // all other lines should be forwarded to the module parses, e.g ParseNavigation()
     switch (line[0]) {
       case '#':   // comment
@@ -238,13 +252,24 @@ Config::Config(char* config_file)
         }
 
         if (prev_module == current_module) {
-          log.ERR("CONFIG", "module name \"%s\" not found, keeping to module \"%s\""
+          log_.ERR("CONFIG", "module name \"%s\" not found, keeping to module \"%s\""
                   , line+1
                   , current_module->name);
         } else {
-          log.INFO("CONFIG", "changing module to \"%s\"", current_module->name);
+          log_.INFO("CONFIG", "changing module to \"%s\"", current_module->name);
         }
 
+        break;
+      }
+      case '$': {
+        char* new_config_file = line + 2;
+        current_module = &module_map[0];
+        log_.INFO("CONFIG", "Stepping into %s, reseting module to \"%s\"",
+                            new_config_file, current_module->name);
+        readFile(new_config_file);
+        current_module = &module_map[0];
+        log_.INFO("CONFIG", "Returning into %s, reseting module to \"%s\"",
+                            config_file, current_module->name);
         break;
       }
       default: {
@@ -254,8 +279,14 @@ Config::Config(char* config_file)
     }
   }
 
-  log.DBG("CONFIG", "configuration file %s loaded", config_file);
+  log_.DBG("CONFIG", "configuration file %s loaded", config_file);
   fclose(file);
+}
+
+Config::Config(char* config_file)
+    : log_(System::getLogger())
+{
+  readFile(config_file);
 }
 
 }}  // namespace hyped::utils

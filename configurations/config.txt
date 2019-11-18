@@ -28,3 +28,5 @@ Embrakes    44
 > Embrakes
 Command     87,10,9,8
 Button      66,69,45,23
+
+$ subconfig_demo.txt

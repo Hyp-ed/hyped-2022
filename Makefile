@@ -14,6 +14,8 @@ include utils/config.mk
 
 # libaries for generating TARGET
 EIGEN=$(LIBS_DIR)/Eigen
+GITHOOKS=.git/hooks
+DEPENDENCIES=$(EIGEN) $(GITHOOKS)
 
 ifeq ($(CROSS), 0)
 	ifneq ($(UNAME),Linux)
@@ -58,7 +60,7 @@ Echo := $(Verb)echo
 
 default: lint $(TARGET)
 
-$(TARGET): all-objects $(MAIN_OBJ)
+$(TARGET): $(DEPENDENCIES) | $(OBJS) $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
@@ -70,8 +72,6 @@ else
 	$(Verb) mkdir -p $(dir $@)
 	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
 endif
-
-all-objects: $(EIGEN) | $(OBJS)
 
 $(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(Echo) "Compiling $<"
@@ -125,6 +125,10 @@ $(EIGEN): $(EIGEN).tar.gz
 	$(Echo) Unpacking Eigen library $@
 	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
 	$(Verb) touch $@
+
+$(GITHOOKS): utils/githooks/*
+	$(Echo) New githooks, installing
+	$(Verb) ./setup.sh
 
 info:
 	$(call echo_var,CC)

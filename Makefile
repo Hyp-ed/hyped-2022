@@ -127,7 +127,7 @@ $(EIGEN): $(EIGEN).tar.gz
 	$(Verb) touch $@
 
 $(GITHOOKS): utils/githooks/*
-	$(Echo) First run, installing githooks
+	$(Echo) New githooks, installing
 	$(Verb) ./setup.sh
 
 info:

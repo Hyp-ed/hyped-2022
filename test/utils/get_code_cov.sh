@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 if [ -z `which lcov` ]; then
   echo Please install lcov to calculate coverage
   exit 1

@@ -49,16 +49,14 @@ struct ModuleEntry {
  * Column 1: A readable name as it appears in the configuration file
  * Column 2: An address of a Config:: member function that performs the line parsing.
  */
+#define MAP_ENTRY(module) \
+  {k##module , #module, &Config::Parse##module},
+
 ModuleEntry module_map[] = {
-  {kNone,         "NOMODULE",       &Config::ParseNone},
-  {kNavigation,   "Navigation",     &Config::ParseNavigation},
-  {kStateMachine, "StateMachine",   &Config::ParseStateMachine},
-  {kTelemetry,    "Telemetry",      &Config::ParseTelemetry},
-  {kEmbrakes,     "Embrakes",       &Config::ParseEmbrakes},
-  {kSensors,      "Sensors",        &Config::ParseSensors}
+  MODULE_LIST(MAP_ENTRY)
 };
 
-void Config::ParseNone(char* line)
+void Config::ParseNoModule(char* line)
 {
   // does nothing
 }
@@ -204,15 +202,6 @@ void Config::ParseSensors(char* line)
 const char config_dir_name[] = "configurations/";
 
 void Config::readFile(char* config_file) {
-  // check if config_file already in config_files_
-  for (char* file : config_files_) {
-    if (std::strcmp(file, config_file) == 0) {
-      log_.ERR("CONFIG", "circular config include, ignore reading %s", config_file);
-      return;
-    }
-  }
-  config_files_.push_back(config_file);
-
   char file_name[BUFFER_SIZE];
   std::strcpy(file_name, config_dir_name);
   std::strcpy(file_name+std::strlen(config_dir_name), config_file);
@@ -262,14 +251,29 @@ void Config::readFile(char* config_file) {
         break;
       }
       case '$': {
+        // check if config_file already in config_files_
         char* new_config_file = line + 2;
-        current_module = &module_map[0];
+        bool duplicate = false;
+        for (char* file : config_files_) {
+          if (std::strcmp(file, new_config_file) == 0) {
+            duplicate = true;
+            break;
+          }
+        }
+        if (duplicate) {
+          log_.ERR("CONFIG", "circular config include of %s from %s", new_config_file, config_file);
+          break;
+        }
+
+        config_files_.push_back(new_config_file);
         log_.INFO("CONFIG", "Stepping into %s, reseting module to \"%s\"",
                             new_config_file, current_module->name);
+        current_module = &module_map[0];
         readFile(new_config_file);
         current_module = &module_map[0];
         log_.INFO("CONFIG", "Returning into %s, reseting module to \"%s\"",
                             config_file, current_module->name);
+        config_files_.pop_back();
         break;
       }
       default: {
@@ -279,14 +283,15 @@ void Config::readFile(char* config_file) {
     }
   }
 
-  log_.DBG("CONFIG", "configuration file %s loaded", config_file);
   fclose(file);
 }
 
 Config::Config(char* config_file)
     : log_(System::getLogger())
 {
+  config_files_.push_back(config_file);
   readFile(config_file);
+  config_files_.pop_back();
 }
 
 }}  // namespace hyped::utils

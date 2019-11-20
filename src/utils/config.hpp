@@ -38,14 +38,19 @@ class System;
 class Logger;
 struct ModuleEntry;
 
-enum Submodule {
-  kNone,
-  kNavigation,
-  kTelemetry,
-  kEmbrakes,
-  kPropulsion,
-  kSensors,
-  kStateMachine
+#define MODULE_LIST(V)  \
+  V(NoModule)           \
+  V(Navigation)         \
+  V(StateMachine)       \
+  V(Telemetry)          \
+  V(Embrakes)           \
+  V(Sensors)
+
+#define CREATE_ENUM(module) \
+  k##module,
+
+enum  Submodule {
+  MODULE_LIST(CREATE_ENUM)
 };
 
 class Config {
@@ -83,20 +88,25 @@ class Config {
   } sensors;
 
 //  private:
-  void ParseNavigation(char* line);
-  void ParseStateMachine(char* line);
-  void ParseTelemetry(char* line);
-  void ParseEmbrakes(char* line);
-  void ParseSensors(char* line);
-  void ParseNone(char* line);
+#define DECLARE_PARSE(module) \
+  void Parse##module(char* line);
+
+  MODULE_LIST(DECLARE_PARSE)
+  // void ParseNavigation(char* line);
+  // void ParseStateMachine(char* line);
+  // void ParseTelemetry(char* line);
+  // void ParseEmbrakes(char* line);
+  // void ParseSensors(char* line);
+  // void ParseNoModule(char* line);
 
  private:
   explicit Config(char* config_file);
-  void readFile(char* config_file);   // recursively called for nested configs
   Config();
+  explicit Config(Config const&) = delete;
+  Config& operator=(Config const&) = delete;
   ~Config();
-  explicit Config(Config const&);
-  Config& operator=(Config const&);
+
+  void readFile(char* config_file);   // recursively called for nested configs
 
   std::vector<char*> config_files_;
   Logger& log_;

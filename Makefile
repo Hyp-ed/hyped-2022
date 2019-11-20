@@ -60,7 +60,7 @@ Echo := $(Verb)echo
 
 default: lint $(TARGET)
 
-$(TARGET): $(DEPENDENCIES) | $(OBJS) $(MAIN_OBJ)
+$(TARGET): $(DEPENDENCIES) $(OBJS) $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 

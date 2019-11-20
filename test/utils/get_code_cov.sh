@@ -1,4 +1,4 @@
-if ![ lcov -v given-command > /dev/null 2>&1 ]; then
+if [ -z `which lcov` ]; then
   echo Please install lcov to calculate coverage
   exit 1
 fi

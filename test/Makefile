@@ -5,12 +5,10 @@
 TARGET=testrunner
 MAIN=main.test.cpp
 SRCS_DIR:=src
-OBJS_DIR:=../bin/test
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/googletest
 GTEST_LIB_TARGET:=$(GTEST)/build/lib/libgtest.a
 LINT:=../utils/Lint/presubmit.py
-COVERAGE_FLAGS=--coverage
 COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
@@ -32,9 +30,9 @@ include $(SRCS_DIR)/Test.files
 SRCS := $(SRCS) $(MAIN)
 OBJS := $(SRCS:.cpp=.o)
 
-OBJS := $(patsubst %,$(OBJS_DIR)/%,$(OBJS))
+OBJS := $(patsubst %,$(OBJS_DEBUG_DIR)/%,$(OBJS))
 
-DEP_DIR := $(OBJS_DIR)
+DEP_DIR := $(OBJS_DEBUG_DIR)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
 INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR) -I../src/
 
@@ -55,7 +53,7 @@ $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS) $(COVERAGE_FLAGS) 
 
-$(OBJS):  $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(GTEST_LIB_TARGET)
+$(OBJS):  $(OBJS_DEBUG_DIR)/%.o: $(SRCS_DIR)/%.cpp $(GTEST_LIB_TARGET)
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
 	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) $(COVERAGE_FLAGS) -I../src -Ilib/googletest/googletest/include -o $@ -c $(INC_DIR) $<
@@ -75,7 +73,7 @@ cleanlint:
 	$(Verb) rm -f .cpplint-cache
 
 clean:
-	$(Verb) rm -rf $(OBJS_DIR)/*
+	$(Verb) rm -rf $(OBJS_DEBUG_DIR)/*
 	$(Verb) rm -rf $(COVERAGE_DIR)
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)

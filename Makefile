@@ -10,9 +10,6 @@ SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin/
 OBJS_RELEASE_DIR:=${OBJS_DIR}/release
-OBJS_DEBUG_DIR:=bin/debug
-
-COVERAGE_FLAGS:=--coverage
 
 
 include utils/config.mk

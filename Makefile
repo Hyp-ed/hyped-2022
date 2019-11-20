@@ -8,7 +8,7 @@ NOLINT=0
 
 SRCS_DIR:=src
 LIBS_DIR:=lib
-OBJS_DIR:=bin/
+OBJS_DIR:=bin
 OBJS_RELEASE_DIR:=${OBJS_DIR}/release
 
 

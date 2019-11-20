@@ -11,6 +11,7 @@ GTEST:=$(LIBS_DIR)/googletest
 GTEST_LIB_TARGET:=$(GTEST)/build/lib/libgtest.a
 LINT:=../utils/Lint/presubmit.py
 COVERAGE_FLAGS=--coverage
+COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 VPATH=../src
@@ -75,6 +76,7 @@ cleanlint:
 
 clean:
 	$(Verb) rm -rf $(OBJS_DIR)/*
+	$(Verb) rm -rf $(COVERAGE_DIR)
 	$(Verb) rm -f $(TARGET)
 	$(Verb) rm -f $(MAINS)
 	$(Verb) rm -f lib/libtest.a

@@ -1,14 +1,16 @@
 #!/bin/bash
-set -e
-if [ -z `which lcov` ]; then
-  echo Please install lcov to calculate coverage
-  exit 1
-fi
 
-if ![ genhtml -v given-command > /dev/null 2>&1 ]; then
-  echo Please install lcov to calculate coverage
-  exit 1
-fi
+set -e
+
+command -v lcov > /dev/null 2>&1 || {
+    echo >&2 "PLEASE INSTALL LCOV TO CALCULATE COVERAGE"
+    exit 1
+}
+
+command -v genhtml > /dev/null 2>&1 || {
+    echo >&2 "PLEASE INSTALL LCOV TO CALCULATE COVERAGE"
+    exit 1
+}
 
 mkdir -p test/coverage/covdata
 echo "Calculating Initial Coverage"

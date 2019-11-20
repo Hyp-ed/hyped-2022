@@ -8,7 +8,12 @@ NOLINT=0
 
 SRCS_DIR:=src
 LIBS_DIR:=lib
-OBJS_DIR:=bin
+OBJS_DIR:=bin/
+OBJS_RELEASE_DIR:=${OBJS_DIR}/release
+OBJS_DEBUG_DIR:=bin/debug
+
+COVERAGE_FLAGS:=--coverage
+
 
 include utils/config.mk
 
@@ -43,13 +48,16 @@ LL:=$(CC)
 # auto-discover all sources
 # TODO: include telemetry once protobuf dependency removed
 SRCS := $(shell find $(SRCS_DIR) -name '*.cpp'  -not -path 'src/telemetry/*')
-OBJS := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DIR)%.o,$(SRCS))
-MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_DIR)/%.o, $(MAIN))
+OBJS := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_RELEASE_DIR)%.o,$(SRCS))
+TEST_OBJS :=  $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DEBUG_DIR)%.o,$(SRCS))
+MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_RELEASE_DIR)/%.o, $(MAIN))
 
-TEST_OBJS:=${OBJS}
+DEP_DIR_RELEASE := $(OBJS_RELEASE_DIR)
+DEPFLAGS_RELEASE = -MT $@ -MMD -MP -MF $(DEP_DIR_RELEASE)/$*.d
 
-DEP_DIR := $(OBJS_DIR)
-DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
+DEP_DIR_DEBUG := $(OBJS_DEBUG_DIR)
+DEPFLAGS_DEBUG = -MT $@ -MMD -MP -MF $(DEP_DIR_DEBUG)/$*.d
+
 INC_DIR := -I$(SRCS_DIR) -I$(LIBS_DIR)
 
 # run "make VERBOSE=1" to see all commands
@@ -64,27 +72,27 @@ $(TARGET): all-objects $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
-$(MAIN_OBJ): $(OBJS_DIR)/%.o: $(MAIN)
+$(MAIN_OBJ): $(OBJS_RELEASE_DIR)/%.o: $(MAIN)
 ifeq (,$(wildcard $(MAIN)))
 $(error file $(MAIN) does not exist)
 else
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
-	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+	$(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $<
 endif
 
 all-objects: $(EIGEN) | $(OBJS)
 
-$(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
+$(OBJS): $(OBJS_RELEASE_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
-	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $< 
+	$(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $< 
 
 
-$(TEST_OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
+$(TEST_OBJS): $(OBJS_DEBUG_DIR)/%.o: $(SRCS_DIR)/%.cpp
 		$(Echo) "Compiling $<"
 		$(Verb) mkdir -p $(dir $@)
-		$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $< --coverage
+		$(Verb) $(CC) $(DEPFLAGS_DEBUG) $(CFLAGS) -o $@ -c $(INC_DIR) $< ${COVERAGE_FLAGS}
 lint:
 ifeq ($(NOLINT), 0)
 	$(Verb) python2.7 utils/Lint/presubmit.py --workspace=src
@@ -99,14 +107,14 @@ lintall:
 	$(Verb) $(MAKE) -C test lint --no-print-directory
 
 testrunner: test/lib/libtest.a
-	$(VERB) $(MAKE) -C test
+	$(VERB) $(MAKE) -C test runner
 
 coverage: testrunner
-	$(Verb) ./test/get_code_cov.sh
+	$(Verb) ./test/utils/get_code_cov.sh
 
 test/lib/libtest.a:  $(EIGEN) $(TEST_OBJS)
 	$(Echo) "Making library"
-	$(Verb) ar -cvq $@ $(OBJS) > /dev/null
+	$(Verb) ar -cvq $@ $(TEST_OBJS) > /dev/null
 
 clean-all: cleanlint cleantest clean
 
@@ -141,6 +149,7 @@ info:
 	$(call echo_var,TOP)
 #	$(call echo_var,SRCS)
 	$(call echo_var,OBJS)
+	$(call echo_var,TEST_OBJS)
 #	$(call echo_var,MAINS)
 	$(call echo_var,UNAME)
 	$(call echo_var,CFLAGS)

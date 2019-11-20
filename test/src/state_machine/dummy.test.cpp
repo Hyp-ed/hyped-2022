@@ -24,7 +24,7 @@
 using hyped::data::Data;
 void t()
 {
-  Data& d = Data::getInstance();
+  // Data& d = Data::getInstance();
 }
 
 TEST(dummy_test, f)

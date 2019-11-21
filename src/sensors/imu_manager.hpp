@@ -1,10 +1,10 @@
 /*
- * Author: Jack Horsburgh
+ * Author:
  * Organisation: HYPED
- * Date: 19/06/18
+ * Date:
  * Description: IMU manager for getting IMU data from around the pod and pushes to data struct
  *
- *    Copyright 2018 HYPED
+ *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -45,7 +45,6 @@ class ImuManager: public ImuManagerInterface {
    * @brief Construct a new Imu Manager object
    *
    * @param log
-   * @param imu
    */
   explicit ImuManager(Logger& log);
 

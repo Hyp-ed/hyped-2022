@@ -74,7 +74,7 @@ FakeGpioCounter::FakeGpioCounter(Logger& log,
   }
 }
 
-StripeCounter FakeGpioCounter::getStripeCounter()     // returns incorrect stripe count
+void FakeGpioCounter::getData(StripeCounter* stripe_count)     // returns incorrect stripe count
 {
   data::State state = data_.getStateMachineData().current_state;
   if (!acc_ref_init_ && state == data::State::kAccelerating) {
@@ -113,7 +113,8 @@ StripeCounter FakeGpioCounter::getStripeCounter()     // returns incorrect strip
         stripe_count_.count.timestamp = utils::Timer::getTimeMicros();
       }
     }
-  return stripe_count_;
+  stripe_count->count = stripe_count_.count;
+  stripe_count->operational = stripe_count_.operational;
 }
 
 void FakeGpioCounter::checkData()
@@ -150,4 +151,9 @@ void FakeGpioCounter::readFromFile(std::vector<StripeCounter>& data)
     }
     data_file.close();
   }
+
+bool FakeGpioCounter::isOnline()
+{
+  return stripe_count_.operational;
+}
 }}

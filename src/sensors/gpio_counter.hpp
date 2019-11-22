@@ -40,7 +40,8 @@ class GpioCounter: public GpioInterface, public Thread {            // interface
  public:
   GpioCounter(utils::Logger& log, int pin);
   ~GpioCounter() {}
-  data::StripeCounter getStripeCounter() override;      // data.hpp, data.cpp<array> data_point.hpp
+  void getData(StripeCounter* stripe_counter) override;
+  bool isOnline() override;
   void run() override;
 
  private:

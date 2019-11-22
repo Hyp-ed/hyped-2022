@@ -56,8 +56,14 @@ void GpioCounter::run()
   }
 }
 
-StripeCounter GpioCounter::getStripeCounter()
+void GpioCounter::getData(StripeCounter* stripe_counter)
 {
-  return stripe_counter_;
+  stripe_counter->count = stripe_counter_.count;
+  stripe_counter->operational = stripe_counter_.operational;
+}
+
+bool GpioCounter::isOnline()
+{
+  return stripe_counter_.operational;
 }
 }}  // namespace hyped::sensors

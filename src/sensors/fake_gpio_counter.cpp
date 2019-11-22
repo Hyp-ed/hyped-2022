@@ -122,7 +122,7 @@ void FakeGpioCounter::checkData()
   if (is_from_file_) {
     uint64_t time_after = 0;
     if (acc_ref_init_) {
-      time_after = utils::Timer::getTimeMicros() - (stripe_file_timestamp_ + accel_start_time_);   // NOLINT [whitespace/line_length]
+      time_after = utils::Timer::getTimeMicros() - (stripe_file_timestamp_ + accel_start_time_);
     }
     log_.DBG3("Fake-GpioCounter", "time_after: %d", time_after);
     if (time_after > kMaxTime && miss_stripe_ && stripe_count_.count.value > 1) { // time_after is longer on first few stripes NOLINT [whitespace/line_length]

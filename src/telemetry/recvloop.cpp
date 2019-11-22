@@ -46,7 +46,7 @@ void RecvLoop::run()
     try {
       msg = main_ref_.client_.receiveData();
     }
-    catch (std::exception& e) {  // NOLINT
+    catch (std::exception& e) {
       log_.ERR("Telemetry", "%s", e.what());
 
       telem_data_struct.module_status = ModuleStatus::kCriticalFailure;

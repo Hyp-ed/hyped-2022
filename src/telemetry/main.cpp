@@ -45,7 +45,7 @@ void Main::run()
   try {
     client_.connect();
   }
-  catch (std::exception& e) {  // NOLINT
+  catch (std::exception& e) {
     log_.ERR("Telemetry", e.what());
     log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
@@ -58,8 +58,8 @@ void Main::run()
   telem_data_struct.module_status = ModuleStatus::kInit;
   data_.setTelemetryData(telem_data_struct);
 
-  SendLoop sendloop_thread {log_, data_, this};  // NOLINT
-  RecvLoop recvloop_thread {log_, data_, this};  // NOLINT
+  SendLoop sendloop_thread {log_, data_, this};
+  RecvLoop recvloop_thread {log_, data_, this};
 
   sendloop_thread.start();
   recvloop_thread.start();

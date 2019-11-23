@@ -11,6 +11,6 @@ before_install:
   - cd "${TRAVIS_BUILD_DIR}"
 script: "CI=1 make coverage lintall "
 after_success:
-  -  bash <(curl -s https://codecov.io/bash) -f test/covdata/hyped.covdata || echo "Codecov did not collect coverage reports"
+  -  bash <(curl -s https://codecov.io/bash) -f test/coverage/ovdata/hyped.covdata || echo "Codecov did not collect coverage reports"
 rvm:
   - 9.00

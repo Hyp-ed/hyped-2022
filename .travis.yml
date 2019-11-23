@@ -4,17 +4,16 @@ compiler: gcc
 os:
   - linux
   - osx
-  
+
 addons:
   apt:
     packages: lcov
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install lcov; fi
   - cd test && sudo chmod u+x setup.sh && ./setup.sh
   - cd "${TRAVIS_BUILD_DIR}"
 script: "CI=1 make coverage lintall "
 after_success:
-  -  bash <(curl -s https://codecov.io/bash) -f test/coverage/covdata/hyped.covdata || echo "Codecov did not collect coverage reports"
+  -  if [ "$TRAVIS_OS_NAME" = "linux" ]; bash <(curl -s https://codecov.io/bash) -f test/coverage/covdata/hyped.covdata || echo "Codecov did not collect coverage reports"; fi
 rvm:
   - 9.00

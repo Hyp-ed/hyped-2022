@@ -245,7 +245,7 @@ void Config::readFile(char* config_file) {
                   , line+1
                   , current_module->name);
         } else {
-          log_.INFO("CONFIG", "changing module to \"%s\"", current_module->name);
+          log_.DBG("CONFIG", "changing module to \"%s\"", current_module->name);
         }
 
         break;
@@ -266,12 +266,12 @@ void Config::readFile(char* config_file) {
         }
 
         config_files_.push_back(new_config_file);
-        log_.INFO("CONFIG", "Stepping into %s, reseting module to \"%s\"",
+        log_.DBG("CONFIG", "Stepping into %s, reseting module to \"%s\"",
                             new_config_file, current_module->name);
         current_module = &module_map[0];
         readFile(new_config_file);
         current_module = &module_map[0];
-        log_.INFO("CONFIG", "Returning into %s, reseting module to \"%s\"",
+        log_.DBG("CONFIG", "Returning into %s, reseting module to \"%s\"",
                             config_file, current_module->name);
         config_files_.pop_back();
         break;

@@ -72,6 +72,8 @@ void printUsage()
     "    --axis\n"
     "    To set run kind for navigation tests.\n"
     "    --tube_run, --elevator_run, --stationary_run, --outside_run\n"
+    "    To disable telemetry module.\n"
+    "    --telemetry_off\n"
     "");
 }
 }   // namespace hyped::utils::System
@@ -113,6 +115,7 @@ System::System(int argc, char* argv[])
       elevator_run(false),
       stationary_run(false),
       outside_run(false),
+      telemetry_off(false),
       running_(true),
       config(0)
 {
@@ -157,6 +160,7 @@ System::System(int argc, char* argv[])
       {"elevator_run", no_argument, 0, 's'},
       {"stationary_run", no_argument, 0, 't'},
       {"outside_run", no_argument, 0, 'w'},
+      {"telemetry_off", no_argument, 0, 'x'},
       {0, 0, 0, 0}
     };    // options for long in long_options array, can support optional argument
     // returns option character from argv array following '-' or '--' from command line
@@ -321,6 +325,10 @@ System::System(int argc, char* argv[])
           outside_run = 1;
           tube_run = 0;
         }
+        break;
+      case 'x': // telemetry_off
+        if (optarg) telemetry_off = atoi(optarg);
+        else        telemetry_off = 1;
         break;
       default:
         printUsage();

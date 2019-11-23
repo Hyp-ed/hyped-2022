@@ -93,6 +93,9 @@ class System {
   bool stationary_run;
   bool outside_run;
 
+  // Telemetry
+  bool telemetry_off;
+
   // barriers
   /**
    * @brief Barrier used by navigation and motor control modules on stm transition to accelerating

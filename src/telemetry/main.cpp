@@ -18,6 +18,7 @@
  *    limitations under the License.
  */
 
+#include "utils/system.hpp"
 #include "telemetry/main.hpp"
 #include "telemetry/sendloop.hpp"
 #include "telemetry/recvloop.hpp"
@@ -38,6 +39,15 @@ Main::Main(uint8_t id, Logger& log)
 
 void Main::run()
 {
+  // check if telemetry is disabled
+  hyped::utils::System& sys = hyped::utils::System::getSystem();
+  if (sys.telemetry_off) {
+    log_.DBG("Telemetry", "Telemetry is disabled");
+    log_.DBG("Telemetry", "Exiting Telemetry Main thread");
+    return;
+  }
+
+
   log_.DBG("Telemetry", "Telemetry Main thread started");
 
   data::Telemetry telem_data_struct = data_.getTelemetryData();

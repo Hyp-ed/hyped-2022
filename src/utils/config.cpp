@@ -23,7 +23,6 @@
 #include <cstring>
 #include <string>  // redundant includes to make linter stop complaining
 #include <vector>
-#include <stack>
 #include <sstream>
 #include "utils/logger.hpp"
 #include "utils/system.hpp"

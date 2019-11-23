@@ -2437,7 +2437,10 @@ def CheckSpacing(filename, clean_lines, linenum, nesting_state, error):
   # an initializer list, for instance), you should have spaces before your
   # braces. And since you should never have braces at the beginning of a line,
   # this is an easy test.
-  if Search(r'[^ ({]{', line):
+  
+  # MODIFIED FOR HYPED - added exception for "throw"ing exceptions
+  #   currently, style guide does not contrain usage of 'throw' - 21st Nov 19
+  if Search(r'[^ ({]{', line) and not Search(r'throw', line):
     error(filename, linenum, 'whitespace/braces', 5,
           'Missing space before {')
 
@@ -2637,7 +2640,9 @@ def CheckBraces(filename, clean_lines, linenum, error):
       break
   if (Search(r'{.*}\s*;', line) and
       line.count('{') == line.count('}') and
-      not Search(r'struct|class|enum|\s*=\s*{', line)):
+      # MODIFIED FOR HYPED - Fix false-positive on braced initializer list declarations
+      #  Allow Declaration of form: "type_name var_name {...};"
+      not Search(r'struct|class|enum|\s*=\s*{|\b.*\b\s*\b.*\b\s*{.*}\s*;', line)):
     error(filename, linenum, 'readability/braces', 4,
           "You don't need a ; after a }")
 

@@ -1,6 +1,7 @@
 CFLAGS:=-pthread -O2 -Wall
 LFLAGS:=-lpthread -pthread
-
+COVERAGE_FLAGS=--coverage
+OBJS_DEBUG_DIR:=bin/debug
 CC:="g++"
 UNAME=$(shell uname)
 ifneq ($(UNAME),Linux)

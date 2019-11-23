@@ -55,11 +55,13 @@ class FakeGpioCounter : public GpioInterface {
   FakeGpioCounter(utils::Logger& log, bool miss_stripe, std::string file_path);
 
   /**
-   * @brief Returns the current count of stripes
+   * @brief returns stripe counter
    *
-   * @return data::StripeCounter stripe count and timestamp (microseconds)
+   * @param stripe_counter data
    */
-  StripeCounter getStripeCounter() override;
+  void getData(StripeCounter* stripe_counter) override;
+
+  bool isOnline() override;
 
  private:
    /**

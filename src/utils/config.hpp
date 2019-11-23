@@ -38,6 +38,19 @@ class System;
 class Logger;
 struct ModuleEntry;
 
+/**
+ * This is an example of automatic core generation using preprocessor macros.
+ * First, a list of modules is defined. The list takes and argument V, which will be another macro.
+ * As part of the main list definition, relevant information can be passed to the V argument.
+ * This can be several values for each entry, e.g. variable name, type, access level,...
+ * In this case, it is just the name of the module.
+ *
+ * Later, we define the macro V to perform the code generation for us.
+ * For example, it is used right here to define enums for the modules, see CREATE_ENUM.
+ * It is also used in the Config class declaration to declare the parsing method for each
+ * module, see DECLARE_PARSE.
+ * Later, in .cpp file, it is used to define module map entries, see MAP_ENTRY.
+ */
 #define MODULE_LIST(V)  \
   V(NoModule)           \
   V(Navigation)         \

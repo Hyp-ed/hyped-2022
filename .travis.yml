@@ -1,6 +1,8 @@
 language: cpp
 compiler: gcc
 addons:
+  homebrew:
+      packages: lcov
   apt:
     packages: lcov
 os:

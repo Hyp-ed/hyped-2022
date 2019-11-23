@@ -29,7 +29,7 @@
 #include "propulsion/main.hpp"
 #include "embrakes/main.hpp"
 #include "state_machine/main.hpp"
-/* #include "telemetry/main.hpp" */
+#include "telemetry/main.hpp"
 #include "utils/concurrent/thread.hpp"
 
 using hyped::utils::Logger;
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
   Logger log_nav(sys.verbose_nav, sys.debug_nav);
   Logger log_sensor(sys.verbose_sensor, sys.debug_sensor);
   Logger log_state(sys.verbose_state, sys.debug_state);
-  /* Logger log_tlm(sys.verbose_tlm, sys.debug_tlm); */
+  Logger log_tlm(sys.verbose_tlm, sys.debug_tlm);
 
   // print HYPED logo at system startup
   std::ifstream file("main_logo.txt");
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   Thread* motors = new hyped::motor_control::Main(2, log_motor);
   Thread* state_machine = new hyped::state_machine::Main(4, log_state);
   Thread* nav     = new hyped::navigation::Main(5, log_nav);
-  /* Thread* tlm     = new hyped::telemetry::Main(3, log_tlm); */
+  Thread* tlm     = new hyped::telemetry::Main(3, log_tlm);
 
   // Start the threads here
   sensors->start();
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
   motors->start();
   state_machine->start();
   nav->start();
-  /* tlm->start(); */
+  tlm->start();
 
   // Join the threads here
   sensors->join();
@@ -88,14 +88,14 @@ int main(int argc, char* argv[])
   motors->join();
   state_machine->join();
   nav->join();
-  /* tlm->join(); */
+  tlm->join();
 
   delete sensors;
   delete embrakes;
   delete motors;
   delete state_machine;
   delete nav;
-  /* delete tlm; */
+  delete tlm;
 
   return 0;
 }

@@ -45,8 +45,7 @@ endif
 LL:=$(CC)
 
 # auto-discover all sources
-# TODO: include telemetry once protobuf dependency removed
-SRCS := $(shell find $(SRCS_DIR) -name '*.cpp'  -not -path 'src/telemetry/*')
+SRCS := $(shell find $(SRCS_DIR) -name '*.cpp')
 OBJS := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_RELEASE_DIR)%.o,$(SRCS))
 TEST_OBJS :=  $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DEBUG_DIR)%.o,$(SRCS))
 MAIN_OBJ := $(patsubst run/%.cpp, $(OBJS_RELEASE_DIR)/%.o, $(MAIN))

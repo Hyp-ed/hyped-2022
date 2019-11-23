@@ -18,12 +18,12 @@
  *    limitations under the License.
  */
 
-#include <google/protobuf/util/delimited_message_util.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <cstring>
+#include <string>
 #include "telemetry/client.hpp"
 #include "utils/system.hpp"
 
@@ -36,7 +36,6 @@ Client::Client(Logger& log)
 
 Client::Client(Logger& log, const utils::Config& config)
   : log_ {log},
-    signal_handler_ {},
     kPort {config.telemetry.Port.c_str()},
     kServerIP {config.telemetry.IP.c_str()}
 {
@@ -78,46 +77,32 @@ bool Client::connect()
 
   log_.INFO("Telemetry", "Connected to server");
 
-  socket_stream_in_ = new google::protobuf::io::FileInputStream(sockfd_);
-  socket_stream_out_ = new google::protobuf::io::FileOutputStream(sockfd_);
   return true;
 }
 
 Client::~Client()
 {
-  delete socket_stream_out_;
-  delete socket_stream_in_;
   close(sockfd_);
 }
 
-bool Client::sendData(telemetry_data::ClientToServer message)
+bool Client::sendData(std::string message)
 {
-  using google::protobuf::util::SerializeDelimitedToZeroCopyStream;
   log_.DBG3("Telemetry", "Starting to send message to server");
 
-  if (!SerializeDelimitedToZeroCopyStream(message, socket_stream_out_) || signal_handler_.gotSigPipeSignal()) {  // NOLINT
-    throw std::runtime_error{"Error sending message"};
-  }
-
-  // we have to call Flush() here otherwise protobufs will buffer the file output stream
-  // and the message will not be sent immediately like we would like
-  socket_stream_out_->Flush();
+  // TODO(robertasn): implement sending data
 
   log_.DBG3("Telemetry", "Finished sending message to server");
 
   return true;
 }
 
-telemetry_data::ServerToClient Client::receiveData()
+std::string Client::receiveData()
 {
-  using google::protobuf::util::ParseDelimitedFromZeroCopyStream;
+  std::string messageFromServer;
 
-  telemetry_data::ServerToClient messageFromServer;
   log_.DBG1("Telemetry", "Waiting to receive from server");
 
-  if (!ParseDelimitedFromZeroCopyStream(&messageFromServer, socket_stream_in_, NULL) || signal_handler_.gotSigPipeSignal()) {  // NOLINT
-    throw std::runtime_error{"Error receiving message"};
-  }
+  // TODO(robertasn): implement receiving data
 
   log_.DBG1("Telemetry", "Finished receiving from server");
 

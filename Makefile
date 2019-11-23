@@ -67,7 +67,7 @@ Echo := $(Verb)echo
 
 default: lint $(TARGET)
 
-$(TARGET): $(DEPENDENCIES) | $(OBJS) $(MAIN_OBJ)
+$(TARGET): $(OBJS) $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
 	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
@@ -80,9 +80,7 @@ else
 	$(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $<
 endif
 
-all-objects: $(EIGEN) | $(RAPIDJSON) | $(OBJS)
-
-$(OBJS): $(OBJS_RELEASE_DIR)/%.o: $(SRCS_DIR)/%.cpp
+$(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(DEPENDENCIES)
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
 	$(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $< 

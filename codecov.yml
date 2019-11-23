@@ -3,8 +3,8 @@ coverage:
     project:
       project:
       default:
-        # Fail the status if coverage drops by >= 3%
-        threshold: 10
+        # Fail the status if coverage drops by >= 10%
+        threshold: 50
     patch:
       default:
-        threshold: 10
+        threshold: 50

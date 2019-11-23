@@ -1,14 +1,16 @@
 language: cpp
 compiler: gcc
-addons:
-  homebrew:
-      packages: lcov
-  apt:
-    packages: lcov
+
 os:
   - linux
   - osx
+  
+addons:
+  apt:
+    packages: lcov
+
 before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install lcov; fi
   - cd test && sudo chmod u+x setup.sh && ./setup.sh
   - cd "${TRAVIS_BUILD_DIR}"
 script: "CI=1 make coverage lintall "

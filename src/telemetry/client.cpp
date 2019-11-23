@@ -89,7 +89,14 @@ bool Client::sendData(std::string message)
 {
   log_.DBG3("Telemetry", "Starting to send message to server");
 
-  // TODO(robertasn): implement sending data
+  message.append("\n");
+
+  int payload_length = message.length();
+
+  // send payload
+  if (send(sockfd_, message.c_str(), payload_length, 0) == -1) {
+    return false;
+  }
 
   log_.DBG3("Telemetry", "Finished sending message to server");
 

@@ -40,9 +40,20 @@ void RecvLoop::run()
   log_.DBG("Telemetry", "Telemetry RecvLoop thread started");
 
   data::Telemetry telem_data_struct = data_.getTelemetryData();
+  std::string message;
 
   while (true) {
-    std::string message = main_ref_.client_.receiveData();
+    try {
+      message = main_ref_.client_.receiveData();
+    }
+    catch (std::exception& e) {
+      log_.ERR("Telemetry", "%s", e.what());
+
+      telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
+      data_.setTelemetryData(telem_data_struct);
+
+      break;
+    }
 
     if (message == "ACK") {
       log_.INFO("Telemetry", "FROM SERVER: ACK");

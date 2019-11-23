@@ -58,6 +58,8 @@ void SendLoop::run()
       data::Telemetry telem_data_struct = data_.getTelemetryData();
       telem_data_struct.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telem_data_struct);
+
+      break;
     }
 
     Thread::sleep(100);

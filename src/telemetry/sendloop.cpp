@@ -50,7 +50,7 @@ void SendLoop::run()
     try {
       main_ref_.client_.sendData(msg);
     }
-    catch (std::exception& err) {  // NOLINT
+    catch (std::exception& err) {
       log_.ERR("Telemetry", "%s", err.what());
 
       data::Telemetry telem_data_struct = data_.getTelemetryData();

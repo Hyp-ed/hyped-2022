@@ -84,7 +84,7 @@ void Config::ParseTelemetry(char* line)
   if (!line) return;
 
   // convert char* line to c++ style string
-  std::string cpp_line {line};  // NOLINT
+  std::string cpp_line {line};
 
   std::istringstream iss(cpp_line);
   std::vector<std::string> tokens;

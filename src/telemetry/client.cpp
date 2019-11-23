@@ -59,21 +59,21 @@ bool Client::connect()
   int return_val;
   if ((return_val = getaddrinfo(kServerIP, kPort, &hints, &server_info)) != 0) {
     log_.ERR("Telemetry", "%s", gai_strerror(return_val));
-    throw std::runtime_error{"Failed getting possible addresses"};  // NOLINT
+    throw std::runtime_error{"Failed getting possible addresses"};
   }
 
   // get a socket file descriptor
   sockfd_ = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
   if (sockfd_ == -1) {
     log_.ERR("Telemetry", "%s", strerror(errno));
-    throw std::runtime_error{"Failed getting socket file descriptor"};  // NOLINT
+    throw std::runtime_error{"Failed getting socket file descriptor"};
   }
 
   // connect socket to server
   if (::connect(sockfd_, server_info->ai_addr, server_info->ai_addrlen) == -1) {
     close(sockfd_);
     log_.ERR("Telemetry", "%s", strerror(errno));
-    throw std::runtime_error{"Failed connecting to socket (couldn't connect to server)"};  // NOLINT
+    throw std::runtime_error{"Failed connecting to socket (couldn't connect to server)"};
   }
 
   log_.INFO("Telemetry", "Connected to server");
@@ -96,7 +96,7 @@ bool Client::sendData(telemetry_data::ClientToServer message)
   log_.DBG3("Telemetry", "Starting to send message to server");
 
   if (!SerializeDelimitedToZeroCopyStream(message, socket_stream_out_) || signal_handler_.gotSigPipeSignal()) {  // NOLINT
-    throw std::runtime_error{"Error sending message"};  // NOLINT
+    throw std::runtime_error{"Error sending message"};
   }
 
   // we have to call Flush() here otherwise protobufs will buffer the file output stream
@@ -116,7 +116,7 @@ telemetry_data::ServerToClient Client::receiveData()
   log_.DBG1("Telemetry", "Waiting to receive from server");
 
   if (!ParseDelimitedFromZeroCopyStream(&messageFromServer, socket_stream_in_, NULL) || signal_handler_.gotSigPipeSignal()) {  // NOLINT
-    throw std::runtime_error{"Error receiving message"};  // NOLINT
+    throw std::runtime_error{"Error receiving message"};
   }
 
   log_.DBG1("Telemetry", "Finished receiving from server");

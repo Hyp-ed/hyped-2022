@@ -105,15 +105,29 @@ bool Client::sendData(std::string message)
 
 std::string Client::receiveData()
 {
-  std::string messageFromServer;
-
   log_.DBG1("Telemetry", "Waiting to receive from server");
 
-  // TODO(robertasn): implement receiving data
+  char header[8];
+
+  // receive header
+  if (recv(sockfd_, header, 8, 0) == -1) {
+    log_.ERR("Telemetry", "Error receiving header");
+    throw std::runtime_error{"Error receiving header"};  // NOLINT
+  }
+
+  int payload_length = strtol(header, NULL, 0);
+  char buffer[1024];  // power of 2 because apparently it's better for networking
+  memset(buffer, 0, sizeof(buffer));  // fill with 0's so null terminated by default
+
+  // receive payload
+  if (recv(sockfd_, buffer, payload_length, 0) == -1) {
+    log_.ERR("Telemetry", "Error receiving payload");
+    throw std::runtime_error{"Error receiving payload"};  // NOLINT
+  }
 
   log_.DBG1("Telemetry", "Finished receiving from server");
 
-  return messageFromServer;
+  return std::string(buffer);
 }
 
 }  // namespace client

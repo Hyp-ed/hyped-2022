@@ -59,13 +59,13 @@ void Main::run()
   data_.setTelemetryData(telem_data_struct);
 
   SendLoop sendloop_thread {log_, data_, this};
-  // RecvLoop recvloop_thread {log_, data_, this};
+  RecvLoop recvloop_thread {log_, data_, this};
 
   sendloop_thread.start();
-  // recvloop_thread.start();
+  recvloop_thread.start();
 
   sendloop_thread.join();
-  // recvloop_thread.join();
+  recvloop_thread.join();
 
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }

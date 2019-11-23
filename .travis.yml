@@ -1,11 +1,16 @@
 language: cpp
 compiler: gcc
+addons:
+  apt:
+    packages: lcov
 os:
   - linux
   - osx
 before_install:
   - cd test && sudo chmod u+x setup.sh && ./setup.sh
   - cd "${TRAVIS_BUILD_DIR}"
-script: "make testrunner lintall"
+script: "CI=1 make coverage lintall "
+after_success:
+  -  bash <(curl -s https://codecov.io/bash) -f hyped.covdata || echo "Codecov did not collect coverage reports"
 rvm:
   - 9.00

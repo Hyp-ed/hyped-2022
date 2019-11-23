@@ -21,6 +21,7 @@
 #ifndef TELEMETRY_SENDLOOP_HPP_
 #define TELEMETRY_SENDLOOP_HPP_
 
+#include <rapidjson/writer.h>
 #include "telemetry/main.hpp"
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"

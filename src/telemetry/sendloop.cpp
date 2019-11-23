@@ -20,6 +20,9 @@
 
 #include "telemetry/sendloop.hpp"
 
+using rapidjson::Writer;
+using rapidjson::StringBuffer;
+
 namespace hyped {
 namespace telemetry {
 

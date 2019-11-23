@@ -16,8 +16,9 @@ include utils/config.mk
 
 # libaries for generating TARGET
 EIGEN=$(LIBS_DIR)/Eigen
+RAPIDJSON=$(LIBS_DIR)/rapidjson
 GITHOOKS=.git/hooks
-DEPENDENCIES=$(EIGEN) $(GITHOOKS)
+DEPENDENCIES=$(EIGEN) $(RAPIDJSON) $(GITHOOKS)
 
 ifeq ($(CROSS), 0)
 	ifneq ($(UNAME),Linux)
@@ -79,7 +80,7 @@ else
 	$(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $<
 endif
 
-all-objects: $(EIGEN) | $(OBJS)
+all-objects: $(EIGEN) | $(RAPIDJSON) | $(OBJS)
 
 $(OBJS): $(OBJS_RELEASE_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(Echo) "Compiling $<"
@@ -110,7 +111,7 @@ testrunner: test/lib/libtest.a
 coverage: testrunner
 	$(Verb) ./test/utils/get_code_cov.sh
 
-test/lib/libtest.a:  $(EIGEN) $(TEST_OBJS)
+test/lib/libtest.a:  $(EIGEN) $(RAPIDJSON) $(TEST_OBJS)
 	$(Echo) "Making library"
 	$(Verb) ar -cvq $@ $(TEST_OBJS) > /dev/null
 
@@ -139,6 +140,12 @@ doc:
 # Re-install eigen library if the tar file changes
 $(EIGEN): $(EIGEN).tar.gz
 	$(Echo) Unpacking Eigen library $@
+	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
+	$(Verb) touch $@
+
+# Re-install rapidjson library if the tar file changes
+$(RAPIDJSON): $(RAPIDJSON).tar.gz
+	$(Echo) Unpacking RapidJSON library $@
 	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
 	$(Verb) touch $@
 

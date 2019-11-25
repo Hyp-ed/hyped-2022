@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if [[ "$1" == "CI" ]]
+if [ "$1" = "CI" ]
 then
     command -v cppcheck > /dev/null 2>&1 || {
         echo "Error: CPPCheck is not installed on Travis"

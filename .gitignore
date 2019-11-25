@@ -25,8 +25,8 @@ testrunner
 /test/lib/googletest
 /test/lib/libtest.a
 /test/lib/cppcheck
+/test/coverage
 binmain.o
-
 # Other rubbish
 .cpplint-cache
 .vscode
@@ -37,3 +37,4 @@ binmain.o
 
 # libraries
 lib/Eigen
+lib/rapidjson

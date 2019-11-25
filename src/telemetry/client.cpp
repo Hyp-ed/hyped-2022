@@ -18,12 +18,12 @@
  *    limitations under the License.
  */
 
-#include <google/protobuf/util/delimited_message_util.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <cstring>
+#include <string>
 #include "telemetry/client.hpp"
 #include "utils/system.hpp"
 
@@ -36,7 +36,6 @@ Client::Client(Logger& log)
 
 Client::Client(Logger& log, const utils::Config& config)
   : log_ {log},
-    signal_handler_ {},
     kPort {config.telemetry.Port.c_str()},
     kServerIP {config.telemetry.IP.c_str()}
 {
@@ -59,69 +58,76 @@ bool Client::connect()
   int return_val;
   if ((return_val = getaddrinfo(kServerIP, kPort, &hints, &server_info)) != 0) {
     log_.ERR("Telemetry", "%s", gai_strerror(return_val));
-    throw std::runtime_error{"Failed getting possible addresses"};  // NOLINT
+    throw std::runtime_error{"Failed getting possible addresses"};
   }
 
   // get a socket file descriptor
   sockfd_ = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
   if (sockfd_ == -1) {
     log_.ERR("Telemetry", "%s", strerror(errno));
-    throw std::runtime_error{"Failed getting socket file descriptor"};  // NOLINT
+    throw std::runtime_error{"Failed getting socket file descriptor"};
   }
 
   // connect socket to server
   if (::connect(sockfd_, server_info->ai_addr, server_info->ai_addrlen) == -1) {
     close(sockfd_);
     log_.ERR("Telemetry", "%s", strerror(errno));
-    throw std::runtime_error{"Failed connecting to socket (couldn't connect to server)"};  // NOLINT
+    throw std::runtime_error{"Failed connecting to socket (couldn't connect to server)"};
   }
 
   log_.INFO("Telemetry", "Connected to server");
 
-  socket_stream_in_ = new google::protobuf::io::FileInputStream(sockfd_);
-  socket_stream_out_ = new google::protobuf::io::FileOutputStream(sockfd_);
   return true;
 }
 
 Client::~Client()
 {
-  delete socket_stream_out_;
-  delete socket_stream_in_;
   close(sockfd_);
 }
 
-bool Client::sendData(telemetry_data::ClientToServer message)
+bool Client::sendData(std::string message)
 {
-  using google::protobuf::util::SerializeDelimitedToZeroCopyStream;
   log_.DBG3("Telemetry", "Starting to send message to server");
 
-  if (!SerializeDelimitedToZeroCopyStream(message, socket_stream_out_) || signal_handler_.gotSigPipeSignal()) {  // NOLINT
-    throw std::runtime_error{"Error sending message"};  // NOLINT
-  }
+  message.append("\n");
 
-  // we have to call Flush() here otherwise protobufs will buffer the file output stream
-  // and the message will not be sent immediately like we would like
-  socket_stream_out_->Flush();
+  int payload_length = message.length();
+
+  // send payload
+  if (send(sockfd_, message.c_str(), payload_length, 0) == -1) {
+    return false;
+  }
 
   log_.DBG3("Telemetry", "Finished sending message to server");
 
   return true;
 }
 
-telemetry_data::ServerToClient Client::receiveData()
+std::string Client::receiveData()
 {
-  using google::protobuf::util::ParseDelimitedFromZeroCopyStream;
-
-  telemetry_data::ServerToClient messageFromServer;
   log_.DBG1("Telemetry", "Waiting to receive from server");
 
-  if (!ParseDelimitedFromZeroCopyStream(&messageFromServer, socket_stream_in_, NULL) || signal_handler_.gotSigPipeSignal()) {  // NOLINT
-    throw std::runtime_error{"Error receiving message"};  // NOLINT
+  char header[8];
+
+  // receive header
+  if (recv(sockfd_, header, 8, 0) == -1) {
+    log_.ERR("Telemetry", "Error receiving header");
+    throw std::runtime_error{"Error receiving header"};  // NOLINT
+  }
+
+  int payload_length = strtol(header, NULL, 0);
+  char buffer[1024];  // power of 2 because apparently it's better for networking
+  memset(buffer, 0, sizeof(buffer));  // fill with 0's so null terminated by default
+
+  // receive payload
+  if (recv(sockfd_, buffer, payload_length, 0) == -1) {
+    log_.ERR("Telemetry", "Error receiving payload");
+    throw std::runtime_error{"Error receiving payload"};  // NOLINT
   }
 
   log_.DBG1("Telemetry", "Finished receiving from server");
 
-  return messageFromServer;
+  return std::string(buffer);
 }
 
 }  // namespace client

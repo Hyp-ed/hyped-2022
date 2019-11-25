@@ -7,10 +7,12 @@ os:
 
 addons:
   apt:
-    packages: lcov
+    packages: 
+      - cppcheck
+      - lcov
 
 before_install:
-  - cd test && sudo chmod u+x cppchecksetup.sh && sudo chmod u+x googletestsetup.sh && ./cppchecksetup.sh && ./googletestsetup.sh
+  - cd test && sudo chmod u+x cppchecksetup.sh && sudo chmod u+x googletestsetup.sh && ./cppchecksetup.sh "CI" && ./googletestsetup.sh
   - cd "${TRAVIS_BUILD_DIR}"
 script: "CI=1 make testrunner lintall static"
 after_success:

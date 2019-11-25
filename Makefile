@@ -5,7 +5,10 @@ TARGET=hyped
 MAIN=run/main.cpp
 CROSS=0
 NOLINT=0
-STATIC_OPS=""
+
+#pass this option to run static checker with specified severity
+# e.g. make static STATIC_OPS=style
+STATIC_OPS="" 
 
 SRCS_DIR:=src
 LIBS_DIR:=lib

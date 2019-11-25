@@ -2,6 +2,7 @@
 # line starting with '#' characters are ignored, i.e. comments
 # lines cannot be longer than 250 characters, else the world breaks
 
+
 # lines starting with '>' start a new parsing section for a new module
 # e.g. "> Navigation" line indicates all following lines will be parse by
 # ParseNavigation() function

@@ -2,7 +2,7 @@ language: cpp
 compiler: gcc
 os: linux
 before_install:
-  - cd test && sudo chmod u+x setup.sh && ./setup.sh
+  - cd test && sudo chmod u+x cppchecksetup.sh && sudo chmod u+x googletestsetup.sh && ./cppchecksetup.sh && ./googletestsetup.sh
   - cd "${TRAVIS_BUILD_DIR}"
 script: "make testrunner lintall static"
 rvm:

@@ -11,3 +11,5 @@ ifneq ($(UNAME),Linux)
 else
 	CFLAGS:=$(CFLAGS) -std=c++11
 endif
+
+ROOT=$(shell git rev-parse --show-toplevel)

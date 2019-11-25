@@ -14,6 +14,9 @@ LINT:=../utils/Lint/presubmit.py
 CPPCHECK_EXC_TARGET:=$(CPPCHECK)/cppcheck
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
+CPPCHECK_ENABLE_OPS=
+CPPCHECK_FLAGS="--error-exitcode=1"
+
 VPATH=../src
 # change to gnu++1 for windows using uname
 include ../utils/config.mk
@@ -44,6 +47,10 @@ ifndef VERBOSE
 endif
 Echo := $(Verb)echo
 
+ifneq ($(CPPCHECK_ENABLE_OPS), )
+	CPPCHECK_FLAGS+="--enable=$(CPPCHECK_ENABLE_OPS)"
+endif
+
 default: runner
 
 .PHONY: runner
@@ -53,7 +60,10 @@ runner: $(TARGET)
 
 staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
 	$(Echo) "Starting Static Checker"
-	$(Verb) ./$(CPPCHECK_EXC_TARGET) ./src
+	$(Echo) "Running checker on /src"
+	$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ../src
+	$(Echo) "\nRunning checker on /test/src"
+	$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ./src
 
 $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"

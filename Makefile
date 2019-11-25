@@ -5,6 +5,7 @@ TARGET=hyped
 MAIN=run/main.cpp
 CROSS=0
 NOLINT=0
+STATIC_OPS=""
 
 SRCS_DIR:=src
 LIBS_DIR:=lib
@@ -90,6 +91,9 @@ lintall:
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
 	$(Echo) "\nLinting test/"
 	$(Verb) $(MAKE) -C test lint --no-print-directory
+
+static:
+	$(Verb) $(MAKE) -C test staticcheck CPPCHECK_ENABLE_OPS=$(STATIC_OPS)
 
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test

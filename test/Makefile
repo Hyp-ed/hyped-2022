@@ -93,7 +93,11 @@ $(CPPCHECK_EXC_TARGET): $(CPPCHECK).tar.gz
 	$(Echo) "Building CPPCheck Analyzer"
 	$(Echo) "This might take a while..."
 	$(Verb) chmod u+x ./lib/cppchecksetup.sh
-	$(Verb) ./lib/cppchecksetup.sh
+    ifeq ($(CI), 1)
+		$(Verb) ./lib/cppchecksetup.sh "CI"
+    else 
+		$(Verb) ./lib/cppchecksetup.sh 
+    endif 
 	$(Verb) touch $@
 
 

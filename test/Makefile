@@ -91,6 +91,7 @@ $(GTEST_LIB_TARGET): $(GTEST).tar.gz
 
 $(CPPCHECK_EXC_TARGET): $(CPPCHECK).tar.gz
 	$(Echo) "Building CPPCheck Analyzer"
+	$(Echo) "This might take a while..."
 	$(Verb) chmod u+x ./lib/cppchecksetup.sh
 	$(Verb) ./lib/cppchecksetup.sh
 	$(Verb) touch $@

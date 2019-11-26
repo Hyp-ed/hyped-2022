@@ -60,18 +60,19 @@ runner: $(TARGET)
 
 staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
 	$(Echo) "Starting Static Checker"
-	$(Echo) "Running checker on /src"
+	$(Echo) "Running checker on /src ..."
     ifeq ($(CI), 1)
-		$(Verb) cppcheck $(CPPCHECK_FLAGS) ../src
+		$(Verb) cppcheck $(CPPCHECK_FLAGS) ../src 1> /dev/null
     else 
-		$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ../src
+		$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ../src 1> /dev/null
     endif
-	$(Echo) "\nRunning checker on /test/src"
+	$(Echo) "Running checker on /test/src ..."
     ifeq ($(CI), 1)
-		$(Verb) cppcheck $(CPPCHECK_FLAGS) ./src
+		$(Verb) cppcheck $(CPPCHECK_FLAGS) ./src 1> /dev/null
     else 
-		$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ./src
+		$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ./src 1> /dev/null
     endif
+	$(Echo) "Static analysis complete"
 
 $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"

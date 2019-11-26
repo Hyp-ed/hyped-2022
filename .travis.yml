@@ -10,6 +10,9 @@ addons:
     packages: 
       - cppcheck
       - lcov
+  homebrew:
+    packages:
+      - cppcheck
 
 before_install:
   - cd test && sudo chmod u+x lib/cppchecksetup.sh && sudo chmod u+x lib/googletestsetup.sh && ./lib/cppchecksetup.sh "CI" && ./lib/googletestsetup.sh

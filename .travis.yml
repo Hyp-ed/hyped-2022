@@ -13,6 +13,7 @@ addons:
   homebrew:
     packages:
       - cppcheck
+    update: true
 
 before_install:
   - cd test && sudo chmod u+x lib/cppchecksetup.sh && sudo chmod u+x lib/googletestsetup.sh && ./lib/cppchecksetup.sh "CI" && ./lib/googletestsetup.sh

@@ -14,7 +14,7 @@ CPPCHECK_EXC_TARGET:=$(CPPCHECK)/cppcheck
 COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
-CPPCHECK_ENABLE_OPS=  
+CPPCHECK_ENABLE_OPS=
 CPPCHECK_FLAGS=--error-exitcode=1 --suppressions-list=./lib/cppcheck-suppress
 
 VPATH=../src

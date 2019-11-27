@@ -15,7 +15,7 @@ COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 CPPCHECK_ENABLE_OPS=  
-CPPCHECK_FLAGS="--error-exitcode=1"
+CPPCHECK_FLAGS=--error-exitcode=1 --suppressions-list=./lib/cppcheck-suppress
 
 VPATH=../src
 # change to gnu++1 for windows using uname
@@ -48,7 +48,7 @@ endif
 Echo := $(Verb)echo
 
 ifneq ($(CPPCHECK_ENABLE_OPS), )
-	CPPCHECK_FLAGS+="--enable=$(CPPCHECK_ENABLE_OPS)"
+	CPPCHECK_FLAGS+=--enable=$(CPPCHECK_ENABLE_OPS)
 endif
 
 default: runner

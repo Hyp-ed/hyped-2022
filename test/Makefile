@@ -30,6 +30,7 @@ include $(SRCS_DIR)/Test.files
 SRCS := $(SRCS) $(MAIN)
 OBJS := $(SRCS:.cpp=.o)
 
+OBJS_DEBUG_DIR := ../$(OBJS_DEBUG_DIR)
 OBJS := $(patsubst %,$(OBJS_DEBUG_DIR)/%,$(OBJS))
 
 DEP_DIR := $(OBJS_DEBUG_DIR)
@@ -51,7 +52,7 @@ runner: $(TARGET)
 
 $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS) $(COVERAGE_FLAGS) 
+	$(Verb) $(LL)  -o $@ $(OBJS) $(LFLAGS) $(COVERAGE_FLAGS)
 
 $(OBJS):  $(OBJS_DEBUG_DIR)/%.o: $(SRCS_DIR)/%.cpp $(GTEST_LIB_TARGET)
 	$(Echo) "Compiling $<"

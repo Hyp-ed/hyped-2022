@@ -16,7 +16,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install cppcheck; fi
   - cd test && sudo chmod u+x lib/cppchecksetup.sh && sudo chmod u+x lib/googletestsetup.sh && ./lib/cppchecksetup.sh "CI" && ./lib/googletestsetup.sh
   - cd "${TRAVIS_BUILD_DIR}"
-script: "CI=1 make testrunner lintall static"
+script: "CI=1 make testrunner lintall static VERBOSE=1"
 after_success:
   - CI=1 make coverage 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash <(curl -s https://codecov.io/bash) -f test/coverage/covdata/hyped.covdata || echo "Codecov did not collect coverage reports"; fi

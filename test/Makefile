@@ -14,6 +14,7 @@ CPPCHECK_EXC_TARGET:=$(CPPCHECK)/cppcheck
 COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
+CPPCHECK_EXEC=$(shell command -v cppcheck || echo ./$(CPPCHECK_EXC_TARGET))
 CPPCHECK_ENABLE_OPS=
 CPPCHECK_FLAGS=--error-exitcode=1 --suppressions-list=./lib/cppcheck-suppress
 
@@ -61,17 +62,9 @@ runner: $(TARGET)
 staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
 	$(Echo) "Starting Static Checker"
 	$(Echo) "Running checker on /src ..."
-    ifeq ($(CI), 1)
-		$(Verb) cppcheck $(CPPCHECK_FLAGS) ../src 1> /dev/null
-    else 
-		$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ../src 1> /dev/null
-    endif
+	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ../src 1> /dev/null
 	$(Echo) "Running checker on /test/src ..."
-    ifeq ($(CI), 1)
-		$(Verb) cppcheck $(CPPCHECK_FLAGS) ./src 1> /dev/null
-    else 
-		$(Verb) ./$(CPPCHECK_EXC_TARGET) $(CPPCHECK_FLAGS) ./src 1> /dev/null
-    endif
+	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ./src 1> /dev/null
 	$(Echo) "Static analysis complete"
 
 $(TARGET): $(OBJS) lib/libtest.a
@@ -90,13 +83,8 @@ $(GTEST_LIB_TARGET): $(GTEST).tar.gz
 	$(Verb) touch $@
 
 $(CPPCHECK_EXC_TARGET): $(CPPCHECK).tar.gz
-    ifneq ($(CI), 1)
-		$(Echo) "Building CPPCheck Analyzer"
-		$(Echo) "This might take a while..."
-		$(Verb) chmod u+x ./lib/cppchecksetup.sh
-		$(Verb) ./lib/cppchecksetup.sh
-		$(Verb) touch $@
-    endif
+	$(Verb) command -v cppcheck > /dev/null 2>&1 || \
+	(chmod u+x ./lib/cppchecksetup.sh && ./lib/cppchecksetup.sh && touch $@)
 
 
 lib/libtest.a:

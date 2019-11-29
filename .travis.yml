@@ -6,7 +6,7 @@ os:
   - osx
 
 dist: bionic
-osx_image: xcode8
+osx_image: xcode9
 
 addons:
   apt:

@@ -16,7 +16,7 @@ GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 CPPCHECK_EXEC=$(shell command -v cppcheck || echo ./$(CPPCHECK_EXC_TARGET))
 CPPCHECK_ENABLE_OPS=
-CPPCHECK_FLAGS=--error-exitcode=1 --suppressions-list=./lib/cppcheck-suppress
+CPPCHECK_FLAGS=--quiet --error-exitcode=1 --suppressions-list=./lib/cppcheck-suppress
 
 VPATH=../src
 # change to gnu++1 for windows using uname
@@ -62,9 +62,9 @@ runner: $(TARGET)
 staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
 	$(Echo) "Starting Static Checker"
 	$(Echo) "Running checker on /src ..."
-	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ../src 1> /dev/null
+	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ../src
 	$(Echo) "Running checker on /test/src ..."
-	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ./src 1> /dev/null
+	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ./src
 	$(Echo) "Static analysis complete"
 
 $(TARGET): $(OBJS) lib/libtest.a

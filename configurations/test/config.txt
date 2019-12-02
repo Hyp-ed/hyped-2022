@@ -1,0 +1,14 @@
+
+# this is the main config entry point for testing utils/config
+# submodules telemetry and sensors are defined here
+# submodules embrakes and state_machine are defined in subconfig.txt
+
+
+> Telemetry
+IP      192.168.5.3
+Port    7777
+
+> Sensors
+Thermistor  158
+
+$ test/subconfig.txt

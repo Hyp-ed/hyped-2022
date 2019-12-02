@@ -111,7 +111,7 @@ coverage: testrunner
 
 test/lib/libtest.a:  $(EIGEN) $(RAPIDJSON) $(TEST_OBJS)
 	$(Echo) "Making library"
-	$(Verb) ar -cvq $@ $(TEST_OBJS) > /dev/null
+	$(Verb) ar -cvr $@ $(TEST_OBJS) > /dev/null
 
 clean-all: cleanlint cleantest clean
 

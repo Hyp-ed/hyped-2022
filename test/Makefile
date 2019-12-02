@@ -48,7 +48,7 @@ default: runner
 .PHONY: runner
 runner: $(TARGET)
 	$(Verb) chmod u+x testrunner
-	$(Verb) ./testrunner
+	$(Verb) cd $(ROOT); ./test/testrunner
 
 $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"

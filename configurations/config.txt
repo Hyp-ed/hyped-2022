@@ -6,6 +6,9 @@
 # lines starting with '>' start a new parsing section for a new module
 # e.g. "> Navigation" line indicates all following lines will be parse by
 # ParseNavigation() function
+# All modules are defined in src/utils/config.hpp file as part of a MODULE_LIST.
+# New modules can be added by extending this list and defining the corresponding
+# Parse<module_name>() function.
 
 # now, the config files support #include statements to make the configurations more modular
 # whenever config file contains line "$ <another_config_file>", the parser stops processing

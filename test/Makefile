@@ -16,7 +16,7 @@ GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
 
 CPPCHECK_EXEC=$(shell command -v cppcheck || echo ./$(CPPCHECK_EXC_TARGET))
 CPPCHECK_ENABLE_OPS=
-CPPCHECK_FLAGS=--quiet --error-exitcode=1 --suppressions-list=./lib/cppcheck-suppress
+CPPCHECK_FLAGS=--quiet --error-exitcode=1 --inline-suppr --suppressions-list=./lib/cppcheck-suppress
 
 VPATH=../src
 # change to gnu++1 for windows using uname

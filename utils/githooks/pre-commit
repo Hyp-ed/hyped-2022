@@ -11,4 +11,4 @@ make test/lib/libtest.a
 make -C test/ testrunner lint
 
 # run static analyzer on src test/src 
-make static
+# make static # off for now

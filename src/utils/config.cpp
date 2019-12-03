@@ -120,6 +120,10 @@ void Config::ParseEmbrakes(char* line)
   }
 }
 
+void Config::ParseFactory(char* line) {
+  // TODO: assign correct getInterface function pointers
+}
+
 void Config::ParseSensors(char* line)
 {
   // EXAMPLE line parsing:

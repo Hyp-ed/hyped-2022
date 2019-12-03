@@ -29,8 +29,14 @@
 #include <string>
 #include <vector>
 #include "data/data.hpp"
+#include "utils/interfaces.hpp"
 
 namespace hyped {
+// forward declare all known interfaces
+#define FORWARD_DECLARE(module, interface) \
+  namespace module { class interface; }
+INTERFACE_LIST(FORWARD_DECLARE)
+
 namespace utils {
 
 // forward declaration
@@ -57,7 +63,8 @@ struct ModuleEntry;
   V(StateMachine)       \
   V(Telemetry)          \
   V(Embrakes)           \
-  V(Sensors)
+  V(Sensors)            \
+  V(Factory)
 
 #define CREATE_ENUM(module) \
   k##module,
@@ -99,6 +106,12 @@ class Config {
     int IMDOut;
     int embrakes;
   } sensors;
+
+  struct Factory {
+#define CREATOR_FUNCTIONS(module, interface) \
+  module::interface* (*get##interface)() = 0;
+  INTERFACE_LIST(CREATOR_FUNCTIONS)
+  } factory;
 
 //  private:
 #define DECLARE_PARSE(module) \

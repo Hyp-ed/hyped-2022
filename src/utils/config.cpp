@@ -27,6 +27,10 @@
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 
+// this is just temporary
+#include "sensors/interface.hpp"
+#include "sensors/imu.hpp"
+
 namespace hyped {
 namespace utils {
 
@@ -289,9 +293,23 @@ void Config::readFile(char* config_file) {
   fclose(file);
 }
 
+template<class T>
+T* foo()
+{
+  Logger log;
+  log.ERR("Factory", "no interface creator configured, returning null");
+  return 0;
+}
+
 Config::Config(char* config_file)
     : log_(System::getLogger())
 {
+
+#define DEFAULT_CREATOR(module, interface) \
+  factory.get##interface = foo<module::interface>;
+  INTERFACE_LIST(DEFAULT_CREATOR)
+  // factory.getImuInterface = foo;
+
   config_files_.push_back(config_file);
   readFile(config_file);
   config_files_.pop_back();

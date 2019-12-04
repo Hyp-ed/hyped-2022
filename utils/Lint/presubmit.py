@@ -241,7 +241,7 @@ class CppLintProcessor(SourceFileProcessor):
               or (name == 'build')
               or (name == 'bin')
               or (name == 'lib')
-              or (name == 'utils')
+              # or (name == 'utils')  # if uncommented, src/utils folder is not linted
               or (name == 'etc'))
 
   IGNORE_LINT = ['config.h']

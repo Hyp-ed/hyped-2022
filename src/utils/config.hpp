@@ -103,22 +103,15 @@ class Config {
   } sensors;
 
   struct Factory {
-#define CREATOR_FUNCTIONS(module, interface) \
-  module::interface* (*get##interface)() = 0;
-  INTERFACE_LIST(CREATOR_FUNCTIONS)
+#define CREATOR_FUNCTION_POINTERS(module, interface) \
+  module::interface* (*get##interface)();
+  INTERFACE_LIST(CREATOR_FUNCTION_POINTERS)
   } factory;
 
-//  private:
 #define DECLARE_PARSE(module) \
-  void Parse##module(char* line);
+  void parse##module(char* line);
 
   MODULE_LIST(DECLARE_PARSE)
-  // void ParseNavigation(char* line);
-  // void ParseStateMachine(char* line);
-  // void ParseTelemetry(char* line);
-  // void ParseEmbrakes(char* line);
-  // void ParseSensors(char* line);
-  // void ParseNoModule(char* line);
 
  private:
   explicit Config(char* config_file);

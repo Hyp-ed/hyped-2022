@@ -33,7 +33,8 @@
 struct utils_config: public ::testing::Test {
   hyped::utils::Config* config;
 
-  void SetUp() {
+  void SetUp()
+  {
     // construct argument list to pass to System::parseArgs
     char argument0[] = "testing.cpp";
     char argument1[] = "--config=test/config.txt";

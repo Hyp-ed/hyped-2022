@@ -43,7 +43,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Below is some supporting code, no need to touch this when adding new interfaces
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-#include <stdio.h>
 namespace hyped {
 
 // forward declare all known interfaces so that they can be used for template specialization
@@ -52,13 +51,15 @@ namespace hyped {
 INTERFACE_LIST(FORWARD_DECLARE)
 
 // declare template function to convert interface type to string
+// without template specialization for a particular template parameter, the compilation
+// should fail during linking
 template<class T>
-inline const char* interfaceName() { return "UnknownInterface"; }
+constexpr const char* interfaceName();
 
-// specialize above template function to provide the string values for interfaces
-#define AS_STRING(module, interface) \
-  template<> \
-  inline const char* interfaceName<hyped::module::interface>() {return #interface;}
+// specialize above template function to provide the string values for known interfaces
+#define AS_STRING(module, interface)  \
+  template<>                          \
+  constexpr const char* interfaceName<module::interface>() {return #interface;}
 INTERFACE_LIST(AS_STRING)
 
 }   // namespace hyped

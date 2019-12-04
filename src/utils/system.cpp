@@ -326,7 +326,7 @@ System::System(int argc, char* argv[])
           tube_run = 0;
         }
         break;
-      case 'x': // telemetry_off
+      case 'x':   // telemetry_off
         if (optarg) telemetry_off = atoi(optarg);
         else        telemetry_off = 1;
         break;

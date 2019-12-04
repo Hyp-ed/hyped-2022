@@ -44,6 +44,7 @@ template<class Interface>
 class Factory {
   typedef Interface* (*InterfaceCreator)();
   typedef std::map<string, InterfaceCreator> Mapping;
+
  public:
   static InterfaceCreator getCreator(string implementation)
   {
@@ -62,24 +63,26 @@ class Factory {
   static bool registerCreator(string implementation, InterfaceCreator creator)
   {
     Factory* instance = getInstance();
-    return instance->mapping_.insert(std::make_pair(implementation, creator)).second;
+    return instance->mapping_.insert({implementation, creator}).second;
   }
 
-
  private:
-  Factory(): log_(false, -1) {}
+  // implement singleton
   static Factory* getInstance()
   {
     if (!instance_) instance_ = new Factory();
 
     return instance_;
   }
-  Logger   log_;
   static Factory* instance_;
+
+  Factory(): log_(false, -1) {}
+  // Factory member variables
+  Logger  log_;
   Mapping mapping_;
 };
 
-// define static intances
+// define static intances (otherwise, linker error)
 template <class Interface>
 Factory<Interface>* Factory<Interface>::instance_ = 0;
 

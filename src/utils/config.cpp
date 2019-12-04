@@ -50,23 +50,23 @@ struct ModuleEntry {
  * Column 2: An address of a Config:: member function that performs the line parsing.
  */
 #define MAP_ENTRY(module) \
-  {k##module , #module, &Config::Parse##module},
+  {k##module , #module, &Config::parse##module},
 
 ModuleEntry module_map[] = {
   MODULE_LIST(MAP_ENTRY)
 };
 
-void Config::ParseNoModule(char* line)
+void Config::parseNoModule(char* line)
 {
   // does nothing
 }
 
-void Config::ParseNavigation(char* line)
+void Config::parseNavigation(char* line)
 {
   printf("nav %s\n", line);
 }
 
-void Config::ParseStateMachine(char* line)
+void Config::parseStateMachine(char* line)
 {
   char* token = strtok(line, " ");
   if (strcmp(token, "Timeout") == 0) {
@@ -77,7 +77,7 @@ void Config::ParseStateMachine(char* line)
   }
 }
 
-void Config::ParseTelemetry(char* line)
+void Config::parseTelemetry(char* line)
 {
   // just in case we get handed a null pointer
   if (!line) return;
@@ -99,7 +99,7 @@ void Config::ParseTelemetry(char* line)
   }
 }
 
-void Config::ParseEmbrakes(char* line)
+void Config::parseEmbrakes(char* line)
 {
   char* token = strtok(line, " ");
 
@@ -121,13 +121,17 @@ void Config::ParseEmbrakes(char* line)
   }
 }
 
+// if there is no creator configured to an interface, we use this one to prevent calling
+// a null pointer function
 template<class T>
-T* createDefault() {
+T* createDefault()
+{
   printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
   return NULL;
 }
 
-void Config::ParseFactory(char* line) {
+void Config::parseFactory(char* line)
+{
   // parse into key value pair, validate input line
   char* key   = strtok(line, " ");
   char* value = strtok(NULL, " ");
@@ -136,6 +140,8 @@ void Config::ParseFactory(char* line) {
     return;
   }
 
+  // if the implementation is not registered with the interface factory, we use the default
+  // creator function
 #define PARSE_FACTORY(module, interface)                                            \
   if (strcmp(key, #interface) == 0) {                                               \
     auto creator = utils::Factory<module::interface>::getCreator(value);            \
@@ -149,7 +155,7 @@ void Config::ParseFactory(char* line) {
                      "INTERFACE_LIST in 'src/utils/interfaces.hpp'", key);
 }
 
-void Config::ParseSensors(char* line)
+void Config::parseSensors(char* line)
 {
   // EXAMPLE line parsing:
   // "char* strtok(line, delimiters)" splits the input line into parts using
@@ -226,13 +232,12 @@ void Config::ParseSensors(char* line)
   }
 }
 
-
 const char config_dir_name[] = "configurations/";
-
-void Config::readFile(char* config_file) {
+void Config::readFile(char* config_file)
+{
   char file_name[BUFFER_SIZE];
-  std::strcpy(file_name, config_dir_name);
-  std::strcpy(file_name+std::strlen(config_dir_name), config_file);
+  std::snprintf(file_name, BUFFER_SIZE, config_dir_name);
+  std::snprintf(file_name+std::strlen(config_dir_name), BUFFER_SIZE, config_file);
   // load config file, parse it into data structure
   FILE* file = fopen(file_name, "r");
   if (!file) {
@@ -317,7 +322,6 @@ void Config::readFile(char* config_file) {
 Config::Config(char* config_file)
     : log_(System::getLogger())
 {
-
 #define INIT_CREATOR(module, interface) \
   factory.get##interface = createDefault<module::interface>;
   INTERFACE_LIST(INIT_CREATOR)

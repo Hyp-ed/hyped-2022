@@ -16,6 +16,7 @@ addons:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install cppcheck; fi
+  - cd test && sudo chmod u+x lib/googletestsetup.sh && ./lib/googletestsetup.sh
   - cd "${TRAVIS_BUILD_DIR}"
 script: "CI=1 make testrunner lintall static"
 after_success:

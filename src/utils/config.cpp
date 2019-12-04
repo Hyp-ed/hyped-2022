@@ -28,10 +28,6 @@
 #include "utils/system.hpp"
 #include "utils/factory.hpp"
 
-// this is just temporary
-#include "sensors/interface.hpp"
-#include "sensors/imu.hpp"
-
 namespace hyped {
 namespace utils {
 

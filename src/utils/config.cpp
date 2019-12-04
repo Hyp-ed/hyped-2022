@@ -26,6 +26,7 @@
 #include <sstream>
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
+#include "utils/factory.hpp"
 
 // this is just temporary
 #include "sensors/interface.hpp"
@@ -124,8 +125,20 @@ void Config::ParseEmbrakes(char* line)
   }
 }
 
+template<class T>
+T* createDefault() {
+  printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
+  return NULL;
+}
+
 void Config::ParseFactory(char* line) {
   // TODO: assign correct getInterface function pointers
+  char* token = strtok(line, " ");
+  char* value = strtok(NULL, " ");
+  if (strcmp(token, "ImuInterface") == 0) {
+    auto creator = utils::Factory<sensors::ImuInterface>::getCreator(value);
+    factory.getImuInterface = creator ? creator : createDefault<sensors::ImuInterface>;
+  }
 }
 
 void Config::ParseSensors(char* line)
@@ -293,22 +306,13 @@ void Config::readFile(char* config_file) {
   fclose(file);
 }
 
-template<class T>
-T* foo()
-{
-  Logger log;
-  log.ERR("Factory", "no interface creator configured, returning null");
-  return 0;
-}
-
 Config::Config(char* config_file)
     : log_(System::getLogger())
 {
 
-#define DEFAULT_CREATOR(module, interface) \
-  factory.get##interface = foo<module::interface>;
-  INTERFACE_LIST(DEFAULT_CREATOR)
-  // factory.getImuInterface = foo;
+#define INIT_CREATOR(module, interface) \
+  factory.get##interface = createDefault<module::interface>;
+  INTERFACE_LIST(INIT_CREATOR)
 
   config_files_.push_back(config_file);
   readFile(config_file);

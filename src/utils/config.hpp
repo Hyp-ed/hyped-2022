@@ -32,11 +32,6 @@
 #include "utils/interfaces.hpp"
 
 namespace hyped {
-// forward declare all known interfaces
-#define FORWARD_DECLARE(module, interface) \
-  namespace module { class interface; }
-INTERFACE_LIST(FORWARD_DECLARE)
-
 namespace utils {
 
 // forward declaration

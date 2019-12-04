@@ -27,14 +27,39 @@
  * Factory module.
  *
  * Adding new interfaces is as easy as extending the interface list below. Interfaces must be
- * specified in (almost) full namespace (hyped:: can be omitted as it is implied)
+ * specified in (almost) full namespace (hyped:: can be omitted as it is implied). This is done
+ * by listing both the interface's namespace and the interface class itself.
  *
+ * NOTE: Interface class must be unique as the interfaces are resolved only based on the
+ * class name, not the full namespaced name.
  */
 
 // use format V(module/namespace, class)
-// e.g.       V(MyFancyInterface, utils::config::fancy::typed::here)
+// e.g.       V(utils::config::fancy::typed::here, MyFancyInterface)
 #define INTERFACE_LIST(V) \
   V(sensors, ImuInterface)
 
+
+
+#include <stdio.h>
+
+namespace hyped {
+
+// forward declare all known interfaces so that they can be used for template specialization
+#define FORWARD_DECLARE(module, interface) \
+  namespace module { class interface; }
+INTERFACE_LIST(FORWARD_DECLARE)
+
+// declare template function to convert interface type to string
+template<class T>
+inline const char* interfaceName() { return "UnknownInterface"; }
+
+// specialize above template function to provide the string values for interfaces
+#define AS_STRING(module, interface) \
+  template<> \
+  inline const char* interfaceName<hyped::module::interface>() {return #interface;}
+INTERFACE_LIST(AS_STRING)
+
+}   // namespace hyped
 
 #endif  // UTILS_INTERFACES_HPP_

@@ -23,6 +23,7 @@
 #include "sensors/imu.hpp"
 #include "utils/concurrent/thread.hpp"
 #include "utils/math/statistics.hpp"
+#include "utils/factory.hpp"
 
 
 // Accelerometer addresses
@@ -290,4 +291,14 @@ void Imu::getTemperature(int* data)
   *data = static_cast<int>(temp);
 }
 
-}}   // namespace hyped::sensors
+namespace {
+ImuInterface* createImu()
+{
+  Logger log(true, -1);
+  return new Imu(log, 66);
+}
+
+int regImu = utils::Factory<ImuInterface>::registerCreator("Imu", createImu);
+}   // namespace ::
+
+}}  // namespace hyped::sensors

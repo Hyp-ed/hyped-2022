@@ -132,13 +132,25 @@ T* createDefault() {
 }
 
 void Config::ParseFactory(char* line) {
-  // TODO: assign correct getInterface function pointers
-  char* token = strtok(line, " ");
+  // parse into key value pair, validate input line
+  char* key   = strtok(line, " ");
   char* value = strtok(NULL, " ");
-  if (strcmp(token, "ImuInterface") == 0) {
-    auto creator = utils::Factory<sensors::ImuInterface>::getCreator(value);
-    factory.getImuInterface = creator ? creator : createDefault<sensors::ImuInterface>;
+  if (!key || !value) {
+    log_.ERR("CONFIG", "lines for Factory submodule must have format \"interface implementation\"");
+    return;
   }
+
+#define PARSE_FACTORY(module, interface)                                            \
+  if (strcmp(key, #interface) == 0) {                                               \
+    auto creator = utils::Factory<module::interface>::getCreator(value);            \
+    factory.get##interface = creator ? creator : createDefault<module::interface>;  \
+    return;                                                                         \
+  }
+  INTERFACE_LIST(PARSE_FACTORY)
+
+  // if we get here, the interface is probably not listed in INTERFACE_LIST
+  log_.ERR("CONFIG", "Factory interface \"%s\" is not registered, you need to list it in "
+                     "INTERFACE_LIST in 'src/utils/interfaces.hpp'", key);
 }
 
 void Config::ParseSensors(char* line)

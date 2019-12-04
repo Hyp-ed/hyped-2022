@@ -4,12 +4,6 @@
 command -v cppcheck > /dev/null 2>&1
 if [ $? -eq 1 ]
 then
-    if [ "$1" = "CI" ]
-    then 
-        echo "Error: CPPCheck is not installed on Travis"
-        exit 1
-    fi
-    
     echo "CPPCheck not found, unpacking from tar ..."
     mkdir -p lib/cppcheck
     tar -xf lib/cppcheck.tar.gz -C lib/cppcheck --strip-components 1

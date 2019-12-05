@@ -239,7 +239,9 @@ void Config::readFile(char* config_file)
   static_assert(config_dir_name_size < BUFFER_SIZE, "configuration directory name is too long");
   char file_name[BUFFER_SIZE];
   std::snprintf(file_name, config_dir_name_size, config_dir_name);
-  std::snprintf(file_name+config_dir_name_size-1, BUFFER_SIZE-config_dir_name_size, config_file);
+  std::snprintf(file_name+config_dir_name_size-1,         // account for dir_name
+                sizeof(file_name)-config_dir_name_size,   // calculate remaining buffer space
+                "%s", config_file);                       // provide string value to be appended
   // load config file, parse it into data structure
   FILE* file = fopen(file_name, "r");
   if (!file) {

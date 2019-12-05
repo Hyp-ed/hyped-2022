@@ -52,7 +52,7 @@ INTERFACE_LIST(FORWARD_DECLARE)
 
 // Declare template function to convert interface type to string.
 // Without template specialization for a particular template parameter, the compilation
-// should fail during linking
+// should fail during linking.
 template<class T>
 constexpr const char* interfaceName();
 

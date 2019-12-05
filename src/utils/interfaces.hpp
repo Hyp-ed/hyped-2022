@@ -56,7 +56,7 @@ INTERFACE_LIST(FORWARD_DECLARE)
 template<class T>
 constexpr const char* interfaceName();
 
-// specialize above template function to provide the string values for known interfaces
+// Specialize above template function to provide the string values for known interfaces.
 #define AS_STRING(module, interface)  \
   template<>                          \
   constexpr const char* interfaceName<module::interface>() {return #interface;}

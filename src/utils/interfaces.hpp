@@ -50,7 +50,7 @@ namespace hyped {
   namespace module { class interface; }
 INTERFACE_LIST(FORWARD_DECLARE)
 
-// declare template function to convert interface type to string
+// Declare template function to convert interface type to string.
 // without template specialization for a particular template parameter, the compilation
 // should fail during linking
 template<class T>

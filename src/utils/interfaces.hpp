@@ -45,7 +45,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace hyped {
 
-// forward declare all known interfaces so that they can be used for template specialization
+// Forward declare all known interfaces so that they can be used for template specialization.
 #define FORWARD_DECLARE(module, interface) \
   namespace module { class interface; }
 INTERFACE_LIST(FORWARD_DECLARE)

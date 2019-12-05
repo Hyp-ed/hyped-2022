@@ -1,9 +1,8 @@
 /*
- * Authors : Martin Kristien
+ * Authors: M. Kristien
  * Organisation: HYPED
- * Date: 3. Dec 2019
+ * Date: Dec 2019
  * Description:
- * This is the main executable for BeagleBone pod node
  *
  *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,24 +16,19 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *
  */
 
-#include "utils/system.hpp"
-#include "utils/config.hpp"
-#include "sensors/interface.hpp"
-#include "demo/interface.hpp"
-using namespace hyped;
+#ifndef DEMO_INTERFACE_HPP_
+#define DEMO_INTERFACE_HPP_
 
-int main(int argc, char* argv[])
-{
-  utils::System::parseArgs(argc, argv);
-  utils::System& sys = utils::System::getSystem();
+namespace hyped {
+namespace demo {
 
-  sensors::ImuInterface* imu = sys.config->factory.getImuInterface();
+class DemoInterface {
+ public:
+  virtual void printYourName() = 0;
+};
 
-  demo::DemoInterface* demo = sys.config->factory.getDemoInterface();
-  demo->printYourName();
+}}  // namespace hyped::demo
 
-  return 0;
-}
+#endif  // DEMO_INTERFACE_HPP_

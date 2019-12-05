@@ -232,12 +232,14 @@ void Config::parseSensors(char* line)
   }
 }
 
-const char config_dir_name[] = "configurations/";
+constexpr char config_dir_name[] = "configurations/";
+constexpr auto config_dir_name_size = sizeof(config_dir_name);
 void Config::readFile(char* config_file)
 {
+  static_assert(config_dir_name_size < BUFFER_SIZE, "configuration directory name is too long");
   char file_name[BUFFER_SIZE];
-  std::snprintf(file_name, BUFFER_SIZE, config_dir_name);
-  std::snprintf(file_name+std::strlen(config_dir_name), BUFFER_SIZE, config_file);
+  std::snprintf(file_name, config_dir_name_size, config_dir_name);
+  std::snprintf(file_name+config_dir_name_size-1, BUFFER_SIZE-config_dir_name_size, config_file);
   // load config file, parse it into data structure
   FILE* file = fopen(file_name, "r");
   if (!file) {

@@ -127,7 +127,7 @@ template<class T>
 T* createDefault()
 {
   printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
-  return NULL;
+  return nullptr;
 }
 
 void Config::parseFactory(char* line)

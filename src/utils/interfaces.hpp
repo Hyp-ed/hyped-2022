@@ -46,18 +46,18 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace hyped {
 
-// forward declare all known interfaces so that they can be used for template specialization
+// Forward declare all known interfaces so that they can be used for template specialization.
 #define FORWARD_DECLARE(module, interface) \
   namespace module { class interface; }
 INTERFACE_LIST(FORWARD_DECLARE)
 
-// declare template function to convert interface type to string
-// without template specialization for a particular template parameter, the compilation
-// should fail during linking
+// Declare template function to convert interface type to string.
+// Without template specialization for a particular template parameter, the compilation
+// should fail during linking.
 template<class T>
 constexpr const char* interfaceName();
 
-// specialize above template function to provide the string values for known interfaces
+// Specialize above template function to provide the string values for known interfaces.
 #define AS_STRING(module, interface)  \
   template<>                          \
   constexpr const char* interfaceName<module::interface>() {return #interface;}

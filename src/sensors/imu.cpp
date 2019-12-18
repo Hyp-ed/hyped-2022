@@ -33,9 +33,6 @@ constexpr uint8_t kAccelXoutH               = 0x2D;   // userbank 0
 constexpr uint8_t kAccelConfig              = 0x14;   // userbank 2
 constexpr uint8_t kAccelScale               = 0x04;   // +/- 4g
 
-// Temperature address
-constexpr uint8_t kTempOutH                 = 0x39;   // userbank 0
-
 constexpr uint8_t kWhoAmIImu                = 0x00;   // sensor to be at this address, userbank 0
 // data to be at these addresses when read from sensor else not initialised
 constexpr uint8_t kWhoAmIResetValue         = 0xEA;   // userbank 0
@@ -47,7 +44,7 @@ constexpr uint8_t kPwrMgmt2           = 0x07;   // userbank 0
 // Configuration
 constexpr uint8_t kReadFlag                 = 0x80;   // unable to find in datasheet
 
-constexpr uint8_t kLpConfig                 = 0x05;   // userbank 0 
+constexpr uint8_t kLpConfig                 = 0x05;   // userbank 0
 
 // Configuration bits Imu
 // constexpr uint8_t kBitsFs250Dps             = 0x00;
@@ -65,7 +62,7 @@ constexpr uint8_t kBitHReset                = 0x80;    // for pwr_mgmt
 
 // values for FIFO
 constexpr uint8_t kFifoReset                = 0x68;   // userbank 0
-constexpr uint8_t kFifoEnable1              = 0x66;   // userbank 0
+// constexpr uint8_t kFifoEnable1              = 0x66;   // userbank 0
 constexpr uint8_t kFifoEnable2              = 0x67;   // userbank 0
 constexpr uint8_t kFifoMode                 = 0x69;
 constexpr uint8_t kFifoCountH               = 0x70;   // userbank 0
@@ -83,11 +80,12 @@ using data::NavigationVector;
 
 namespace sensors {
 
-Imu::Imu(Logger& log, uint32_t pin)
+Imu::Imu(Logger& log, uint32_t pin, bool is_fifo)
     : spi_(SPI::getInstance()),
     log_(log),
     gpio_(pin, kDirection, log),
     pin_(pin),
+    is_fifo_(is_fifo),
     is_online_(false)
 {
   log_.DBG1("Imu pin: ", "%d", pin);
@@ -117,7 +115,7 @@ void Imu::init()
   // DLPF
   writeByte(kAccelConfig, 0x09);    // LPF and DLPF configuration
   setAcclScale();
-  
+
   enableFifo();
 
   if (check_init) {
@@ -181,23 +179,8 @@ void Imu::selectBank(uint8_t switch_bank)
 {
 
   writeByte(kRegBankSel, switch_bank << 4);
-  // switch (switch_bank) {
-  //   case 0:
-  //     writeByte(kRegBankSel, 0x00);
-  //   break;
-  //   case 1:
-  //     writeByte(kRegBankSel, 0x10);
-  //   break;
-  //   case 2:
-  //     writeByte(kRegBankSel, 0x20);
-  //   break;
-  //   case 3:
-  //     writeByte(kRegBankSel, 0x30);
-  //   break;
-  // }
   user_bank_ = switch_bank;
-  log_.DBG("Imu", "User bank switched to %u", user_bank_);
-  
+  log_.DBG1("Imu", "User bank switched to %u", user_bank_);
 }
 
 void Imu::writeByte(uint8_t write_reg, uint8_t write_data)
@@ -236,7 +219,7 @@ void Imu::setAcclScale()
 {
   uint8_t data;
   readByte(kAccelConfig, &data);
-  writeByte(kAccelConfig, data | kAccelScale); 
+  writeByte(kAccelConfig, data | kAccelScale);
 
   switch (kAccelScale) {
     case kBitsFs2G:
@@ -254,7 +237,7 @@ void Imu::setAcclScale()
   }
 }
 
-int Imu::readFifo(std::vector<ImuData>& data)
+int Imu::readFifo(ImuData* data)
 {
   if (is_online_) {
     // get fifo size
@@ -270,7 +253,7 @@ int Imu::readFifo(std::vector<ImuData>& data)
     log_.DBG3("Imu-FIFO", "Buffer size = %d", fifo_size);
     int16_t axcounts, aycounts, azcounts;           // include negative int
     float value_x, value_y, value_z;
-    for (size_t i = 0; i < (fifo_size/kFrameSize_); i++) {
+    for (size_t i = 0; i < (fifo_size/kFrameSize_); i++) {    // make sure is less than array size
       readBytes(kFifoRW, buffer, kFrameSize_);
       axcounts = (((int16_t)buffer[0]) << 8) | buffer[1];     // 2 byte acc data for xyz
       aycounts = (((int16_t)buffer[2]) << 8) | buffer[3];
@@ -282,12 +265,10 @@ int Imu::readFifo(std::vector<ImuData>& data)
       value_z = static_cast<float>(azcounts);
 
       // put data in struct and add to data vector (param)
-      ImuData imu_data;
-      imu_data.operational = is_online_;
-      imu_data.acc[0] = value_x/acc_divider_  * 9.80665;
-      imu_data.acc[1] = value_y/acc_divider_  * 9.80665;
-      imu_data.acc[2] = value_z/acc_divider_  * 9.80665;
-      data.push_back(imu_data);
+      data->operational = is_online_;
+      data->fifo[i][0] = value_x/acc_divider_  * 9.80665;
+      data->fifo[i][1] = value_y/acc_divider_  * 9.80665;
+      data->fifo[i][2] = value_z/acc_divider_  * 9.80665;
     }
     return 1;
   } else {
@@ -301,24 +282,28 @@ int Imu::readFifo(std::vector<ImuData>& data)
 void Imu::getData(ImuData* data)
 {
   if (is_online_) {
-    log_.DBG2("Imu", "Getting Imu data");
-    auto& acc = data->acc;
-    uint8_t response[8];
-    int16_t bit_data;
-    float value;
-    int i;
-    float accel_data[3];
+    if (is_fifo_) {
+      int count = readFifo(data);   // TODO(anyone): does this synax work?
+    } else {
+      log_.DBG2("Imu", "Getting Imu data");
+      auto& acc = data->acc;
+      uint8_t response[8];
+      int16_t bit_data;
+      float value;
+      int i;
+      float accel_data[3];
 
-    readBytes(kAccelXoutH, response, 8);
-    for (i = 0; i < 3; i++) {
-      bit_data = ((int16_t) response[i*2] << 8) | response[i*2+1];
-      value = static_cast<float>(bit_data);
-      accel_data[i] = value/acc_divider_  * 9.80665;
+      readBytes(kAccelXoutH, response, 8);
+      for (i = 0; i < 3; i++) {
+        bit_data = ((int16_t) response[i*2] << 8) | response[i*2+1];
+        value = static_cast<float>(bit_data);
+        accel_data[i] = value/acc_divider_  * 9.80665;
+      }
+      data->operational = is_online_;
+      acc[0] = accel_data[0];
+      acc[1] = accel_data[1];
+      acc[2] = accel_data[2];
     }
-    data->operational = is_online_;
-    acc[0] = accel_data[0];
-    acc[1] = accel_data[1];
-    acc[2] = accel_data[2];
   } else {
     // Try and turn the sensor on again
     log_.ERR("Imu", "Sensor not operational, trying to turn on sensor");

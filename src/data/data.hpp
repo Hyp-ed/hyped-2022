@@ -72,6 +72,9 @@ struct Sensor {
 
 struct ImuData : public Sensor {
   NavigationVector acc;
+
+  static constexpr int kFifo = 85;
+  array<NavigationVector, kFifo> fifo;
 };
 
 struct StripeCounter : public Sensor {

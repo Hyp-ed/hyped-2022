@@ -39,7 +39,7 @@ namespace sensors {
 
 class Imu : public ImuInterface {
  public:
-  Imu(Logger& log, uint32_t pin);
+  Imu(Logger& log, uint32_t pin, bool is_fifo);
   ~Imu();
   /*
    *  @brief Returns if the sensor is online
@@ -61,7 +61,7 @@ class Imu : public ImuInterface {
    * @param data ImuData vector to read number of full sets into
    * @return 0 if empty
    */
-  int readFifo(std::vector<ImuData>& data);
+  int readFifo(ImuData* data);
 
  private:
   /*
@@ -125,6 +125,7 @@ class Imu : public ImuInterface {
   Logger& log_;
   GPIO    gpio_;
   uint32_t pin_;
+  bool is_fifo_;
   double  acc_divider_;
   bool    is_online_;
   uint8_t user_bank_;

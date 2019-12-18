@@ -1,0 +1,23 @@
+# configuration file, all config files should be in ./configurations/ folder
+# line starting with '#' characters are ignored, i.e. comments
+# lines cannot be longer than 250 characters, else the world breaks
+
+
+# lines starting with '>' start a new parsing section for a new module
+# e.g. "> Navigation" line indicates all following lines will be parse by
+# ParseNavigation() function
+# All modules are defined in src/utils/config.hpp file as part of a MODULE_LIST.
+# New modules can be added by extending this list and defining the corresponding
+# Parse<module_name>() function.
+
+# now, the config files support #include statements to make the configurations more modular
+# whenever config file contains line "$ <another_config_file>", the parser stops processing
+# the current config file and steps into processing <another_config_file>.
+# note, the currenct module is reset to "Nomodule" whenever stepping into or out of a config files
+# therefore, users should always define their "> Module" at the beginning of the config file
+# and after any "$ <file>" include statement
+
+$ telemetry.txt
+$ state_machine.txt
+$ sensors.txt
+$ embrakes.txt

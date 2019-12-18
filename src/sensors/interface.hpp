@@ -27,6 +27,7 @@
 namespace hyped {
 
 using data::ImuData;
+using data::StripeCounter;
 using data::TemperatureData;
 using data::NavigationVector;
 using data::BatteryData;
@@ -51,13 +52,13 @@ class ImuInterface: public SensorInterface {
   virtual void getData(ImuData* imu) = 0;
 };
 
-class GpioInterface {
+class GpioInterface: public SensorInterface {
  public:
   /**
    * @brief Get GPIO data
-   * @param
+   * @param stripe_counter - output pointer
    */
-  virtual data::StripeCounter getStripeCounter() = 0;
+  virtual void getData(StripeCounter* stripe_counter) = 0;
 };
 
 class BMSInterface: public SensorInterface {

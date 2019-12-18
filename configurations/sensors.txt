@@ -1,0 +1,9 @@
+> Sensors
+ChipSelect  47,22,27,86
+KeyenceL    68
+KeyenceR    67
+Thermistor  3
+HPMaster    65
+HPSSR       46,26
+IMDOut      20
+Embrakes    44

@@ -18,8 +18,11 @@
  *    limitations under the License.
  */
 
+#include <string>
 #include "telemetry/sendloop.hpp"
-#include "telemetry/utils.hpp"
+
+using rapidjson::Writer;
+using rapidjson::StringBuffer;
 
 namespace hyped {
 namespace telemetry {
@@ -36,23 +39,22 @@ void SendLoop::run()
 {
   log_.DBG("Telemetry", "Telemetry SendLoop thread started");
 
-  telemetry_data::ClientToServer msg;
-
   while (true) {
-    packNavigationMessage(msg);
-    packStateMachineMessage(msg);
-    packMotorsMessage(msg);
-    packBatteriesMessage(msg);
-    packSensorsMessage(msg);
-    packTemperatureMessage(msg);
-    packEmergencyBrakesMessage(msg);
+    StringBuffer sb;
+    Writer<StringBuffer> writer(sb);
 
-    try {
-      main_ref_.client_.sendData(msg);
-    }
-    catch (std::exception& err) {  // NOLINT
-      log_.ERR("Telemetry", "%s", err.what());
+    writer.StartObject();
+    packNavigationMessage(writer);
+    packStateMachineMessage(writer);
+    packMotorsMessage(writer);
+    packBatteriesMessage(writer);
+    packSensorsMessage(writer);
+    packTemperatureMessage(writer);
+    packEmergencyBrakesMessage(writer);
+    writer.EndObject();
 
+    if (!main_ref_.client_.sendData(sb.GetString())) {
+      log_.ERR("Telemetry", "Error sending message");
       data::Telemetry telem_data_struct = data_.getTelemetryData();
       telem_data_struct.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telem_data_struct);
@@ -60,120 +62,225 @@ void SendLoop::run()
       break;
     }
 
-    msg.Clear();
-
     Thread::sleep(100);
   }
 
   log_.DBG("Telemetry", "Exiting Telemetry SendLoop thread");
 }
 
-void SendLoop::packNavigationMessage(telemetry_data::ClientToServer& msg)
+void SendLoop::packNavigationMessage(Writer<StringBuffer>& writer)
 {
   data::Navigation nav_data = data_.getNavigationData();
-  telemetry_data::ClientToServer::Navigation* navigation_msg = msg.mutable_navigation();
-
-  navigation_msg->set_module_status(Utils::moduleStatusEnumConversion(nav_data.module_status));
-  navigation_msg->set_distance(nav_data.distance);
-  navigation_msg->set_velocity(nav_data.velocity);
-  navigation_msg->set_acceleration(nav_data.acceleration);
+  writer.Key("navigation");
+  writer.StartObject();
+  writer.Key("moduleStatus");
+  writer.String(convertModuleStatus(nav_data.module_status).c_str());
+  writer.Key("distance");
+  writer.Double(nav_data.distance);
+  writer.Key("velocity");
+  writer.Double(nav_data.velocity);
+  writer.Key("acceleration");
+  writer.Double(nav_data.acceleration);
+  writer.EndObject();
 }
 
-void SendLoop::packStateMachineMessage(telemetry_data::ClientToServer& msg)
+void SendLoop::packStateMachineMessage(Writer<StringBuffer>& writer)
 {
   data::StateMachine sm_data = data_.getStateMachineData();
-  telemetry_data::ClientToServer::StateMachine* state_machine_msg = msg.mutable_state_machine();
-
-  state_machine_msg->set_current_state(Utils::stateEnumConversion(sm_data.current_state));
+  writer.Key("stateMachine");
+  writer.StartObject();
+  writer.Key("currentState");
+  writer.String(convertStateMachineState(sm_data.current_state).c_str());
+  writer.EndObject();
 }
 
-void SendLoop::packMotorsMessage(telemetry_data::ClientToServer& msg)
+void SendLoop::packMotorsMessage(Writer<StringBuffer>& writer)
 {
   data::Motors motor_data = data_.getMotorData();
-  telemetry_data::ClientToServer::Motors* motors_msg = msg.mutable_motors();
-
-  motors_msg->set_module_status(Utils::moduleStatusEnumConversion(motor_data.module_status));
+  writer.Key("motors");
+  writer.StartObject();
+  writer.Key("moduleStatus");
+  writer.String(convertModuleStatus(motor_data.module_status).c_str());
+  writer.EndObject();
 }
 
-void SendLoop::packBatteriesMessage(telemetry_data::ClientToServer& msg)
+void SendLoop::packBatteriesMessage(Writer<StringBuffer>& writer)
 {
   data::Batteries batteries_data = data_.getBatteriesData();
-  telemetry_data::ClientToServer::Batteries* batteries_msg = msg.mutable_batteries();
-
-  batteries_msg->set_module_status(Utils::moduleStatusEnumConversion(batteries_data.module_status)); // NOLINT
-
-  packLpBatteryDataMessage(*batteries_msg, batteries_data.low_power_batteries);
-  packHpBatteryDataMessage(*batteries_msg, batteries_data.high_power_batteries);
+  writer.Key("batteries");
+  writer.StartObject();
+  writer.Key("moduleStatus");
+  writer.String(convertModuleStatus(batteries_data.module_status).c_str());
+  writer.Key("lowPowerBatteries");
+  packLpBatteryDataMessage(writer, batteries_data.low_power_batteries);
+  writer.Key("highPowerBatteries");
+  packHpBatteryDataMessage(writer, batteries_data.high_power_batteries);
+  writer.EndObject();
 }
 
 template<std::size_t SIZE>
-void SendLoop::packLpBatteryDataMessage(batteriesMsg& batteries_msg, std::array<data::BatteryData, SIZE>& battery_data_array) // NOLINT
+void SendLoop::packLpBatteryDataMessage(Writer<StringBuffer>& writer, std::array<data::BatteryData, SIZE>& battery_data_array) // NOLINT
 {
+  writer.StartArray();
   for (auto battery_data : battery_data_array) {
-    telemetry_data::ClientToServer::Batteries::BatteryData* battery_data_msg = batteries_msg.add_low_power_batteries(); // NOLINT
-    packBatteryDataMessageHelper(*battery_data_msg, battery_data);
+    packBatteryDataMessageHelper(false, writer, battery_data);
   }
+  writer.EndArray();
 }
 
 template<std::size_t SIZE>
-void SendLoop::packHpBatteryDataMessage(batteriesMsg& batteries_msg, std::array<data::BatteryData, SIZE>& battery_data_array) // NOLINT
+void SendLoop::packHpBatteryDataMessage(Writer<StringBuffer>& writer, std::array<data::BatteryData, SIZE>& battery_data_array) // NOLINT
 {
+  writer.StartArray();
   for (auto battery_data : battery_data_array) {
-    telemetry_data::ClientToServer::Batteries::BatteryData* battery_data_msg = batteries_msg.add_high_power_batteries(); // NOLINT
-    packBatteryDataMessageHelper(*battery_data_msg, battery_data);
+    packBatteryDataMessageHelper(true, writer, battery_data);
   }
+  writer.EndArray();
 }
 
-void SendLoop::packBatteryDataMessageHelper(batteriesMsg::BatteryData& battery_data_msg, data::BatteryData& battery_data) // NOLINT
+void SendLoop::packBatteryDataMessageHelper(bool HP, Writer<StringBuffer>& writer, data::BatteryData& battery_data) // NOLINT
 {
-  battery_data_msg.set_voltage(battery_data.voltage);
-  battery_data_msg.set_current(battery_data.current);
-  battery_data_msg.set_charge(battery_data.charge);
-  battery_data_msg.set_average_temperature(battery_data.average_temperature);
-  battery_data_msg.set_low_temperature(battery_data.low_temperature);
-  battery_data_msg.set_high_temperature(battery_data.high_temperature);
-  battery_data_msg.set_low_voltage_cell(battery_data.low_voltage_cell);
-  battery_data_msg.set_high_voltage_cell(battery_data.high_voltage_cell);
+  writer.StartObject();
+  writer.Key("voltage");
+  writer.Int(battery_data.voltage);
+  writer.Key("current");
+  writer.Int(battery_data.current);
+  writer.Key("charge");
+  writer.Int(battery_data.charge);
+  writer.Key("averageTemperature");
+  writer.Int(battery_data.average_temperature);
 
+  if (HP) {
+    writer.Key("lowTemperature");
+    writer.Int(battery_data.low_temperature);
+    writer.Key("highTemperature");
+    writer.Int(battery_data.high_temperature);
+    writer.Key("lowVoltageCell");
+    writer.Int(battery_data.low_voltage_cell);
+    writer.Key("highVoltageCell");
+    writer.Int(battery_data.high_voltage_cell);
+  }
+
+  writer.Key("indvVoltage");
+  writer.StartArray();
   for (int voltage : battery_data.cell_voltage) {
-    battery_data_msg.add_indv_voltage(voltage);
+    writer.Int(voltage);
   }
+  writer.EndArray();
+  writer.EndObject();
 }
 
-void SendLoop::packSensorsMessage(telemetry_data::ClientToServer& msg)
+void SendLoop::packSensorsMessage(Writer<StringBuffer>& writer)
 {
   data::Sensors sensors_data = data_.getSensorsData();
-  telemetry_data::ClientToServer::Sensors* sensors_msg = msg.mutable_sensors();
-
-  sensors_msg->set_module_status(Utils::moduleStatusEnumConversion(sensors_data.module_status));
-
+  writer.Key("sensors");
+  writer.StartObject();
+  writer.Key("moduleStatus");
+  writer.String(convertModuleStatus(sensors_data.module_status).c_str());
+  writer.Key("imu");
+  writer.StartArray();
   for (data::ImuData imu_data : sensors_data.imu.value) {
-    telemetry_data::ClientToServer::Sensors::ImuData* imu_data_msg = sensors_msg->add_imu();
-
-    imu_data_msg->set_operational(imu_data.operational);
+    writer.StartObject();
+    writer.Key("operational");
+    writer.Bool(imu_data.operational);
+    writer.Key("acc");
+    writer.StartArray();
 
     // hardcoded atm to loop three times bc hyped vector doesn't have a method for vector length
     // or have an iterator to support a ranged for loop
     for (int i = 0; i < 3; i++) {
-      imu_data_msg->add_acc(imu_data.acc[i]);
+      writer.Double(imu_data.acc[i]);
     }
+    writer.EndArray();
+    writer.EndObject();
+  }
+  writer.EndArray();
+  writer.EndObject();
+}
+
+void SendLoop::packTemperatureMessage(Writer<StringBuffer>& writer)
+{
+  writer.Key("temperature");
+  writer.StartObject();
+  writer.Key("temperature");
+  writer.Int(data_.getTemperature());
+  writer.EndObject();
+}
+
+void SendLoop::packEmergencyBrakesMessage(Writer<StringBuffer>& writer)
+{
+  data::EmergencyBrakes emergency_brakes_data = data_.getEmergencyBrakesData();
+  writer.Key("emergencyBrakes");
+  writer.StartObject();
+  writer.Key("brakes");
+  writer.StartArray();
+  for (bool brake_retracted : emergency_brakes_data.brakes_retracted) {
+    writer.Bool(brake_retracted);
+  }
+  writer.EndArray();
+  writer.EndObject();
+}
+
+std::string SendLoop::convertStateMachineState(data::State state)
+{
+  switch (state) {
+  case data::State::kInvalid:
+    return "INVALID";
+    break;
+  case data::State::kEmergencyBraking:
+    return "EMERGENCY_BRAKING";
+    break;
+  case data::State::kFailureStopped:
+    return "FAILURE_STOPPED";
+    break;
+  case data::State::kIdle:
+    return "IDLE";
+    break;
+  case data::State::kCalibrating:
+    return "CALIBRATING";
+    break;
+  case data::State::kRunComplete:
+    return "RUN_COMPLETE";
+    break;
+  case data::State::kFinished:
+    return "FINISHED";
+    break;
+  case data::State::kReady:
+    return "READY";
+    break;
+  case data::State::kAccelerating:
+    return "ACCELERATING";
+    break;
+  case data::State::kNominalBraking:
+    return "NOMINAL_BRAKING";
+    break;
+  case data::State::kExiting:
+    return "EXITING";
+    break;
+  default:
+    return "";
+    break;
   }
 }
 
-void SendLoop::packTemperatureMessage(telemetry_data::ClientToServer& msg)
+std::string SendLoop::convertModuleStatus(data::ModuleStatus module_status)
 {
-  telemetry_data::ClientToServer::Temperature* temp_msg = msg.mutable_temperature();
-
-  temp_msg->set_temperature(data_.getTemperature());
-}
-
-void SendLoop::packEmergencyBrakesMessage(telemetry_data::ClientToServer& msg)
-{
-  data::EmergencyBrakes emergency_brakes_data = data_.getEmergencyBrakesData();
-  telemetry_data::ClientToServer::EmergencyBrakes* emergency_brakes_msg = msg.mutable_emergency_brakes(); // NOLINT
-
-  for (bool brake_retracted : emergency_brakes_data.brakes_retracted) {
-    emergency_brakes_msg->add_brakes(brake_retracted);
+  switch (module_status) {
+  case data::ModuleStatus::kStart:
+    return "START";
+    break;
+  case data::ModuleStatus::kInit:
+    return "INIT";
+    break;
+  case data::ModuleStatus::kReady:
+    return "READY";
+    break;
+  case data::ModuleStatus::kCriticalFailure:
+    return "CRITICAL_FAILURE";
+    break;
+  default:
+    return "";
+    break;
   }
 }
 

@@ -1,7 +1,7 @@
 /*
- * Author: Gregory Dayao and Jack Horsburgh
+ * Author:
  * Organisation: HYPED
- * Date: 20/06/18
+ * Date: 20/06/19
  * Description:
  * BMS manager for getting battery data and pushes to data struct.
  * Checks whether batteries are in range and enters emergency state if fails.
@@ -25,43 +25,59 @@
 
 #include <cstdint>
 
-#include "sensors/manager_interface.hpp"
-
-#include "sensors/interface.hpp"
+#include "utils/concurrent/thread.hpp"
 #include "utils/system.hpp"
+#include "data/data.hpp"
 #include "utils/io/gpio.hpp"
 
 namespace hyped {
 
 using utils::Logger;
-using hyped::data::BatteryData;
+using utils::concurrent::Thread;
+using data::Data;
 using utils::io::GPIO;
 
 namespace sensors {
 
-class BmsManager: public BmsManagerInterface  {
+class GpioManager : public Thread  {
  public:
-  explicit BmsManager(Logger& log);
-  void run()                override;
+  GpioManager(Logger& log);
+  void run();
 
  private:
-  BMSInterface*   bms_[data::Batteries::kNumLPBatteries+data::Batteries::kNumHPBatteries];
   utils::System&  sys_;
-
-  /**
-   * @brief check IMD and set GPIOs accordingly
-   */
-  bool checkIMD();
-
-  /**
-   * @brief needs to be references because run() passes directly to data struct
-   */
   data::Data&     data_;
 
   /**
-   * @brief holds LP BatteryData, HP BatteryData, and module_status
+   * @brief for hp_master_, hp_ssr_, and prop_cool_
    */
-  data::Batteries batteries_;
+  void clearHP();
+
+  /**
+   * @brief for hp_master_, hp_ssr_, and prop_cool_
+   */
+  void setHP();
+
+  /*
+   * @brief SSR that controls objects in hp_ssr_ array
+   */
+  GPIO* hp_master_;
+
+  /**
+   * @brief HPSSR held high in nominal states, cleared when module failure or pod emergency state
+   *        Batteries module status forces kEmergencyBraking, which actuates embrakes
+   */
+  GPIO* hp_ssr_[data::Batteries::kNumHPBatteries];
+
+  /**
+   * @brief embrakes_ssr_ held high in nominal states, cleared in emergency state
+   */
+  GPIO* embrakes_ssr_;
+
+  /**
+   * @brief for IMD boolean in BatteryData
+   */
+  GPIO* imd_out_;
 
   /**
    * @brief print log messages once
@@ -73,16 +89,13 @@ class BmsManager: public BmsManagerInterface  {
    */
   data::ModuleStatus previous_status_;
 
+
   /**
    * @brief do not check ranges for first 5 seconds
    */
   uint64_t start_time_;
   uint64_t check_time_ = 5000000;
 
-  /**
-   * @brief checks voltage, current, temperature, and charge
-   */
-  bool batteriesInRange();
 };
 
 }}  // namespace hyped::sensors

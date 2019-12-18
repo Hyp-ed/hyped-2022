@@ -49,6 +49,11 @@ class ImuManagerInterface : public ManagerInterface {
   explicit ImuManagerInterface(utils::Logger& log) : ManagerInterface(log) {}
 };
 
+class BmsManagerInterface : public ManagerInterface {
+ public:
+  explicit BmsManagerInterface(utils::Logger& log) : ManagerInterface(log) {}
+};
+
 }}  // namespace hyped::sensors
 
 #endif  // SENSORS_MANAGER_INTERFACE_HPP_

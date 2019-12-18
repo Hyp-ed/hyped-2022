@@ -78,7 +78,7 @@ class Main: public Thread {
     uint8_t                                pins_[data::Sensors::kNumKeyence];
     GpioInterface*                         keyences_[data::Sensors::kNumKeyence];  // 0 L and 1 R
     std::unique_ptr<ImuManagerInterface>   imu_manager_;
-    std::unique_ptr<ManagerInterface>      battery_manager_;
+    std::unique_ptr<BmsManagerInterface>   battery_manager_;
     TemperatureInterface*                  temperature_;
     bool                                   log_error_ = false;
 

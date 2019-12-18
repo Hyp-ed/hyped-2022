@@ -32,7 +32,7 @@ namespace hyped {
 namespace sensors {
 
 BmsManager::BmsManager(Logger& log)
-    : ManagerInterface(log),
+    : BmsManagerInterface(log),
       sys_(utils::System::getSystem()),
       data_(Data::getInstance())
 {
@@ -55,30 +55,6 @@ BmsManager::BmsManager(Logger& log)
       for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
         bms_[i + data::Batteries::kNumLPBatteries] = new FakeBatteries(log_, false, false);
       }
-    }
-
-    if (!sys_.battery_test) {
-      // Set SSR switches for real system
-
-      // IMD ssr
-      imd_out_ = new GPIO(sys_.config->sensors.IMDOut, utils::io::gpio::kOut);
-      imd_out_->set();
-      log_.INFO("BMS-MANAGER", "IMD has been initialised SET");
-
-      // clear HPSSRs if default is high
-      for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        hp_ssr_[i] = new GPIO(sys_.config->sensors.HPSSR[i], utils::io::gpio::kOut);
-        hp_ssr_[i]->clear();      // HP off until kReady State
-        log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
-      }
-      hp_master_ = new GPIO(sys_.config->sensors.hp_master, utils::io::gpio::kOut);
-      hp_master_->clear();
-      log_.INFO("BMS-MANAGER", "HP SSRs has been initialised CLEAR");
-
-      // Set embrakes ssr
-      embrakes_ssr_ = new GPIO(sys_.config->sensors.embrakes, utils::io::gpio::kOut);
-      embrakes_ssr_->set();
-      log_.INFO("BMS-MANAGER", "Embrake SSR has been set");
     }
   } else if (sys_.fake_batteries_fail) {
     // fake batteries fail here
@@ -108,31 +84,6 @@ BmsManager::BmsManager(Logger& log)
   log_.INFO("BMS-MANAGER", "batteries data has been initialised");
 }
 
-void BmsManager::clearHP()
-{
-  if (!sys_.battery_test) {
-    if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
-      hp_master_->clear();  // important to clear this first
-      for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        hp_ssr_[i]->clear();      // HP off until kReady State
-      }
-    }
-  }
-}
-
-void BmsManager::setHP()
-{
-  if (!sys_.battery_test) {
-    if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
-      for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        hp_ssr_[i]->set();
-        sleep(50);
-      }
-      hp_master_->set();
-    }
-  }
-}
-
 bool BmsManager::checkIMD()
 {
   if (!sys_.battery_test) {
@@ -140,7 +91,6 @@ bool BmsManager::checkIMD()
       for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
         if (batteries_.high_power_batteries[i].imd_fault == false) {
           log_.ERR("BMS-MANAGER", "IMD Fault %d: clearing imd_out_, throwing kCriticalFailure", i);
-          imd_out_->clear();
           return false;
         }
       }
@@ -172,7 +122,6 @@ void BmsManager::run()
           if (batteries_.module_status != previous_status_)
             log_.ERR("BMS-MANAGER", "battery failure detected");
           batteries_.module_status = data::ModuleStatus::kCriticalFailure;
-          clearHP();
         }
         previous_status_ = batteries_.module_status;
       }
@@ -181,21 +130,6 @@ void BmsManager::run()
     // publish the new data
     data_.setBatteriesData(batteries_);
 
-    if (state == data::State::kEmergencyBraking || state == data::State::kFailureStopped) {
-      clearHP();
-      embrakes_ssr_->clear();     // actuate brakes in emergency state
-      if (state != previous_state_)
-        log_.ERR("BMS-MANAGER", "Emergency State! HP SSR cleared and Embrakes actuated");
-    } else if (state == data::State::kFinished) {
-      clearHP();
-      if (state != previous_state_)
-        log_.INFO("BMS-MANAGER", "kFinished reached...HP off");
-    } else if (state == data::State::kReady) {
-      setHP();
-      if (state != previous_state_)
-        log_.INFO("BMS-MANAGER", "kReady...HP SSR set and HP on");
-    }
-    previous_state_ = state;
     sleep(100);
   }
 }

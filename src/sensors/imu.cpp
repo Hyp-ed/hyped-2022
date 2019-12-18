@@ -68,7 +68,7 @@ constexpr uint8_t kFifoMode                 = 0x69;
 constexpr uint8_t kFifoCountH               = 0x70;   // userbank 0
 constexpr uint8_t kFifoRW                   = 0x72;   // userbank 0
 constexpr uint8_t kUserCtrl                 = 0x03;   // to reset and enable FIFO
-// constexpr uint8_t kIntEnable2 = 0x12;    // userbank 0, for FIFO overflow, read 0x10 at this register
+// constexpr uint8_t kIntEnable2 = 0x12;    // userbank 0, for FIFO overflow, read = 0x10
 
 
 namespace hyped {
@@ -177,7 +177,6 @@ Imu::~Imu()
 
 void Imu::selectBank(uint8_t switch_bank)
 {
-
   writeByte(kRegBankSel, switch_bank << 4);
   user_bank_ = switch_bank;
   log_.DBG1("Imu", "User bank switched to %u", user_bank_);
@@ -284,6 +283,11 @@ void Imu::getData(ImuData* data)
   if (is_online_) {
     if (is_fifo_) {
       int count = readFifo(data);   // TODO(anyone): does this synax work?
+      if (count) {
+        log_.DBG2("Imu", "Fifo filled");
+      } else {
+        log_.DBG2("Imu", "Fifo empty");
+      }
     } else {
       log_.DBG2("Imu", "Getting Imu data");
       auto& acc = data->acc;

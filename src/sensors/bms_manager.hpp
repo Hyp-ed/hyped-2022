@@ -29,13 +29,11 @@
 
 #include "sensors/interface.hpp"
 #include "utils/system.hpp"
-#include "utils/io/gpio.hpp"
 
 namespace hyped {
 
 using utils::Logger;
 using hyped::data::BatteryData;
-using utils::io::GPIO;
 
 namespace sensors {
 
@@ -62,11 +60,6 @@ class BmsManager: public BmsManagerInterface  {
    * @brief holds LP BatteryData, HP BatteryData, and module_status
    */
   data::Batteries batteries_;
-
-  /**
-   * @brief print log messages once
-   */
-  data::State previous_state_;
 
   /**
    * @brief print log messages once

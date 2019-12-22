@@ -44,7 +44,7 @@ ImuManager::ImuManager(Logger& log)
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k1MHz);
 
     for (int i = 0; i < data::Sensors::kNumImus; i++) {   // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], 0x08);
+      imu_[i] = new Imu(log, sys_.config->sensors.ChipSelect[i], 0x08);
     }
 
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k20MHz);

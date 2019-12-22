@@ -37,6 +37,7 @@ BmsManager::BmsManager(Logger& log)
       data_(Data::getInstance())
 {
   old_timestamp_ = utils::Timer::getTimeMicros();
+  check_time_ = sys_.config->sensors.CheckTime;
   if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
     // create BMS LP
     for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
@@ -74,7 +75,6 @@ BmsManager::BmsManager(Logger& log)
     }
   }
 
-  previous_state_ = data_.getStateMachineData().current_state;
   // kInit for SM transition
   batteries_ = data_.getBatteriesData();
   batteries_.module_status = data::ModuleStatus::kInit;
@@ -86,14 +86,10 @@ BmsManager::BmsManager(Logger& log)
 
 bool BmsManager::checkIMD()
 {
-  if (!sys_.battery_test) {
-    if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
-      for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        if (batteries_.high_power_batteries[i].imd_fault == false) {
-          log_.ERR("BMS-MANAGER", "IMD Fault %d: clearing imd_out_, throwing kCriticalFailure", i);
-          return false;
-        }
-      }
+  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+    if (batteries_.high_power_batteries[i].imd_fault == false) {
+      log_.ERR("BMS-MANAGER", "IMD Fault %d: clearing imd_out_, throwing kCriticalFailure", i);
+      return false;
     }
   }
   return true;
@@ -114,7 +110,6 @@ void BmsManager::run()
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
-    data::State state = data_.getStateMachineData().current_state;
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
       // check health of batteries
       if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
@@ -166,7 +161,7 @@ bool BmsManager::batteriesInRange()
 
   // check HP
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    auto& battery = batteries_.high_power_batteries[i];     // reference battereis individually
+    auto& battery = batteries_.high_power_batteries[i];     // reference batteries individually
     if (battery.voltage < 1000 || battery.voltage > 1296) {   // voltage in 100V to 129.6V
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d voltage out of range: %d", i, battery.voltage);

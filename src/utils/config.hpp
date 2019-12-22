@@ -90,14 +90,18 @@ class Config {
   } embrakes;
 
   struct Sensors {
-    int chip_select[data::Sensors::kNumImus];
+    int kNumImus;
+    int kNumKeyence;
+    int kNumLPBatteries;
+    int kNumHPBatteries;
+    int kNumCells;
+    int ChipSelect[data::Sensors::kNumImus];        // TODO(anyone): needs to be from config
     int KeyenceL;
     int KeyenceR;
     int Thermistor;
-    int hp_master;
-    int HPSSR[data::Batteries::kNumHPBatteries];
-    int IMDOut;
-    int embrakes;
+    int Master;
+    int HPSSR[data::Batteries::kNumHPBatteries];    // TODO(anyone): needs to be from config
+    int CheckTime;
   } sensors;
 
 //  private:

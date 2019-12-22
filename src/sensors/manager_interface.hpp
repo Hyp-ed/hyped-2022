@@ -54,6 +54,11 @@ class BmsManagerInterface : public ManagerInterface {
   explicit BmsManagerInterface(utils::Logger& log) : ManagerInterface(log) {}
 };
 
+class GpioManagerInterface : public ManagerInterface {
+ public:
+  explicit GpioManagerInterface(utils::Logger& log) : ManagerInterface(log) {}
+};
+
 }}  // namespace hyped::sensors
 
 #endif  // SENSORS_MANAGER_INTERFACE_HPP_

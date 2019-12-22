@@ -3,8 +3,7 @@
  * Organisation: HYPED
  * Date: 20/06/19
  * Description:
- * BMS manager for getting battery data and pushes to data struct.
- * Checks whether batteries are in range and enters emergency state if fails.
+ *    Manages basic GPIO output for state machine and module responses for easy additions and edits
  *
  *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,64 +19,40 @@
  *    limitations under the License.
  */
 
-#ifndef SENSORS_BMS_MANAGER_HPP_
-#define SENSORS_BMS_MANAGER_HPP_
+#ifndef SENSORS_GPIO_MANAGER_HPP_
+#define SENSORS_GPIO_MANAGER_HPP_
 
 #include <cstdint>
 
-#include "utils/concurrent/thread.hpp"
+#include "sensors/manager_interface.hpp"
+
 #include "utils/system.hpp"
-#include "data/data.hpp"
 #include "utils/io/gpio.hpp"
 
 namespace hyped {
 
 using utils::Logger;
-using utils::concurrent::Thread;
 using data::Data;
 using utils::io::GPIO;
 
 namespace sensors {
 
-class GpioManager : public Thread  {
+class GpioManager : public GpioManagerInterface  {
  public:
-  GpioManager(Logger& log);
-  void run();
+  explicit GpioManager(Logger& log);
+  void run() override;
 
  private:
   utils::System&  sys_;
   data::Data&     data_;
 
-  /**
-   * @brief for hp_master_, hp_ssr_, and prop_cool_
-   */
   void clearHP();
 
-  /**
-   * @brief for hp_master_, hp_ssr_, and prop_cool_
-   */
   void setHP();
 
-  /*
-   * @brief SSR that controls objects in hp_ssr_ array
-   */
-  GPIO* hp_master_;
+  GPIO* master_;
 
-  /**
-   * @brief HPSSR held high in nominal states, cleared when module failure or pod emergency state
-   *        Batteries module status forces kEmergencyBraking, which actuates embrakes
-   */
   GPIO* hp_ssr_[data::Batteries::kNumHPBatteries];
-
-  /**
-   * @brief embrakes_ssr_ held high in nominal states, cleared in emergency state
-   */
-  GPIO* embrakes_ssr_;
-
-  /**
-   * @brief for IMD boolean in BatteryData
-   */
-  GPIO* imd_out_;
 
   /**
    * @brief print log messages once
@@ -87,17 +62,9 @@ class GpioManager : public Thread  {
   /**
    * @brief print log messages once
    */
-  data::ModuleStatus previous_status_;
-
-
-  /**
-   * @brief do not check ranges for first 5 seconds
-   */
-  uint64_t start_time_;
-  uint64_t check_time_ = 5000000;
-
+  data::ModuleStatus previous_battery_status_;
 };
 
 }}  // namespace hyped::sensors
 
-#endif  // SENSORS_BMS_MANAGER_HPP_
+#endif  // SENSORS_GPIO_MANAGER_HPP_

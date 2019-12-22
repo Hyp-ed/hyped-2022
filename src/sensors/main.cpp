@@ -34,7 +34,6 @@ using utils::System;
 using data::Data;
 using data::Sensors;
 using data::StripeCounter;
-using utils::io::GPIO;
 
 namespace sensors {
 

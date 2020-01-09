@@ -42,28 +42,28 @@ Main::Main(uint8_t id, utils::Logger& log)
     data_(data::Data::getInstance()),
     sys_(utils::System::getSystem()),
     log_(log),
-    pins_ {static_cast<uint8_t>(sys_.config->sensors.KeyenceL), static_cast<uint8_t>(sys_.config->sensors.KeyenceR)}, // NOLINT
+    pins_ {static_cast<uint8_t>(sys_.config->sensors.keyence_l), static_cast<uint8_t>(sys_.config->sensors.keyence_r)}, // NOLINT
     imu_manager_(new ImuManager(log)),
     battery_manager_(new BmsManager(log))
 {
   if (!(sys_.fake_keyence || sys_.fake_keyence_fail)) {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumKeyence; i++) {
       GpioCounter* keyence = new GpioCounter(log_, pins_[i]);
       keyence->start();
       keyences_[i] = keyence;
     }
   } else if (sys_.fake_keyence_fail) {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumKeyence; i++) {
       // miss four stripes in a row after 20th, 2000 micros during peak velocity
       keyences_[i] = new FakeGpioCounter(log_, true, "data/in/gpio_counter_fail_run.txt");
     }
   } else {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumKeyence; i++) {
       keyences_[i] = new FakeGpioCounter(log_, false, "data/in/gpio_counter_normal_run.txt");
     }
   }
   if (!(sys_.fake_temperature || sys_.fake_temperature_fail)) {
-    temperature_ = new Temperature(log_, sys_.config->sensors.Thermistor);
+    temperature_ = new Temperature(log_, sys_.config->sensors.thermistor);
   } else if (sys_.fake_temperature_fail) {
     // fake temperature fail case
     temperature_ = new FakeTemperature(log_, true);
@@ -80,7 +80,7 @@ Main::Main(uint8_t id, utils::Logger& log)
 
 bool Main::keyencesUpdated()
 {
-  for (int i = 0; i < data::Sensors::kNumKeyence; i ++) {
+  for (int i = 0; i < sys_.config->sensors.kNumKeyence; i ++) {
     if (prev_keyence_stripe_count_arr_[i].count.value != keyence_stripe_counter_arr_[i].count.value)
       return true;
   }
@@ -116,7 +116,7 @@ void Main::run()
       data_.setSensorsKeyenceData(keyence_stripe_counter_arr_);
       prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
     }
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumKeyence; i++) {
       keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
     }
     Thread::sleep(10);  // Sleep for 10ms

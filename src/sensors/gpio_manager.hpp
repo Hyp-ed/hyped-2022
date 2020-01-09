@@ -23,10 +23,12 @@
 #define SENSORS_GPIO_MANAGER_HPP_
 
 #include <cstdint>
+#include <vector>
 
 #include "sensors/manager_interface.hpp"
 
 #include "utils/system.hpp"
+#include "utils/config.hpp"
 #include "utils/io/gpio.hpp"
 
 namespace hyped {
@@ -50,9 +52,16 @@ class GpioManager : public GpioManagerInterface  {
 
   void setHP();
 
+  /**
+   * @brief master switch to keep pod on, signal held high at startup
+   */
   GPIO* master_;
 
-  GPIO* hp_ssr_[data::Batteries::kNumHPBatteries];
+  /**
+   * @brief SSR switches for HP battery packs
+   *
+   */
+  std::vector<GPIO*> hp_ssr_;      // TODO(anyone): to change
 
   /**
    * @brief print log messages once

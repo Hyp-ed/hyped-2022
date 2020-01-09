@@ -43,13 +43,13 @@ ImuManager::ImuManager(Logger& log)
   if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k1MHz);
 
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {   // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.ChipSelect[i], 0x08);
+    for (int i = 0; i < sys_.config->sensors.kNumImus; i++) {   // creates new real IMU objects
+      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], 0x08);
     }
 
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k20MHz);
   } else if (sys_.fake_imu_fail) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumImus; i++) {
       // change params to fail in kAcccelerating or kNominalBraking states
       imu_[i] = new FakeImuFromFile(log,
                                     "data/in/acc_state.txt",
@@ -57,7 +57,7 @@ ImuManager::ImuManager(Logger& log)
                                     "data/in/decel_state.txt", (i%2 == 0), false);
     }
   } else {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumImus; i++) {
       imu_[i] = new FakeImuFromFile(log,
                                     "data/in/acc_state.txt",
                                     "data/in/decel_state.txt",
@@ -71,7 +71,7 @@ void ImuManager::run()
 {
   // collect real data while system is running
   while (sys_.running_) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumImus; i++) {
       imu_[i]->getData(&(sensors_imu_.value[i]));
     }
     sensors_imu_.timestamp = utils::Timer::getTimeMicros();

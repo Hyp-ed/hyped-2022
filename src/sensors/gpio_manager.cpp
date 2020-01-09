@@ -34,13 +34,13 @@ GpioManager::GpioManager(Logger& log)
 {
   old_timestamp_ = utils::Timer::getTimeMicros();
     // clear HPSSRs if default is high
-  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    hp_ssr_[i] = new GPIO(sys_.config->sensors.HPSSR[i], utils::io::gpio::kOut);
-    hp_ssr_[i]->clear();      // HP off until kReady State
+  for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
+    hp_ssr_.push_back(new GPIO(sys_.config->sensors.HPSSR[i], utils::io::gpio::kOut));
+    hp_ssr_[i]->clear();
     log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
   }
   // master switch to keep pod on
-  master_ = new GPIO(sys_.config->sensors.Master, utils::io::gpio::kOut);
+  master_ = new GPIO(sys_.config->sensors.master, utils::io::gpio::kOut);
   master_->set();
   log_.INFO("BMS-MANAGER", "Master switch SET");
 
@@ -51,14 +51,14 @@ GpioManager::GpioManager(Logger& log)
 void GpioManager::clearHP()
 {
   master_->clear();  // important to clear this first
-  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+  for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
     hp_ssr_[i]->clear();      // HP off until kReady State
   }
 }
 
 void GpioManager::setHP()
 {
-  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+  for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
     hp_ssr_[i]->set();
     sleep(50);
   }

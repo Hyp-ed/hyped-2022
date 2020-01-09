@@ -37,10 +37,10 @@ BmsManager::BmsManager(Logger& log)
       data_(Data::getInstance())
 {
   old_timestamp_ = utils::Timer::getTimeMicros();
-  check_time_ = sys_.config->sensors.CheckTime;
+  check_time_ = sys_.config->sensors.checktime;
   if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
     // create BMS LP
-    for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumLPBatteries; i++) {
       BMS* bms = new BMS(i, log_);
       bms->start();
       bms_[i] = bms;
@@ -48,30 +48,30 @@ BmsManager::BmsManager(Logger& log)
     // fake HP for state machine tests
     if (!sys_.fake_highpower) {
       // create BMS HP
-      for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        bms_[i + data::Batteries::kNumLPBatteries] = new BMSHP(i, log_);
+      for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
+        bms_[i + sys_.config->sensors.kNumLPBatteries] = new BMSHP(i, log_);
       }
     } else {
       // fake HP battery only
-      for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        bms_[i + data::Batteries::kNumLPBatteries] = new FakeBatteries(log_, false, false);
+      for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
+        bms_[i + sys_.config->sensors.kNumLPBatteries] = new FakeBatteries(log_, false, false);
       }
     }
   } else if (sys_.fake_batteries_fail) {
     // fake batteries fail here
-    for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumLPBatteries; i++) {
       bms_[i] = new FakeBatteries(log_, true, true);
     }
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      bms_[i + data::Batteries::kNumLPBatteries] = new FakeBatteries(log_, false, true);
+    for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
+      bms_[i + sys_.config->sensors.kNumLPBatteries] = new FakeBatteries(log_, false, true);
     }
   } else {
     // fake batteries here
-    for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumLPBatteries; i++) {
       bms_[i] = new FakeBatteries(log_, true, false);
     }
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      bms_[i + data::Batteries::kNumLPBatteries] = new FakeBatteries(log_, false, false);
+    for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
+      bms_[i + sys_.config->sensors.kNumLPBatteries] = new FakeBatteries(log_, false, false);
     }
   }
 
@@ -86,7 +86,7 @@ BmsManager::BmsManager(Logger& log)
 
 bool BmsManager::checkIMD()
 {
-  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+  for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
     if (batteries_.high_power_batteries[i].imd_fault == false) {
       log_.ERR("BMS-MANAGER", "IMD Fault %d: clearing imd_out_, throwing kCriticalFailure", i);
       return false;
@@ -99,14 +99,14 @@ void BmsManager::run()
 {
   while (sys_.running_) {
     // keep updating data_ based on values read from sensors
-    for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
+    for (int i = 0; i < sys_.config->sensors.kNumLPBatteries; i++) {
       bms_[i]->getData(&batteries_.low_power_batteries[i]);
       if (!bms_[i]->isOnline())
         batteries_.low_power_batteries[i].voltage = 0;
     }
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      bms_[i + data::Batteries::kNumLPBatteries]->getData(&batteries_.high_power_batteries[i]);
-      if (!bms_[i + data::Batteries::kNumLPBatteries]->isOnline())
+    for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
+      bms_[i + sys_.config->sensors.kNumLPBatteries]->getData(&batteries_.high_power_batteries[i]);
+      if (!bms_[i + sys_.config->sensors.kNumLPBatteries]->isOnline())
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
@@ -132,7 +132,7 @@ void BmsManager::run()
 bool BmsManager::batteriesInRange()
 {
   // check LP
-  for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
+  for (int i = 0; i < sys_.config->sensors.kNumLPBatteries; i++) {
     auto& battery = batteries_.low_power_batteries[i];      // reference batteries individually
     if (battery.voltage < 175 || battery.voltage > 294) {   // voltage in 17.5V to 29.4V
       if (batteries_.module_status != previous_status_)
@@ -160,7 +160,7 @@ bool BmsManager::batteriesInRange()
   }
 
   // check HP
-  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+  for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
     auto& battery = batteries_.high_power_batteries[i];     // reference batteries individually
     if (battery.voltage < 1000 || battery.voltage > 1296) {   // voltage in 100V to 129.6V
       if (batteries_.module_status != previous_status_)

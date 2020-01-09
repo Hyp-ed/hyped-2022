@@ -95,13 +95,13 @@ class Config {
     int kNumLPBatteries;
     int kNumHPBatteries;
     int kNumCells;
-    int ChipSelect[data::Sensors::kNumImus];        // TODO(anyone): needs to be from config
-    int KeyenceL;
-    int KeyenceR;
-    int Thermistor;
-    int Master;
-    int HPSSR[data::Batteries::kNumHPBatteries];    // TODO(anyone): needs to be from config
-    int CheckTime;
+    std::vector<int> chip_select;
+    int keyence_l;
+    int keyence_r;
+    int thermistor;
+    int master;
+    std::vector<int> HPSSR;
+    int checktime;
   } sensors;
 
 //  private:

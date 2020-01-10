@@ -175,7 +175,7 @@ void Config::ParseSensors(char* line)
     for (int i = 0; i < sensors.kNumImus; i++) {
       char* value = strtok(NULL, ",");
       if (value) {
-      sensors.chip_select.push_back(atoi(value));
+        sensors.chip_select.push_back(atoi(value));
       }
     }
   }
@@ -204,15 +204,15 @@ void Config::ParseSensors(char* line)
   if (strcmp(token, "Master") == 0) {
     char* value = strtok(NULL, " ");
     if (value) {
-      sensors.master= atoi(value);
+      sensors.master = atoi(value);
     }
   }
 
-  if (strcmp(token, "HPSSR") == 0) {
+  if (strcmp(token, "HPShutoff") == 0) {
     for (int i = 0; i < sensors.kNumHPBatteries; i++) {
       char* value = strtok(NULL, ",");
       if (value) {
-        sensors.HPSSR.push_back(atoi(value));
+        sensors.hp_shutoff.push_back(atoi(value));
       }
     }
   }
@@ -220,7 +220,7 @@ void Config::ParseSensors(char* line)
   if (strcmp(token, "CheckTime") == 0) {
     char* value = strtok(NULL, " ");
     if (value) {
-      sensors.checktime= atoi(value);
+      sensors.checktime = atoi(value);
     }
   }
 }

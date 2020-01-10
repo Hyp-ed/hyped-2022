@@ -9,6 +9,6 @@ KeyenceL         68
 KeyenceR         67
 Thermistor       3
 Master           65
-HPSSR            46,26
+HPShutoff        46,26
 # milliseconds
 CheckTime        5000000

@@ -34,7 +34,7 @@ GpioManager::GpioManager(Logger& log)
 {
     // clear HPSSRs if default is high
   for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
-    hp_ssr_.push_back(new GPIO(sys_.config->sensors.HPSSR[i], utils::io::gpio::kOut));
+    hp_ssr_.push_back(new GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
     hp_ssr_[i]->clear();
     log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
   }

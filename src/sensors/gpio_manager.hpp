@@ -47,13 +47,12 @@ class GpioManager : public Thread  {
   void run() override;
 
  private:
-  utils::System&  sys_;
-  data::Data&     data_;
-
   void clearHP();
 
   void setHP();
 
+  utils::System&  sys_;
+  data::Data&     data_;
   /**
    * @brief master switch to keep pod on, signal held high at startup
    */
@@ -63,15 +62,17 @@ class GpioManager : public Thread  {
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<GPIO*> hp_ssr_;      // TODO(anyone): to change
+  std::vector<GPIO*> hp_ssr_;
 
   /**
-   * @brief print log messages once
+   * @brief stores the previous state when switch statement checks state machine
+   *        conditional statement prevents repetitive error message printing to console
    */
   data::State previous_state_;
 
   /**
-   * @brief print log messages once
+   * @brief stores the previous state when switch statement checks state machine
+   *        conditional statement prevents repetitive error message printing to console
    */
   data::ModuleStatus previous_battery_status_;
 };

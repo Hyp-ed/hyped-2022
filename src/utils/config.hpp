@@ -100,7 +100,7 @@ class Config {
     int keyence_r;
     int thermistor;
     int master;
-    std::vector<int> HPSSR;
+    std::vector<int> hp_shutoff;
     int checktime;
   } sensors;
 

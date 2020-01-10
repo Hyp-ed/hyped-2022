@@ -19,8 +19,6 @@
  */
 
 #include "sensors/main.hpp"
-#include "sensors/imu_manager.hpp"
-#include "sensors/bms_manager.hpp"
 #include "sensors/gpio_counter.hpp"
 #include "sensors/temperature.hpp"
 #include "sensors/fake_gpio_counter.hpp"

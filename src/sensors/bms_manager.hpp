@@ -25,7 +25,8 @@
 
 #include <cstdint>
 
-#include "sensors/manager_interface.hpp"
+#include "data/data.hpp"
+#include "utils/concurrent/thread.hpp"
 
 #include "sensors/interface.hpp"
 #include "utils/system.hpp"
@@ -33,11 +34,12 @@
 namespace hyped {
 
 using utils::Logger;
+using utils::concurrent::Thread;
 using hyped::data::BatteryData;
 
 namespace sensors {
 
-class BmsManager: public BmsManagerInterface  {
+class BmsManager: public Thread  {
  public:
   explicit BmsManager(Logger& log);
   void run()                override;

@@ -23,7 +23,8 @@
 
 #include <cstdint>
 
-#include "sensors/manager_interface.hpp"
+#include "data/data.hpp"
+#include "utils/concurrent/thread.hpp"
 
 #include "sensors/interface.hpp"
 #include "utils/system.hpp"
@@ -31,13 +32,14 @@
 namespace hyped {
 
 using utils::Logger;
+using utils::concurrent::Thread;
 
 namespace sensors {
 /**
  * @brief creates class to hold multiple IMUs and respective data.
  *
  */
-class ImuManager: public ImuManagerInterface {
+class ImuManager: public Thread {
   typedef data::DataPoint<array<ImuData, data::Sensors::kNumImus>>  DataArray;
 
  public:

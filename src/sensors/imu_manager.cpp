@@ -34,12 +34,10 @@ using utils::System;
 
 namespace sensors {
 ImuManager::ImuManager(Logger& log)
-    : ImuManagerInterface(log),
+    : Thread(log),
       sys_(System::getSystem()),
       data_(Data::getInstance())
 {
-  old_timestamp_ = utils::Timer::getTimeMicros();
-
   if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k1MHz);
 

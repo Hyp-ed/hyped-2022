@@ -25,7 +25,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "sensors/manager_interface.hpp"
+#include "data/data.hpp"
+#include "utils/concurrent/thread.hpp"
 
 #include "utils/system.hpp"
 #include "utils/config.hpp"
@@ -35,11 +36,12 @@ namespace hyped {
 
 using utils::Logger;
 using data::Data;
+using utils::concurrent::Thread;
 using utils::io::GPIO;
 
 namespace sensors {
 
-class GpioManager : public GpioManagerInterface  {
+class GpioManager : public Thread  {
  public:
   explicit GpioManager(Logger& log);
   void run() override;

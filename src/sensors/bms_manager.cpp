@@ -32,11 +32,10 @@ namespace hyped {
 namespace sensors {
 
 BmsManager::BmsManager(Logger& log)
-    : BmsManagerInterface(log),
+    : Thread(log),
       sys_(utils::System::getSystem()),
       data_(Data::getInstance())
 {
-  old_timestamp_ = utils::Timer::getTimeMicros();
   check_time_ = sys_.config->sensors.checktime;
   if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
     // create BMS LP

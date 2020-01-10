@@ -28,11 +28,10 @@ namespace hyped {
 namespace sensors {
 
 GpioManager::GpioManager(Logger& log)
-    : GpioManagerInterface(log),
+    : Thread(log),
       sys_(utils::System::getSystem()),
       data_(Data::getInstance())
 {
-  old_timestamp_ = utils::Timer::getTimeMicros();
     // clear HPSSRs if default is high
   for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
     hp_ssr_.push_back(new GPIO(sys_.config->sensors.HPSSR[i], utils::io::gpio::kOut));

@@ -3,7 +3,7 @@
  * Organisation: HYPED
  * Date: 3. Dec 2019
  * Description:
- * This is the main executable for BeagleBone pod node
+ * Demo executable showing how to use the driver interface abstraction.
  *
  *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");

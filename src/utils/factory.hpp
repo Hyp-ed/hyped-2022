@@ -43,7 +43,6 @@ namespace utils {
 template<class Interface>
 class Factory {
   typedef Interface* (*InterfaceCreator)();
-  typedef std::map<string, InterfaceCreator> Mapping;
 
  public:
   static InterfaceCreator getCreator(string implementation)
@@ -79,7 +78,7 @@ class Factory {
   Factory(): log_(false, -1) {}
   // Factory member variables
   Logger  log_;
-  Mapping mapping_;
+  std::map<string, InterfaceCreator> mapping_;
 };
 
 // define static intances (otherwise, linker error)

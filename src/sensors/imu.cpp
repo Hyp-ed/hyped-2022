@@ -98,8 +98,6 @@ void Imu::init()
   // Set pin high
   gpio_.set();
 
-  // TODO(anyone): SPI speed configuration
-
   selectBank(0);
 
   writeByte(kPwrMgmt1, kBitHReset);   // Reset Device
@@ -133,7 +131,7 @@ void Imu::enableFifo()
   uint8_t data;
   readByte(kUserCtrl, &data);
   writeByte(kUserCtrl, data | 0x40);       // enable FIFO
-  // TODO(anyone): SRAM?
+  // TODO(anyone): look into SRAM
   writeByte(kFifoMode, 0x01);              // do not write when full
   writeByte(kFifoEnable2, 0x10);
   uint8_t check_enable;

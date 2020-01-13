@@ -67,7 +67,14 @@ void GpioManager::setHP()
 void GpioManager::run()
 {
   while (sys_.running_) {
-    // set up so doesnt do repeatedly
+    /**
+     * Add module status for your appropriate module and have a switch statement to check each
+     * appropriate that needs actuation of a hardware device. For example, we need to turn on
+     * high power right before launch in kReady state and shut off high power during a failure.
+     * See examples below. Use previous_<module>_status_ and previous_state_ to prevent repetitive
+     * actuation.
+     */
+
     data::ModuleStatus battery_status = data_.getBatteriesData().module_status;
     data::State state = data_.getStateMachineData().current_state;
 

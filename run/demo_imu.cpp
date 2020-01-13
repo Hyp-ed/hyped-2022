@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
   for (int i = 0; i < 50; i++) {
     imu0.getData(&data0);
     if (is_fifo) {
-      for (int i = 0; i < ImuData::kFifo; i++) {
+      for (int i = 0; i < ImuData::kFifoSize; i++) {
         log.INFO("TEST-Imu", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2",
                   0,
                   data0.fifo[i][0],

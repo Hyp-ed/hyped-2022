@@ -46,7 +46,9 @@ ImuManager::ImuManager(Logger& log)
     }
 
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k20MHz);
-  } /* else if (sys_.fake_imu_fail) {
+  }
+  /*
+  else if (sys_.fake_imu_fail) {
     for (int i = 0; i < sys_.config->sensors.kNumImus; i++) {
       // change params to fail in kAcccelerating or kNominalBraking states
       imu_[i] = new FakeImuFromFile(log,

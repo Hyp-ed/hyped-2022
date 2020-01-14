@@ -1,10 +1,10 @@
 /*
- * Author: Jack Horsburgh
+ * Author:
  * Organisation: HYPED
- * Date: 23/05/18
+ * Date:
  * Description: Main file for Imu
  *
- *    Copyright 2018 HYPED
+ *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -24,50 +24,51 @@
 #include "utils/concurrent/thread.hpp"
 #include "utils/math/statistics.hpp"
 
+// user bank addresse
+constexpr uint8_t kRegBankSel               = 0x7F;
 
 // Accelerometer addresses
-constexpr uint8_t kAccelXoutH               = 0x3B;
+constexpr uint8_t kAccelXoutH               = 0x2D;   // userbank 0
 
-constexpr uint8_t kAccelConfig              = 0x1C;
-constexpr uint8_t kAccelConfig2             = 0x1D;
+constexpr uint8_t kAccelConfig              = 0x14;   // userbank 2
+constexpr uint8_t kAccelScale               = 0x04;   // +/- 4g
 
-// Temperature address
-constexpr uint8_t kTempOutH                 = 65;
-
-constexpr uint8_t kWhoAmIImu                = 0x75;   // sensor to be at this address
+constexpr uint8_t kWhoAmIImu                = 0x00;   // sensor to be at this address, userbank 0
 // data to be at these addresses when read from sensor else not initialised
-constexpr uint8_t kWhoAmIResetValue1        = 0x71;
-constexpr uint8_t kWhoAmIResetValue2        = 0x70;
+constexpr uint8_t kWhoAmIResetValue         = 0xEA;   // userbank 0
 
 // Power Management
-constexpr uint8_t kMpuRegPwrMgmt1           = 0x6B;
+constexpr uint8_t kPwrMgmt1           = 0x06;   // userbank 0
+constexpr uint8_t kPwrMgmt2           = 0x07;   // userbank 0
 
 // Configuration
-constexpr uint8_t kMpuRegConfig             = 0x1A;
+constexpr uint8_t kReadFlag                 = 0x80;   // unable to find in datasheet
 
-constexpr uint8_t kReadFlag                 = 0x80;
+constexpr uint8_t kLpConfig                 = 0x05;   // userbank 0
 
 // Configuration bits Imu
 // constexpr uint8_t kBitsFs250Dps             = 0x00;
 // constexpr uint8_t kBitsFs500Dps             = 0x08;
 // constexpr uint8_t kBitsFs1000Dps            = 0x10;
 // constexpr uint8_t kBitsFs2000Dps            = 0x18;
-constexpr uint8_t kBitsFs2G                 = 0x00;
-constexpr uint8_t kBitsFs4G                 = 0x08;
-constexpr uint8_t kBitsFs8G                 = 0x10;
-constexpr uint8_t kBitsFs16G                = 0x18;
+constexpr uint8_t kBitsFs2G                 = 0x00;   // for accel_config
+constexpr uint8_t kBitsFs4G                 = 0x02;
+constexpr uint8_t kBitsFs8G                 = 0x04;
+constexpr uint8_t kBitsFs16G                = 0x06;
 
 // Resets the device to defaults
-constexpr uint8_t kBitHReset                = 0x80;
+constexpr uint8_t kBitHReset                = 0x80;    // for pwr_mgmt
 
 
 // values for FIFO
-constexpr uint8_t kFifoEnable = 0x23;   // set FIFO enable flags
-constexpr uint8_t kFifoCountH = 0x72;   // 2 bytes for H and L registers
-constexpr uint8_t kFifoRW = 0x74;
-constexpr uint8_t kUserCtrl = 0x6A;     // to reset and enable FIFO
-// constexpr uint8_t kIntEnable = 0x38;    // for FIFO overflow, read 0x10 at this register
-constexpr uint8_t kFifoAccel = 0x08;
+constexpr uint8_t kFifoReset                = 0x68;   // userbank 0
+// constexpr uint8_t kFifoEnable1              = 0x66;   // userbank 0
+constexpr uint8_t kFifoEnable2              = 0x67;   // userbank 0
+constexpr uint8_t kFifoMode                 = 0x69;
+constexpr uint8_t kFifoCountH               = 0x70;   // userbank 0
+constexpr uint8_t kFifoRW                   = 0x72;   // userbank 0
+constexpr uint8_t kUserCtrl                 = 0x03;   // to reset and enable FIFO
+// constexpr uint8_t kIntEnable2 = 0x12;    // userbank 0, for FIFO overflow, read = 0x10
 
 
 namespace hyped {
@@ -79,12 +80,12 @@ using data::NavigationVector;
 
 namespace sensors {
 
-Imu::Imu(Logger& log, uint32_t pin, uint8_t acc_scale)
+Imu::Imu(Logger& log, uint32_t pin, bool is_fifo)
     : spi_(SPI::getInstance()),
     log_(log),
     gpio_(pin, kDirection, log),
     pin_(pin),
-    acc_scale_(acc_scale),
+    is_fifo_(is_fifo),
     is_online_(false)
 {
   log_.DBG1("Imu pin: ", "%d", pin);
@@ -97,18 +98,25 @@ void Imu::init()
   // Set pin high
   gpio_.set();
 
-  writeByte(kMpuRegPwrMgmt1, kBitHReset);   // Reset Device
+  selectBank(0);
+
+  writeByte(kPwrMgmt1, kBitHReset);   // Reset Device
   Thread::sleep(200);
   // Test connection
   bool check_init = whoAmI();
 
-  writeByte(kMpuRegConfig, 0x01);
-  writeByte(kAccelConfig2, 0x01);
-  setAcclScale(acc_scale_);
+  writeByte(kPwrMgmt2, 0x07);         // enable acc, disable gyro
+  writeByte(kLpConfig, 0x20);         // enable duty cycle acc
+  writeByte(kUserCtrl, 0x80);         // enable DMP
+
+  selectBank(2);
+  // DLPF
+  writeByte(kAccelConfig, 0x09);    // LPF and DLPF configuration
+  setAcclScale();
+
   enableFifo();
 
   if (check_init) {
-    log_.INFO("Imu", "FIFO Enabled");
     log_.INFO("Imu", "Imu sensor %d created. Initialisation complete.", pin_);
   } else {
     log_.ERR("Imu", "ERROR: Imu sensor %d not initialised.", pin_);
@@ -117,13 +125,23 @@ void Imu::init()
 
 void Imu::enableFifo()
 {
-  writeByte(kUserCtrl, 0x04);       // Put serial interface to SPI only, FIFO reset
+  selectBank(0);
+  writeByte(kFifoReset, 0x0F);
   Thread::sleep(500);
-  writeByte(kUserCtrl, 0x40);       // FIFO enable
-  writeByte(kFifoEnable, kFifoAccel);
-  uint8_t check_enable = 0;
-  readByte(kFifoEnable, &check_enable);
-  kFrameSize_ = 6;                   // only for acceleration xyz
+  uint8_t data;
+  readByte(kUserCtrl, &data);
+  writeByte(kUserCtrl, data | 0x40);       // enable FIFO
+  // TODO(anyone): look into SRAM
+  writeByte(kFifoMode, 0x01);              // do not write when full
+  writeByte(kFifoEnable2, 0x10);
+  uint8_t check_enable;
+  readByte(kFifoEnable2, &check_enable);   // only for acceleration xyz
+  if (check_enable == 0x10) {
+    log_.INFO("Imu", "FIFO Enabled");
+  } else {
+    log_.ERR("Imu", "ERROR: FIFO not enabled");
+  }
+  kFrameSize_ = 6;
 }
 
 bool Imu::whoAmI()
@@ -132,10 +150,9 @@ bool Imu::whoAmI()
   int send_counter;
 
   for (send_counter = 1; send_counter < 10; send_counter++) {
-    // Who am I checks what address the sensor is at
     readByte(kWhoAmIImu, &data);
     log_.DBG1("Imu", "Imu connected to SPI, data: %d", data);
-    if (data == kWhoAmIResetValue1 || data == kWhoAmIResetValue2) {
+    if (data == kWhoAmIResetValue) {
       is_online_ = true;
       break;
     } else {
@@ -154,6 +171,13 @@ bool Imu::whoAmI()
 Imu::~Imu()
 {
   log_.INFO("Imu", "Deconstructing sensor %d object", pin_);
+}
+
+void Imu::selectBank(uint8_t switch_bank)
+{
+  writeByte(kRegBankSel, switch_bank << 4);
+  user_bank_ = switch_bank;
+  log_.DBG1("Imu", "User bank switched to %u", user_bank_);
 }
 
 void Imu::writeByte(uint8_t write_reg, uint8_t write_data)
@@ -188,11 +212,13 @@ void  Imu::deSelect()
   gpio_.set();
 }
 
-void Imu::setAcclScale(int scale)
+void Imu::setAcclScale()
 {
-  writeByte(kAccelConfig, scale);
+  uint8_t data;
+  readByte(kAccelConfig, &data);
+  writeByte(kAccelConfig, data | kAccelScale);
 
-  switch (scale) {
+  switch (kAccelScale) {
     case kBitsFs2G:
       acc_divider_ = 16384;
     break;
@@ -208,7 +234,7 @@ void Imu::setAcclScale(int scale)
   }
 }
 
-int Imu::readFifo(std::vector<ImuData>& data)
+int Imu::readFifo(ImuData* data)
 {
   if (is_online_) {
     // get fifo size
@@ -224,7 +250,7 @@ int Imu::readFifo(std::vector<ImuData>& data)
     log_.DBG3("Imu-FIFO", "Buffer size = %d", fifo_size);
     int16_t axcounts, aycounts, azcounts;           // include negative int
     float value_x, value_y, value_z;
-    for (size_t i = 0; i < (fifo_size/kFrameSize_); i++) {
+    for (size_t i = 0; i < (fifo_size/kFrameSize_); i++) {    // make sure is less than array size
       readBytes(kFifoRW, buffer, kFrameSize_);
       axcounts = (((int16_t)buffer[0]) << 8) | buffer[1];     // 2 byte acc data for xyz
       aycounts = (((int16_t)buffer[2]) << 8) | buffer[3];
@@ -236,12 +262,10 @@ int Imu::readFifo(std::vector<ImuData>& data)
       value_z = static_cast<float>(azcounts);
 
       // put data in struct and add to data vector (param)
-      ImuData imu_data;
-      imu_data.operational = is_online_;
-      imu_data.acc[0] = value_x/acc_divider_  * 9.80665;
-      imu_data.acc[1] = value_y/acc_divider_  * 9.80665;
-      imu_data.acc[2] = value_z/acc_divider_  * 9.80665;
-      data.push_back(imu_data);
+      data->operational = is_online_;
+      data->fifo[i][0] = value_x/acc_divider_  * 9.80665;
+      data->fifo[i][1] = value_y/acc_divider_  * 9.80665;
+      data->fifo[i][2] = value_z/acc_divider_  * 9.80665;
     }
     return 1;
   } else {
@@ -255,39 +279,37 @@ int Imu::readFifo(std::vector<ImuData>& data)
 void Imu::getData(ImuData* data)
 {
   if (is_online_) {
-    log_.DBG2("Imu", "Getting Imu data");
-    auto& acc = data->acc;
-    uint8_t response[8];
-    int16_t bit_data;
-    float value;
-    int i;
-    float accel_data[3];
+    if (is_fifo_) {
+      int count = readFifo(data);   // TODO(anyone): does this synax work?
+      if (count) {
+        log_.DBG2("Imu", "Fifo filled");
+      } else {
+        log_.DBG2("Imu", "Fifo empty");
+      }
+    } else {
+      log_.DBG2("Imu", "Getting Imu data");
+      auto& acc = data->acc;
+      uint8_t response[8];
+      int16_t bit_data;
+      float value;
+      int i;
+      float accel_data[3];
 
-    readBytes(kAccelXoutH, response, 8);
-    for (i = 0; i < 3; i++) {
-      bit_data = ((int16_t) response[i*2] << 8) | response[i*2+1];
-      value = static_cast<float>(bit_data);
-      accel_data[i] = value/acc_divider_  * 9.80665;
+      readBytes(kAccelXoutH, response, 8);
+      for (i = 0; i < 3; i++) {
+        bit_data = ((int16_t) response[i*2] << 8) | response[i*2+1];
+        value = static_cast<float>(bit_data);
+        accel_data[i] = value/acc_divider_  * 9.80665;
+      }
+      data->operational = is_online_;
+      acc[0] = accel_data[0];
+      acc[1] = accel_data[1];
+      acc[2] = accel_data[2];
     }
-    data->operational = is_online_;
-    acc[0] = accel_data[0];
-    acc[1] = accel_data[1];
-    acc[2] = accel_data[2];
   } else {
     // Try and turn the sensor on again
     log_.ERR("Imu", "Sensor not operational, trying to turn on sensor");
     init();
   }
 }
-
-void Imu::getTemperature(int* data)
-{
-  uint8_t response[2];
-  readBytes(kTempOutH, response, 2);
-
-  uint16_t temp = ((response[0] << 8) | response[1])/333.87 + 21;
-
-  *data = static_cast<int>(temp);
-}
-
 }}   // namespace hyped::sensors

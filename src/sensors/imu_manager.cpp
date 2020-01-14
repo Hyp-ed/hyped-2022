@@ -1,10 +1,10 @@
 /*
- * Author: Jack Horsburgh
+ * Author:
  * Organisation: HYPED
- * Date: 19/06/18
+ * Date:
  * Description: IMU manager for getting IMU data from around the pod and pushes to data struct
  *
- *    Copyright 2018 HYPED
+ *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -46,7 +46,7 @@ ImuManager::ImuManager(Logger& log)
     }
 
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k20MHz);
-  } else if (sys_.fake_imu_fail) {
+  } /* else if (sys_.fake_imu_fail) {
     for (int i = 0; i < sys_.config->sensors.kNumImus; i++) {
       // change params to fail in kAcccelerating or kNominalBraking states
       imu_[i] = new FakeImuFromFile(log,
@@ -62,6 +62,7 @@ ImuManager::ImuManager(Logger& log)
                                     "data/in/decel_state.txt", false, false);
     }
   }
+  */
   log_.INFO("IMU-MANAGER", "imu data has been initialised");
 }
 

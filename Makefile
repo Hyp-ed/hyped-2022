@@ -6,6 +6,10 @@ MAIN=run/main.cpp
 CROSS=0
 NOLINT=0
 
+#pass this option to run static checker with specified severity
+# e.g. make static STATIC_ENABLE=style
+STATIC_ENABLE=
+
 SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin
@@ -102,6 +106,9 @@ lintall:
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
 	$(Echo) "\nLinting test/"
 	$(Verb) $(MAKE) -C test lint --no-print-directory
+
+static:
+	$(Verb) $(MAKE) -C test staticcheck CPPCHECK_ENABLE_OPS=$(STATIC_ENABLE)
 
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test runner

@@ -5,14 +5,20 @@ os:
   - linux
   - osx
 
+dist: bionic
+
 addons:
   apt:
-    packages: lcov
+    packages: 
+      - cppcheck
+      - lcov
+
 
 before_install:
-  - cd test && sudo chmod u+x setup.sh && ./setup.sh
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install cppcheck; fi
+  - cd test && sudo chmod u+x lib/googletestsetup.sh && ./lib/googletestsetup.sh
   - cd "${TRAVIS_BUILD_DIR}"
-script: "CI=1 make testrunner lintall"
+script: "CI=1 make testrunner lintall static"
 after_success:
   - CI=1 make coverage 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then bash <(curl -s https://codecov.io/bash) -f test/coverage/covdata/hyped.covdata || echo "Codecov did not collect coverage reports"; fi

@@ -7,10 +7,16 @@ MAIN=main.test.cpp
 SRCS_DIR:=src
 LIBS_DIR:=lib
 GTEST:=$(LIBS_DIR)/googletest
+CPPCHECK:=$(LIBS_DIR)/cppcheck
 GTEST_LIB_TARGET:=$(GTEST)/build/lib/libgtest.a
 LINT:=../utils/Lint/presubmit.py
+CPPCHECK_EXC_TARGET:=$(CPPCHECK)/cppcheck
 COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
+
+CPPCHECK_EXEC=$(shell command -v cppcheck || echo ./$(CPPCHECK_EXC_TARGET))
+CPPCHECK_ENABLE_OPS=
+CPPCHECK_FLAGS=--quiet --error-exitcode=1 --inline-suppr --suppressions-list=./lib/cppcheck-suppress
 
 VPATH=../src
 # change to gnu++1 for windows using uname
@@ -43,12 +49,24 @@ ifndef VERBOSE
 endif
 Echo := $(Verb)echo
 
+ifneq ($(CPPCHECK_ENABLE_OPS), )
+	CPPCHECK_FLAGS+=--enable=$(CPPCHECK_ENABLE_OPS)
+endif
+
 default: runner
 
 .PHONY: runner
 runner: $(TARGET)
 	$(Verb) chmod u+x testrunner
 	$(Verb) cd $(ROOT); ./test/testrunner
+
+staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
+	$(Echo) "Starting Static Checker"
+	$(Echo) "Running checker on /src ..."
+	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ../src
+	$(Echo) "Running checker on /test/src ..."
+	$(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) ./src
+	$(Echo) "Static analysis complete"
 
 $(TARGET): $(OBJS) lib/libtest.a
 	$(Echo) "Linking executable $(MAIN) into $@"
@@ -61,8 +79,14 @@ $(OBJS):  $(OBJS_DEBUG_DIR)/%.o: $(SRCS_DIR)/%.cpp $(GTEST_LIB_TARGET)
 
 $(GTEST_LIB_TARGET): $(GTEST).tar.gz
 	$(Echo) "Building GTest Suite"
-	$(Verb) ./setup.sh
+	$(Verb) chmod u+x ./lib/googletestsetup.sh
+	$(Verb) ./lib/googletestsetup.sh
 	$(Verb) touch $@
+
+$(CPPCHECK_EXC_TARGET): $(CPPCHECK).tar.gz
+	$(Verb) command -v cppcheck > /dev/null 2>&1 || \
+	(chmod u+x ./lib/cppchecksetup.sh && ./lib/cppchecksetup.sh && touch $@)
+
 
 lib/libtest.a:
 	$(Verb) make -C .. test/lib/libtest.a

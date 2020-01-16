@@ -1,10 +1,10 @@
 /*
- * Author: Jack Horsburgh
+ * Author:
  * Organisation: HYPED
- * Date: 23/05/18
+ * Date:
  * Description: Main file for Imu
  *
- *    Copyright 2018 HYPED
+ *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -39,7 +39,7 @@ namespace sensors {
 
 class Imu : public ImuInterface {
  public:
-  Imu(Logger& log, uint32_t pin, uint8_t acc_scale = 0x08);
+  Imu(Logger& log, uint32_t pin, bool is_fifo);
   ~Imu();
   /*
    *  @brief Returns if the sensor is online
@@ -61,20 +61,13 @@ class Imu : public ImuInterface {
    * @param data ImuData vector to read number of full sets into
    * @return 0 if empty
    */
-  int readFifo(std::vector<ImuData>& data);
-
-  /**
-   * @brief Get the Temperature from the IMU
-   *
-   * @param temp - the variable to be updated
-   */
-  void getTemperature(int* temp);
+  int readFifo(ImuData* data);
 
  private:
   /*
    *  @brief Sets the range for the accelerometer by writing to the IMU given the write register address
    */
-  void setAcclScale(int scale);
+  void setAcclScale();
   void init();
 
   /**
@@ -99,6 +92,8 @@ class Imu : public ImuInterface {
    * @return false
    */
   bool whoAmI();
+
+  void selectBank(uint8_t switch_bank);
 
   /**
    * @brief chipselects and and writes data (byte) to register address
@@ -130,9 +125,10 @@ class Imu : public ImuInterface {
   Logger& log_;
   GPIO    gpio_;
   uint32_t pin_;
-  uint8_t acc_scale_;
+  bool is_fifo_;
   double  acc_divider_;
   bool    is_online_;
+  uint8_t user_bank_;
   static const uint64_t time_start;
   size_t kFrameSize_;               // initialised as 6 in enableFifo()
 };

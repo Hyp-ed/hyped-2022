@@ -18,8 +18,8 @@
  *    limitations under the License.
  */
 
-#ifndef UTILS_FACTORY_HPP_
-#define UTILS_FACTORY_HPP_
+#ifndef UTILS_INTERFACE_FACTORY_HPP_
+#define UTILS_INTERFACE_FACTORY_HPP_
 /**
  * @brief An abstract templated factory to provide mapping from string names
  * of abstract interfaces to functions creating the implementations of the interfaces.
@@ -41,13 +41,13 @@ namespace hyped {
 namespace utils {
 
 template<class Interface>
-class Factory {
+class InterfaceFactory {
   typedef Interface* (*InterfaceCreator)();
 
  public:
   static InterfaceCreator getCreator(string implementation)
   {
-    Factory* instance = getInstance();
+    InterfaceFactory* instance = getInstance();
     auto result = instance->mapping_.find(implementation);
     if (result == instance->mapping_.end()) {
       instance->log_.ERR("FACTORY", "no mapping for interface \"%s\" named \"%s\"",
@@ -61,30 +61,30 @@ class Factory {
 
   static bool registerCreator(string implementation, InterfaceCreator creator)
   {
-    Factory* instance = getInstance();
+    InterfaceFactory* instance = getInstance();
     return instance->mapping_.insert({implementation, creator}).second;
   }
 
  private:
   // implement singleton
-  static Factory* getInstance()
+  static InterfaceFactory* getInstance()
   {
-    if (!instance_) instance_ = new Factory();
+    if (!instance_) instance_ = new InterfaceFactory();
 
     return instance_;
   }
-  static Factory* instance_;
+  static InterfaceFactory* instance_;
 
-  Factory(): log_(false, -1) {}
-  // Factory member variables
+  InterfaceFactory(): log_(false, -1) {}
+  // InterfaceFactory member variables
   Logger  log_;
   std::map<string, InterfaceCreator> mapping_;
 };
 
 // define static intances (otherwise, linker error)
 template <class Interface>
-Factory<Interface>* Factory<Interface>::instance_ = 0;
+InterfaceFactory<Interface>* InterfaceFactory<Interface>::instance_ = 0;
 
 }}  // namespace hyped::utils
 
-#endif  // UTILS_FACTORY_HPP_
+#endif  // UTILS_INTERFACE_FACTORY_HPP_

@@ -59,7 +59,7 @@ struct ModuleEntry;
   V(Telemetry)          \
   V(Embrakes)           \
   V(Sensors)            \
-  V(Factory)
+  V(InterfaceFactory)
 
 #define CREATE_ENUM(module) \
   k##module,
@@ -102,12 +102,12 @@ class Config {
     int embrakes;
   } sensors;
 
-  struct Factory {
+  struct InterfaceFactory {
   // Module used in this context refers to the namespace containing the interface.
 #define CREATOR_FUNCTION_POINTERS(module, interface) \
   module::interface* (*get##interface)();
   INTERFACE_LIST(CREATOR_FUNCTION_POINTERS)
-  } factory;
+  } interfaceFactory;
 
 #define DECLARE_PARSE(module) \
   void parse##module(char* line);

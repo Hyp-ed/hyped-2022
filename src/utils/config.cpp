@@ -26,7 +26,7 @@
 #include <sstream>
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "utils/factory.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace utils {
@@ -207,13 +207,14 @@ T* createDefault()
   return nullptr;
 }
 
-void Config::parseFactory(char* line)
+void Config::parseInterfaceFactory(char* line)
 {
   // parse into key value pair, validate input line
   char* key   = strtok(line, " ");
   char* value = strtok(NULL, " ");
   if (!key || !value) {
-    log_.ERR("CONFIG", "lines for Factory submodule must have format \"interface implementation\"");
+    log_.ERR("CONFIG",
+            "lines for InterfaceFactory submodule must have format \"interface implementation\"");
     return;
   }
 
@@ -221,8 +222,8 @@ void Config::parseFactory(char* line)
   // creator function
 #define PARSE_FACTORY(module, interface)                                            \
   if (strcmp(key, #interface) == 0) {                                               \
-    auto creator = utils::Factory<module::interface>::getCreator(value);            \
-    factory.get##interface = creator ? creator : createDefault<module::interface>;  \
+    auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);            \
+    interfaceFactory.get##interface = creator ? creator : createDefault<module::interface>;  \
     return;                                                                         \
   }
   INTERFACE_LIST(PARSE_FACTORY)
@@ -327,7 +328,7 @@ Config::Config(char* config_file)
     : log_(System::getLogger())
 {
 #define INIT_CREATOR(module, interface) \
-  factory.get##interface = createDefault<module::interface>;
+  interfaceFactory.get##interface = createDefault<module::interface>;
   INTERFACE_LIST(INIT_CREATOR)
 
   config_files_.push_back(config_file);

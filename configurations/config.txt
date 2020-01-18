@@ -22,6 +22,6 @@ $ state_machine.txt
 $ sensors.txt
 $ embrakes.txt
 
-> Factory
+> InterfaceFactory
 ImuInterface Imu
 DemoInterface Implementation1

@@ -21,7 +21,7 @@
 #include <stdio.h>
 
 #include "demo/interface.hpp"
-#include "utils/factory.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace demo {
@@ -41,7 +41,7 @@ DemoInterface* createImplementation2()
 {
   return new Implementation2();
 }
-bool reg_impl = utils::Factory<DemoInterface>
+bool reg_impl = utils::InterfaceFactory<DemoInterface>
                 ::registerCreator("Implementation2", createImplementation2);
 }
 

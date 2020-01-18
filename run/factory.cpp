@@ -31,9 +31,9 @@ int main(int argc, char* argv[])
   utils::System::parseArgs(argc, argv);
   utils::System& sys = utils::System::getSystem();
 
-  sensors::ImuInterface* imu = sys.config->factory.getImuInterface();
+  sensors::ImuInterface* imu = sys.config->interfaceFactory.getImuInterface();
 
-  demo::DemoInterface* demo = sys.config->factory.getDemoInterface();
+  demo::DemoInterface* demo = sys.config->interfaceFactory.getDemoInterface();
   demo->printYourName();
 
   return 0;

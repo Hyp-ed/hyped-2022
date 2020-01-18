@@ -61,6 +61,83 @@ void Config::parseNoModule(char* line)
   // does nothing
 }
 
+void Config::parseSensors(char* line)
+{
+  // EXAMPLE line parsing:
+  // "char* strtok(line, delimiters)" splits the input line into parts using
+  // characters from delimiters. The return value points to a valid split section.
+  // To get another split section, call strtok again with NULL as the first
+  // argument.
+  // E.g. for line "IP 135.152.120.2", and you call these functions (in this order):
+  // strtok(line, " ") returns string "IP"
+  // strtok(NULL, " ") returns string "135.152.120.2"
+  //
+  // After this, the value can be converted from string to bool/int/string and
+  // stored in the corresponding configuration field
+
+  char* token = strtok(line, " ");
+
+  if (strcmp(token, "ChipSelect") == 0) {
+    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+      char* value = strtok(NULL, ",");
+      if (value) {
+      sensors.chip_select[i] = atoi(value);
+      }
+    }
+  }
+
+  if (strcmp(token, "KeyenceL") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.KeyenceL = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "KeyenceR") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.KeyenceR = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "Thermistor") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.Thermistor = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "HPMaster") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.hp_master= atoi(value);
+    }
+  }
+
+  if (strcmp(token, "HPSSR") == 0) {
+    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+      char* value = strtok(NULL, ",");
+      if (value) {
+        sensors.HPSSR[i] = atoi(value);
+      }
+    }
+  }
+
+  if (strcmp(token, "IMDOut") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.IMDOut = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "Embrakes") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.embrakes = atoi(value);
+    }
+  }
+}
+
 void Config::parseNavigation(char* line)
 {
   printf("nav %s\n", line);
@@ -153,83 +230,6 @@ void Config::parseFactory(char* line)
   // if we get here, the interface is probably not listed in INTERFACE_LIST
   log_.ERR("CONFIG", "Factory interface \"%s\" is not registered, you need to list it in "
                      "INTERFACE_LIST in 'src/utils/interfaces.hpp'", key);
-}
-
-void Config::parseSensors(char* line)
-{
-  // EXAMPLE line parsing:
-  // "char* strtok(line, delimiters)" splits the input line into parts using
-  // characters from delimiters. The return value points to a valid split section.
-  // To get another split section, call strtok again with NULL as the first
-  // argument.
-  // E.g. for line "IP 135.152.120.2", and you call these functions (in this order):
-  // strtok(line, " ") returns string "IP"
-  // strtok(NULL, " ") returns string "135.152.120.2"
-  //
-  // After this, the value can be converted from string to bool/int/string and
-  // stored in the corresponding configuration field
-
-  char* token = strtok(line, " ");
-
-  if (strcmp(token, "ChipSelect") == 0) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-      sensors.chip_select[i] = atoi(value);
-      }
-    }
-  }
-
-  if (strcmp(token, "KeyenceL") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.KeyenceL = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "KeyenceR") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.KeyenceR = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "Thermistor") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.Thermistor = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "HPMaster") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.hp_master= atoi(value);
-    }
-  }
-
-  if (strcmp(token, "HPSSR") == 0) {
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        sensors.HPSSR[i] = atoi(value);
-      }
-    }
-  }
-
-  if (strcmp(token, "IMDOut") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.IMDOut = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "Embrakes") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.embrakes = atoi(value);
-    }
-  }
 }
 
 constexpr char config_dir_name[] = "configurations/";

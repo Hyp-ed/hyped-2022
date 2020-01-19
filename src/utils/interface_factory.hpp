@@ -77,7 +77,7 @@ class InterfaceFactory {
 
   InterfaceFactory(): log_(false, -1) {}
   // InterfaceFactory member variables
-  Logger  log_;
+  Logger log_;
   std::map<string, InterfaceCreator> mapping_;
 };
 

@@ -31,7 +31,7 @@ constexpr uint8_t kRegBankSel               = 0x7F;
 constexpr uint8_t kAccelXoutH               = 0x2D;   // userbank 0
 
 constexpr uint8_t kAccelConfig              = 0x14;   // userbank 2
-constexpr uint8_t kAccelScale               = 0x04;   // +/- 4g
+constexpr uint8_t kAccelScale               = 0x02;   // +/- 4g
 
 constexpr uint8_t kWhoAmIImu                = 0x00;   // sensor to be at this address, userbank 0
 // data to be at these addresses when read from sensor else not initialised
@@ -45,6 +45,7 @@ constexpr uint8_t kPwrMgmt2           = 0x07;   // userbank 0
 constexpr uint8_t kReadFlag                 = 0x80;   // unable to find in datasheet
 
 constexpr uint8_t kLpConfig                 = 0x05;   // userbank 0
+constexpr uint8_t kIntPinConfig             = 0x0F;   // userbank 0
 
 // Configuration bits Imu
 // constexpr uint8_t kBitsFs250Dps             = 0x00;
@@ -67,7 +68,7 @@ constexpr uint8_t kFifoEnable2              = 0x67;   // userbank 0
 constexpr uint8_t kFifoMode                 = 0x69;
 constexpr uint8_t kFifoCountH               = 0x70;   // userbank 0
 constexpr uint8_t kFifoRW                   = 0x72;   // userbank 0
-constexpr uint8_t kUserCtrl                 = 0x03;   // to reset and enable FIFO
+constexpr uint8_t kUserCtrl                 = 0x03;   // userbank 0
 // constexpr uint8_t kIntEnable2 = 0x12;    // userbank 0, for FIFO overflow, read = 0x10
 
 
@@ -105,19 +106,66 @@ void Imu::init()
   // Test connection
   bool check_init = whoAmI();
 
+  writeByte(kPwrMgmt1, 0x01);   // autoselect clock
+  writeByte(kIntPinConfig, 0xC0); // int pin config?
+
+  //   uint8_t reply;
+  // readByte(kPwrMgmt2, &reply);
+  // log_.DBG1("Imu", "kPwrMgmt2 before = %d", reply);
+
   writeByte(kPwrMgmt2, 0x07);         // enable acc, disable gyro
-  writeByte(kLpConfig, 0x20);         // enable duty cycle acc
+  // readByte(kPwrMgmt2, &reply);
+  // log_.DBG1("Imu", "kPwrMgmt2 after= %d", reply);
+
+  // uint8_t lp_read;
+  // readByte(kLpConfig, &lp_read);
+  // log_.DBG1("Imu", "kLpConfig before = %d", lp_read);
+  // TODO(Greg): REMOVE THIS
+  // writeByte(kLpConfig, 0x20);         // enable duty cycle acc
+  // readByte(kLpConfig, &lp_read);
+  // log_.DBG1("Imu", "kLpConfig after = %d", lp_read);
+
+  // TODO(Greg): consider if optional?
+  uint8_t ctrl_read;
+  writeByte(kUserCtrl, 0x00);         // reset
+  writeByte(kUserCtrl, 0x08);         // reset DMP
+  readByte(kUserCtrl, &ctrl_read);
+  log_.DBG1("Imu", "kUserCtrl before = %d", ctrl_read);
   writeByte(kUserCtrl, 0x80);         // enable DMP
+  readByte(kUserCtrl, &ctrl_read);
+  log_.DBG1("Imu", "kUserCtrl after = %d", ctrl_read);
+
+
 
   selectBank(2);
+
+  // TODO(Greg): set sample rate bank 2
+  // TODO(Greg): set bandwidth
+  // TODO(Greg): accelconfig fchoice (fullscale value)
+
+  uint8_t reply2;
+  writeByte(kAccelConfig, 0x01);    // reset val
+  readByte(kAccelConfig, &reply2);
+  log_.DBG1("Imu", "kAccelConfig before = %d", reply2);
+
   // DLPF
-  writeByte(kAccelConfig, 0x09);    // LPF and DLPF configuration
+  // writeByte(kAccelConfig, 0x09);    // LPF and DLPF configuration
+  writeByte(kAccelConfig, 0x3F);
+  uint8_t reply3;
+  readByte(kAccelConfig, &reply3);
+  log_.DBG1("Imu", "kAccelConfig after1 = %d", reply3);
   setAcclScale();
 
-  enableFifo();
+  // selectBank(0);
+  // uint8_t reply2;
+  // readByte(kPwrMgmt2, &reply2);
+  // log_.DBG1("Imu", "kPwrMgmt2 = %d", reply2);
+
+  // enableFifo();
 
   if (check_init) {
     log_.INFO("Imu", "Imu sensor %d created. Initialisation complete.", pin_);
+    selectBank(0);
   } else {
     log_.ERR("Imu", "ERROR: Imu sensor %d not initialised.", pin_);
   }
@@ -175,7 +223,8 @@ Imu::~Imu()
 
 void Imu::selectBank(uint8_t switch_bank)
 {
-  writeByte(kRegBankSel, switch_bank << 4);
+  writeByte(kRegBankSel, (switch_bank << 4));
+  // log_.DBG1("Imu", "bank switch = %d", (switch_bank << 4));
   user_bank_ = switch_bank;
   log_.DBG1("Imu", "User bank switched to %u", user_bank_);
 }
@@ -216,7 +265,13 @@ void Imu::setAcclScale()
 {
   uint8_t data;
   readByte(kAccelConfig, &data);
-  writeByte(kAccelConfig, data | kAccelScale);
+  log_.DBG1("Imu", "before = %d", data);
+  // writeByte(kAccelConfig, data | kAccelScale);
+    writeByte(kAccelConfig, 0xB);
+
+  readByte(kAccelConfig, &data);
+  log_.DBG1("Imu", "after = %d", data);
+
 
   switch (kAccelScale) {
     case kBitsFs2G:
@@ -298,6 +353,7 @@ void Imu::getData(ImuData* data)
       readBytes(kAccelXoutH, response, 8);
       for (i = 0; i < 3; i++) {
         bit_data = ((int16_t) response[i*2] << 8) | response[i*2+1];
+        log_.DBG1("Imu", "raw data %d = %d", i, bit_data);
         value = static_cast<float>(bit_data);
         accel_data[i] = value/acc_divider_  * 9.80665;
       }

@@ -26,6 +26,7 @@
 #include <sstream>
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace utils {
@@ -49,78 +50,18 @@ struct ModuleEntry {
  * Column 2: An address of a Config:: member function that performs the line parsing.
  */
 #define MAP_ENTRY(module) \
-  {k##module , #module, &Config::Parse##module},
+  {k##module , #module, &Config::parse##module},
 
 ModuleEntry module_map[] = {
   MODULE_LIST(MAP_ENTRY)
 };
 
-void Config::ParseNoModule(char* line)
+void Config::parseNoModule(char* line)
 {
   // does nothing
 }
 
-void Config::ParseNavigation(char* line)
-{
-  printf("nav %s\n", line);
-}
-
-void Config::ParseStateMachine(char* line)
-{
-  char* token = strtok(line, " ");
-  if (strcmp(token, "Timeout") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      statemachine.timeout = atoi(value);
-    }
-  }
-}
-
-void Config::ParseTelemetry(char* line)
-{
-  // just in case we get handed a null pointer
-  if (!line) return;
-
-  // convert char* line to c++ style string
-  std::string cpp_line {line};
-
-  std::istringstream iss(cpp_line);
-  std::vector<std::string> tokens;
-
-  for (std::string s; iss >> s;) {
-    tokens.push_back(s);
-  }
-
-  if (tokens[0] == "IP") {
-    telemetry.IP = tokens[1];
-  } else if (tokens[0] == "Port") {
-    telemetry.Port = tokens[1];
-  }
-}
-
-void Config::ParseEmbrakes(char* line)
-{
-  char* token = strtok(line, " ");
-
-  if (strcmp(token, "Command") == 0) {
-    for (int i = 0; i < 4; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        embrakes.command[i] = atoi(value);
-      }
-    }
-  }
-  if (strcmp(token, "Button") == 0) {
-    for (int i = 0; i < 4; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        embrakes.button[i] = atoi(value);
-      }
-    }
-  }
-}
-
-void Config::ParseSensors(char* line)
+void Config::parseSensors(char* line)
 {
   // EXAMPLE line parsing:
   // "char* strtok(line, delimiters)" splits the input line into parts using
@@ -197,13 +138,111 @@ void Config::ParseSensors(char* line)
   }
 }
 
+void Config::parseNavigation(char* line)
+{
+  printf("nav %s\n", line);
+}
 
-const char config_dir_name[] = "configurations/";
+void Config::parseStateMachine(char* line)
+{
+  char* token = strtok(line, " ");
+  if (strcmp(token, "Timeout") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      statemachine.timeout = atoi(value);
+    }
+  }
+}
 
-void Config::readFile(char* config_file) {
+void Config::parseTelemetry(char* line)
+{
+  // just in case we get handed a null pointer
+  if (!line) return;
+
+  // convert char* line to c++ style string
+  std::string cpp_line {line};
+
+  std::istringstream iss(cpp_line);
+  std::vector<std::string> tokens;
+
+  for (std::string s; iss >> s;) {
+    tokens.push_back(s);
+  }
+
+  if (tokens[0] == "IP") {
+    telemetry.IP = tokens[1];
+  } else if (tokens[0] == "Port") {
+    telemetry.Port = tokens[1];
+  }
+}
+
+void Config::parseEmbrakes(char* line)
+{
+  char* token = strtok(line, " ");
+
+  if (strcmp(token, "Command") == 0) {
+    for (int i = 0; i < 4; i++) {
+      char* value = strtok(NULL, ",");
+      if (value) {
+        embrakes.command[i] = atoi(value);
+      }
+    }
+  }
+  if (strcmp(token, "Button") == 0) {
+    for (int i = 0; i < 4; i++) {
+      char* value = strtok(NULL, ",");
+      if (value) {
+        embrakes.button[i] = atoi(value);
+      }
+    }
+  }
+}
+
+// if there is no creator configured to an interface, we use this one to prevent calling
+// a null pointer function
+template<class T>
+T* createDefault()
+{
+  printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
+  return nullptr;
+}
+
+void Config::parseInterfaceFactory(char* line)
+{
+  // parse into key value pair, validate input line
+  char* key   = strtok(line, " ");
+  char* value = strtok(NULL, " ");
+  if (!key || !value) {
+    log_.ERR("CONFIG",
+            "lines for InterfaceFactory submodule must have format \"interface implementation\"");
+    return;
+  }
+
+  // if the implementation is not registered with the interface factory, we use the default
+  // creator function
+#define PARSE_FACTORY(module, interface)                                            \
+  if (strcmp(key, #interface) == 0) {                                               \
+    auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);            \
+    interfaceFactory.get##interface = creator ? creator : createDefault<module::interface>;  \
+    return;                                                                         \
+  }
+  INTERFACE_LIST(PARSE_FACTORY)
+
+  // if we get here, the interface is probably not listed in INTERFACE_LIST
+  log_.ERR("CONFIG", "Factory interface \"%s\" is not registered, you need to list it in "
+                     "INTERFACE_LIST in 'src/utils/interfaces.hpp'", key);
+}
+
+constexpr char config_dir_name[] = "configurations/";
+constexpr auto config_dir_name_size = sizeof(config_dir_name);
+void Config::readFile(char* config_file)
+{
+  static_assert(config_dir_name_size < BUFFER_SIZE, "configuration directory name is too long");
   char file_name[BUFFER_SIZE];
-  std::strcpy(file_name, config_dir_name);
-  std::strcpy(file_name+std::strlen(config_dir_name), config_file);
+  std::snprintf(file_name, config_dir_name_size, config_dir_name);
+  std::snprintf(file_name+config_dir_name_size-1,         // account for dir_name
+                sizeof(file_name)-config_dir_name_size,   // calculate remaining buffer space
+                "%s", config_file);                       // provide string value to be appended
   // load config file, parse it into data structure
   FILE* file = fopen(file_name, "r");
   if (!file) {
@@ -288,6 +327,10 @@ void Config::readFile(char* config_file) {
 Config::Config(char* config_file)
     : log_(System::getLogger())
 {
+#define INIT_CREATOR(module, interface) \
+  interfaceFactory.get##interface = createDefault<module::interface>;
+  INTERFACE_LIST(INIT_CREATOR)
+
   config_files_.push_back(config_file);
   readFile(config_file);
   config_files_.pop_back();

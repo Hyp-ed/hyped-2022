@@ -32,6 +32,8 @@ constexpr uint8_t kAccelXoutH               = 0x2D;   // userbank 0
 
 constexpr uint8_t kAccelConfig              = 0x14;   // userbank 2
 constexpr uint8_t kAccelScale               = 0x02;   // +/- 4g
+constexpr uint8_t kAccelSmplrtDiv1          = 0x10;   // userbank 2
+constexpr uint8_t kAccelSmplrtDiv2          = 0x11;   // userbank 2
 
 constexpr uint8_t kWhoAmIImu                = 0x00;   // sensor to be at this address, userbank 0
 // data to be at these addresses when read from sensor else not initialised
@@ -106,62 +108,27 @@ void Imu::init()
   // Test connection
   bool check_init = whoAmI();
 
-  writeByte(kPwrMgmt1, 0x01);   // autoselect clock
-  writeByte(kIntPinConfig, 0xC0); // int pin config?
-
-  //   uint8_t reply;
-  // readByte(kPwrMgmt2, &reply);
-  // log_.DBG1("Imu", "kPwrMgmt2 before = %d", reply);
+  writeByte(kPwrMgmt1, 0x01);         // autoselect clock source
+  // writeByte(kIntPinConfig, 0xC0); // int pin config
 
   writeByte(kPwrMgmt2, 0x07);         // enable acc, disable gyro
-  // readByte(kPwrMgmt2, &reply);
-  // log_.DBG1("Imu", "kPwrMgmt2 after= %d", reply);
 
-  // uint8_t lp_read;
-  // readByte(kLpConfig, &lp_read);
-  // log_.DBG1("Imu", "kLpConfig before = %d", lp_read);
-  // TODO(Greg): REMOVE THIS
-  // writeByte(kLpConfig, 0x20);         // enable duty cycle acc
-  // readByte(kLpConfig, &lp_read);
-  // log_.DBG1("Imu", "kLpConfig after = %d", lp_read);
-
-  // TODO(Greg): consider if optional?
-  uint8_t ctrl_read;
-  writeByte(kUserCtrl, 0x00);         // reset
+  // Digital Motion Processor enabled
   writeByte(kUserCtrl, 0x08);         // reset DMP
-  readByte(kUserCtrl, &ctrl_read);
-  log_.DBG1("Imu", "kUserCtrl before = %d", ctrl_read);
   writeByte(kUserCtrl, 0x80);         // enable DMP
-  readByte(kUserCtrl, &ctrl_read);
-  log_.DBG1("Imu", "kUserCtrl after = %d", ctrl_read);
 
-
-
+  // acceleration configurations
   selectBank(2);
 
-  // TODO(Greg): set sample rate bank 2
-  // TODO(Greg): set bandwidth
-  // TODO(Greg): accelconfig fchoice (fullscale value)
-
-  uint8_t reply2;
   writeByte(kAccelConfig, 0x01);    // reset val
-  readByte(kAccelConfig, &reply2);
-  log_.DBG1("Imu", "kAccelConfig before = %d", reply2);
 
   // DLPF
   // writeByte(kAccelConfig, 0x09);    // LPF and DLPF configuration
-  writeByte(kAccelConfig, 0x3F);
-  uint8_t reply3;
-  readByte(kAccelConfig, &reply3);
-  log_.DBG1("Imu", "kAccelConfig after1 = %d", reply3);
+  writeByte(kAccelConfig, 0x08);       // reference low pass filter config table
+
   setAcclScale();
 
-  // selectBank(0);
-  // uint8_t reply2;
-  // readByte(kPwrMgmt2, &reply2);
-  // log_.DBG1("Imu", "kPwrMgmt2 = %d", reply2);
-
-  // enableFifo();
+  enableFifo();
 
   if (check_init) {
     log_.INFO("Imu", "Imu sensor %d created. Initialisation complete.", pin_);
@@ -173,18 +140,50 @@ void Imu::init()
 
 void Imu::enableFifo()
 {
+  // disable FIFO, already done
+  // do no write when full 0x0F
+  // enable acc
+  // reset fifo - 0x0F, 0x00
+  // enable fifo
+
+  // TODO(Greg): FIFO is not popping
+
   selectBank(0);
+  writeByte(kFifoMode, 0x0F);              // do not write when full
+  // acc only
+  writeByte(kFifoEnable2, 0x10);
+  // reset
   writeByte(kFifoReset, 0x0F);
-  Thread::sleep(500);
+  Thread::sleep(200);
+  writeByte(kFifoReset, 0x00);
+  // enable
   uint8_t data;
   readByte(kUserCtrl, &data);
   writeByte(kUserCtrl, data | 0x40);       // enable FIFO
-  // TODO(anyone): look into SRAM
-  writeByte(kFifoMode, 0x01);              // do not write when full
-  writeByte(kFifoEnable2, 0x10);
+
+  // selectBank(0);
+  // // reset: assert and de-assert
+  // writeByte(kFifoReset, 0x1F);
+  // Thread::sleep(200);
+  // writeByte(kFifoReset, 0x00);
+  // uint8_t data;
+  // readByte(kUserCtrl, &data);
+  // writeByte(kUserCtrl, data | 0x40);       // enable FIFO
+
+  // // // reset: assert and de-assert
+  // // writeByte(kFifoReset, 0x1F);
+  // // Thread::sleep(200);
+  // // writeByte(kFifoReset, 0x00);
+
+  // // TODO(anyone): look into SRAM
+  // writeByte(kFifoMode, 0x1F);              // do not write when full
+  // writeByte(kFifoEnable2, 0x10);
+
+
   uint8_t check_enable;
-  readByte(kFifoEnable2, &check_enable);   // only for acceleration xyz
-  if (check_enable == 0x10) {
+  readByte(kUserCtrl, &check_enable);   // in user control
+
+  if (check_enable == (data | 0x40)) {
     log_.INFO("Imu", "FIFO Enabled");
   } else {
     log_.ERR("Imu", "ERROR: FIFO not enabled");
@@ -263,15 +262,13 @@ void  Imu::deSelect()
 
 void Imu::setAcclScale()
 {
+  // userbank 2
   uint8_t data;
   readByte(kAccelConfig, &data);
-  log_.DBG1("Imu", "before = %d", data);
-  // writeByte(kAccelConfig, data | kAccelScale);
-    writeByte(kAccelConfig, 0xB);
-
-  readByte(kAccelConfig, &data);
-  log_.DBG1("Imu", "after = %d", data);
-
+  writeByte(kAccelConfig, data | kAccelScale);
+  // set accel sample rate divider to maximise sample rate (1125 Hz)
+  writeByte(kAccelSmplrtDiv1, 0x00);
+  writeByte(kAccelSmplrtDiv2, 0x00);
 
   switch (kAccelScale) {
     case kBitsFs2G:
@@ -321,6 +318,7 @@ int Imu::readFifo(ImuData* data)
       data->fifo[i][0] = value_x/acc_divider_  * 9.80665;
       data->fifo[i][1] = value_y/acc_divider_  * 9.80665;
       data->fifo[i][2] = value_z/acc_divider_  * 9.80665;
+      log_.INFO("Imu-FIFO", "FIFO readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", 0, data->fifo[i][0], data->fifo[i][1], data->fifo[i][2]);   // NOLINT
     }
     return 1;
   } else {
@@ -353,7 +351,6 @@ void Imu::getData(ImuData* data)
       readBytes(kAccelXoutH, response, 8);
       for (i = 0; i < 3; i++) {
         bit_data = ((int16_t) response[i*2] << 8) | response[i*2+1];
-        log_.DBG1("Imu", "raw data %d = %d", i, bit_data);
         value = static_cast<float>(bit_data);
         accel_data[i] = value/acc_divider_  * 9.80665;
       }

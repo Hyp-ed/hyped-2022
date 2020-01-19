@@ -39,13 +39,13 @@ int main(int argc, char* argv[])
 {
   hyped::utils::System::parseArgs(argc, argv);
   Logger& log = hyped::utils::System::getLogger();
-  Imu imu0(log, 20, false);
+  Imu imu0(log, 20, true);
 
   ImuData data0;
 
   for (int i = 0; i<50; i++) {
     imu0.getData(&data0);
-    log.INFO("TEST-Imu", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", 0, data0.acc[0], data0.acc[1], data0.acc[2]);
+    // log.INFO("TEST-Imu", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", 0, data0.acc[0], data0.acc[1], data0.acc[2]);
     Thread::sleep(100);
   }
 

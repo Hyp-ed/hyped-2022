@@ -24,6 +24,7 @@ testrunner
 /utils/Lint/lintresults.txt
 /test/lib/googletest
 /test/lib/libtest.a
+/test/lib/cppcheck
 /test/coverage
 binmain.o
 # Other rubbish

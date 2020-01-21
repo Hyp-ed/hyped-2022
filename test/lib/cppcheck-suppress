@@ -1,0 +1,5 @@
+// Add a cppcheck error id on each line to disable it, e.g.
+//variableScope
+
+// Can also specify to suppress in only specific file (and line number)
+//constParameter:../src/utils/math/kalman_multivariate.cpp:102

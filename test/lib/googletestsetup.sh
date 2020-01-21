@@ -1,8 +1,8 @@
 #!/bin/bash
 
-cd lib && mkdir -p googletest
-tar -xf googletest.tar.gz -C googletest --strip-components 1
-cd googletest && mkdir -p build
+mkdir -p lib/googletest
+tar -xf lib/googletest.tar.gz -C lib/googletest --strip-components 1
+cd lib/googletest && mkdir -p build
 UNAME=$(uname)
 COMPILER=""
 if [ $UNAME == "Windows" ]; then 

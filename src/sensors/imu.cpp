@@ -23,6 +23,7 @@
 #include "sensors/imu.hpp"
 #include "utils/concurrent/thread.hpp"
 #include "utils/math/statistics.hpp"
+#include "utils/interface_factory.hpp"
 
 // user bank addresse
 constexpr uint8_t kRegBankSel               = 0x7F;
@@ -312,4 +313,15 @@ void Imu::getData(ImuData* data)
     init();
   }
 }
-}}   // namespace hyped::sensors
+
+namespace {
+ImuInterface* createImu()
+{
+  Logger log(true, -1);
+  return new Imu(log, 66, false);
+}
+
+int regImu = utils::InterfaceFactory<ImuInterface>::registerCreator("Imu", createImu);
+}   // namespace ::
+
+}}  // namespace hyped::sensors

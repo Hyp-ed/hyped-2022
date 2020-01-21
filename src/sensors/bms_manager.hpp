@@ -24,6 +24,7 @@
 #define SENSORS_BMS_MANAGER_HPP_
 
 #include <cstdint>
+#include <vector>
 
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
@@ -45,7 +46,7 @@ class BmsManager: public Thread  {
   void run()                override;
 
  private:
-  BMSInterface*   bms_[data::Batteries::kNumLPBatteries+data::Batteries::kNumHPBatteries];
+  vector<BMSInterface*>   bms_;
   utils::System&  sys_;
 
   /**

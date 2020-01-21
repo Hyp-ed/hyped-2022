@@ -25,6 +25,7 @@
 #define SENSORS_MAIN_HPP_
 
 #include <cstdint>
+#include <vector>
 
 #include "sensors/interface.hpp"
 #include "bms_manager.hpp"
@@ -76,8 +77,8 @@ class Main: public Thread {
     data::Batteries batteries_;
     data::StripeCounter stripe_counter_;
 
-    uint8_t                                pins_[data::Sensors::kNumKeyence];
-    GpioInterface*                         keyences_[data::Sensors::kNumKeyence];  // 0 L and 1 R
+    vector<uint8_t>                        pins_;
+    vector<GpioInterface*>                 keyences_;  // 0 L and 1 R
     ImuManager*                            imu_manager_;
     BmsManager*                            battery_manager_;
     TemperatureInterface*                  temperature_;
@@ -86,13 +87,13 @@ class Main: public Thread {
     /**
      * @brief update this from GpioCounter::getStripeCounter();
      */
-    array<data::StripeCounter, data::Sensors::kNumKeyence> keyence_stripe_counter_arr_;
+    vector<data::StripeCounter> keyence_stripe_counter_arr_;
 
     /**
      * @brief use this to compare with keyence_stripe_counter_arr_
      *        update when keyenceUpdated() == true
      */
-    array<data::StripeCounter, data::Sensors::kNumKeyence> prev_keyence_stripe_count_arr_;
+    vector<data::StripeCounter> prev_keyence_stripe_count_arr_;
 };
 
 }}

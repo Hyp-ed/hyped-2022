@@ -20,8 +20,10 @@
 
 #include "sensors/bms.hpp"
 
+#include "utils/config.hpp"
 #include "utils/logger.hpp"
 #include "utils/timer.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
@@ -38,7 +40,7 @@ BMS::BMS(uint8_t id, Logger& log)
       can_(Can::getInstance()),
       running_(false)
 {
-  ASSERT(id < data::Batteries::kNumLPBatteries);
+  ASSERT(id < utils::System::getSystem().config->sensors.kNumLPBatteries);
   // verify this BMS unit has not been instantiated
   for (uint8_t i : existing_ids_) {
     if (id == i) {

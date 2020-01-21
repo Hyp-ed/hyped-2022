@@ -171,7 +171,7 @@ int16_t StateProcessor::calcMaxCurrent()
 {
   Batteries hp_packs = data_.getBatteriesData();
   int16_t max_current = 0;
-  for (int i = 0; i < hp_packs.kNumHPBatteries; i++) {
+  for (int i = 0; i < sys_.config->sensors.kNumHPBatteries; i++) {
     int16_t current = hp_packs.high_power_batteries[i].current;
     if (max_current < current) {
       max_current = current;

@@ -22,11 +22,13 @@
 
 #include <cstdint>
 #include <array>
+#include <vector>
 #include "utils/math/vector.hpp"
 #include "data/data_point.hpp"
 #include "utils/concurrent/lock.hpp"
 
 using std::array;
+using std::vector;
 
 namespace hyped {
 
@@ -72,9 +74,7 @@ struct Sensor {
 
 struct ImuData : public Sensor {
   NavigationVector acc;
-
-  static constexpr int kFifoSize = 85;
-  array<NavigationVector, kFifoSize> fifo;
+  vector<NavigationVector> fifo;
 };
 
 struct StripeCounter : public Sensor {
@@ -86,22 +86,18 @@ struct TemperatureData : public Sensor {
 };
 
 struct Sensors : public Module {
-  static constexpr int kNumImus = 4;      // TODO(anyone): read in from config
-  static constexpr int kNumKeyence = 2;   // TODO(anyone): read in from config
-
-  DataPoint<array<ImuData, kNumImus>> imu;
-  array<StripeCounter, kNumKeyence>  keyence_stripe_counter;
+  DataPoint<vector<ImuData>> imu;
+  vector<StripeCounter>  keyence_stripe_counter;
 };
 
 struct BatteryData {
-  static constexpr int kNumCells = 36;  // TODO(anyone): read in from config
   uint16_t  voltage;                    // dV
   int16_t   current;                    // dA
   uint8_t   charge;                     // %
   int8_t    average_temperature;        // C
 
   // below only for BMSHP! Value for BMSLP = 0
-  uint16_t  cell_voltage[kNumCells];    // mV
+  vector<uint16_t>  cell_voltage;       // mV
   int8_t    low_temperature;            // C
   int8_t    high_temperature;           // C
   uint16_t  low_voltage_cell;           // mV
@@ -110,11 +106,8 @@ struct BatteryData {
 };
 
 struct Batteries : public Module {
-  static constexpr int kNumLPBatteries = 3;   // TODO(anyone): read in from config
-  static constexpr int kNumHPBatteries = 2;   // TODO(anyone): read in from config
-
-  array<BatteryData, kNumLPBatteries> low_power_batteries;
-  array<BatteryData, kNumHPBatteries> high_power_batteries;
+  vector<BatteryData> low_power_batteries;
+  vector<BatteryData> high_power_batteries;
 };
 
 struct EmergencyBrakes : public Module {
@@ -226,12 +219,12 @@ class Data {
   /**
    * @brief retrieves imu data from Sensors
    */
-  DataPoint<array<ImuData, Sensors::kNumImus>> getSensorsImuData();
+  DataPoint<vector<ImuData>> getSensorsImuData();
 
   /**
    * @brief retrieves gpio_counter data from Sensors
    */
-  array<StripeCounter, Sensors::kNumKeyence> getSensorsKeyenceData();
+  vector<StripeCounter> getSensorsKeyenceData();
 
   /**
    * @brief      Should be called to update sensor data.
@@ -240,11 +233,11 @@ class Data {
   /**
    * @brief      Should be called to update sensor imu data.
    */
-  void setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>>& imu);
+  void setSensorsImuData(const DataPoint<vector<ImuData>>& imu);
   /**
    * @brief      Should be called to update sensor keyence data.
    */
-  void setSensorsKeyenceData(const array<StripeCounter, Sensors::kNumKeyence>&  keyence_stripe_counter);  //NOLINT
+  void setSensorsKeyenceData(const vector<StripeCounter>&  keyence_stripe_counter);  //NOLINT
 
   /**
    * @brief      Retrieves data from the batteries.

@@ -86,15 +86,15 @@ struct TemperatureData : public Sensor {
 };
 
 struct Sensors : public Module {
-  static constexpr int kNumImus = 4;      // TODO(anyone): read in from config
-  static constexpr int kNumKeyence = 2;   // TODO(anyone): read in from config
+  static constexpr int kNumImus = 4;
+  static constexpr int kNumKeyence = 2;
 
   DataPoint<array<ImuData, kNumImus>> imu;
   array<StripeCounter, kNumKeyence>  keyence_stripe_counter;
 };
 
 struct BatteryData {
-  static constexpr int kNumCells = 36;  // TODO(anyone): read in from config
+  static constexpr int kNumCells = 36;
   uint16_t  voltage;                    // dV
   int16_t   current;                    // dA
   uint8_t   charge;                     // %
@@ -110,8 +110,8 @@ struct BatteryData {
 };
 
 struct Batteries : public Module {
-  static constexpr int kNumLPBatteries = 3;   // TODO(anyone): read in from config
-  static constexpr int kNumHPBatteries = 2;   // TODO(anyone): read in from config
+  static constexpr int kNumLPBatteries = 3;
+  static constexpr int kNumHPBatteries = 2;
 
   array<BatteryData, kNumLPBatteries> low_power_batteries;
   array<BatteryData, kNumHPBatteries> high_power_batteries;

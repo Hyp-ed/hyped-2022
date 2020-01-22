@@ -22,7 +22,6 @@
 #define SENSORS_IMU_MANAGER_HPP_
 
 #include <cstdint>
-#include <vector>
 
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
@@ -41,7 +40,7 @@ namespace sensors {
  *
  */
 class ImuManager: public Thread {
-  typedef data::DataPoint<vector<ImuData>>  DataArray;
+  typedef data::DataPoint<array<ImuData, data::Sensors::kNumImus>>  DataArray;
 
  public:
   /**
@@ -69,7 +68,7 @@ class ImuManager: public Thread {
    */
   data::Data&      data_;
 
-  vector<ImuInterface*>    imu_;
+  ImuInterface*     imu_[data::Sensors::kNumImus];
 };
 
 }}  // namespace hyped::sensors

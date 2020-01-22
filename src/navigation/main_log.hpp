@@ -19,7 +19,6 @@
 #define NAVIGATION_MAIN_LOG_HPP_
 
 #include <stdio.h>
-#include <vector>
 
 #include <cstdio>
 #include <fstream>
@@ -57,9 +56,9 @@ class MainLog: public Thread {
     Logger& log_;
     System& sys_;
     Data& data_;
-    std::vector<NavigationVector> gravity_calibration_;
+    std::array<NavigationVector, data::Sensors::kNumImus> gravity_calibration_;
 
-    std::vector<ImuDataLogger> imu_loggers_;
+    std::array<ImuDataLogger, data::Sensors::kNumImus> imu_loggers_;
 
     /**
      * @brief Determine the value of gravitational acceleration measured by sensors at rest

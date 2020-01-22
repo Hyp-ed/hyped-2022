@@ -112,10 +112,10 @@ void SendLoop::packBatteriesMessage(Writer<StringBuffer>& writer)
   writer.Key("moduleStatus");
   writer.String(convertModuleStatus(batteries_data.module_status).c_str());
   writer.Key("lowPowerBatteries");
-  // packLpBatteryDataMessage(writer, batteries_data.low_power_batteries);
-  // writer.Key("highPowerBatteries");
-  // packHpBatteryDataMessage(writer, batteries_data.high_power_batteries);
-  // writer.EndObject();
+  packLpBatteryDataMessage(writer, batteries_data.low_power_batteries);
+  writer.Key("highPowerBatteries");
+  packHpBatteryDataMessage(writer, batteries_data.high_power_batteries);
+  writer.EndObject();
 }
 
 template<std::size_t SIZE>

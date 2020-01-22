@@ -19,7 +19,6 @@
 #ifndef PROPULSION_STATE_PROCESSOR_HPP_
 #define PROPULSION_STATE_PROCESSOR_HPP_
 
-#include "utils/config.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 #include "utils/timer.hpp"

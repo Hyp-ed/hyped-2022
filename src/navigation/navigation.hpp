@@ -19,10 +19,9 @@
 #ifndef NAVIGATION_NAVIGATION_HPP_
 #define NAVIGATION_NAVIGATION_HPP_
 
+#include <array>
 #include <cstdint>
 #include <math.h>
-#include <array>
-#include <vector>
 
 #include "data/data.hpp"
 #include "data/data_point.hpp"
@@ -31,7 +30,6 @@
 #include "utils/logger.hpp"
 #include "utils/math/integrator.hpp"
 #include "utils/math/statistics.hpp"
-#include "utils/system.hpp"
 
 namespace hyped {
 
@@ -52,13 +50,13 @@ namespace navigation {
 
   class Navigation {
     public:
-      typedef vector<ImuData>             ImuDataArray;
-      typedef DataPoint<ImuDataArray>     ImuDataPointArray;
-      typedef vector<NavigationVector>    NavigationVectorArray;
-      typedef vector<NavigationType>      NavigationArray;
-      typedef vector<NavigationType>      NavigationArrayOneFaulty;
-      typedef vector<KalmanFilter>        FilterArray;
-      typedef vector<data::StripeCounter>  KeyenceDataArray;
+      typedef std::array<ImuData, data::Sensors::kNumImus>            ImuDataArray;
+      typedef DataPoint<ImuDataArray>                                 ImuDataPointArray;
+      typedef std::array<NavigationVector, data::Sensors::kNumImus>   NavigationVectorArray;
+      typedef std::array<NavigationType, data::Sensors::kNumImus>     NavigationArray;
+      typedef std::array<NavigationType, data::Sensors::kNumImus - 1> NavigationArrayOneFaulty;
+      typedef std::array<KalmanFilter, data::Sensors::kNumImus>       FilterArray;
+      typedef array<data::StripeCounter, data::Sensors::kNumKeyence>  KeyenceDataArray;
 
       /**
        * @brief Construct a new Navigation object
@@ -177,7 +175,6 @@ namespace navigation {
       // System communication
       Logger& log_;
       Data& data_;
-      System& sys_;
       ModuleStatus status_;
 
       // counter for outputs
@@ -193,9 +190,9 @@ namespace navigation {
       FilterArray filters_;
 
       // Counter for consecutive outlier output from each IMU
-      std::vector<uint32_t> imu_outlier_counter_;
+      std::array<uint32_t, data::Sensors::kNumImus> imu_outlier_counter_;
       // Array of booleans to signify which IMUs are reliable or faulty
-      std::vector<bool> imu_reliable_;
+      std::array<bool, data::Sensors::kNumImus> imu_reliable_;
       // Counter of how many IMUs have failed
       uint32_t nOutlierImus_;
 

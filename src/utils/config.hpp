@@ -92,11 +92,6 @@ class Config {
   } embrakes;
 
   struct Sensors {
-    int kNumImus;
-    int kNumKeyence;
-    int kNumLPBatteries;
-    int kNumHPBatteries;
-    int kNumCells;
     std::vector<int> chip_select;
     int keyence_l;
     int keyence_r;

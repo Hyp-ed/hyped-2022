@@ -1,9 +1,4 @@
 > Sensors
-kNumImus         4
-kNumKeyence      2
-kNumLPBatteries  3
-kNumHPBatteries  2
-kNumCells        36
 ChipSelect       47,22,27,86
 KeyenceL         68
 KeyenceR         67

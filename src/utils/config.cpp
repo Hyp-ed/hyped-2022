@@ -77,43 +77,8 @@ void Config::parseSensors(char* line)
 
   char* token = strtok(line, " ");
 
-  if (strcmp(token, "kNumImus") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.kNumImus = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "kNumKeyence") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.kNumKeyence = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "kNumLPBatteries") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.kNumLPBatteries = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "kNumHPBatteries") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.kNumHPBatteries = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "kNumCells") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.kNumCells = atoi(value);
-    }
-  }
-
   if (strcmp(token, "ChipSelect") == 0) {
-    for (int i = 0; i < sensors.kNumImus; i++) {
+    for (int i = 0; i < data::Sensors::kNumImus; i++) {
       char* value = strtok(NULL, ",");
       if (value) {
         sensors.chip_select.push_back(atoi(value));
@@ -150,7 +115,7 @@ void Config::parseSensors(char* line)
   }
 
   if (strcmp(token, "HPShutoff") == 0) {
-    for (int i = 0; i < sensors.kNumHPBatteries; i++) {
+    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
       char* value = strtok(NULL, ",");
       if (value) {
         sensors.hp_shutoff.push_back(atoi(value));

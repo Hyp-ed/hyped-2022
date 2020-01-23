@@ -92,14 +92,13 @@ class Config {
   } embrakes;
 
   struct Sensors {
-    int chip_select[data::Sensors::kNumImus];
-    int KeyenceL;
-    int KeyenceR;
-    int Thermistor;
-    int hp_master;
-    int HPSSR[data::Batteries::kNumHPBatteries];
-    int IMDOut;
-    int embrakes;
+    std::vector<int> chip_select;
+    int keyence_l;
+    int keyence_r;
+    int thermistor;
+    int master;
+    std::vector<int> hp_shutoff;
+    int checktime;
   } sensors;
 
   struct InterfaceFactory {

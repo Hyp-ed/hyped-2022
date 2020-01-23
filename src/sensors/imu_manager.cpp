@@ -34,17 +34,15 @@ using utils::System;
 
 namespace sensors {
 ImuManager::ImuManager(Logger& log)
-    : ImuManagerInterface(log),
+    : Thread(log),
       sys_(System::getSystem()),
       data_(Data::getInstance())
 {
-  old_timestamp_ = utils::Timer::getTimeMicros();
-
   if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k1MHz);
 
     for (int i = 0; i < data::Sensors::kNumImus; i++) {   // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], false);
+      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], 0x08);
     }
 
     utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k20MHz);

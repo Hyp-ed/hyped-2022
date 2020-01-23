@@ -27,7 +27,8 @@
 #include <cstdint>
 
 #include "sensors/interface.hpp"
-#include "sensors/manager_interface.hpp"
+#include "bms_manager.hpp"
+#include "imu_manager.hpp"
 #include "utils/system.hpp"
 
 namespace hyped {
@@ -77,8 +78,8 @@ class Main: public Thread {
 
     uint8_t                                pins_[data::Sensors::kNumKeyence];
     GpioInterface*                         keyences_[data::Sensors::kNumKeyence];  // 0 L and 1 R
-    std::unique_ptr<ImuManagerInterface>   imu_manager_;
-    std::unique_ptr<ManagerInterface>      battery_manager_;
+    ImuManager*                            imu_manager_;
+    BmsManager*                            battery_manager_;
     TemperatureInterface*                  temperature_;
     bool                                   log_error_ = false;
 

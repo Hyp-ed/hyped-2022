@@ -199,26 +199,31 @@ NavigationType Navigation::accNorm(NavigationVector& acc)
 
 void Navigation::queryImus()
 {
-  NavigationArray acc_raw;
+  NavigationVectorArray acc_raw;
+  NavigationArray acc_raw_moving;  // Raw values in moving axis
   OnlineStatistics<NavigationType> acc_avg_filter;
   sensor_readings_ = data_.getSensorsImuData();
   uint32_t t = sensor_readings_.timestamp;
   // process raw values
-  for (int i = 0; i < data::Sensors::kNumImus; ++i) {
-    if (!imu_reliable_[i]) { acc_raw[i] = 0;
-    } else {
-      NavigationVector a = sensor_readings_.value[i].acc - gravity_calibration_[i];
-      acc_raw[i] = a[axis_];  // accNorm(a) * (1 - 2 * (a[axis_] < 0));
+  for (int axis = 0; axis < 3; axis++) {
+    for (int i = 0; i < data::Sensors::kNumImus; ++i) {
+      if (!imu_reliable_[i]) { acc_raw[i][axis] = 0;
+      } else {
+        NavigationVector a = sensor_readings_.value[i].acc - gravity_calibration_[i];
+        acc_raw[i][axis] = a[axis];
+        if (axis == axis_) acc_raw_moving[i] = a[axis_];
+      }
+    }
+    tukeyFences(acc_raw_moving, kTukeyThreshold);
+    // Kalman filter the readings which are reliable
+    for (int i = 0; i < data::Sensors::kNumImus; ++i) {
+      if (imu_reliable_[i]) {
+        NavigationType estimate = filters_[i].filter(acc_raw_moving[i]);
+        acc_avg_filter.update(estimate);
+      }
     }
   }
-  tukeyFences(acc_raw, kTukeyThreshold);
-  // Kalman filter the readings which are reliable
-  for (int i = 0; i < data::Sensors::kNumImus; ++i) {
-    if (imu_reliable_[i]) {
-      NavigationType estimate = filters_[i].filter(acc_raw[i]);
-      acc_avg_filter.update(estimate);
-    }
-  }
+
   acceleration_.value = acc_avg_filter.getMean();
   acceleration_.timestamp = t;
 

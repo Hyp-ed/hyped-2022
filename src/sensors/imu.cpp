@@ -41,8 +41,8 @@ constexpr uint8_t kWhoAmIImu                = 0x00;   // sensor to be at this ad
 constexpr uint8_t kWhoAmIResetValue         = 0xEA;   // userbank 0
 
 // Power Management
-constexpr uint8_t kPwrMgmt1           = 0x06;   // userbank 0
-constexpr uint8_t kPwrMgmt2           = 0x07;   // userbank 0
+constexpr uint8_t kPwrMgmt1                 = 0x06;   // userbank 0
+constexpr uint8_t kPwrMgmt2                 = 0x07;   // userbank 0
 
 // Configuration
 constexpr uint8_t kReadFlag                 = 0x80;   // unable to find in datasheet
@@ -65,12 +65,13 @@ constexpr uint8_t kBitHReset                = 0x80;    // for pwr_mgmt
 
 
 // values for FIFO
-constexpr uint8_t kFifoReset                = 0x68;   // userbank 0
 // constexpr uint8_t kFifoEnable1              = 0x66;   // userbank 0
 constexpr uint8_t kFifoEnable2              = 0x67;   // userbank 0
-constexpr uint8_t kFifoMode                 = 0x69;
+constexpr uint8_t kFifoReset                = 0x68;   // userbank 0
+constexpr uint8_t kFifoMode                 = 0x69;   // userbank 0
 constexpr uint8_t kFifoCountH               = 0x70;   // userbank 0
 constexpr uint8_t kFifoRW                   = 0x72;   // userbank 0
+constexpr uint8_t kDataRdyStatus            = 0x74;   // userbank 0
 constexpr uint8_t kUserCtrl                 = 0x03;   // userbank 0
 // constexpr uint8_t kIntEnable2 = 0x12;    // userbank 0, for FIFO overflow, read = 0x10
 
@@ -114,9 +115,9 @@ void Imu::init()
 
   writeByte(kPwrMgmt2, 0x07);         // enable acc, disable gyro
 
-  // Digital Motion Processor enabled
-  writeByte(kUserCtrl, 0x08);         // reset DMP
-  writeByte(kUserCtrl, 0x80);         // enable DMP
+  // Digital Motion Processor disabled to enable FIFO
+  // writeByte(kUserCtrl, 0x08);         // reset DMP
+  // writeByte(kUserCtrl, 0x80);         // enable DMP
 
   // acceleration configurations
   selectBank(2);
@@ -141,48 +142,22 @@ void Imu::init()
 
 void Imu::enableFifo()
 {
-  // disable FIFO, already done
-  // do no write when full 0x0F
-  // enable acc
-  // reset fifo - 0x0F, 0x00
-  // enable fifo
-
-  // TODO(Greg): FIFO is not popping
-
   selectBank(0);
-  writeByte(kFifoMode, 0x0F);              // do not write when full
-  // acc only
-  writeByte(kFifoEnable2, 0x10);
-  // reset
-  writeByte(kFifoReset, 0x0F);
+  // reset: assert and de-assert
+  writeByte(kFifoReset, 0x1F);
   Thread::sleep(200);
   writeByte(kFifoReset, 0x00);
-  // enable
   uint8_t data;
   readByte(kUserCtrl, &data);
   writeByte(kUserCtrl, data | 0x40);       // enable FIFO
 
-  // selectBank(0);
-  // // reset: assert and de-assert
-  // writeByte(kFifoReset, 0x1F);
-  // Thread::sleep(200);
-  // writeByte(kFifoReset, 0x00);
-  // uint8_t data;
-  // readByte(kUserCtrl, &data);
-  // writeByte(kUserCtrl, data | 0x40);       // enable FIFO
-
-  // // // reset: assert and de-assert
-  // // writeByte(kFifoReset, 0x1F);
-  // // Thread::sleep(200);
-  // // writeByte(kFifoReset, 0x00);
-
-  // // TODO(anyone): look into SRAM
   // writeByte(kFifoMode, 0x1F);              // do not write when full
-  // writeByte(kFifoEnable2, 0x10);
-
+  writeByte(kFifoMode, 0x00);               // override old data, data stream
+  writeByte(kFifoEnable2, 0x10);            // acc data to fifo enabled
+  writeByte(kDataRdyStatus, 0x0F);          // acc values written to FIFO
 
   uint8_t check_enable;
-  readByte(kUserCtrl, &check_enable);   // in user control
+  readByte(kUserCtrl, &check_enable);       // in user control
 
   if (check_enable == (data | 0x40)) {
     log_.INFO("Imu", "FIFO Enabled");
@@ -290,36 +265,40 @@ void Imu::setAcclScale()
 int Imu::readFifo(ImuData* data)
 {
   if (is_online_) {
+    data->fifo.clear();
     // get fifo size
     uint8_t buffer[kFrameSize_];
-    readBytes(kFifoCountH, reinterpret_cast<uint8_t*>(buffer), 2);    // from count H/L registers
+    uint8_t size_buffer[2];
+    readBytes(kFifoCountH, reinterpret_cast<uint8_t*>(size_buffer), 2);    // from count H/L
     // convert big->little endian of count (2 bytes)
-    size_t fifo_size = (((uint16_t) (buffer[0]&0x0F)) << 8) + (((uint16_t) buffer[1]));
+    uint16_t fifo_size = (((uint16_t) (size_buffer[0]&0x1F)) << 8) | (size_buffer[1]);
 
     if (fifo_size == 0) {
-      log_.DBG3("Imu-FIFO", "FIFO EMPTY");
+      log_.DBG1("Imu-FIFO", "FIFO EMPTY");
       return 0;
     }
-    log_.DBG3("Imu-FIFO", "Buffer size = %d", fifo_size);
+    log_.DBG1("Imu-FIFO", "Buffer size = %d", fifo_size);
     int16_t axcounts, aycounts, azcounts;           // include negative int
     float value_x, value_y, value_z;
+    log_.DBG1("Imu-FIFO", "iterating = %d", (fifo_size/kFrameSize_));
     for (size_t i = 0; i < (fifo_size/kFrameSize_); i++) {    // make sure is less than array size
       readBytes(kFifoRW, buffer, kFrameSize_);
       axcounts = (((int16_t)buffer[0]) << 8) | buffer[1];     // 2 byte acc data for xyz
       aycounts = (((int16_t)buffer[2]) << 8) | buffer[3];
       azcounts = (((int16_t)buffer[4]) << 8) | buffer[5];
 
-      // convert to floats for accel_data
       value_x = static_cast<float>(axcounts);
       value_y = static_cast<float>(aycounts);
       value_z = static_cast<float>(azcounts);
 
       // put data in struct and add to data vector (param)
+      NavigationVector imu_data;
       data->operational = is_online_;
-      data->fifo[i][0] = value_x/acc_divider_  * 9.80665;
-      data->fifo[i][1] = value_y/acc_divider_  * 9.80665;
-      data->fifo[i][2] = value_z/acc_divider_  * 9.80665;
-      log_.INFO("Imu-FIFO", "FIFO readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", 0, data->fifo[i][0], data->fifo[i][1], data->fifo[i][2]);   // NOLINT
+      imu_data[0] = value_x/acc_divider_  * 9.80665;
+      imu_data[1] = value_y/acc_divider_  * 9.80665;
+      imu_data[2] = value_z/acc_divider_  * 9.80665;
+      data->fifo.push_back(imu_data);
+      // log_.INFO("Imu-FIFO", "FIFO readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", 0, imu_data[0], imu_data[1], imu_data[2]);   // NOLINT
     }
     return 1;
   } else {

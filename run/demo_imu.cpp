@@ -43,9 +43,13 @@ int main(int argc, char* argv[])
 
   ImuData data0;
 
-  for (int i = 0; i<50; i++) {
-    imu0.getData(&data0);
-    // log.INFO("TEST-Imu", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", 0, data0.acc[0], data0.acc[1], data0.acc[2]);
+  while(true) {
+    // imu0.getData(&data0);
+    imu0.readFifo(&data0);
+    log.INFO("TEST-Imu", "FIFO SIZE = %d", data0.fifo.size());
+    for (int i = 0; i < data0.fifo.size(); i++) {
+      log.INFO("TEST-Imu", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", i, data0.fifo[i][0], data0.fifo[i][1], data0.fifo[i][2]);
+    }
     Thread::sleep(100);
   }
 

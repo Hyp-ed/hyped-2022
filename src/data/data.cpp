@@ -79,6 +79,12 @@ DataPoint<array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
   return sensors_.imu;
 }
 
+DataPoint<array<EncoderData, Sensors::kNumEncoders>> Data::getSensorsEncoderData()
+{
+  ScopedLock L(&lock_sensors_);
+  return sensors_.encoder;
+}
+
 array<StripeCounter, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
 {
   ScopedLock L(&lock_sensors_);
@@ -107,6 +113,12 @@ void Data::setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>>&
 {
   ScopedLock L(&lock_sensors_);
   sensors_.imu = imu;
+}
+
+void Data::setSensorsEncoderData(const DataPoint<array<EncoderData, Sensors::kNumEncoders>>& encoder) //NOLINT
+{
+  ScopedLock L(&lock_sensors_);
+  sensors_.encoder = encoder;
 }
 
 void Data::setSensorsKeyenceData(const array<StripeCounter, Sensors::kNumKeyence>& keyence_stripe_counter) //NOLINT
@@ -164,4 +176,3 @@ void Data::setTelemetryData(const Telemetry& telemetry_data)
 }
 
 }}  // namespace data::hyped
-

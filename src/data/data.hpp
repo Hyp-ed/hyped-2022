@@ -253,7 +253,7 @@ class Data {
    */
   void setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>>& imu);
   /**
-   * @brief      Should be called to update sensor imu data.
+   * @brief      Should be called to update sensor encoder data.
    */
   void setSensorsEncoderData(const DataPoint<array<EncoderData, Sensors::kNumEncoders>>& imu);
   /**

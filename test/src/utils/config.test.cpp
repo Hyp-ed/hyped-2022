@@ -33,7 +33,8 @@
 struct utils_config: public ::testing::Test {
   hyped::utils::Config* config;
 
-  void SetUp() {
+  void SetUp()
+  {
     // construct argument list to pass to System::parseArgs
     char argument0[] = "testing.cpp";
     char argument1[] = "--config=test/config.txt";
@@ -51,7 +52,7 @@ TEST_F(utils_config, test_config_reads_top_config_file)
   ASSERT(config->telemetry.IP.compare("192.168.5.3") == 0);
   ASSERT(config->telemetry.Port.compare("7777") == 0);
 
-  ASSERT_EQ(config->sensors.Thermistor, 158);
+  ASSERT_EQ(config->sensors.thermistor, 158);
 
   ASSERT_EQ(config->statemachine.timeout, 14);
 }

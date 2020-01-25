@@ -25,21 +25,21 @@
 
 #include <cstdint>
 
-#include "sensors/manager_interface.hpp"
+#include "data/data.hpp"
+#include "utils/concurrent/thread.hpp"
 
 #include "sensors/interface.hpp"
 #include "utils/system.hpp"
-#include "utils/io/gpio.hpp"
 
 namespace hyped {
 
 using utils::Logger;
+using utils::concurrent::Thread;
 using hyped::data::BatteryData;
-using utils::io::GPIO;
 
 namespace sensors {
 
-class BmsManager: public ManagerInterface  {
+class BmsManager: public Thread  {
  public:
   explicit BmsManager(Logger& log);
   void run()                override;
@@ -47,16 +47,6 @@ class BmsManager: public ManagerInterface  {
  private:
   BMSInterface*   bms_[data::Batteries::kNumLPBatteries+data::Batteries::kNumHPBatteries];
   utils::System&  sys_;
-
-  /**
-   * @brief for hp_master_, hp_ssr_, and prop_cool_
-   */
-  void clearHP();
-
-  /**
-   * @brief for hp_master_, hp_ssr_, and prop_cool_
-   */
-  void setHP();
 
   /**
    * @brief check IMD and set GPIOs accordingly
@@ -68,36 +58,10 @@ class BmsManager: public ManagerInterface  {
    */
   data::Data&     data_;
 
-  /*
-   * @brief SSR that controls objects in hp_ssr_ array
-   */
-  GPIO* hp_master_;
-
-  /**
-   * @brief HPSSR held high in nominal states, cleared when module failure or pod emergency state
-   *        Batteries module status forces kEmergencyBraking, which actuates embrakes
-   */
-  GPIO* hp_ssr_[data::Batteries::kNumHPBatteries];
-
-  /**
-   * @brief embrakes_ssr_ held high in nominal states, cleared in emergency state
-   */
-  GPIO* embrakes_ssr_;
-
-  /**
-   * @brief for IMD boolean in BatteryData
-   */
-  GPIO* imd_out_;
-
   /**
    * @brief holds LP BatteryData, HP BatteryData, and module_status
    */
   data::Batteries batteries_;
-
-  /**
-   * @brief print log messages once
-   */
-  data::State previous_state_;
 
   /**
    * @brief print log messages once

@@ -1,7 +1,7 @@
 /*
- * Author: Neil Weidinger
+ * Authors: M. Kristien
  * Organisation: HYPED
- * Date: May 2019
+ * Date: Dec 2019
  * Description:
  *
  *    Copyright 2019 HYPED
@@ -18,29 +18,32 @@
  *    limitations under the License.
  */
 
-#ifndef TELEMETRY_SIGNALHANDLER_HPP_
-#define TELEMETRY_SIGNALHANDLER_HPP_
+#include <stdio.h>
 
-#include "utils/logger.hpp"
+#include "demo/interface.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
+namespace demo {
 
-using utils::Logger;
+class Implementation1 : public DemoInterface {
+ public:
+  Implementation1() {}
 
-namespace telemetry {
-
-class SignalHandler {
-  public:
-    SignalHandler();
-    static bool gotSigPipeSignal();
-
-  private:
-    static void sigPipeHandler(int signum);
-    static bool receivedSigPipeSignal;
-    static Logger log_;
+  void printYourName() override
+  {
+    printf("hello, my name is Implementation1\n");
+  }
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+namespace {
+DemoInterface* createImplementation1()
+{
+  return new Implementation1();
+}
+bool reg_impl = utils::InterfaceFactory<DemoInterface>
+                ::registerCreator("Implementation1", createImplementation1);
+}
 
-#endif  // TELEMETRY_SIGNALHANDLER_HPP_
+
+}}  // namespace hyped::demo

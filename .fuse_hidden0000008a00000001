@@ -1,0 +1,41 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.rulers": [100],
+    "editor.renderWhitespace": "all",
+    "files.trimTrailingWhitespace": true,
+    "editor.tabSize": 2,
+    "files.eol": "\n",
+    "files.autoSave": "onWindowChange",
+    "files.exclude": {
+      "**/.cpplint-cache": true,
+      "bin": true,
+      "**/build": true,
+      "**/*.a": true,
+      "**/testrunner*": true,
+      "hyped*": true
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "C_Cpp.clang_format_style": "Google",
+    "C_Cpp.default.includePath": [
+      "${workspaceRoot}/src",
+      "${workspaceRoot}/lib",
+      "${workspaceRoot}/test/lib/googletest/googletest/include"
+    ],
+    "C_Cpp.default.defines": [
+
+    ],
+    "editor.detectIndentation": false,
+    "C_Cpp.default.cppStandard": "c++11",
+    "C_Cpp.default.cStandard": "c11",
+    "files.associations": {
+      "random": "cpp",
+      "optional": "cpp"
+    }
+  }
+}

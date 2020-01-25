@@ -1,7 +1,7 @@
 /*
- * Author: Neil Weidinger
+ * Authors: M. Kristien
  * Organisation: HYPED
- * Date: March 2019
+ * Date: Dec 2019
  * Description:
  *
  *    Copyright 2019 HYPED
@@ -18,38 +18,17 @@
  *    limitations under the License.
  */
 
-#ifndef TELEMETRY_CLIENT_HPP_
-#define TELEMETRY_CLIENT_HPP_
-
-#include <string>
-#include "telemetry/signalhandler.hpp"
-#include "utils/logger.hpp"
-#include "utils/config.hpp"
+#ifndef DEMO_INTERFACE_HPP_
+#define DEMO_INTERFACE_HPP_
 
 namespace hyped {
+namespace demo {
 
-using utils::Logger;
-
-namespace telemetry {
-
-class Client {
-  public:
-    explicit Client(Logger& log);
-    ~Client();
-    bool connect();
-    bool sendData(std::string message);
-    std::string receiveData();
-
-  private:
-    Client(Logger& log, const utils::Config& config);
-
-    int sockfd_;
-    Logger& log_;
-    const char* kPort;
-    const char* kServerIP;
+class DemoInterface {
+ public:
+  virtual void printYourName() = 0;
 };
 
-}  // namespace client
-}  // namespace hyped
+}}  // namespace hyped::demo
 
-#endif  // TELEMETRY_CLIENT_HPP_
+#endif  // DEMO_INTERFACE_HPP_

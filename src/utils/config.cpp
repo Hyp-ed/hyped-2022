@@ -26,6 +26,7 @@
 #include <sstream>
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace utils {
@@ -49,23 +50,93 @@ struct ModuleEntry {
  * Column 2: An address of a Config:: member function that performs the line parsing.
  */
 #define MAP_ENTRY(module) \
-  {k##module , #module, &Config::Parse##module},
+  {k##module , #module, &Config::parse##module},
 
 ModuleEntry module_map[] = {
   MODULE_LIST(MAP_ENTRY)
 };
 
-void Config::ParseNoModule(char* line)
+void Config::parseNoModule(char* line)
 {
   // does nothing
 }
 
-void Config::ParseNavigation(char* line)
+void Config::parseSensors(char* line)
+{
+  // EXAMPLE line parsing:
+  // "char* strtok(line, delimiters)" splits the input line into parts using
+  // characters from delimiters. The return value points to a valid split section.
+  // To get another split section, call strtok again with NULL as the first
+  // argument.
+  // E.g. for line "IP 135.152.120.2", and you call these functions (in this order):
+  // strtok(line, " ") returns string "IP"
+  // strtok(NULL, " ") returns string "135.152.120.2"
+  //
+  // After this, the value can be converted from string to bool/int/string and
+  // stored in the corresponding configuration field
+
+  char* token = strtok(line, " ");
+
+  if (strcmp(token, "ChipSelect") == 0) {
+    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+      char* value = strtok(NULL, ",");
+      if (value) {
+        sensors.chip_select.push_back(atoi(value));
+      }
+    }
+  }
+
+  if (strcmp(token, "KeyenceL") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.keyence_l = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "KeyenceR") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.keyence_r = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "Thermistor") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.thermistor = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "Master") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.master = atoi(value);
+    }
+  }
+
+  if (strcmp(token, "HPShutoff") == 0) {
+    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
+      char* value = strtok(NULL, ",");
+      if (value) {
+        sensors.hp_shutoff.push_back(atoi(value));
+      }
+    }
+  }
+
+  if (strcmp(token, "CheckTime") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      sensors.checktime = atoi(value);
+    }
+  }
+}
+
+void Config::parseNavigation(char* line)
 {
   printf("nav %s\n", line);
 }
 
-void Config::ParseStateMachine(char* line)
+void Config::parseStateMachine(char* line)
 {
   char* token = strtok(line, " ");
   if (strcmp(token, "Timeout") == 0) {
@@ -76,7 +147,7 @@ void Config::ParseStateMachine(char* line)
   }
 }
 
-void Config::ParseTelemetry(char* line)
+void Config::parseTelemetry(char* line)
 {
   // just in case we get handed a null pointer
   if (!line) return;
@@ -98,7 +169,7 @@ void Config::ParseTelemetry(char* line)
   }
 }
 
-void Config::ParseEmbrakes(char* line)
+void Config::parseEmbrakes(char* line)
 {
   char* token = strtok(line, " ");
 
@@ -120,90 +191,51 @@ void Config::ParseEmbrakes(char* line)
   }
 }
 
-void Config::ParseSensors(char* line)
+// if there is no creator configured to an interface, we use this one to prevent calling
+// a null pointer function
+template<class T>
+T* createDefault()
 {
-  // EXAMPLE line parsing:
-  // "char* strtok(line, delimiters)" splits the input line into parts using
-  // characters from delimiters. The return value points to a valid split section.
-  // To get another split section, call strtok again with NULL as the first
-  // argument.
-  // E.g. for line "IP 135.152.120.2", and you call these functions (in this order):
-  // strtok(line, " ") returns string "IP"
-  // strtok(NULL, " ") returns string "135.152.120.2"
-  //
-  // After this, the value can be converted from string to bool/int/string and
-  // stored in the corresponding configuration field
-
-  char* token = strtok(line, " ");
-
-  if (strcmp(token, "ChipSelect") == 0) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-      sensors.chip_select[i] = atoi(value);
-      }
-    }
-  }
-
-  if (strcmp(token, "KeyenceL") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.KeyenceL = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "KeyenceR") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.KeyenceR = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "Thermistor") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.Thermistor = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "HPMaster") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.hp_master= atoi(value);
-    }
-  }
-
-  if (strcmp(token, "HPSSR") == 0) {
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        sensors.HPSSR[i] = atoi(value);
-      }
-    }
-  }
-
-  if (strcmp(token, "IMDOut") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.IMDOut = atoi(value);
-    }
-  }
-
-  if (strcmp(token, "Embrakes") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.embrakes = atoi(value);
-    }
-  }
+  printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
+  return nullptr;
 }
 
+void Config::parseInterfaceFactory(char* line)
+{
+  // parse into key value pair, validate input line
+  char* key   = strtok(line, " ");
+  char* value = strtok(NULL, " ");
+  if (!key || !value) {
+    log_.ERR("CONFIG",
+            "lines for InterfaceFactory submodule must have format \"interface implementation\"");
+    return;
+  }
 
-const char config_dir_name[] = "configurations/";
+  // if the implementation is not registered with the interface factory, we use the default
+  // creator function
+#define PARSE_FACTORY(module, interface)                                            \
+  if (strcmp(key, #interface) == 0) {                                               \
+    auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);            \
+    interfaceFactory.get##interface = creator ? creator : createDefault<module::interface>;  \
+    return;                                                                         \
+  }
+  INTERFACE_LIST(PARSE_FACTORY)
 
-void Config::readFile(char* config_file) {
+  // if we get here, the interface is probably not listed in INTERFACE_LIST
+  log_.ERR("CONFIG", "Factory interface \"%s\" is not registered, you need to list it in "
+                     "INTERFACE_LIST in 'src/utils/interfaces.hpp'", key);
+}
+
+constexpr char config_dir_name[] = "configurations/";
+constexpr auto config_dir_name_size = sizeof(config_dir_name);
+void Config::readFile(char* config_file)
+{
+  static_assert(config_dir_name_size < BUFFER_SIZE, "configuration directory name is too long");
   char file_name[BUFFER_SIZE];
-  std::strcpy(file_name, config_dir_name);
-  std::strcpy(file_name+std::strlen(config_dir_name), config_file);
+  std::snprintf(file_name, config_dir_name_size, config_dir_name);
+  std::snprintf(file_name+config_dir_name_size-1,         // account for dir_name
+                sizeof(file_name)-config_dir_name_size,   // calculate remaining buffer space
+                "%s", config_file);                       // provide string value to be appended
   // load config file, parse it into data structure
   FILE* file = fopen(file_name, "r");
   if (!file) {
@@ -288,6 +320,10 @@ void Config::readFile(char* config_file) {
 Config::Config(char* config_file)
     : log_(System::getLogger())
 {
+#define INIT_CREATOR(module, interface) \
+  interfaceFactory.get##interface = createDefault<module::interface>;
+  INTERFACE_LIST(INIT_CREATOR)
+
   config_files_.push_back(config_file);
   readFile(config_file);
   config_files_.pop_back();

@@ -1,8 +1,9 @@
 /*
- * Author: Neil Weidinger
+ * Authors : Martin Kristien
  * Organisation: HYPED
- * Date: April 2019
+ * Date: 3. Dec 2019
  * Description:
+ * Demo executable showing how to use the driver interface abstraction.
  *
  *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,30 +17,24 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *
  */
 
-#ifndef TELEMETRY_RECVLOOP_HPP_
-#define TELEMETRY_RECVLOOP_HPP_
+#include "utils/system.hpp"
+#include "utils/config.hpp"
+#include "sensors/interface.hpp"
+#include "demo/interface.hpp"
+using namespace hyped;
 
-#include "telemetry/main.hpp"
-#include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
+int main(int argc, char* argv[])
+{
+  utils::System::parseArgs(argc, argv);
+  utils::System& sys = utils::System::getSystem();
 
-namespace hyped {
+  sensors::ImuInterface* imu = sys.config->interfaceFactory.getImuInterface();
 
-namespace telemetry {
+  demo::DemoInterface* demo = sys.config->interfaceFactory.getDemoInterface();
+  demo->printYourName();
 
-class RecvLoop: public Thread {
-  public:
-    explicit RecvLoop(Logger &log, data::Data& data, Main* main_pointer);
-    void run() override;
-
-  private:
-    Main& main_ref_;
-    data::Data& data_;
-};
-
-}  // namespace telemetry
-}  // namespace hyped
-
-#endif  // TELEMETRY_RECVLOOP_HPP_
+  return 0;
+}

@@ -47,6 +47,30 @@ struct stateMachineTest : public ::testing::Test {
   void TearDown() {}
 };
 
+// temp travis tests
+TEST(temptrav, shouldnotrun_noci) 
+{
+  ASSERT_EQ(0, 1);
+}
+
+TEST(temptrav, shouldrun)
+{
+  ASSERT_EQ(1, 1);
+}
+
+TEST_F(stateMachineTest, dontrun_noci)
+{
+  ASSERT_EQ(0, 1);
+}
+
+TEST_F(stateMachineTest, stillrun_nocites) 
+{
+  ASSERT_EQ(1, 1);
+}
+
+
+// end temp travis tests
+
 // Test fixture for 'accelerating' state
 TEST_F(stateMachineTest, state_machine_init)
 {

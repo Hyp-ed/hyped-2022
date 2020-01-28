@@ -58,7 +58,7 @@ default: runner
 .PHONY: runner
 runner: $(TARGET)
 	$(Verb) chmod u+x testrunner
-	$(Verb) cd $(ROOT); ./test/testrunner
+	$(Verb) cd $(ROOT); ./test/testrunner --gtest_filter=-*_noci
 
 staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
 	$(Echo) "Starting Static Checker"

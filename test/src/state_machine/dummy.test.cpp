@@ -48,7 +48,7 @@ struct stateMachineTest : public ::testing::Test {
 };
 
 // temp travis tests
-TEST(temptrav, shouldnotrun_noci) 
+TEST(temptrav, shouldnotrun_noci)
 {
   ASSERT_EQ(0, 1);
 }
@@ -63,7 +63,7 @@ TEST_F(stateMachineTest, dontrun_noci)
   ASSERT_EQ(0, 1);
 }
 
-TEST_F(stateMachineTest, stillrun_nocites) 
+TEST_F(stateMachineTest, stillrun_nocites)
 {
   ASSERT_EQ(1, 1);
 }

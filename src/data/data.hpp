@@ -89,7 +89,7 @@ struct TemperatureData : public Sensor {
 };
 
 struct Sensors : public Module {
-  static constexpr int kNumImus = 4;
+  static constexpr int kNumImus = 2;
   static constexpr int kNumKeyence = 2;
 
   DataPoint<array<ImuData, kNumImus>> imu;

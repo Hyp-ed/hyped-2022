@@ -1,14 +1,14 @@
 /*
  * Author: Gregory Dayao
  * Organisation: HYPED
- * Date: 3/4/19
- * Description: Demo for MPU9250 sensor using imu_manager
+ * Date: 30/1/20
+ * Description: Demo for ICM-20948 sensor using imu_manager
  * Troubleshooting:
  * If a single sensor does not initialise, try reconfiguring the chip_select_ pin.
  *  The GPIO pin may be faulty, so attempt with another pin and change
  *  chip_select_ pin list in imu_manager.cpp accordingly.
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -22,7 +22,7 @@
  *    limitations under the License.
  */
 
-#include "sensors/imu.hpp"
+#include "sensors/imu_manager.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 #include "utils/concurrent/thread.hpp"
@@ -31,24 +31,32 @@
 using hyped::utils::Logger;
 using hyped::utils::concurrent::Thread;
 using namespace hyped::data;
-using namespace std;
 using hyped::data::ImuData;
-using hyped::sensors::Imu;
+using hyped::data::Sensors;
+using hyped::sensors::ImuManager;
 
 int main(int argc, char* argv[])
 {
   hyped::utils::System::parseArgs(argc, argv);
   Logger& log = hyped::utils::System::getLogger();
-  Imu imu0(log, 20, true);
+  Data& data = Data::getInstance();
+  DataPoint<array<ImuData, Sensors::kNumImus>> data_array_;
+  ImuManager imu(log);
 
-  ImuData data0;
+  StateMachine state_machine = data.getStateMachineData();
+  state_machine.current_state = State::kAccelerating;   // change state for different accel values
+  data.setStateMachineData(state_machine);
+
+  imu.start();
 
   while(true) {
-    // imu0.getData(&data0);
-    imu0.readFifo(&data0);
-    log.INFO("TEST-Imu", "FIFO SIZE = %d", data0.fifo.size());
-    for (int i = 0; i < data0.fifo.size(); i++) {
-      log.INFO("TEST-Imu", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2", i, data0.fifo[i][0], data0.fifo[i][1], data0.fifo[i][2]);
+    data_array_ = data.getSensorsImuData();
+    for (int j = 0; j < Sensors::kNumImus; j++) {
+      log.INFO("TEST-ImuManager", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2",
+                j,
+                data_array_.value[j].acc[0],
+                data_array_.value[j].acc[1],
+                data_array_.value[j].acc[2]);
     }
     Thread::sleep(100);
   }

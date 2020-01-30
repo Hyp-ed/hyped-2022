@@ -285,7 +285,7 @@ class CppLintProcessor(SourceFileProcessor):
     return total_errors == 0
 
 COPYRIGHT_HEADER_PATTERN = re.compile(
-    r'Copyright [\d-]*20[0-1][0-9] HYPED')
+    r'Copyright [\d-]*20[0-2][0-9] HYPED')
 
 class SourceProcessor(SourceFileProcessor):
   """

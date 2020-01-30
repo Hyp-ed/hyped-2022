@@ -3,10 +3,6 @@
  * Organisation: HYPED
  * Date: 30/1/20
  * Description: Demo for ICM-20948 sensor using imu_manager
- * Troubleshooting:
- * If a single sensor does not initialise, try reconfiguring the chip_select_ pin.
- *  The GPIO pin may be faulty, so attempt with another pin and change
- *  chip_select_ pin list in imu_manager.cpp accordingly.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,15 +27,16 @@
 using hyped::utils::Logger;
 using hyped::utils::concurrent::Thread;
 using namespace hyped::data;
-using hyped::data::ImuData;
 using hyped::data::Sensors;
 using hyped::sensors::ImuManager;
+using hyped::utils::System;
 
 int main(int argc, char* argv[])
 {
   hyped::utils::System::parseArgs(argc, argv);
   Logger& log = hyped::utils::System::getLogger();
   Data& data = Data::getInstance();
+
   DataPoint<array<ImuData, Sensors::kNumImus>> data_array_;
   ImuManager imu(log);
 
@@ -51,7 +48,7 @@ int main(int argc, char* argv[])
 
   while(true) {
     data_array_ = data.getSensorsImuData();
-    for (int j = 0; j < Sensors::kNumImus; j++) {
+    for (int j = 0; j < 1; j++) {
       log.INFO("TEST-ImuManager", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2",
                 j,
                 data_array_.value[j].acc[0],

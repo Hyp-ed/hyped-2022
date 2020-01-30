@@ -1,5 +1,5 @@
 /*
- * Author:
+ * Author: Gregory Dayao, Yeyao Liu
  * Organisation: HYPED
  * Date:
  * Description: Main file for Imu
@@ -46,9 +46,6 @@ constexpr uint8_t kPwrMgmt2                 = 0x07;   // userbank 0
 
 // Configuration
 constexpr uint8_t kReadFlag                 = 0x80;   // unable to find in datasheet
-
-constexpr uint8_t kLpConfig                 = 0x05;   // userbank 0
-constexpr uint8_t kIntPinConfig             = 0x0F;   // userbank 0
 
 // Configuration bits Imu
 // constexpr uint8_t kBitsFs250Dps             = 0x00;

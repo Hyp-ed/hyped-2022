@@ -81,7 +81,7 @@ void Config::parseSensors(char* line)
     for (int i = 0; i < data::Sensors::kNumImus; i++) {
       char* value = strtok(NULL, ",");
       if (value) {
-        sensors.chip_select.push_back(atoi(value));
+        sensors.chip_select[i] = atoi(value);
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Author:
+ * Author: Gregory Dayao, Yeyao Liu
  * Organisation: HYPED
  * Date:
  * Description: Main file for Imu

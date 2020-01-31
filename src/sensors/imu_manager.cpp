@@ -39,13 +39,11 @@ ImuManager::ImuManager(Logger& log)
       data_(Data::getInstance())
 {
   if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
-    utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k1MHz);
+    utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
 
     for (int i = 0; i < data::Sensors::kNumImus; i++) {   // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], 0x08);
+      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], false);
     }
-
-    utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k20MHz);
   }
   // else if (sys_.fake_imu_fail) {
   //   for (int i = 0; i < data::Sensors::kNumImus; i++) {
@@ -63,7 +61,7 @@ ImuManager::ImuManager(Logger& log)
   //                                   "data/in/decel_state.txt", false, false);
   //   }
   // }
-  log_.INFO("IMU-MANAGER", "imu data has been initialised");
+  log_.INFO("IMU-MANAGER", "imu manager has been initialised");
 }
 
 void ImuManager::run()

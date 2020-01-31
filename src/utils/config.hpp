@@ -92,7 +92,7 @@ class Config {
   } embrakes;
 
   struct Sensors {
-    std::vector<int> chip_select;
+    int chip_select[data::Sensors::kNumImus];
     int keyence_l;
     int keyence_r;
     int thermistor;

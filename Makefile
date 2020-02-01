@@ -113,6 +113,12 @@ static:
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test runner
 
+testrunner-all: test/lib/libtest.a
+	$(VERB) $(MAKE) -C test runnerall 
+
+testrunner-filter: test/lib/libtest.a
+	$(VERB) $(MAKE) -C test runnerfilter
+
 coverage: testrunner
 	$(Verb) ./test/utils/get_code_cov.sh
 

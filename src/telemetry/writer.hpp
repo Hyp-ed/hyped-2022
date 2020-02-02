@@ -30,7 +30,7 @@ namespace telemetry {
 
   class Writer {
     public:
-      Writer();
+      explicit Writer(data::Data& data);
       void start();
       void end();
       void packCrucialData();
@@ -41,14 +41,17 @@ namespace telemetry {
     private:
       rapidjson::Writer<rapidjson::StringBuffer> rjwriter_;
       rapidjson::StringBuffer sb_;
-      void add(std::string name, int min, int max, std::string units, int value);
-      void add(std::string name, float min, float max, std::string units, float value);
+      void add(std::string name, int min, int max, std::string unit, int value);
+      void add(std::string name, float min, float max, std::string unit, float value);
       void add(std::string name, bool value);
       void add(std::string name, std::string value);
       void add(std::string name, data::State value);
       void add(std::string name, data::ModuleStatus value);
+      void startList(std::string name);
+      void endList();
       std::string convertStateMachineState(data::State state);
       std::string convertModuleStatus(data::ModuleStatus module_status);
+      data::Data& data_;
   };
 
 }  // namespace telemetry

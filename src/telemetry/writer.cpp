@@ -21,20 +21,20 @@
 #include <string>
 
 #include "writer.hpp"
+#include "data/data.hpp"
 
 namespace hyped {
 namespace telemetry {
 
   // additional data points that are displayed in the GUI data section
-  // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/State-Machine
+  // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
   void Writer::packAdditionalData()
   {
     rjwriter_.Key("additional_data");
     rjwriter_.StartArray();
 
     // edit below
-
-
+    
     // edit above
 
     rjwriter_.EndArray();
@@ -47,10 +47,12 @@ namespace telemetry {
     rjwriter_.Key("crucial_data");
     rjwriter_.StartArray();
 
-    add("distance", 0, 1250, "m", 0);
-    add("velocity", 0, 100, "m/s", 0);
-    add("acceleration", -20, 20, "m/s^2", 0);
-    add("status", true);
+    data::Navigation nav_data = data_.getNavigationData();
+    data::StateMachine sm_data = data_.getStateMachineData();
+    add("distance", 0.0, 1250.0, "m", nav_data.distance);
+    add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
+    add("acceleration", -50.0, 50.0, "m/s^2", nav_data.acceleration);
+    add("status", sm_data.current_state);
 
     rjwriter_.EndArray();
   }
@@ -62,14 +64,15 @@ namespace telemetry {
     rjwriter_.Key("status_data");
     rjwriter_.StartArray();
 
+    // TODO(everyone): add all required data points
+
     rjwriter_.EndArray();
   }
 
-  Writer::Writer()
-  {
-    rapidjson::StringBuffer sb_;
-    rapidjson::Writer<rapidjson::StringBuffer> rjwriter_(sb_);
-  }
+  Writer::Writer(data::Data& data)
+    : rjwriter_(sb_),
+      data_ {data}
+  {}
 
   void Writer::start()
   {
@@ -81,12 +84,27 @@ namespace telemetry {
     rjwriter_.EndObject();
   }
 
+  void Writer::startList(std::string name)
+  {
+    rjwriter_.StartObject();
+    rjwriter_.Key("name");
+    rjwriter_.String(name.c_str());
+    rjwriter_.Key("value");
+    rjwriter_.StartArray();
+  }
+
+  void Writer::endList()
+  {
+    rjwriter_.EndArray();
+    rjwriter_.EndObject();
+  }
+
   std::string Writer::getString()
   {
     return sb_.GetString();
   }
 
-  void Writer::add(std::string name, int min, int max, std::string units, int value)
+  void Writer::add(std::string name, int min, int max, std::string unit, int value)
   {
     rjwriter_.StartObject();
     rjwriter_.Key("name");
@@ -95,14 +113,14 @@ namespace telemetry {
     rjwriter_.Int(min);
     rjwriter_.Key("max");
     rjwriter_.Int(max);
-    rjwriter_.Key("units");
-    rjwriter_.String(units.c_str());
+    rjwriter_.Key("unit");
+    rjwriter_.String(unit.c_str());
     rjwriter_.Key("value");
     rjwriter_.Int(value);
     rjwriter_.EndObject();
   }
 
-  void Writer::add(std::string name, float min, float max, std::string units, float value)
+  void Writer::add(std::string name, float min, float max, std::string unit, float value)
   {
     rjwriter_.StartObject();
     rjwriter_.Key("name");
@@ -111,8 +129,8 @@ namespace telemetry {
     rjwriter_.Double(min);
     rjwriter_.Key("max");
     rjwriter_.Double(max);
-    rjwriter_.Key("units");
-    rjwriter_.String(units.c_str());
+    rjwriter_.Key("unit");
+    rjwriter_.String(unit.c_str());
     rjwriter_.Key("value");
     rjwriter_.Double(value);
     rjwriter_.EndObject();

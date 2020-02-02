@@ -38,7 +38,7 @@ void SendLoop::run()
   log_.DBG("Telemetry", "Telemetry SendLoop thread started");
 
   while (true) {
-    Writer writer;
+    Writer writer(data_);
 
     writer.start();
     writer.packCrucialData();

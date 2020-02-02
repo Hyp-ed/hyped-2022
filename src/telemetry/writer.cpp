@@ -34,7 +34,7 @@ namespace telemetry {
     rjwriter_.StartArray();
 
     // edit below
-    
+
     // edit above
 
     rjwriter_.EndArray();

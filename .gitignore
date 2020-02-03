@@ -19,6 +19,7 @@ testrunner
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+.fuse_hidden*
 
 # Testing
 /utils/Lint/lintresults.txt

@@ -74,16 +74,6 @@ Writer::Writer(data::Data& data)
     data_ {data}
 {}
 
-void Writer::start()
-{
-  rjwriter_.StartObject();
-}
-
-void Writer::end()
-{
-  rjwriter_.EndObject();
-}
-
 void Writer::startList(const char* name)
 {
   rjwriter_.StartObject();
@@ -97,11 +87,6 @@ void Writer::endList()
 {
   rjwriter_.EndArray();
   rjwriter_.EndObject();
-}
-
-std::string Writer::getString()
-{
-  return sb_.GetString();
 }
 
 void Writer::add(const char* name, int min, int max, const char* unit, int value)

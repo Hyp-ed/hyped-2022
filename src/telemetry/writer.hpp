@@ -31,12 +31,22 @@ namespace telemetry {
 class Writer {
  public:
   explicit Writer(data::Data& data);
-  void start();
-  void end();
   void packCrucialData();
   void packStatusData();
   void packAdditionalData();
-  std::string getString();
+
+  void start()
+  {
+    rjwriter_.StartObject();
+  }
+  void end()
+  {
+    rjwriter_.EndObject();
+  }
+  std::string getString()
+  {
+    return sb_.GetString();
+  }
 
  private:
   void add(const char* name, int min, int max, const char* unit, int value);

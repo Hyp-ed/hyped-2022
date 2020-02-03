@@ -28,31 +28,32 @@
 namespace hyped {
 namespace telemetry {
 
-  class Writer {
-    public:
-      explicit Writer(data::Data& data);
-      void start();
-      void end();
-      void packCrucialData();
-      void packStatusData();
-      void packAdditionalData();
-      std::string getString();
+class Writer {
+ public:
+  explicit Writer(data::Data& data);
+  void start();
+  void end();
+  void packCrucialData();
+  void packStatusData();
+  void packAdditionalData();
+  std::string getString();
 
-    private:
-      rapidjson::Writer<rapidjson::StringBuffer> rjwriter_;
-      rapidjson::StringBuffer sb_;
-      void add(std::string name, int min, int max, std::string unit, int value);
-      void add(std::string name, float min, float max, std::string unit, float value);
-      void add(std::string name, bool value);
-      void add(std::string name, std::string value);
-      void add(std::string name, data::State value);
-      void add(std::string name, data::ModuleStatus value);
-      void startList(std::string name);
-      void endList();
-      std::string convertStateMachineState(data::State state);
-      std::string convertModuleStatus(data::ModuleStatus module_status);
-      data::Data& data_;
-  };
+ private:
+  void add(const char* name, int min, int max, const char* unit, int value);
+  void add(const char* name, float min, float max, const char* unit, float value);
+  void add(const char* name, bool value);
+  void add(const char* name, const char* value);
+  void add(const char* name, data::State value);
+  void add(const char* name, data::ModuleStatus value);
+  void startList(const char* name);
+  void endList();
+
+  rapidjson::StringBuffer sb_;
+  rapidjson::Writer<rapidjson::StringBuffer> rjwriter_;
+  const char* convertStateMachineState(data::State state);
+  const char* convertModuleStatus(data::ModuleStatus module_status);
+  data::Data& data_;
+};
 
 }  // namespace telemetry
 }  // namespace hyped

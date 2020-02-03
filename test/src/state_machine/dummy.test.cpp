@@ -47,7 +47,8 @@ struct stateMachineTest : public ::testing::Test {
   void TearDown() {}
 };
 
-// temp travis tests
+// temp travis tests for gtest filters
+// delete before merge
 TEST(temptrav, shouldnotrun_noci)
 {
   ASSERT_EQ(0, 1);

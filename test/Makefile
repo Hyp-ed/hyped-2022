@@ -13,6 +13,7 @@ LINT:=../utils/Lint/presubmit.py
 CPPCHECK_EXC_TARGET:=$(CPPCHECK)/cppcheck
 COVERAGE_DIR:=coverage
 GOOGLE_TEST_LIBS = -lgtest -Llib/googletest/build/lib/
+GOOGLE_TEST_FILTERS=
 
 CPPCHECK_EXEC=$(shell command -v cppcheck || echo ./$(CPPCHECK_EXC_TARGET))
 CPPCHECK_ENABLE_OPS=
@@ -58,7 +59,15 @@ default: runner
 .PHONY: runner
 runner: $(TARGET)
 	$(Verb) chmod u+x testrunner
+	$(Verb) cd $(ROOT); ./test/testrunner --gtest_filter=-*_noci
+
+runnerall: $(TARGET)
+	$(Verb) chmod u+x testrunner
 	$(Verb) cd $(ROOT); ./test/testrunner
+
+runnerfilter: $(TARGET)
+	$(Verb) chmod u+x testrunner
+	$(Verb) cd $(ROOT); ./test/testrunner --gtest_filter=$(GOOGLE_TEST_FILTERS)
 
 staticcheck: $(TARGET) $(CPPCHECK_EXC_TARGET)
 	$(Echo) "Starting Static Checker"

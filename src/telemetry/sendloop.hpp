@@ -43,18 +43,6 @@ class SendLoop: public Thread {
     void run() override;
 
   private:
-    void packNavigationMessage(Writer<StringBuffer>& writer);
-    void packStateMachineMessage(Writer<StringBuffer>& writer);
-    void packMotorsMessage(Writer<StringBuffer>& writer);
-    void packBatteriesMessage(Writer<StringBuffer>& writer);
-    template<std::size_t SIZE>
-    void packLpBatteryDataMessage(Writer<StringBuffer>& writer, std::array<data::BatteryData, SIZE>& battery_data_array); // NOLINT
-    template<std::size_t SIZE>
-    void packHpBatteryDataMessage(Writer<StringBuffer>& writer, std::array<data::BatteryData, SIZE>& battery_data_array); // NOLINT
-    void packBatteryDataMessageHelper(bool HP, Writer<StringBuffer>& writer, data::BatteryData& battery_data); // NOLINT
-    void packSensorsMessage(Writer<StringBuffer>& writer);
-    void packTemperatureMessage(Writer<StringBuffer>& writer);
-    void packEmergencyBrakesMessage(Writer<StringBuffer>& writer);
     std::string convertStateMachineState(data::State state);
     std::string convertModuleStatus(data::ModuleStatus module_status);
     Main&                   main_ref_;

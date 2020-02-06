@@ -7,10 +7,10 @@ if command -v hostnamectl>/dev/null; then
   if hostnamectl | grep beaglebone>/dev/null; then
     OPTION=""
   else
-    OPTION="-j"
+    OPTION="-j4"
   fi
 else
-  OPTION="-j"
+  OPTION="-j4"
 fi
 
 # compile and link, lint on src/

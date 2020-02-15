@@ -5,11 +5,11 @@ echo -n "Deploying git hooks: "
 
 HOOKDIR=.git/hooks
 
-# when repo is a subrepo, .git is a file describing the path to the actual gitdir
-if [ -f .git ]
+# when repo is a subrepo, .git is not a directory, but a file describing the path to the actual gitdir
+if [ ! -d .git ]
 then
-    # reroute $HOOKDIR to the actual directory
-    HOOKDIR=$(perl -nle 'print $1 if /gitdir: (.+)/' .git)
+    echo "IGNORING SINCE SUBMODULE"
+    exit
 fi
 
 # remove old hooks

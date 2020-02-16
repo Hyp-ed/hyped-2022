@@ -36,6 +36,7 @@ binmain.o
 *.ipch
 *.ipch.icloud
 .ccls
+.ccls-cache
 
 # libraries
 lib/Eigen

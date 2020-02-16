@@ -35,6 +35,7 @@ binmain.o
 .ipynb_checkpoints
 *.ipch
 *.ipch.icloud
+.ccls
 
 # libraries
 lib/Eigen

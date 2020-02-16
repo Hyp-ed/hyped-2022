@@ -117,7 +117,7 @@ testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test runner
 
 testrunner-all: test/lib/libtest.a
-	$(VERB) $(MAKE) -C test runnerall 
+	$(VERB) $(MAKE) -C test runnerall
 
 testrunner-filter: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test runnerfilter GOOGLE_TEST_FILTERS=$(GTEST_FILTERS)
@@ -176,5 +176,12 @@ info:
 #	$(call echo_var,MAINS)
 	$(call echo_var,UNAME)
 	$(call echo_var,CFLAGS)
+
+# PHONY to redo even if .ccls file exists
+.PHONY: .ccls
+.ccls:
+	$(Echo) $(CC) > $@
+	$(Verb) $(foreach value,$(CFLAGS) ,echo $(value) >> $@;)
+	$(Verb) $(foreach value,$(INC_DIR),echo $(value) >> $@;)
 
 -include $(OBJS:.o=.d)

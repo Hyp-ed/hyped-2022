@@ -14,5 +14,8 @@ else
   OPTION="-j4"
 fi
 
+# show what is actually run
+set -x
+
 # run tests
 make testrunner "$OPTION"

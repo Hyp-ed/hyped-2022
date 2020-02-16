@@ -13,6 +13,9 @@ else
   OPTION="-j4"
 fi
 
+# show what is actually run
+set -x
+
 # compile and link, lint on src/
 make "$OPTION"
 
@@ -20,5 +23,5 @@ make "$OPTION"
 make test/lib/libtest.a  "$OPTION"
 make -C test/ testrunner lint "$OPTION"
 
-# run static analyzer on src test/src 
+# run static analyzer on src test/src
 # make static # off for now

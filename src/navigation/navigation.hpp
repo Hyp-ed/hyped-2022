@@ -1,7 +1,7 @@
 /*
- * Author: Neil McBlane, Brano Pilnan
+ * Author: Neil McBlane, Brano Pilnan, Justus Rudolph
  * Organisation: HYPED
- * Date: 05/04/2019
+ * Date: 16/02/2020
  * Description: Main file for navigation class.
  *
  *    Copyright 2019 HYPED
@@ -157,6 +157,9 @@ namespace navigation {
     private:
       static constexpr int kCalibrationAttempts = 3;
       static constexpr int kCalibrationQueries = 10000;
+      
+      // number of previous measurements stored
+      static constexpr int kPreviousMeasurements = 1000;
 
       static constexpr int kPrintFreq = 1;
       static constexpr NavigationType kEmergencyDeceleration = 24;
@@ -187,15 +190,25 @@ namespace navigation {
       unsigned int axis_;
 
       // acceptable variances for calibration measurements: {x, y, z}
-      std::array<float, 3> calibration_limits_;
+      array<float, 3> calibration_limits_;
+
+      // Calibration variances in each dimension, necessary for vibration checking
+      array<NavigationType, 3> calibration_variance_;
+
+      // Array of previous measurements
+      array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
+      // Current point in recent measurements, to save space
+      uint16_t curr_msmt_;
+      // Boolean value to check if the array has been filled, to not wrong variance
+      bool prev_filled_;
 
       // Kalman filters to filter each IMU measurement individually
       FilterArray filters_;
 
       // Counter for consecutive outlier output from each IMU
-      std::array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
+      array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
       // Array of booleans to signify which IMUs are reliable or faulty
-      std::array<bool, Sensors::kNumImus> imu_reliable_;
+      array<bool, Sensors::kNumImus> imu_reliable_;
       // Counter of how many IMUs have failed
       uint32_t nOutlierImus_;
 
@@ -257,6 +270,10 @@ namespace navigation {
        * @brief Update uncertainty in distance obtained through IMU measurements.
        */
       void updateUncertainty();
+      /**
+       * @brief Check for vibrations
+       */
+      void checkVibration();
   };
 
 

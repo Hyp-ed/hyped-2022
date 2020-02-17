@@ -34,6 +34,7 @@ Navigation::Navigation(Logger& log, unsigned int axis/*=0*/)
            counter_(0),
            axis_(axis),
            calibration_limits_ {{0.05, 0.05, 0.05}},
+           curr_msmt_(0),
            imu_reliable_ {{true, true, true, true}},
            nOutlierImus_(0),
            stripe_counter_(0, 0),
@@ -121,7 +122,7 @@ Navigation::NavigationVectorArray Navigation::getGravityCalibration() const
 void Navigation::calibrateGravity()
 {
   log_.INFO("NAV", "Calibrating gravity");
-  std::array<RollingStatistics<NavigationVector>, Sensors::kNumImus> online_array =
+  array<RollingStatistics<NavigationVector>, Sensors::kNumImus> online_array =
     {{ RollingStatistics<NavigationVector>(kCalibrationQueries),
        RollingStatistics<NavigationVector>(kCalibrationQueries),
        RollingStatistics<NavigationVector>(kCalibrationQueries),
@@ -166,6 +167,15 @@ void Navigation::calibrateGravity()
               i, gravity_calibration_[i][0], gravity_calibration_[i][1],
               gravity_calibration_[i][2], var);
     }
+    // set calibration uncertainties
+    for (int axis = 0; axis < 3; axis++){
+      for (int i = 0; i < Sensors::kNumImus; i++) {
+        double var = (online_array[i].getVariance()[axis]);
+        calibration_variance_[axis] += var*var;
+      }
+      // geometric mean for variances of different IMUs
+      calibration_variance_[axis] = sqrt(calibration_variance_[axis]);
+    }
     status_ = ModuleStatus::kReady;
     updateData();
     log_.INFO("NAV", "Navigation module ready");
@@ -207,19 +217,24 @@ void Navigation::queryImus()
   // process raw values
   for (int axis = 0; axis < 3; axis++) {
     for (int i = 0; i < Sensors::kNumImus; ++i) {
-      if (!imu_reliable_[i]) { acc_raw[i][axis] = 0;
-      } else {
-        NavigationVector a = sensor_readings_.value[i].acc - gravity_calibration_[i];
-        acc_raw[axis][i] = a[axis];
-        if (axis == axis_) acc_raw_moving[i] = a[axis_];
-      }
+      NavigationVector a = sensor_readings_.value[i].acc - gravity_calibration_[i];
+      acc_raw[axis][i] = a[axis];
+      
+      // the moving axis should be set to 0 for tukeyFences
+      if (!imu_reliable_[i]) { 
+        acc_raw_moving[i] = 0;
+      } else if (axis == axis_) acc_raw_moving[i] = a[axis_];
     }
   }
-  // Run outlier detection on moving, and supposedly non moving axes
+  // Run outlier detection on moving axis
   tukeyFences(acc_raw_moving, kTukeyThreshold);
-  for (int axis = 0; axis < 3; axis++) {
-    tukeyFences(acc_raw[axis], kTukeyThreshold);
-  }
+  // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
+  // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
+
+  /*for (int axis = 0; axis < 3; axis++) {
+    if (axis != axis_) tukeyFences(acc_raw[axis], kTukeyThreshold);
+  }*/
+  
   // Kalman filter the readings which are reliable
   for (int i = 0; i < Sensors::kNumImus; ++i) {
     if (imu_reliable_[i]) {
@@ -227,12 +242,42 @@ void Navigation::queryImus()
       acc_avg_filter.update(estimate);
     }
   }
+  previous_measurements_[curr_msmt_] = acc_raw;
+  curr_msmt_++;
+  if (curr_msmt_ == kPreviousMeasurements) {
+    curr_msmt_ = 0;
+    prev_filled_ = 1;
+  }
+  if (prev_filled_) checkVibration();
 
   acceleration_.value = acc_avg_filter.getMean();
   acceleration_.timestamp = t;
 
   acceleration_integrator_.update(acceleration_);
   velocity_integrator_.update(velocity_);
+}
+
+void Navigation::checkVibration()
+{
+  // curr_msmt points at next measurement, ie the last one
+  for (int i = 0; i < kPreviousMeasurements; i++) {
+    ImuAxisData raw_data = previous_measurements_[(curr_msmt_ + i) % kPreviousMeasurements];
+    for (int axis = 0; axis < 3; axis++) {
+      OnlineStatistics<NavigationType> online_array;
+      if (axis != axis_) {  // assume variance in moving axis are not vibrations
+        for (int imu = 0; imu < Sensors::kNumImus; imu++) {
+          online_array.update(raw_data[axis][imu]);
+        }
+      }
+      double var = online_array.getVariance();
+      double ratio = var / calibration_variance_[axis];
+      double statistical_variance_ratio = kCalibrationAttempts/kPreviousMeasurements;
+      if (ratio > statistical_variance_ratio) { 
+        log_.ERR("NAV", "Variance in axis %d is %.3f times larger than its calibration variance.",
+          axis, ratio);
+      }
+    }
+  }
 }
 
 void Navigation::updateUncertainty()

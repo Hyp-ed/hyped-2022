@@ -168,7 +168,7 @@ void Navigation::calibrateGravity()
               gravity_calibration_[i][2], var);
     }
     // set calibration uncertainties
-    for (int axis = 0; axis < 3; axis++){
+    for (int axis = 0; axis < 3; axis++) {
       for (int i = 0; i < Sensors::kNumImus; i++) {
         double var = (online_array[i].getVariance()[axis]);
         calibration_variance_[axis] += var*var;
@@ -223,7 +223,9 @@ void Navigation::queryImus()
       // the moving axis should be set to 0 for tukeyFences
       if (!imu_reliable_[i]) {
         acc_raw_moving[i] = 0;
-      } else if (axis == axis_) acc_raw_moving[i] = a[axis_];
+      } else if (axis == axis_) {
+        acc_raw_moving[i] = a[axis_];
+      }
     }
   }
   // Run outlier detection on moving axis

@@ -1,7 +1,7 @@
 /*
  * Author: Neil McBlane, Brano Pilnan, Justus Rudolph
  * Organisation: HYPED
- * Date: 15/02/2020
+ * Date: 16/02/2020
  * Description: Main file for navigation class.
  *
  *    Copyright 2019 HYPED
@@ -215,13 +215,13 @@ void Navigation::queryImus()
   sensor_readings_ = data_.getSensorsImuData();
   uint32_t t = sensor_readings_.timestamp;
   // process raw values
-  for (int axis = 0; axis < 3; axis++) {
+  for (uint8_t axis = 0; axis < 3; axis++) {
     for (int i = 0; i < Sensors::kNumImus; ++i) {
       NavigationVector a = sensor_readings_.value[i].acc - gravity_calibration_[i];
       acc_raw[axis][i] = a[axis];
-      
+
       // the moving axis should be set to 0 for tukeyFences
-      if (!imu_reliable_[i]) { 
+      if (!imu_reliable_[i]) {
         acc_raw_moving[i] = 0;
       } else if (axis == axis_) acc_raw_moving[i] = a[axis_];
     }
@@ -234,7 +234,7 @@ void Navigation::queryImus()
   /*for (int axis = 0; axis < 3; axis++) {
     if (axis != axis_) tukeyFences(acc_raw[axis], kTukeyThreshold);
   }*/
-  
+
   // Kalman filter the readings which are reliable
   for (int i = 0; i < Sensors::kNumImus; ++i) {
     if (imu_reliable_[i]) {
@@ -262,7 +262,7 @@ void Navigation::checkVibration()
   // curr_msmt points at next measurement, ie the last one
   for (int i = 0; i < kPreviousMeasurements; i++) {
     ImuAxisData raw_data = previous_measurements_[(curr_msmt_ + i) % kPreviousMeasurements];
-    for (int axis = 0; axis < 3; axis++) {
+    for (uint8_t axis = 0; axis < 3; axis++) {
       OnlineStatistics<NavigationType> online_array;
       if (axis != axis_) {  // assume variance in moving axis are not vibrations
         for (int imu = 0; imu < Sensors::kNumImus; imu++) {
@@ -272,7 +272,7 @@ void Navigation::checkVibration()
       double var = online_array.getVariance();
       double ratio = var / calibration_variance_[axis];
       double statistical_variance_ratio = kCalibrationAttempts/kPreviousMeasurements;
-      if (ratio > statistical_variance_ratio) { 
+      if (ratio > statistical_variance_ratio) {
         log_.ERR("NAV", "Variance in axis %d is %.3f times larger than its calibration variance.",
           axis, ratio);
       }

@@ -157,7 +157,7 @@ namespace navigation {
     private:
       static constexpr int kCalibrationAttempts = 3;
       static constexpr int kCalibrationQueries = 10000;
-      
+
       // number of previous measurements stored
       static constexpr int kPreviousMeasurements = 1000;
 

@@ -71,6 +71,7 @@ class System {
   bool fake_temperature;
   bool fake_embrakes;
   bool fake_motors;
+  bool fake_telemetry;
 
   // Fake Fail System variables below
   bool fake_imu_fail;

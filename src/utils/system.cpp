@@ -66,6 +66,7 @@ void printUsage()
     "    --fake_temperature --fake_temperature_fail\n"
     "    --fake_embrakes --fake_motors\n"
     "    --battery_test  --fake_highpower\n"
+    "    --fake_telemetry\n"
     "    To set navigation IDs.\n"
     "    --imu_id, --run_id\n"
     "    To set which IMU axis to be navigated after.\n"
@@ -102,6 +103,7 @@ System::System(int argc, char* argv[])
       fake_temperature(false),
       fake_embrakes(false),
       fake_motors(false),
+      fake_telemetry(false),
       fake_imu_fail(false),
       fake_batteries_fail(false),
       fake_keyence_fail(false),
@@ -161,6 +163,7 @@ System::System(int argc, char* argv[])
       {"stationary_run", no_argument, 0, 't'},
       {"outside_run", no_argument, 0, 'w'},
       {"telemetry_off", no_argument, 0, 'x'},
+      {"fake_telemetry", no_argument, 0, 'X'},
       {0, 0, 0, 0}
     };    // options for long in long_options array, can support optional argument
     // returns option character from argv array following '-' or '--' from command line
@@ -329,6 +332,10 @@ System::System(int argc, char* argv[])
       case 'x':   // telemetry_off
         if (optarg) telemetry_off = atoi(optarg);
         else        telemetry_off = 1;
+        break;
+      case 'X':   // fake_telemetry
+        if (optarg) fake_telemetry = atoi(optarg);
+        else        fake_telemetry = 1;
         break;
       default:
         printUsage();

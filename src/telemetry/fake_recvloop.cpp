@@ -1,5 +1,5 @@
 /*
- * Author: James Ridley
+ * Author: J. Ridley
  * Organisation: HYPED
  * Date: April 2019
  * Description:
@@ -32,21 +32,39 @@ FakeRecvLoop::FakeRecvLoop(Logger &log, data::Data& data, Main* main_pointer)
     main_ref_ {*main_pointer},
     data_ {data}
 {
-  log_.DBG("Telemetry", "Fake Telemetry RecvLoop thread object created");
+  log_.DBG("Fake-Telemetry", "Fake Telemetry RecvLoop thread object created");
 }
 
-std::string FakeRecvLoop::receiveFakeData() {
-    std::string fake_message;
-    log_.DBG("Telemetry", "Receiving fake message");
-    if (data_.getStateMachineData.currenState == data::State::kIdle) {
-        fake_message = "CALIBRATE";
-    }
-    return fake_message;
+/*
+ * Fake data will automatically "receive" the message to transition
+ * to the next state as soon as statemachine enters the prerequisite state.
+ * Sends a new message every second to avoid clogging.
+ */
+std::string FakeRecvLoop::receiveFakeData()
+{
+  Thread::sleep(1000);
+  std::string fake_message;
+  switch (data_.getStateMachineData().current_state) {
+  case  data::State::kIdle:
+    fake_message = "CALIBRATE";
+    break;
+  case  data::State::kReady:
+    fake_message = "LAUNCH";
+    break;
+  case  data::State::kRunComplete:
+    fake_message = "SERVER_PROPULSION_GO";
+    break;
+  default:
+    fake_message = "ACK";
+    break;
+  }
+  log_.DBG("Fake-Telemetry", "Receiving fake message");
+  return fake_message;
 }
 
 void FakeRecvLoop::run()
 {
-  log_.DBG("Telemetry", "Fake Telemetry RecvLoop thread started");
+  log_.DBG("Fake-Telemetry", "Fake Telemetry RecvLoop thread started");
 
   data::Telemetry telem_data_struct = data_.getTelemetryData();
   std::string message;
@@ -56,7 +74,7 @@ void FakeRecvLoop::run()
       message = receiveFakeData();
     }
     catch (std::exception& e) {
-      log_.ERR("Telemetry", "%s", e.what());
+      log_.ERR("Fake-Telemetry", "%s", e.what());
 
       telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telem_data_struct);
@@ -65,40 +83,48 @@ void FakeRecvLoop::run()
     }
 
     if (message == "ACK") {
-      log_.INFO("Telemetry", "FROM SERVER: ACK");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: ACK");
     } else if (message == "STOP") {
-      log_.INFO("Telemetry", "FROM SERVER: STOP");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: STOP");
       telem_data_struct.emergency_stop_command = true;
     } else if (message == "CALIBRATE") {
-      log_.INFO("Telemetry", "FROM SERVER: CALIBRATE");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: CALIBRATE");
       telem_data_struct.calibrate_command = true;
     } else if (message == "LAUNCH") {
-      log_.INFO("Telemetry", "FROM SERVER: LAUNCH");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: LAUNCH");
       telem_data_struct.launch_command = true;
     } else if (message == "RESET") {
-      log_.INFO("Telemetry", "FROM SERVER: RESET");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: RESET");
       telem_data_struct.reset_command = true;
     } else if (message == "SERVER_PROPULSION_GO") {
-      log_.INFO("Telemetry", "FROM SERVER: SERVICE_PROPULSION_GO");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: SERVICE_PROPULSION_GO");
       telem_data_struct.service_propulsion_go = true;
     } else if (message == "SERVER_PROPULSION_STOP") {
-      log_.INFO("Telemetry", "FROM SERVER: SERVICE_PROPULSION_STOP");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: SERVICE_PROPULSION_STOP");
       telem_data_struct.service_propulsion_go = false;
     } else if (message == "NOMINAL_BRAKING") {
-      log_.INFO("Telemetry", "FROM SERVER: NOMINAL_BRAKING");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: NOMINAL_BRAKING");
       telem_data_struct.nominal_braking_command = true;
     } else if (message == "NOMINAL_RETRACT") {
-      log_.INFO("Telemetry", "FROM SERVER: NOMINAL_RETRACT");
+      log_.INFO("Fake-Telemetry", "FROM SERVER: NOMINAL_RETRACT");
       telem_data_struct.nominal_braking_command = false;
     } else {
-      log_.ERR("Telemetry", "Unrecognized input from server, ENTERING CRITICAL FAILURE");
+      log_.ERR("Fake-Telemetry", "Unrecognized input from server, ENTERING CRITICAL FAILURE");
       telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
     }
 
     data_.setTelemetryData(telem_data_struct);
+
+    // Once SVP GO is entered wait 5 seconds before changing state again
+    // for the sake of testing SVP code
+    if (message == "SERVER_PROPULSION_GO") {
+      Thread::sleep(5000);
+      telem_data_struct.service_propulsion_go = false;
+      data_.setTelemetryData(telem_data_struct);
+    }
   }
 
-  log_.DBG("Telemetry", "Exiting Fake Telemetry RecvLoop thread");
+  log_.DBG("Fake-Telemetry", "Exiting Fake Telemetry RecvLoop thread");
 }
 
 }  // namespace telemetry

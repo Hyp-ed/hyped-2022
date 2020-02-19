@@ -22,6 +22,8 @@
 #include "telemetry/main.hpp"
 #include "telemetry/sendloop.hpp"
 #include "telemetry/recvloop.hpp"
+#include "telemetry/fake_recvloop.hpp"
+#include "telemetry/fake_sendloop.hpp"
 
 namespace hyped {
 
@@ -47,35 +49,43 @@ void Main::run()
     return;
   }
 
-
   log_.DBG("Telemetry", "Telemetry Main thread started");
 
   data::Telemetry telem_data_struct = data_.getTelemetryData();
 
-  try {
-    client_.connect();
-  }
-  catch (std::exception& e) {
-    log_.ERR("Telemetry", e.what());
-    log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
+  if (!sys.fake_telemetry) {
+    try {
+      client_.connect();
+    }
+    catch (std::exception& e) {
+      log_.ERR("Telemetry", e.what());
+      log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
-    telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
-    data_.setTelemetryData(telem_data_struct);
+      telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
+      data_.setTelemetryData(telem_data_struct);
 
-    return;
+      return;
+    }
   }
 
   telem_data_struct.module_status = ModuleStatus::kInit;
   data_.setTelemetryData(telem_data_struct);
 
-  SendLoop sendloop_thread {log_, data_, this};
-  RecvLoop recvloop_thread {log_, data_, this};
-
-  sendloop_thread.start();
-  recvloop_thread.start();
-
-  sendloop_thread.join();
-  recvloop_thread.join();
+  if (sys.fake_telemetry) {
+    FakeSendLoop fake_sendloop_thread {log_, data_, this};
+    FakeRecvLoop fake_recvloop_thread {log_, data_, this};
+    fake_sendloop_thread.start();
+    fake_recvloop_thread.start();
+    fake_sendloop_thread.join();
+    fake_recvloop_thread.join();
+  } else {
+    SendLoop sendloop_thread {log_, data_, this};
+    RecvLoop recvloop_thread {log_, data_, this};
+    sendloop_thread.start();
+    recvloop_thread.start();
+    sendloop_thread.join();
+    recvloop_thread.join();
+  }
 
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }

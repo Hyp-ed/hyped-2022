@@ -18,30 +18,38 @@
  *    limitations under the License.
  */
 
-#ifndef TELEMETRY_FAKE_RECVLOOP_HPP_
-#define TELEMETRY_FAKE_RECVLOOP_HPP_
+#ifndef TELEMETRY_FAKE_SENDLOOP_HPP_
+#define TELEMETRY_FAKE_SENDLOOP_HPP_
 
+#include <rapidjson/writer.h>
 #include <string>
 #include "telemetry/main.hpp"
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
 
+using rapidjson::Writer;
+using rapidjson::StringBuffer;
+
 namespace hyped {
+
+using utils::concurrent::Thread;
+using utils::Logger;
 
 namespace telemetry {
 
-class FakeRecvLoop: public Thread {
+class FakeSendLoop: public Thread {
   public:
-    explicit FakeRecvLoop(Logger &log, data::Data& data, Main* main_pointer);
-    std::string receiveFakeData();
+    explicit FakeSendLoop(Logger &log, data::Data& data, Main* main_pointer);
     void run() override;
 
   private:
-    Main& main_ref_;
-    data::Data& data_;
+    std::string convertStateMachineState(data::State state);
+    std::string convertModuleStatus(data::ModuleStatus module_status);
+    Main&                   main_ref_;
+    data::Data&             data_;
 };
 
 }  // namespace telemetry
 }  // namespace hyped
 
-#endif  // TELEMETRY_FAKE_RECVLOOP_HPP_
+#endif  // TELEMETRY_FAKE_SENDLOOP_HPP_

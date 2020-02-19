@@ -18,30 +18,39 @@
  *    limitations under the License.
  */
 
-#ifndef TELEMETRY_FAKE_RECVLOOP_HPP_
-#define TELEMETRY_FAKE_RECVLOOP_HPP_
-
 #include <string>
-#include "telemetry/main.hpp"
-#include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
+#include "fake_sendloop.hpp"
+#include "writer.hpp"
 
 namespace hyped {
-
 namespace telemetry {
 
-class FakeRecvLoop: public Thread {
-  public:
-    explicit FakeRecvLoop(Logger &log, data::Data& data, Main* main_pointer);
-    std::string receiveFakeData();
-    void run() override;
+FakeSendLoop::FakeSendLoop(Logger& log, data::Data& data, Main* main_pointer)
+  : Thread {log},
+    main_ref_ {*main_pointer},
+    data_ {data}
+{
+  log_.DBG("Telemetry", "Fake Telemetry SendLoop thread object created");
+}
 
-  private:
-    Main& main_ref_;
-    data::Data& data_;
-};
+void FakeSendLoop::run()
+{
+  log_.DBG("Telemetry", "Fake Telemetry SendLoop thread started");
+
+  while (true) {
+    Writer writer(data_);
+
+    writer.start();
+    writer.packCrucialData();
+    writer.packStatusData();
+    writer.packAdditionalData();
+    writer.end();
+
+    Thread::sleep(100);
+  }
+
+  log_.DBG("Telemetry", "Exiting Fake Telemetry SendLoop thread");
+}
 
 }  // namespace telemetry
 }  // namespace hyped
-
-#endif  // TELEMETRY_FAKE_RECVLOOP_HPP_

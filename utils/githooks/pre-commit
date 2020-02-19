@@ -3,12 +3,22 @@
 
 echo "Running pre-commit hook"
 
+if command -v hostnamectl>/dev/null; then
+  if hostnamectl | grep beaglebone>/dev/null; then
+    OPTION=""
+  else
+    OPTION="-j4"
+  fi
+else
+  OPTION="-j4"
+fi
+
 # compile and link, lint on src/
-make
+make "$OPTION"
 
 # compile and link, lint on test/src
-make test/lib/libtest.a
-make -C test/ testrunner lint
+make test/lib/libtest.a  "$OPTION"
+make -C test/ testrunner lint "$OPTION"
 
 # run static analyzer on src test/src 
 # make static # off for now

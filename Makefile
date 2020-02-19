@@ -10,6 +10,9 @@ NOLINT=0
 # e.g. make static STATIC_ENABLE=style
 STATIC_ENABLE=
 
+#filters for which tests to run with gtest
+GTEST_FILTERS=
+
 SRCS_DIR:=src
 LIBS_DIR:=lib
 OBJS_DIR:=bin
@@ -112,6 +115,12 @@ static:
 
 testrunner: test/lib/libtest.a
 	$(VERB) $(MAKE) -C test runner
+
+testrunner-all: test/lib/libtest.a
+	$(VERB) $(MAKE) -C test runnerall 
+
+testrunner-filter: test/lib/libtest.a
+	$(VERB) $(MAKE) -C test runnerfilter GOOGLE_TEST_FILTERS=$(GTEST_FILTERS)
 
 coverage: testrunner
 	$(Verb) ./test/utils/get_code_cov.sh

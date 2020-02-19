@@ -117,7 +117,7 @@ SPI::SPI(Logger& log)
       ch_(0),
       log_(log)
 {
-  const char device[] = "/dev/spidev2.0";   // spidev1.0 for SPI0
+  const char device[] = "/dev/spidev1.0";   // spidev1.0 for SPI0
   spi_fd_ = open(device, O_RDWR, 0);
 
   if (spi_fd_ < 0) {

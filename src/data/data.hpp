@@ -22,11 +22,13 @@
 
 #include <cstdint>
 #include <array>
+#include <vector>
 #include "utils/math/vector.hpp"
 #include "data/data_point.hpp"
 #include "utils/concurrent/lock.hpp"
 
 using std::array;
+using std::vector;
 
 namespace hyped {
 
@@ -73,8 +75,7 @@ struct Sensor {
 struct ImuData : public Sensor {
   NavigationVector acc;
 
-  static constexpr int kFifoSize = 85;
-  array<NavigationVector, kFifoSize> fifo;
+  std::vector<NavigationVector> fifo;
 };
 
 struct EncoderData : public Sensor {

@@ -45,23 +45,22 @@ ImuManager::ImuManager(Logger& log)
     for (int i = 0; i < data::Sensors::kNumImus; i++) {   // creates new real IMU objects
       imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], false);
     }
+  } else if (sys_.fake_imu_fail) {
+    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+      // change params to fail in kAcccelerating or kNominalBraking states
+      imu_[i] = new FakeImuFromFile(log,
+                                    "data/in/acc_state.txt",
+                                    "data/in/decel_state.txt",
+                                    "data/in/decel_state.txt", (i%2 == 0), false);
+    }
+  } else {
+    for (int i = 0; i < data::Sensors::kNumImus; i++) {
+      imu_[i] = new FakeImuFromFile(log,
+                                    "data/in/acc_state.txt",
+                                    "data/in/decel_state.txt",
+                                    "data/in/decel_state.txt", false, false);
+    }
   }
-  // else if (sys_.fake_imu_fail) {
-  //   for (int i = 0; i < data::Sensors::kNumImus; i++) {
-  //     // change params to fail in kAcccelerating or kNominalBraking states
-  //     imu_[i] = new FakeImuFromFile(log,
-  //                                   "data/in/acc_state.txt",
-  //                                   "data/in/decel_state.txt",
-  //                                   "data/in/decel_state.txt", (i%2 == 0), false);
-  //   }
-  // } else {
-  //   for (int i = 0; i < data::Sensors::kNumImus; i++) {
-  //     imu_[i] = new FakeImuFromFile(log,
-  //                                   "data/in/acc_state.txt",
-  //                                   "data/in/decel_state.txt",
-  //                                   "data/in/decel_state.txt", false, false);
-  //   }
-  // }
   log_.INFO("IMU-MANAGER", "imu manager has been initialised");
 }
 

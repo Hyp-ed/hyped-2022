@@ -228,6 +228,8 @@ void Navigation::queryImus()
       }
     }
   }
+  log_.DBG1("NAV", "Raw acceleration values: %.3f, %.3f, %.3f, %.3f", acc_raw_moving[0],
+            acc_raw_moving[1], acc_raw_moving[2], acc_raw_moving[3]);
   // Run outlier detection on moving axis
   tukeyFences(acc_raw_moving, kTukeyThreshold);
   // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
@@ -273,7 +275,7 @@ void Navigation::checkVibration()
       }
       double var = online_array.getVariance();
       double ratio = var / calibration_variance_[axis];
-      double statistical_variance_ratio = kCalibrationAttempts/kPreviousMeasurements;
+      double statistical_variance_ratio = kCalibrationQueries/kPreviousMeasurements;
       if (ratio > statistical_variance_ratio) {
         log_.ERR("NAV", "Variance in axis %d is %.3f times larger than its calibration variance.",
           axis, ratio);

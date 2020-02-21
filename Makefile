@@ -1,5 +1,4 @@
 
-# define VERBOSE=1 to see executed commands
 # default build configuration
 TARGET  := hyped
 MAIN    := run/main.cpp
@@ -21,13 +20,7 @@ GTEST_FILTERS=
 # include helper files
 include $(HELPER)/config.mk
 include $(HELPER)/build.mk
-
-# libaries for generating TARGET
-EIGEN=$(LIBS_DIR)/Eigen
-RAPIDJSON=$(LIBS_DIR)/rapidjson
-GITHOOKS=.git/hooks
-DEPENDENCIES=$(EIGEN) $(RAPIDJSON) $(GITHOOKS)
-
+include $(HELPER)/libs.mk
 
 default: lint $(TARGET)
 
@@ -84,22 +77,6 @@ cleantest:
 .PHONY: doc
 doc:
   $(Verb) doxygen Doxyfile
-
-# Re-install eigen library if the tar file changes
-$(EIGEN): $(EIGEN).tar.gz
-  $(Echo) Unpacking Eigen library $@
-  $(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
-  $(Verb) touch $@
-
-# Re-install rapidjson library if the tar file changes
-$(RAPIDJSON): $(RAPIDJSON).tar.gz
-  $(Echo) Unpacking RapidJSON library $@
-  $(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
-  $(Verb) touch $@
-
-$(GITHOOKS): utils/githooks/*
-  $(Echo) New githooks, installing
-  $(Verb) ./setup.sh
 
 .PHONY: print
 print:

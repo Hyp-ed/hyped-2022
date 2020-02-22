@@ -18,4 +18,4 @@ fi
 set -x
 
 # run tests
-make testrunner "$OPTION"
+make test "$OPTION"

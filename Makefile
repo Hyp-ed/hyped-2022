@@ -15,7 +15,7 @@ include $(HELPER)/libs.mk
 include $(HELPER)/test.mk
 
 .DEFAULT_GOAL := default
-default: lint $(TARGET) $(GITHOOKS)
+default: $(DEPENDENCIES) lint $(TARGET)
 
 lint:
 ifeq ($(NOLINT), 0)
@@ -28,7 +28,7 @@ lintall:
   $(Echo) -e "\nLinting run/"
   $(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
   $(Echo) -e "\nLinting test/"
-  $(Verb) $(MAKE) -C test lint --no-print-directory
+  $(Verb) -python2.7 utils/Lint/presubmit.py --workspace=test
 
 clean-all: cleanlint cleantest clean
 

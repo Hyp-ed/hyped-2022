@@ -49,7 +49,7 @@ SRCS      := $(shell find $(SRCS_DIR) -name '*.cpp')
 OBJS      := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DIR)%.o,$(SRCS))
 MAIN_OBJ  := $(patsubst run/%.cpp, $(OBJS_DIR)/%.o, $(MAIN))
 
-$(TARGET): $(OBJS) $(MAIN_OBJ)
+$(TARGET): $(DEPENDENCIES) $(OBJS) $(MAIN_OBJ)
   $(Echo) "Linking executable $(MAIN) into $@"
   $(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
@@ -58,7 +58,7 @@ $(MAIN_OBJ): $(OBJS_DIR)/%.o: $(MAIN)
   $(Verb) mkdir -p $(dir $@)
   $(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
 
-$(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp $(DEPENDENCIES)
+$(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
   $(Echo) "Compiling $<"
   $(Verb) mkdir -p $(dir $@)
   $(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $<

@@ -1,6 +1,4 @@
 
-
-
 # libaries for generating TARGET
 EIGEN         := $(LIBS_DIR)/Eigen
 RAPIDJSON     := $(LIBS_DIR)/rapidjson

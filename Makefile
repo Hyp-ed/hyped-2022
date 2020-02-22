@@ -5,19 +5,10 @@ MAIN    := run/main.cpp
 CROSS   := 0
 NOLINT  := 0
 VERBOSE := 0
-HELPER  := utils/build
 RELEASE := 0
 
-# TODO: move to testing makefile
-#pass this option to run static checker with specified severity
-# e.g. make static STATIC_ENABLE=style
-STATIC_ENABLE=
-
-# TODO: move to testing makefile
-#filters for which tests to run with gtest
-GTEST_FILTERS=
-
 # include helper files
+HELPER  := utils/build
 include $(HELPER)/config.mk
 include $(HELPER)/build.mk
 include $(HELPER)/libs.mk

@@ -20,31 +20,39 @@ GTEST_DIR     := $(TEST_DIR)/$(LIBS_DIR)/googletest
 GTEST_TARGET  := $(GTEST_DIR)/build/lib/libgtest.a
 T_INC_DIR     += -I$(GTEST_DIR)/googletest/include
 T_LFLAGS      += $(GTEST_TARGET)
+GTEST_FILTERS +=
 
-CPPCHECK_DIR    := $(LIBS_DIR)/cppcheck
-CPPCHECK_TARGET := $(CPPCHECK)/cppcheck
+CPPCHECK_DIR    := $(TEST_DIR)/$(LIBS_DIR)/cppcheck
+CPPCHECK_TARGET := $(CPPCHECK_DIR)/cppcheck
+CPPCHECK_EXEC   := $(shell command -v cppcheck || echo ./$(CPPCHECK_TARGET))
+CPPCHECK_FLAGS=--quiet --error-exitcode=1 --inline-suppr --suppressions-list=$(TEST_DIR)/lib/cppcheck-suppress
+
+#pass this option to run static checker with specified severity
+# e.g. make static STATIC_ENABLE=style
+STATIC_ENABLE=
 
 test: $(T_TARGET)
   $(Verb) ./$< --gtest_filter=-*_noci
 
+test-all: $(T_TARGET)
+  $(Verb) ./$<
 
-# static:
-#   $(Verb) $(MAKE) -C test staticcheck CPPCHECK_ENABLE_OPS=$(STATIC_ENABLE)
+test-filter: $(T_TARGET)
+  $(Verb) ./$< --gtest_filter=$(GTEST_FILTERS)
 
-# testrunner: test/lib/libtest.a
-#   $(VERB) $(MAKE) -C test runner
+coverage: $(T_TARGET)
+  $(Verb) ./test/utils/get_code_cov.sh
 
-# testrunner-all: test/lib/libtest.a
-#   $(VERB) $(MAKE) -C test runnerall
+test-lint:
+  $(Verb) python2.7 utils/Lint/presubmit.py --workspace=test/src
 
-# testrunner-filter: test/lib/libtest.a
-#   $(VERB) $(MAKE) -C test runnerfilter GOOGLE_TEST_FILTERS=$(GTEST_FILTERS)
-
-# coverage: testrunner
-#   $(Verb) ./test/utils/get_code_cov.sh
-
-# test-lint:
-#   $(Verb) python2.7 $(LINT) --workspace=test/src
+static: $(T_TARGET) $(CPPCHECK_EXEC)
+  $(Echo) "Starting Static Checker"
+  $(Echo) "Running checker on /src ..."
+  $(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) $(SRCS_DIR)
+  $(Echo) "Running checker on /test/src ..."
+  $(Verb) $(CPPCHECK_EXEC) $(CPPCHECK_FLAGS) $(TEST_DIR)/$(SRCS_DIR)
+  $(Echo) "Static analysis complete"
 
 # COMPILE TEST
 $(T_TARGET): $(OBJS) $(T_OBJS)
@@ -62,11 +70,8 @@ $(GTEST_TARGET): $(GTEST_DIR).tar.gz
   $(Verb) cd test; ./lib/googletestsetup.sh
   $(Verb) touch $@
 
-# $(CPPCHECK_TARGET)
-
-# $(CPPCHECK_EXC_TARGET): $(CPPCHECK).tar.gz
-# 	$(Verb) command -v cppcheck > /dev/null 2>&1 || \
-# 	(chmod u+x ./lib/cppchecksetup.sh && ./lib/cppchecksetup.sh && touch $@)
-
+$(CPPCHECK_EXEC): $(CPPCHECK_DIR).tar.gz
+  $(Verb) command -v cppcheck > /dev/null 2>&1 || \
+  (chmod u+x ./test/lib/cppchecksetup.sh && ./test/lib/cppchecksetup.sh && touch $@)
 
 -include $(T_OBJS:.o=.d)

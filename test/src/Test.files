@@ -2,6 +2,6 @@
 # Makefile include defining variable SRCS containing list of all source files
 # add .cpp files using complete path the following format: "<file>.cpp \"
 
-SRCS := \
+T_SRCS := \
   state_machine/dummy.test.cpp \
   utils/config.test.cpp \

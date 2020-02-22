@@ -21,6 +21,7 @@ GTEST_FILTERS=
 include $(HELPER)/config.mk
 include $(HELPER)/build.mk
 include $(HELPER)/libs.mk
+include $(HELPER)/test.mk
 
 default: lint $(TARGET)
 
@@ -36,25 +37,6 @@ lintall:
   $(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
   $(Echo) -e "\nLinting test/"
   $(Verb) $(MAKE) -C test lint --no-print-directory
-
-static:
-  $(Verb) $(MAKE) -C test staticcheck CPPCHECK_ENABLE_OPS=$(STATIC_ENABLE)
-
-testrunner: test/lib/libtest.a
-  $(VERB) $(MAKE) -C test runner
-
-testrunner-all: test/lib/libtest.a
-  $(VERB) $(MAKE) -C test runnerall
-
-testrunner-filter: test/lib/libtest.a
-  $(VERB) $(MAKE) -C test runnerfilter GOOGLE_TEST_FILTERS=$(GTEST_FILTERS)
-
-coverage: testrunner
-  $(Verb) ./test/utils/get_code_cov.sh
-
-test/lib/libtest.a:  $(EIGEN) $(RAPIDJSON) $(TEST_OBJS)
-  $(Echo) "Making library"
-  $(Verb) ar -cvr $@ $(TEST_OBJS) > /dev/null
 
 clean-all: cleanlint cleantest clean
 

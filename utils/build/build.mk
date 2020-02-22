@@ -2,7 +2,6 @@
 # Furthermore, it defines compilation recipes
 CFLAGS          := -pthread -Wall
 LFLAGS          := -lpthread -pthread
-COVERAGE_FLAGS  := --coverage
 CC              := g++
 INC_DIR         := -I$(SRCS_DIR) -I$(LIBS_DIR)
 DEPFLAGS         = -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d

@@ -23,7 +23,8 @@ include $(HELPER)/build.mk
 include $(HELPER)/libs.mk
 include $(HELPER)/test.mk
 
-default: lint $(TARGET)
+.DEFAULT_GOAL := default
+default: lint $(TARGET) $(GITHOOKS)
 
 lint:
 ifeq ($(NOLINT), 0)

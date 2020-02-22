@@ -19,7 +19,7 @@ COVERAGE_FLAGS  := --coverage
 GTEST_DIR     := $(TEST_DIR)/$(LIBS_DIR)/googletest
 GTEST_TARGET  := $(GTEST_DIR)/build/lib/libgtest.a
 T_INC_DIR     += -I$(GTEST_DIR)/googletest/include
-T_LFLAGS      += $(GTEST_TARGET)
+T_LFLAGS      += -L$(dir $(GTEST_TARGET)) -lgtest
 GTEST_FILTERS +=
 
 CPPCHECK_DIR    := $(TEST_DIR)/$(LIBS_DIR)/cppcheck
@@ -56,7 +56,7 @@ static: $(T_TARGET) $(CPPCHECK_EXEC)
   $(Echo) "Static analysis complete"
 
 # COMPILE TEST
-$(T_TARGET): $(OBJS) $(T_OBJS)
+$(T_TARGET): $(DEPENDENCIES) $(OBJS) $(T_OBJS)
   $(Echo) "Linking test executable $@"
   $(Verb) $(LL) -o $@ $(OBJS) $(T_OBJS) $(T_LFLAGS) $(COVERAGE_FLAGS)
 

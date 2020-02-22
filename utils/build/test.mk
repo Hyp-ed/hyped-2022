@@ -31,6 +31,7 @@ CPPCHECK_FLAGS=--quiet --error-exitcode=1 --inline-suppr --suppressions-list=$(T
 # e.g. make static STATIC_ENABLE=style
 STATIC_ENABLE=
 
+.PHONY: test
 test: $(T_TARGET)
   $(Verb) ./$< --gtest_filter=-*_noci
 

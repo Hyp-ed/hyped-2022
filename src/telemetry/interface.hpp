@@ -1,7 +1,7 @@
 /*
- * Author: Neil Weidinger
+ * Authors: J. Ridley
  * Organisation: HYPED
- * Date: March 2019
+ * Date: Dec 2019
  * Description:
  *
  *    Copyright 2019 HYPED
@@ -18,14 +18,8 @@
  *    limitations under the License.
  */
 
-#ifndef TELEMETRY_CLIENT_HPP_
-#define TELEMETRY_CLIENT_HPP_
-
-#include <string>
-#include "telemetry/signalhandler.hpp"
-#include "utils/logger.hpp"
-#include "utils/config.hpp"
-#include "interface.hpp"
+#ifndef TEL_INTERFACE_HPP_
+#define TEL_INTERFACE_HPP_
 
 namespace hyped {
 
@@ -33,24 +27,26 @@ using utils::Logger;
 
 namespace telemetry {
 
-class Client : public ClientInterface {
-  public:
-    explicit Client(Logger& log);
-    ~Client();
-    bool connect() override;
-    bool sendData(std::string message) override;
-    std::string receiveData() override;
-
-  private:
-    Client(Logger& log, const utils::Config& config);
-
-    int sockfd_;
-    Logger& log_;
-    const char* kPort;
-    const char* kServerIP;
+class ClientInterface {
+ public:
+  /**
+   * @brief Connect client to base station, ret
+   * @return true if successful
+   */
+  virtual bool connect();
+  /**
+   * @brief Send message to base station
+   * @param message String to send to base-station 
+   * @return true if successful
+   */
+  virtual bool sendData(std::string message);
+  /**
+   * @brief Receive message from base station
+   * @return message as a string
+   */
+  virtual std::string receiveData();
 };
 
-}  // namespace client
-}  // namespace hyped
+}}  // namespace hyped::telemetry
 
-#endif  // TELEMETRY_CLIENT_HPP_
+#endif  // TEL_INTERFACE_HPP_

@@ -53,7 +53,7 @@ void Main::run()
 
   data::Telemetry telem_data_struct = data_.getTelemetryData();
 
-  if (!sys.fake_telemetry) {
+  if (!sys.fake_telemetry) { //remove this condition once fake tel is implemented as an interface
     try {
       client_.connect();
     }
@@ -71,21 +71,14 @@ void Main::run()
   telem_data_struct.module_status = ModuleStatus::kInit;
   data_.setTelemetryData(telem_data_struct);
 
-  if (sys.fake_telemetry) {
-    FakeSendLoop fake_sendloop_thread {log_, data_, this};
-    FakeRecvLoop fake_recvloop_thread {log_, data_, this};
-    fake_sendloop_thread.start();
-    fake_recvloop_thread.start();
-    fake_sendloop_thread.join();
-    fake_recvloop_thread.join();
-  } else {
-    SendLoop sendloop_thread {log_, data_, this};
-    RecvLoop recvloop_thread {log_, data_, this};
-    sendloop_thread.start();
-    recvloop_thread.start();
-    sendloop_thread.join();
-    recvloop_thread.join();
-  }
+  
+  SendLoop sendloop_thread {log_, data_, this};
+  RecvLoop recvloop_thread {log_, data_, this};
+  sendloop_thread.start();
+  recvloop_thread.start();
+  sendloop_thread.join();
+  recvloop_thread.join();
+
 
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }

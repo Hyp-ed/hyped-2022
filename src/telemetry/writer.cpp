@@ -34,7 +34,7 @@ void Writer::packAdditionalData()
   rjwriter_.StartArray();
 
   // edit below
-
+  
   // edit above
 
   rjwriter_.EndArray();

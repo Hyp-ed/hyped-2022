@@ -109,6 +109,7 @@ void BmsManager::run()
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
+    /*  THIS HAS TO WORK LATER pls
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
       // check health of batteries
       if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
@@ -120,6 +121,7 @@ void BmsManager::run()
         previous_status_ = batteries_.module_status;
       }
     }
+    */
 
     // publish the new data
     data_.setBatteriesData(batteries_);

@@ -176,6 +176,8 @@ void Navigation::calibrateGravity()
       // geometric mean for variances of different IMUs
       calibration_variance_[axis] = sqrt(calibration_variance_[axis]);
     }
+    log_.INFO("NAV", "Calibration Variance: x-axis: %.3f, y-axis: %.3f, z-axis: %.3f",
+      calibration_variance_[0], calibration_variance_[1], calibration_variance_[2]);
     status_ = ModuleStatus::kReady;
     updateData();
     log_.INFO("NAV", "Navigation module ready");
@@ -264,22 +266,27 @@ void Navigation::queryImus()
 void Navigation::checkVibration()
 {
   // curr_msmt points at next measurement, ie the last one
+  array<OnlineStatistics<NavigationType>, 3> online_array_axis;
   for (int i = 0; i < kPreviousMeasurements; i++) {
     ImuAxisData raw_data = previous_measurements_[(curr_msmt_ + i) % kPreviousMeasurements];
     for (uint8_t axis = 0; axis < 3; axis++) {
-      OnlineStatistics<NavigationType> online_array;
       if (axis != axis_) {  // assume variance in moving axis are not vibrations
         for (int imu = 0; imu < Sensors::kNumImus; imu++) {
-          online_array.update(raw_data[axis][imu]);
+          online_array_axis[axis].update(raw_data[axis][imu]);
         }
       }
-      double var = online_array.getVariance();
-      double ratio = var / calibration_variance_[axis];
-      double statistical_variance_ratio = kCalibrationQueries/kPreviousMeasurements;
-      if (ratio > statistical_variance_ratio) {
-        log_.ERR("NAV", "Variance in axis %d is %.3f times larger than its calibration variance.",
-          axis, ratio);
-      }
+    }
+  }
+  for (uint8_t axis = 0; axis < 3; axis++) {
+    double var = online_array_axis[axis].getVariance();
+    if (counter_ % 100000 == 0 && axis != axis_) {
+      log_.INFO("NAV", "Variance in axis %d: %.3f", axis, var);
+    }
+    double ratio = var / calibration_variance_[axis];
+    double statistical_variance_ratio = kCalibrationQueries/kPreviousMeasurements;
+    if (ratio > statistical_variance_ratio) {
+      log_.ERR("NAV", "Variance in axis %d is %.3f times larger than its calibration variance.",
+        axis, ratio);
     }
   }
 }

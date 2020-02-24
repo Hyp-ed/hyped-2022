@@ -68,7 +68,9 @@ USAGE := "make <target>\n"\
 "           this is the default target and can be run with just \"make\"\n"\
 "lint     - lint check src/ code for codestyle violations\n"\
 "test     - run a unit test suite (also compile everything needed)\n"\
-"clean    - delete all binary object files to recompile everything\n"
+"clean    - delete all binary object files to recompile everything\n"\
+"print VARIABLE=<variable>  - print content of a makefile variable to see that it will be when running targets\n"\
+"                           - e.g. make print VARIABLE=CFLAGS\n"
 .PHONE: help
 help:
 	$(Echo) -e $(USAGE)

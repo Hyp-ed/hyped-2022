@@ -216,7 +216,8 @@ void Config::parseInterfaceFactory(char* line)
 #define PARSE_FACTORY(module, interface)                                            \
   if (strcmp(key, #interface) == 0) {                                               \
     auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);            \
-    interfaceFactory.get##interface = creator ? creator : createDefault<module::interface>;  \
+    interfaceFactory.get##interface##Instance = creator ? creator :  \
+      createDefault<module::interface>;  \
     return;                                                                         \
   }
   INTERFACE_LIST(PARSE_FACTORY)
@@ -321,7 +322,7 @@ Config::Config(char* config_file)
     : log_(System::getLogger())
 {
 #define INIT_CREATOR(module, interface) \
-  interfaceFactory.get##interface = createDefault<module::interface>;
+  interfaceFactory.get##interface##Instance = createDefault<module::interface>;
   INTERFACE_LIST(INIT_CREATOR)
 
   config_files_.push_back(config_file);

@@ -36,9 +36,9 @@
 
 // use format V(module/namespace, class)
 // e.g.       V(utils::config::fancy::typed::here, MyFancyInterface)
-#define INTERFACE_LIST(V) \
-  V(sensors, ImuInterface) \
-  V(demo, DemoInterface)
+#define INTERFACE_LIST(Register) \
+  Register(sensors, ImuInterface) \
+  Register(demo, DemoInterface)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

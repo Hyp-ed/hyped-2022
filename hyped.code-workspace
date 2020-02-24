@@ -35,8 +35,5 @@
     "editor.detectIndentation": false,
     "C_Cpp.default.cppStandard": "c++11",
     "C_Cpp.default.cStandard": "c11",
-    "[makefile]": {
-      "editor.insertSpaces": true
-    }
   }
 }

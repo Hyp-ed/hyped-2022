@@ -19,55 +19,51 @@ default: $(DEPENDENCIES) lint $(TARGET)
 
 lint:
 ifeq ($(NOLINT), 0)
-  $(Verb) python2.7 utils/Lint/presubmit.py --workspace=src
+	$(Verb) python2.7 utils/Lint/presubmit.py --workspace=src
 endif
 
 lintall:
-  $(Echo) -e "\nLinting src/"
-  $(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
-  $(Echo) -e "\nLinting run/"
-  $(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
-  $(Echo) -e "\nLinting test/"
-  $(Verb) -python2.7 utils/Lint/presubmit.py --workspace=test
+	$(Echo) -e "\nLinting src/"
+	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
+	$(Echo) -e "\nLinting run/"
+	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
+	$(Echo) -e "\nLinting test/"
+	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=test
 
-clean-all: cleanlint cleantest clean
+clean-all: clean
 
 clean:
-  $(Verb) rm -rf $(OBJS_DIR)/
-  $(Verb) rm -f $(TARGET)
-
-cleanlint:
-  $(Verb) rm -f .cpplint-cache
-  $(Verb) $(MAKE) -C test cleanlint --no-print-directory
+	$(Verb) rm -rf $(OBJS_DIR)/
+	$(Verb) rm -f $(TARGET)
 
 define echo_var
   @echo $(1) = $($1)
 endef
 
-cleantest:
-  cd test && $(MAKE) clean
-  $(Verb) rm -f testrunner
-
 .PHONY: doc
 doc:
-  $(Verb) doxygen Doxyfile
+	$(Verb) doxygen Doxyfile
 
 .PHONY: print
 print:
-  $(call echo_var,$(VARIABLE))
+	$(call echo_var,$(VARIABLE))
 
 info:
-  $(call echo_var,CC)
-  $(call echo_var,SRCS)
-  $(call echo_var,OBJS)
-  $(call echo_var,UNAME)
-  $(call echo_var,CFLAGS)
+	$(call echo_var,CC)
+	$(call echo_var,SRCS)
+	$(call echo_var,OBJS)
+	$(call echo_var,UNAME)
+	$(call echo_var,CFLAGS)
 
 # PHONY to redo even if .ccls file exists
 .PHONY: .ccls
 .ccls:
-  $(Echo) $(CC) > $@
-  $(Verb) $(foreach value,$(CFLAGS) ,echo $(value) >> $@;)
-  $(Verb) $(foreach value,$(INC_DIR),echo $(value) >> $@;)
+	$(Echo) $(CC) > $@
+	$(Verb) $(foreach value,$(CFLAGS) ,echo $(value) >> $@;)
+	$(Verb) $(foreach value,$(INC_DIR),echo $(value) >> $@;)
+
+.PHONE: help
+help:
+
 
 -include $(OBJS:.o=.d)

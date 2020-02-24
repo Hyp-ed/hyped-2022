@@ -27,7 +27,4 @@ else
 endif
 Echo := $(Verb)echo
 
-# make recipes use space indentation instead of tabs
-.RECIPEPREFIX := $(shell echo " ")
-
 ROOT=$(shell git rev-parse --show-toplevel)

@@ -1,10 +1,10 @@
 # This makefile configures variables related to compilation, e.g. compiler flags.
 # Furthermore, it defines compilation recipes
-CFLAGS          := -pthread -Wall
-LFLAGS          := -lpthread -pthread
-CC              := g++
-INC_DIR         := -I$(SRCS_DIR) -I$(LIBS_DIR)
-DEPFLAGS         = -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
+CFLAGS   := -pthread -Wall
+LFLAGS   := -lpthread -pthread
+CC       := g++
+INC_DIR  := -I$(SRCS_DIR) -I$(LIBS_DIR)
+DEPFLAGS  = -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
 
 ifeq ($(RELEASE),1)
   CFLAGS += -O2
@@ -50,15 +50,15 @@ OBJS      := $(patsubst $(SRCS_DIR)%.cpp,$(OBJS_DIR)%.o,$(SRCS))
 MAIN_OBJ  := $(patsubst run/%.cpp, $(OBJS_DIR)/%.o, $(MAIN))
 
 $(TARGET): $(DEPENDENCIES) $(OBJS) $(MAIN_OBJ)
-  $(Echo) "Linking executable $(MAIN) into $@"
-  $(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
+	$(Echo) "Linking executable $(MAIN) into $@"
+	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
 
 $(MAIN_OBJ): $(OBJS_DIR)/%.o: $(MAIN)
-  $(Echo) "Compiling main: $<"
-  $(Verb) mkdir -p $(dir $@)
-  $(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+	$(Echo) "Compiling main: $<"
+	$(Verb) mkdir -p $(dir $@)
+	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
 
 $(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
-  $(Echo) "Compiling $<"
-  $(Verb) mkdir -p $(dir $@)
-  $(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+	$(Echo) "Compiling $<"
+	$(Verb) mkdir -p $(dir $@)
+	$(Verb) $(CC) $(DEPFLAGS_RELEASE) $(CFLAGS) -o $@ -c $(INC_DIR) $<

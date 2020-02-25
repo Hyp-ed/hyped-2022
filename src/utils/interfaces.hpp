@@ -34,11 +34,11 @@
  * class name, not the full namespaced name.
  */
 
-// use format V(module/namespace, class)
-// e.g.       V(utils::config::fancy::typed::here, MyFancyInterface)
-#define INTERFACE_LIST(V) \
-  V(sensors, ImuInterface) \
-  V(demo, DemoInterface)
+// use format REGISTER(module/namespace, class)
+// e.g.       REGISTER(utils::config::fancy::typed::here, MyFancyInterface)
+#define INTERFACE_LIST(REGISTER) \
+  REGISTER(sensors, ImuInterface) \
+  REGISTER(demo, DemoInterface)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

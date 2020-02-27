@@ -6,6 +6,8 @@ OBJS_DIR := bin
 TEST_DIR := test
 LIBS_DIR := lib
 
+SHELL := /bin/bash
+
 ifeq ($(RELEASE),1)
   OBJS_DIR += /release
 endif

@@ -27,6 +27,22 @@ CPPCHECK_TARGET := $(CPPCHECK_DIR)/cppcheck
 CPPCHECK_EXEC   := $(shell command -v cppcheck || echo ./$(CPPCHECK_TARGET))
 CPPCHECK_FLAGS=--quiet --error-exitcode=1 --inline-suppr --suppressions-list=$(TEST_DIR)/lib/cppcheck-suppress
 
+# dependency checks
+## Is 1 when python is installed
+PYTHON=$(shell python2.7 -V  >/dev/null 2>&1 && echo "1" )
+
+PYTHONCHECK=$(shell [[ -z "$(PYTHON)" ]] && echo "0" || echo "1")
+
+# Manual override for LINTER
+# run "make VERBOSE=1" to see all commands
+ifndef NOLINT
+	NOLINT := 0
+endif
+
+
+# Checks manual override and python flag defined in config
+RUNLINTER=$(shell [[ $(NOLINT) == 0 && $(PYTHONCHECK) == 1 ]] && echo 1 )
+
 #pass this option to run static checker with specified severity
 # e.g. make static STATIC_ENABLE=style
 STATIC_ENABLE=

@@ -18,17 +18,23 @@ include $(HELPER)/test.mk
 default: $(DEPENDENCIES) lint $(TARGET)
 
 lint:
-ifeq ($(NOLINT), 0)
+ifeq ($(RUNLINTER), 1)
 	$(Verb) python2.7 utils/Lint/presubmit.py --workspace=src
+else ifeq ($(PYTHONCHECK), 0)
+	$(error Cannot find Python 2.7, please check Python Version 2.7.X  is installed)
 endif
 
 lintall:
+ifeq ($(RUNLINTER), 1)
 	$(Echo) -e "\nLinting src/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=src
 	$(Echo) -e "\nLinting run/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=run
 	$(Echo) -e "\nLinting test/"
 	$(Verb) -python2.7 utils/Lint/presubmit.py --workspace=test
+else ifeq ($(PYTHONCHECK), 0)
+	$(error Cannot find Python 2.7, please check Python Version 2.7.X  is installed )
+endif
 
 clean-all: clean
 

@@ -30,10 +30,10 @@ DEPENDENCIES=$(EIGEN) $(RAPIDJSON) $(GITHOOKS)
 ifeq ($(CROSS), 0)
 	ARCH=$(shell uname -m)
 	ifneq (,$(findstring 64,$(ARCH)))
-		CFLAGS:=$(CFLAGS) -DARCH_64
+		CFLAGS:=$(CFLAGS) -DARCH_64 -DWIN
 	endif
 else ifeq ($(UNAME), Darwin)
-    $(info cross-compiling on Mac master race host)
+    $(info cross-compiling using Mac master race host)
 	CC:=linked-cc-dir/prebuilt/bin/clang++
 	export COMPILER_PATH = linked-cc-dir/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0/
 	CFLAGS:=$(CFLAGS) --target=arm-linux-gnueabihf \
@@ -44,7 +44,7 @@ else ifeq ($(UNAME), Darwin)
 					  --gcc-toolchain=linked-cc-dir/prebuilt/bin
 	LFLAGS:= $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=linked-cc-dir/sysroot
 else
-    $(info cross-compiling on Linux host)
+    $(info cross-compiling using Linux host)
 	CC:=hyped-cross-g++
 	CFLAGS:=$(CFLAGS) -DARCH_32
 	LFLAGS:= $(LFLAGS) -static

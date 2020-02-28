@@ -34,26 +34,27 @@ ifeq ($(CROSS), 0)
 	endif
 else ifeq ($(UNAME), Darwin)
     $(info cross-compiling using Mac master race host)
-	CC:=linked-cc-dir/prebuilt/bin/clang++
-	export COMPILER_PATH = linked-cc-dir/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0/
+	CC:=mac-crosscompiler/prebuilt/bin/clang++
+	export COMPILER_PATH = mac-crosscompiler/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0/
 	CFLAGS:=$(CFLAGS) --target=arm-linux-gnueabihf \
-					  --sysroot=linked-cc-dir/sysroot \
-					  -isysroot linked-cc-dir/sysroot \
-					  -Ilinked-cc-dir/sysroot/usr/include/c++/6.3.0 \
-					  -Ilinked-cc-dir/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0 \
-					  --gcc-toolchain=linked-cc-dir/prebuilt/bin
-	LFLAGS:= $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=linked-cc-dir/sysroot
+					  --sysroot=mac-crosscompiler/sysroot \
+					  -isysroot mac-crosscompiler/sysroot \
+					  -Imac-crosscompiler/sysroot/usr/include/c++/6.3.0 \
+					  -Imac-crosscompiler/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0 \
+					  --gcc-toolchain=mac-crosscompiler/prebuilt/bin
+	LFLAGS:= $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=mac-crosscompiler/sysroot
 else
     $(info cross-compiling using Linux host)
 	CC:=hyped-cross-g++
-	CFLAGS:=$(CFLAGS) -DARCH_32
+	CFLAGS:=$(CFLAGS)
 	LFLAGS:= $(LFLAGS) -static
 endif
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )
-$(error compiler $(CC) is not installed)
+    $(error compiler $(CC) is not installed)
 endif
+
 LL:=$(CC)
 
 # auto-discover all sources

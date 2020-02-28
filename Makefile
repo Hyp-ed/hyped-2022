@@ -30,7 +30,7 @@ DEPENDENCIES=$(EIGEN) $(RAPIDJSON) $(GITHOOKS)
 ifeq ($(CROSS), 0)
 	ARCH=$(shell uname -m)
 	ifneq (,$(findstring 64,$(ARCH)))
-		CFLAGS:=$(CFLAGS) -DARCH_64 -DWIN
+		CFLAGS:=$(CFLAGS) -DARCH_64
 	endif
 else ifeq ($(UNAME), Darwin)
     $(info cross-compiling using Mac master race host)

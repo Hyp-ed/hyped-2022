@@ -46,7 +46,6 @@ else ifeq ($(UNAME), Darwin)
 else
     $(info cross-compiling using Linux host)
 	CC:=hyped-cross-g++
-	CFLAGS:=$(CFLAGS)
 	LFLAGS:= $(LFLAGS) -static
 endif
 

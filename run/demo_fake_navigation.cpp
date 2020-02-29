@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
   Logger* log_nav = new Logger(sys.verbose_nav, sys.debug_nav);
 
   // Keyence must be disabled
-  sys.tube_run = 0;
+  sys.official_run = 0;
   if (sys.stationary_run) {
     log_nav->INFO("NAV", "STATIONARY RUN INITIALISED");
   } else {

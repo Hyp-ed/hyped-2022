@@ -36,6 +36,8 @@ binmain.o
 *.ipch
 *.ipch.icloud
 
+# Navigation
+src/navigation/testing
 # libraries
 lib/Eigen
 lib/rapidjson

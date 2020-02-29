@@ -44,7 +44,7 @@ void KalmanFilter::setup()
   // check system navigation run for R setup
   System &sys = System::getSystem();
   MatrixXf R = MatrixXf::Zero(m_, m_);;
-  if (sys.tube_run || sys.outside_run) R = createTubeMeasurementCovarianceMatrix();
+  if (sys.official_run || sys.outside_run) R = createTubeMeasurementCovarianceMatrix();
   else if (sys.elevator_run) R = createElevatorMeasurementCovarianceMatrix();
   else if (sys.stationary_run) R = createStationaryMeasurementCovarianceMatrix();
 

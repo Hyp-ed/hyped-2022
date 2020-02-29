@@ -65,19 +65,16 @@ ModuleStatus Navigation::getModuleStatus() const
   return status_;
 }
 
-// TODO(Neil/Lukas/Justus): do this more smartly?
 NavigationType Navigation::getAcceleration() const
 {
   return acceleration_.value;
 }
 
-// TODO(Neil/Lukas/Justus): do this more smartly?
 NavigationType Navigation::getVelocity() const
 {
   return velocity_.value;
 }
 
-// TODO(Neil/Lukas/Justus): do this more smartly?
 NavigationType Navigation::getDistance() const
 {
   return distance_.value;
@@ -85,7 +82,8 @@ NavigationType Navigation::getDistance() const
 
 NavigationType Navigation::getEmergencyBrakingDistance() const
 {
-  // TODO(Neil): Account for actuation delay and/or communication latency?
+  // TODO(Anyone): Account for actuation delay and/or communication latency?
+  // Also, how realistic is this? (e.g brake force wearing down)
   return getVelocity()*getVelocity() / (2*kEmergencyDeceleration);
 }
 
@@ -411,6 +409,11 @@ void Navigation::setHasInit()
   init_time_set_ = true;
 }
 
+void Navigation::logWrite()
+{
+  nav_write_ = true;
+}
+
 void Navigation::tukeyFences(NavigationArray& data_array, float threshold)
 {
   // Define the quartiles first:
@@ -517,6 +520,14 @@ void Navigation::updateData()
   nav_data.braking_distance           = 1.2 * getEmergencyBrakingDistance();
 
   data_.setNavigationData(nav_data);
+
+  if (nav_write_) {
+    std::ofstream writefile;
+    writefile.open("src/navigation/testing/nav_data.csv", std::ios::app);
+    writefile << counter_          << delimiter << nav_data.acceleration << delimiter <<
+                 nav_data.velocity << delimiter << nav_data.distance     << std::endl;
+    writefile.close();
+  }
 
   if (counter_ % 100 == 0) {  // kPrintFreq
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", //NOLINT

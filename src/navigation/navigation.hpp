@@ -19,9 +19,10 @@
 #ifndef NAVIGATION_NAVIGATION_HPP_
 #define NAVIGATION_NAVIGATION_HPP_
 
+#include <math.h>
 #include <array>
 #include <cstdint>
-#include <math.h>
+#include <fstream>
 
 #include "data/data.hpp"
 #include "data/data_point.hpp"
@@ -153,6 +154,10 @@ namespace navigation {
        * @brief Set the keyence used to fake, so the system knows to use central timestamps.
        */
       void setKeyenceFake();
+      /**
+       * @brief Write to file nav_data.csv
+       */
+      void logWrite();
 
     private:
       static constexpr int kCalibrationAttempts = 3;
@@ -160,6 +165,8 @@ namespace navigation {
 
       // number of previous measurements stored
       static constexpr int kPreviousMeasurements = 1000;
+
+      static constexpr char delimiter = '\t';
 
       static constexpr int kPrintFreq = 1;
       static constexpr NavigationType kEmergencyDeceleration = 24;
@@ -191,7 +198,6 @@ namespace navigation {
 
       // acceptable variances for calibration measurements: {x, y, z}
       array<float, 3> calibration_limits_;
-
       // Calibration variances in each dimension, necessary for vibration checking
       array<NavigationType, 3> calibration_variance_;
 
@@ -201,6 +207,9 @@ namespace navigation {
       uint16_t curr_msmt_;
       // Boolean value to check if the array has been filled, to not wrong variance
       bool prev_filled_;
+
+      // Flag to write to file
+      bool nav_write_;
 
       // Kalman filters to filter each IMU measurement individually
       FilterArray filters_;

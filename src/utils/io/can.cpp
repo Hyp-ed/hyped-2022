@@ -27,21 +27,22 @@
 #include <net/if.h>
 
 #if LINUX
-    #include <linux/can.h>
+#include <linux/can.h>
 #else
-  #define CAN_MAX_DLEN 8
-  struct can_frame {
-    uint32_t can_id;    /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-    uint8_t    can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
-    uint8_t    __pad;   /* padding */
-    uint8_t    __res0;  /* reserved / padding */
-    uint8_t    __res1;  /* reserved / padding */
-    uint8_t    data[CAN_MAX_DLEN] __attribute__((aligned(8)));
-  };
+#define CAN_MAX_DLEN 8
 
-  #ifndef PF_CAN
-  #define PF_CAN 29
-  #define AF_CAN PF_CAN
+struct can_frame {
+  uint32_t can_id;    /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+  uint8_t    can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
+  uint8_t    __pad;   /* padding */
+  uint8_t    __res0;  /* reserved / padding */
+  uint8_t    __res1;  /* reserved / padding */
+  uint8_t    data[CAN_MAX_DLEN] __attribute__((aligned(8)));
+};
+
+#ifndef PF_CAN
+#define PF_CAN 29
+#define AF_CAN PF_CAN
 #endif  // if LINUX
 
 #define CAN_RAW 1

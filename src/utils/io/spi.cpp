@@ -29,33 +29,35 @@
 #include <sys/mman.h>
 
 #if LINUX
-    #include <linux/spi/spidev.h>
+#include <linux/spi/spidev.h>
 #else
-  #define _IOW(type, nr, size) 10   // random demo functionality
-  #define SPI_IOC_MAGIC             'k'
-  #define SPI_IOC_WR_MODE           _IOW(SPI_IOC_MAGIC, 1, uint8_t)
-  #define SPI_IOC_WR_MAX_SPEED_HZ   _IOW(SPI_IOC_MAGIC, 4, uint32_t)
-  #define SPI_IOC_WR_LSB_FIRST      _IOW(SPI_IOC_MAGIC, 2, uint8_t)
-  #define SPI_IOC_WR_BITS_PER_WORD  _IOW(SPI_IOC_MAGIC, 3, uint8_t)
-  struct spi_ioc_transfer {
-    uint64_t tx_buf;
-    uint64_t rx_buf;
+#define _IOW(type, nr, size) 10   // random demo functionality
+#define SPI_IOC_MAGIC             'k'
+#define SPI_IOC_WR_MODE           _IOW(SPI_IOC_MAGIC, 1, uint8_t)
+#define SPI_IOC_WR_MAX_SPEED_HZ   _IOW(SPI_IOC_MAGIC, 4, uint32_t)
+#define SPI_IOC_WR_LSB_FIRST      _IOW(SPI_IOC_MAGIC, 2, uint8_t)
+#define SPI_IOC_WR_BITS_PER_WORD  _IOW(SPI_IOC_MAGIC, 3, uint8_t)
 
-    uint32_t len;
-    uint32_t speed_hz;
+struct spi_ioc_transfer {
+  uint64_t tx_buf;
+  uint64_t rx_buf;
 
-    uint16_t delay_usecs;
-    uint8_t  bits_per_word;
-    uint8_t  cs_change;
-    uint8_t  tx_nbits;
-    uint8_t  rx_nbits;
-    uint16_t pad;
-  };
-  #define SPI_MSGSIZE(N) \
-    ((((N)*(sizeof(struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS)) \
-      ? ((N)*(sizeof(struct spi_ioc_transfer))) : 0)
-  #define SPI_IOC_MESSAGE(N)  _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
-  #define SPI_CS_HIGH         0x04
+  uint32_t len;
+  uint32_t speed_hz;
+
+  uint16_t delay_usecs;
+  uint8_t  bits_per_word;
+  uint8_t  cs_change;
+  uint8_t  tx_nbits;
+  uint8_t  rx_nbits;
+  uint16_t pad;
+};
+
+#define SPI_MSGSIZE(N) \
+  ((((N)*(sizeof(struct spi_ioc_transfer))) < (1 << _IOC_SIZEBITS)) \
+    ? ((N)*(sizeof(struct spi_ioc_transfer))) : 0)
+#define SPI_IOC_MESSAGE(N)  _IOW(SPI_IOC_MAGIC, 0, char[SPI_MSGSIZE(N)])
+#define SPI_CS_HIGH         0x04
 #endif  // if LINUX
 
 #include "utils/system.hpp"

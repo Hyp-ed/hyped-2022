@@ -106,7 +106,7 @@ void FakeGpioCounter::getData(StripeCounter* stripe_count)     // returns incorr
       data::Navigation nav   = data_.getNavigationData();     // throw failure from fake_imu
       uint32_t current_count = stripe_count_.count.value;
 
-      uint16_t nav_count = std::floor(nav.distance/kStripeDistance);      // cast floor int;
+      uint16_t nav_count = std::floor(nav.displacement/kStripeDistance);      // cast floor int;
 
       if (current_count != nav_count) {
         stripe_count_.count.value = nav_count;

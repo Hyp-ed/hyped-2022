@@ -93,7 +93,7 @@ namespace navigation {
        *
        * @return NavigationType Returns the forward component of displacement vector [m]
        */
-      NavigationType getDistance() const;
+      NavigationType getDisplacement() const;
       /**
        * @brief Get the emergency braking distance [m]
        *
@@ -241,7 +241,7 @@ namespace navigation {
       ImuDataPointArray sensor_readings_;
       DataPoint<NavigationType> acceleration_;
       DataPoint<NavigationType> velocity_;
-      DataPoint<NavigationType> distance_;
+      DataPoint<NavigationType> displacement_;
       NavigationVectorArray gravity_calibration_;
 
       // Initial timestamp (for comparisons)
@@ -249,7 +249,7 @@ namespace navigation {
       // Previous timestamp
       uint32_t prev_timestamp_;
       // Uncertainty in distance
-      NavigationType distance_uncertainty_;
+      NavigationType displ_unc_;
       // Uncertainty in velocity
       NavigationType velocity_uncertainty_;
       // Previous acceleration measurement, necessary for uncertainty determination

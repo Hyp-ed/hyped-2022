@@ -41,7 +41,8 @@ else ifeq ($(UNAME), Darwin)
 					  -isysroot mac-crosscompiler/sysroot \
 					  -Imac-crosscompiler/sysroot/usr/include/c++/6.3.0 \
 					  -Imac-crosscompiler/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0 \
-					  --gcc-toolchain=mac-crosscompiler/prebuilt/bin
+					  --gcc-toolchain=mac-crosscompiler/prebuilt/bin \
+					  -DLINUX
 	LFLAGS:= $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=mac-crosscompiler/sysroot
 else
     $(info cross-compiling using Linux host)

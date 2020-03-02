@@ -1,10 +1,10 @@
 
 # default build configuration
-TARGET  := hyped
-MAIN    := run/main.cpp
-CROSS   := 0
-NOLINT  := 0
-VERBOSE := 0
+TARGET  := hyped         # define the binary name to compile into
+MAIN    := run/main.cpp  # define application entry point
+CROSS   := 0             # set to 1 to use a cross-compiler, to compile on a laptop and run on BBB
+NOLINT  := 0             # set to 1 to prevent linting the code
+VERBOSE := 0             # set to 1 to print all commands Makefile runs
 RELEASE := 0
 
 # include helper files

@@ -33,18 +33,18 @@ class ClientInterface {
    * @brief Connect client to base station, ret
    * @return true if successful
    */
-  virtual bool connect();
+  virtual bool connect() = 0;
   /**
    * @brief Send message to base station
-   * @param message String to send to base-station 
+   * @param message String to send to base-station
    * @return true if successful
    */
-  virtual bool sendData(std::string message);
+  virtual bool sendData(std::string message) = 0;
   /**
    * @brief Receive message from base station
    * @return message as a string
    */
-  virtual std::string receiveData();
+  virtual std::string receiveData() = 0;
 };
 
 }}  // namespace hyped::telemetry

@@ -25,7 +25,9 @@
 #include "telemetry/signalhandler.hpp"
 #include "utils/logger.hpp"
 #include "utils/config.hpp"
-#include "interface.hpp"
+#include "client_interface.hpp"
+#include "data/data.hpp"
+#include "utils/concurrent/thread.hpp"
 
 namespace hyped {
 
@@ -35,12 +37,16 @@ namespace telemetry {
 
 class FakeClient : public ClientInterface {
   public:
-    explicit FakeClient(Logger& log);
+    FakeClient();
+    ~FakeClient();
     bool connect() override;
     bool sendData(std::string message) override;
     std::string receiveData() override;
+    
   private:
     Logger& log_;
+    utils::concurrent::Thread thread_;
+    data::Data& data;
 };
 
 }  // namespace telemetry

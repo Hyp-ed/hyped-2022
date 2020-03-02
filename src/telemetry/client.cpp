@@ -30,17 +30,14 @@
 namespace hyped {
 namespace telemetry {
 
-Client::Client(Logger& log)
-  : Client {log, *utils::System::getSystem().config}
-{}
-
-Client::Client(Logger& log, const utils::Config& config)
-  : log_ {log},
-    kPort {config.telemetry.Port.c_str()},
-    kServerIP {config.telemetry.IP.c_str()}
-{
-  log_.DBG("Telemetry", "Client object created");
-}
+Client::Client()
+  : log_(utils::System::getLogger()),                                        
+    config_(utils::System::getSystem().config),
+    kPort(config_->telemetry.Port.c_str()),
+    kServerIP(config_->telemetry.IP.c_str())
+    {
+      log_.DBG("Telemetry", "Client object created"); 
+    }
 
 bool Client::connect()
 {

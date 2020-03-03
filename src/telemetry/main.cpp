@@ -34,7 +34,7 @@ Main::Main(uint8_t id, Logger& log)
   : Thread {id, log},
     data_ {data::Data::getInstance()},
     client_ {
-      utils::System::getSystem().config->interfaceFactory.getClientInterface()
+      utils::System::getSystem().config->interfaceFactory.getClientInterfaceInstance()
     }
 {
   log_.DBG("Telemetry", "Telemetry Main thread object created");

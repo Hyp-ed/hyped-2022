@@ -66,7 +66,6 @@ void printUsage()
     "    --fake_temperature --fake_temperature_fail\n"
     "    --fake_embrakes --fake_motors\n"
     "    --battery_test  --fake_highpower\n"
-    "    --fake_telemetry\n"
     "    To set navigation IDs.\n"
     "    --imu_id, --run_id\n"
     "    To set which IMU axis to be navigated after.\n"

@@ -38,7 +38,8 @@
 // e.g.       V(utils::config::fancy::typed::here, MyFancyInterface)
 #define INTERFACE_LIST(V) \
   V(sensors, ImuInterface) \
-  V(demo, DemoInterface)
+  V(demo, DemoInterface) \
+  V(telemetry, ClientInterface)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

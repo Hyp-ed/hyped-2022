@@ -23,30 +23,34 @@
 #include "utils/system.hpp"
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace telemetry {
 
-FakeClient::FakeClient() 
+FakeClient::FakeClient()
   : log_(utils::System::getLogger()),
-    data(data::Data::getInstance()) {  //how do i get an instance of statemachine data
+    data(data::Data::getInstance())
+    {
     log_.INFO("Telemetry", "Fake client object created");
 }
 
-bool FakeClient::connect() {
+bool FakeClient::connect()
+{
   log_.INFO("Telemetry", "Fake client connected");
   return true;
 }
 
-bool FakeClient::sendData(std::string message) {
+bool FakeClient::sendData(std::string message)
+{
   return true;
 }
 
-std::string FakeClient::receiveData() {
-  //Thread.sleep(1000);                              //how do i get sleep working
-  
+std::string FakeClient::receiveData()
+{
+  utils::concurrent::Thread::sleep(1000);
   std::string fake_message;
-  switch (data.getStateMachineData().current_state) { //how do we i get the current state
+  switch (data.getStateMachineData().current_state) {
   case  data::State::kIdle:
     fake_message = "CALIBRATE";
     break;
@@ -57,12 +61,23 @@ std::string FakeClient::receiveData() {
     fake_message = "SERVER_PROPULSION_GO";
     break;
   default:
-    fake_message = "ACK";
+    fake_message = "FAKE_ACK";
     break;
   }
   log_.DBG("Fake-Telemetry", "Receiving fake message");
   return fake_message;
 }
 
-} //namespace telemetry
-} //namespace hyped
+namespace {
+// this is how the config system will create the instance of FakeClient
+ClientInterface* createFakeClient()
+{
+  return new FakeClient();
+}
+// register the implementation with the factory
+bool reg_impl = utils::InterfaceFactory<ClientInterface>
+                ::registerCreator("FakeClient", createFakeClient);
+}
+
+}  // namespace telemetry
+}  // namespace hyped

@@ -18,8 +18,10 @@
  *    limitations under the License.
  */
 
-#ifndef TEL_INTERFACE_HPP_
-#define TEL_INTERFACE_HPP_
+#ifndef TELEMETRY_CLIENT_INTERFACE_HPP_
+#define TELEMETRY_CLIENT_INTERFACE_HPP_
+
+#include <string>
 
 namespace hyped {
 
@@ -49,4 +51,4 @@ class ClientInterface {
 
 }}  // namespace hyped::telemetry
 
-#endif  // TEL_INTERFACE_HPP_
+#endif  // TELEMETRY_CLIENT_INTERFACE_HPP_

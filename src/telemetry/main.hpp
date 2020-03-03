@@ -24,6 +24,7 @@
 #include "telemetry/client.hpp"
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
+#include "telemetry/client_interface.hpp"
 
 namespace hyped {
 
@@ -41,7 +42,7 @@ class Main: public Thread {
     friend class SendLoop;
     friend class RecvLoop;
     data::Data& data_;
-    Client client_;
+    ClientInterface* client_;
 };
 
 }  // namespace telemetry

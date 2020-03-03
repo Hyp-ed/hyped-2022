@@ -22,8 +22,7 @@
 #include "telemetry/main.hpp"
 #include "telemetry/sendloop.hpp"
 #include "telemetry/recvloop.hpp"
-#include "telemetry/fake_recvloop.hpp"
-#include "telemetry/fake_sendloop.hpp"
+#include "telemetry/client_interface.hpp"
 
 namespace hyped {
 
@@ -34,7 +33,9 @@ namespace telemetry {
 Main::Main(uint8_t id, Logger& log)
   : Thread {id, log},
     data_ {data::Data::getInstance()},
-    client_ {}
+    client_ {
+      utils::System::getSystem().config->interfaceFactory.getClientInterface()
+    }
 {
   log_.DBG("Telemetry", "Telemetry Main thread object created");
 }
@@ -53,25 +54,24 @@ void Main::run()
 
   data::Telemetry telem_data_struct = data_.getTelemetryData();
 
-  if (!sys.fake_telemetry) { //remove this condition once fake tel is implemented as an interface
-    try {
-      client_.connect();
-    }
-    catch (std::exception& e) {
-      log_.ERR("Telemetry", e.what());
-      log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
-      telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
-      data_.setTelemetryData(telem_data_struct);
-
-      return;
-    }
+  try {
+    client_->connect();
   }
+  catch (std::exception& e) {
+    log_.ERR("Telemetry", e.what());
+    log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
+
+    telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
+    data_.setTelemetryData(telem_data_struct);
+
+    return;
+  }
+
 
   telem_data_struct.module_status = ModuleStatus::kInit;
   data_.setTelemetryData(telem_data_struct);
 
-  
   SendLoop sendloop_thread {log_, data_, this};
   RecvLoop recvloop_thread {log_, data_, this};
   sendloop_thread.start();

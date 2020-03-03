@@ -42,14 +42,13 @@ class FakeClient : public ClientInterface {
     bool connect() override;
     bool sendData(std::string message) override;
     std::string receiveData() override;
-    
+
   private:
     Logger& log_;
-    utils::concurrent::Thread thread_;
     data::Data& data;
 };
 
 }  // namespace telemetry
 }  // namespace hyped
 
-#endif //TELEMETRY_FAKE_CLIENT_HPP_
+#endif  // TELEMETRY_FAKE_CLIENT_HPP_

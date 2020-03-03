@@ -135,7 +135,15 @@ void Navigation::calibrateGravity()
     for (int i = 0; i < kCalibrationQueries; ++i) {
       sensor_readings_ = data_.getSensorsImuData();
       for (int j = 0; j < Sensors::kNumImus; ++j) {
-        online_array[j].update(sensor_readings_.value[j].acc);
+        NavigationVector imu_data = sensor_readings_.value[j].acc;
+        online_array[j].update(imu_data);
+        if (nav_write_) {
+          std::ofstream writefile;
+          writefile.open("src/navigation/testing/nav_data.csv", std::ios::app);
+          writefile << j           << delimiter << imu_data[0] << delimiter <<
+                       imu_data[1] << delimiter << imu_data[2] << std::endl;
+          writefile.close();
+        }
       }
       Thread::sleep(1);
     }
@@ -211,6 +219,7 @@ void Navigation::queryImus()
 {
   ImuAxisData acc_raw;  // All raw data, four values per axis
   NavigationArray acc_raw_moving;  // Raw values in moving axis
+
   OnlineStatistics<NavigationType> acc_avg_filter;
   sensor_readings_ = data_.getSensorsImuData();
   uint32_t t = sensor_readings_.timestamp;
@@ -520,14 +529,6 @@ void Navigation::updateData()
   nav_data.braking_distance           = 1.2 * getEmergencyBrakingDistance();
 
   data_.setNavigationData(nav_data);
-
-  if (nav_write_) {
-    std::ofstream writefile;
-    writefile.open("src/navigation/testing/nav_data.csv", std::ios::app);
-    writefile << counter_          << delimiter << nav_data.acceleration << delimiter <<
-                 nav_data.velocity << delimiter << nav_data.displacement     << std::endl;
-    writefile.close();
-  }
 
   if (counter_ % 100 == 0) {  // kPrintFreq
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", //NOLINT

@@ -104,7 +104,7 @@ class Config {
   struct InterfaceFactory {
   // Module used in this context refers to the namespace containing the interface.
 #define CREATOR_FUNCTION_POINTERS(module, interface) \
-  module::interface* (*get##interface)();
+  module::interface* (*get##interface##Instance)();
   INTERFACE_LIST(CREATOR_FUNCTION_POINTERS)
   } interfaceFactory;
 

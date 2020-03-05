@@ -4,7 +4,7 @@ CFLAGS   := $(CFLAGS) -pthread -Wall
 LFLAGS   := $(LFLAGS) -lpthread -pthread
 CC       := g++
 INC_DIR  := $(INC_DIR) -I$(SRCS_DIR) -I$(LIBS_DIR)
-DEPFLAGS := $(DEPFLAGS) -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
+DEPFLAGS  = -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
 
 ifeq ($(RELEASE),1)
   CFLAGS += -O2

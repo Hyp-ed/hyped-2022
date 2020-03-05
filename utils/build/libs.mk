@@ -14,7 +14,7 @@ $(EIGEN): $(EIGEN).tar.gz
 	$(Verb) touch $@
 
 # Re-install rapidjson library if the tar file changes
-# RAPIDJSOM is a header only lib, no compilation needed
+# RAPIDJSON is a header only lib, no compilation needed
 $(RAPIDJSON): $(RAPIDJSON).tar.gz
 	$(Echo) Unpacking RapidJSON library $@
 	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null

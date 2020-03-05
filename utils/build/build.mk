@@ -46,10 +46,10 @@ CFLAGS += -DARCH_$(ARCH)
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )
-$(warning compiler $(CC) is not installed)
+	$(warning compiler $(CC) is not installed)
 endif
-LL := $(CC)
 
+LL := $(CC)
 
 # auto-discover all sources
 SRCS      := $(shell find $(SRCS_DIR) -name '*.cpp')

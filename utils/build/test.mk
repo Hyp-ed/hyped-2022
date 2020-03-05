@@ -33,13 +33,6 @@ PYTHON=$(shell python2.7 -V  >/dev/null 2>&1 && echo "1" )
 
 PYTHONCHECK=$(shell [[ -z "$(PYTHON)" ]] && echo "0" || echo "1")
 
-# Manual override for LINTER
-# run "make VERBOSE=1" to see all commands
-ifndef NOLINT
-	NOLINT := 0
-endif
-
-
 # Checks manual override and python flag defined in config
 RUNLINTER=$(shell [[ $(NOLINT) == 0 && $(PYTHONCHECK) == 1 ]] && echo 1 )
 
@@ -90,5 +83,10 @@ $(GTEST_TARGET): $(GTEST_DIR).tar.gz
 $(CPPCHECK_EXEC): $(CPPCHECK_DIR).tar.gz
 	$(Verb) command -v cppcheck > /dev/null 2>&1 || \
 	(chmod u+x ./test/lib/cppchecksetup.sh && ./test/lib/cppchecksetup.sh && touch $@)
+
+
+test-clean:
+	$(Verb) rm -rf $(T_OBJ_DIR)/
+	$(Verb) rm -f $(T_TARGET)
 
 -include $(T_OBJS:.o=.d)

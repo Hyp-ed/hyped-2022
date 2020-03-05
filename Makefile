@@ -1,10 +1,15 @@
 
 # default build configuration
-TARGET  := hyped         # define the binary name to compile into
-MAIN    := run/main.cpp  # define application entry point
-CROSS   := 0             # set to 1 to use a cross-compiler, to compile on a laptop and run on BBB
-NOLINT  := 0             # set to 1 to prevent linting the code
-VERBOSE := 0             # set to 1 to print all commands Makefile runs
+# TARGET  - define the binary name to compile into
+# MAIN    - define application entry point
+# CROSS   - set to 1 to use a cross-compiler, to compile on a laptop and run on BBB
+# NOLINT  - set to 1 to prevent linting the code
+# VERBOSE - set to 1 to print all commands Makefile runs
+TARGET  := hyped
+MAIN    := run/main.cpp
+CROSS   := 0
+NOLINT  := 0
+VERBOSE := 0
 RELEASE := 0
 
 # include helper files
@@ -36,7 +41,10 @@ else ifeq ($(PYTHONCHECK), 0)
 	$(error Cannot find Python 2.7, please check Python Version 2.7.X  is installed )
 endif
 
-clean-all: clean
+clean-all: clean clean-lint test-clean
+
+clean-lint:
+	$(Verb) rm -f .cpplint-cache
 
 clean:
 	$(Verb) rm -rf $(OBJS_DIR)/

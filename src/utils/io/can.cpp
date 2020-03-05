@@ -26,10 +26,11 @@
 #include <sys/socket.h>
 #include <net/if.h>
 
-#ifndef WIN
+#if LINUX
 #include <linux/can.h>
 #else
 #define CAN_MAX_DLEN 8
+
 struct can_frame {
   uint32_t can_id;    /* 32 bit CAN_ID + EFF/RTR/ERR flags */
   uint8_t    can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
@@ -42,7 +43,7 @@ struct can_frame {
 #ifndef PF_CAN
 #define PF_CAN 29
 #define AF_CAN PF_CAN
-#endif
+#endif  // if LINUX
 
 #define CAN_RAW 1
 #define CAN_MTU (sizeof(struct can_frame))

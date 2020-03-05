@@ -28,28 +28,33 @@ GITHOOKS=.git/hooks
 DEPENDENCIES=$(EIGEN) $(RAPIDJSON) $(GITHOOKS)
 
 ifeq ($(CROSS), 0)
-	ifneq ($(UNAME),Linux)
-		# assume Windows
-		UNAME='Windows'
-		CFLAGS:=$(CFLAGS) -DWIN -std=gnu++11
-	else
-		CFLAGS:=$(CFLAGS) -std=c++11
-	endif
 	ARCH=$(shell uname -m)
 	ifneq (,$(findstring 64,$(ARCH)))
 		CFLAGS:=$(CFLAGS) -DARCH_64
 	endif
+else ifeq ($(UNAME), Darwin)
+    $(info cross-compiling using Mac master race host)
+	CC:=mac-crosscompiler/prebuilt/bin/clang++
+	export COMPILER_PATH = mac-crosscompiler/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0/
+	CFLAGS:=$(CFLAGS) --target=arm-linux-gnueabihf \
+					  --sysroot=mac-crosscompiler/sysroot \
+					  -isysroot mac-crosscompiler/sysroot \
+					  -Imac-crosscompiler/sysroot/usr/include/c++/6.3.0 \
+					  -Imac-crosscompiler/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0 \
+					  --gcc-toolchain=mac-crosscompiler/prebuilt/bin \
+					  -DLINUX
+	LFLAGS:= $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=mac-crosscompiler/sysroot
 else
+    $(info cross-compiling using Linux host)
 	CC:=hyped-cross-g++
-	CFLAGS:=$(CFLAGS) -DARCH_32
 	LFLAGS:= $(LFLAGS) -static
-$(info cross-compiling)
 endif
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )
-$(error compiler $(CC) is not installed)
+    $(error compiler $(CC) is not installed)
 endif
+
 LL:=$(CC)
 
 # auto-discover all sources

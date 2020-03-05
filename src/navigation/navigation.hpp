@@ -1,7 +1,7 @@
 /*
- * Author: Neil McBlane, Brano Pilnan
+ * Author: Neil McBlane, Brano Pilnan, Justus Rudolph
  * Organisation: HYPED
- * Date: 05/04/2019
+ * Date: 16/02/2020
  * Description: Main file for navigation class.
  *
  *    Copyright 2019 HYPED
@@ -40,23 +40,26 @@ using data::ModuleStatus;
 using data::NavigationType;
 using data::NavigationVector;
 using data::Motors;
+using data::Sensors;
 using navigation::KalmanFilter;
 using utils::Logger;
 using utils::math::Integrator;
 using utils::math::OnlineStatistics;
 using utils::math::RollingStatistics;
+using std::array;
 
 namespace navigation {
 
   class Navigation {
     public:
-      typedef std::array<ImuData, data::Sensors::kNumImus>            ImuDataArray;
-      typedef DataPoint<ImuDataArray>                                 ImuDataPointArray;
-      typedef std::array<NavigationVector, data::Sensors::kNumImus>   NavigationVectorArray;
-      typedef std::array<NavigationType, data::Sensors::kNumImus>     NavigationArray;
-      typedef std::array<NavigationType, data::Sensors::kNumImus - 1> NavigationArrayOneFaulty;
-      typedef std::array<KalmanFilter, data::Sensors::kNumImus>       FilterArray;
-      typedef array<data::StripeCounter, data::Sensors::kNumKeyence>  KeyenceDataArray;
+      typedef array<ImuData, Sensors::kNumImus>                   ImuDataArray;
+      typedef DataPoint<ImuDataArray>                             ImuDataPointArray;
+      typedef array<NavigationVector, Sensors::kNumImus>          NavigationVectorArray;
+      typedef array<array<NavigationType, Sensors::kNumImus>, 3>  ImuAxisData;
+      typedef array<NavigationType, Sensors::kNumImus>            NavigationArray;
+      typedef array<NavigationType, Sensors::kNumImus-1>          NavigationArrayOneFaulty;
+      typedef array<KalmanFilter, Sensors::kNumImus>              FilterArray;
+      typedef array<data::StripeCounter, Sensors::kNumKeyence>    KeyenceDataArray;
 
       /**
        * @brief Construct a new Navigation object
@@ -155,6 +158,9 @@ namespace navigation {
       static constexpr int kCalibrationAttempts = 3;
       static constexpr int kCalibrationQueries = 10000;
 
+      // number of previous measurements stored
+      static constexpr int kPreviousMeasurements = 1000;
+
       static constexpr int kPrintFreq = 1;
       static constexpr NavigationType kEmergencyDeceleration = 24;
       static constexpr float kTukeyThreshold = 1;  // 0.75
@@ -184,15 +190,25 @@ namespace navigation {
       unsigned int axis_;
 
       // acceptable variances for calibration measurements: {x, y, z}
-      std::array<float, 3> calibration_limits_;
+      array<float, 3> calibration_limits_;
+
+      // Calibration variances in each dimension, necessary for vibration checking
+      array<NavigationType, 3> calibration_variance_;
+
+      // Array of previous measurements
+      array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
+      // Current point in recent measurements, to save space
+      uint16_t curr_msmt_;
+      // Boolean value to check if the array has been filled, to not wrong variance
+      bool prev_filled_;
 
       // Kalman filters to filter each IMU measurement individually
       FilterArray filters_;
 
       // Counter for consecutive outlier output from each IMU
-      std::array<uint32_t, data::Sensors::kNumImus> imu_outlier_counter_;
+      array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
       // Array of booleans to signify which IMUs are reliable or faulty
-      std::array<bool, data::Sensors::kNumImus> imu_reliable_;
+      array<bool, Sensors::kNumImus> imu_reliable_;
       // Counter of how many IMUs have failed
       uint32_t nOutlierImus_;
 
@@ -254,6 +270,10 @@ namespace navigation {
        * @brief Update uncertainty in distance obtained through IMU measurements.
        */
       void updateUncertainty();
+      /**
+       * @brief Check for vibrations
+       */
+      void checkVibration();
   };
 
 

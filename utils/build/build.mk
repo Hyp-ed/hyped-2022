@@ -1,23 +1,15 @@
 # This makefile configures variables related to compilation, e.g. compiler flags.
 # Furthermore, it defines compilation recipes
-CFLAGS   := -pthread -Wall
-LFLAGS   := -lpthread -pthread
+CFLAGS   := $(CFLAGS) -pthread -Wall
+LFLAGS   := $(LFLAGS) -lpthread -pthread
 CC       := g++
-INC_DIR  := -I$(SRCS_DIR) -I$(LIBS_DIR)
-DEPFLAGS  = -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
+INC_DIR  := $(INC_DIR) -I$(SRCS_DIR) -I$(LIBS_DIR)
+DEPFLAGS := $(DEPFLAGS) -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
 
 ifeq ($(RELEASE),1)
   CFLAGS += -O2
 else
   CFLAGS += -Og
-endif
-
-ifneq ($(UNAME),Linux)
-  # assume Windows
-  UNAME   := Windows
-  CFLAGS  += -DWIN -std=gnu++11
-else
-  CFLAGS  += -std=c++11
 endif
 
 ARCH := $(shell uname -m)
@@ -29,10 +21,25 @@ endif
 
 # Reconfigure from cross-compilation
 ifeq ($(CROSS), 1)
-  CC      := hyped-cross-g++
-  ARCH    := 32
-  LFLAGS  += -static
-$(info cross-compiling)
+  ARCH := 32
+
+  ifeq ($(UNAME), Darwin)
+    $(info cross-compiling using Mac host)
+	CC := mac-crosscompiler/prebuilt/bin/clang++
+	export COMPILER_PATH = mac-crosscompiler/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0/
+	CFLAGS := $(CFLAGS) --target=arm-linux-gnueabihf \
+					    --sysroot=mac-crosscompiler/sysroot \
+					    -isysroot mac-crosscompiler/sysroot \
+					    -Imac-crosscompiler/sysroot/usr/include/c++/6.3.0 \
+					    -Imac-crosscompiler/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0 \
+					    --gcc-toolchain=mac-crosscompiler/prebuilt/bin \
+					    -DLINUX
+	LFLAGS := $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=mac-crosscompiler/sysroot
+  else
+    $(info cross-compiling using Linux host)
+	CC := hyped-cross-g++
+	LFLAGS := $(LFLAGS) -static
+  endif
 endif
 
 CFLAGS += -DARCH_$(ARCH)

@@ -13,12 +13,14 @@ ifeq ($(RELEASE),1)
 endif
 
 UNAME := $(shell uname)
-ifneq ($(UNAME),Linux)
-  # assume Windows
-  UNAME   += Windows
-  CFLAGS  += -std=gnu++11
+
+ifeq ($(UNAME), $(filter $(UNAME), Linux Darwin))
+	# if Linux OR Mac
+	CFLAGS := $(CFLAGS) -std=c++11
 else
-  CFLAGS  += -std=c++11
+	# else, assume Windows
+	UNAME='Windows'
+	CFLAGS := $(CFLAGS) -std=gnu++11
 endif
 
 # run "make VERBOSE=1" to see all commands

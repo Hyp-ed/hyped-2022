@@ -17,7 +17,7 @@ $(EIGEN): $(EIGEN).tar.gz
 # RAPIDJSON is a header only lib, no compilation needed
 $(RAPIDJSON): $(RAPIDJSON).tar.gz
 	$(Echo) Unpacking RapidJSON library $@
-	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
+	$(Verb) tar -zxvf $@.tar.gz -C $(LIBS_DIR) > /dev/null
 	$(Verb) touch $@
 
 

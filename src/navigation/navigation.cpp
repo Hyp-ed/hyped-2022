@@ -300,96 +300,75 @@ void Navigation::checkVibration()
 
 void Navigation::updateUncertainty()
 {
-  /* Uncertainty from measuring is the timestamp between two measurements times velocity.
-   * Furthermore, the velocity has an uncertainty due to acceleration and timestamp. */
   double delta_t = (displacement_.timestamp - prev_timestamp_)/1000000.0;
   NavigationType abs_delta_acc = abs(getAcceleration() - prev_acc_);
-  // Adds uncertainty from the possible shift in both directions in the timestamp
+  // Random walk uncertainty
   velocity_uncertainty_ += abs_delta_acc*delta_t/2.;
-  // Adds uncertainty from the variance in acceleration from measurements
+  // Processing uncertainty
   NavigationType acc_variance = 0.0;
   for (int i = 0; i < Sensors::kNumImus; i++) {
     acc_variance += filters_[i].KalmanFilter::getEstimateVariance();
   }
-  // Average variance
   acc_variance = acc_variance/Sensors::kNumImus;
-  // Standard deviation
   NavigationType acc_stdDev = sqrt(acc_variance);
-  // uncertainty is the std deviation integrated to give velocity
+
   velocity_uncertainty_ += acc_stdDev*delta_t;
-  // Hence uncertainty in distance becomes updated with:
   displ_unc_ += velocity_uncertainty_*delta_t;
-  // Also, distance will be affected by taking the average of two velocities
+  // Random walk uncertainty
   displ_unc_ += abs(getVelocity() - prev_vel_) * delta_t / 2.;
 }
 
 void Navigation::queryKeyence()
 {
-  // set the keyence readings with the data from the central data struct
   keyence_readings_ = data_.getSensorsKeyenceData();
+
   for (int i = 0; i < Sensors::kNumKeyence; i++) {
-    // Checks whether the stripe count has been updated and if it has not been
-    // double-counted with the time constraint (100000micros atm, aka 0.1s, subject to change).
+    // Check new readings
     if (prev_keyence_readings_[i].count.value != keyence_readings_[i].count.value &&
          keyence_readings_[i].count.timestamp - stripe_counter_.timestamp > 1e5) {
       stripe_counter_.value++;
       stripe_counter_.timestamp = keyence_readings_[i].count.timestamp;
       if (!keyence_real_) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
 
-      // Allow up to one missed stripe.
-      // There must be some uncertainty in distance around the missed 30.48m (kStripeDistance).
       NavigationType allowed_uncertainty = displ_unc_;
-      /* If the uncertainty is too small, it is set to a relatively small value so that we do
-       * not get an error just because the uncertainty is tiny. */
       NavigationType minimum_uncertainty = kStripeDistance / 5.;
+
       if (displ_unc_ < minimum_uncertainty) allowed_uncertainty = minimum_uncertainty;
       NavigationType displ_change = displacement_.value - stripe_counter_.value*kStripeDistance;
-      /* There should only be an updated stripe count if the IMU determined distance is closer
-       * to the the next stripe than the current. It should not just lie within the uncertainty,
-       * otherwise we might count way more stripes than there are as soon as the uncertainty gets
-       * fairly large (>15m). */
+
+      // Allow up to one missed stripe
       if (displ_change > kStripeDistance - allowed_uncertainty &&
           displ_change < kStripeDistance + allowed_uncertainty &&
           displacement_.value > stripe_counter_.value*kStripeDistance + 0.5*kStripeDistance) {
         stripe_counter_.value++;
         displ_change -= kStripeDistance;
       }
-      /* Error handling: If distance from keyence still deviates more than the allowed
-      uncertainty, then the measurements are no longer believable. Important that this
-      is only checked in an update, otherwise we might throw an error in between stripes.
-      The first stripe is very uncertain, since it takes the longest, thus we ignore it.
-      Even if the first stripe is missed, error handling will catch it when the second is seen.*/
+      // Too large disagreement
       if ((displ_change < (-2) * allowed_uncertainty) ||
           (displ_change > 2 * allowed_uncertainty))
       {
         keyence_failure_counter_++;
         keyence_failure_counter_ += floor(abs(displ_change) / kStripeDistance);
       }
-      // Lower the uncertainty in velocity (based on sinuisoidal distribution):
-      velocity_uncertainty_ -= abs(displ_change*1e6/
-                               (stripe_counter_.timestamp - init_timestamp_));
+      // Lower the uncertainty in velocity
+      velocity_uncertainty_ -= abs(displ_change*1e6/(stripe_counter_.timestamp - init_timestamp_));
       log_.DBG("NAV", "Stripe detected!");
       log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_timestamp_);
       log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
 
-      // Make sure velocity uncertainty is positive.
+      // Ensure velocity uncertainty is positive
       velocity_uncertainty_ = abs(velocity_uncertainty_);
-      // The uncertainty in distance is not changed from this because the impact is far too large
-      // Update velocity value
+
       velocity_.value -= displ_change*1e6/(stripe_counter_.timestamp - init_timestamp_);
-      // Update distance value
       displacement_.value -= displ_change;
       break;
     }
   }
-  // If more than one disagreement occurs then we enter the kCriticalFailure state
+  // Failure if more than one disagreement
   if (keyence_failure_counter_ > 1) {
     status_ = ModuleStatus::kCriticalFailure;
     log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
   }
-  /* Similarly, if the current IMU distance is larger than four times the distance between
-   * two stripes, then we know that the two can no longer agree. That is because at least
-   * three stripes have been missed then, which throws kCriticalFailure. */
   if (displacement_.value - stripe_counter_.value*kStripeDistance > 4 * kStripeDistance) {
     status_ = ModuleStatus::kCriticalFailure;
     log_.ERR("NAV", "IMU distance at least 3 * kStripeDistance ahead, entering kCriticalFailure.");

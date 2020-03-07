@@ -19,13 +19,12 @@
 #include "navigation/stripe_count.hpp"
 
 namespace hyped {
-namespace navigation{
+namespace navigation {
 
-StripeCount::StripeCount(Logger& log, Data& data, uint32_t init_time,
-      NavigationType& displ_unc, NavigationType& vel_unc, NavigationType stripe_dist)
+StripeCount::StripeCount(Logger& log, Data& data, NavigationType& displ_unc,
+  NavigationType& vel_unc, NavigationType stripe_dist)
   : log_(log),
     data_(data),
-    init_time_(init_time_),
     displ_unc_(displ_unc),
     vel_unc_(vel_unc),
     stripe_counter_(0, 0),
@@ -43,6 +42,20 @@ void StripeCount::getReadings()
 void StripeCount::updateReadings()
 {
   prev_readings_ = readings_;
+}
+
+void StripeCount::set_init(uint32_t init_time)
+{
+  init_time_ = init_time;
+}
+
+uint16_t StripeCount::getStripeCount()
+{
+  return stripe_counter_.value;
+}
+uint8_t StripeCount::getFailureCount()
+{
+  return failure_counter_;
 }
 
 bool StripeCount::checkFailure(NavigationType displ)
@@ -69,6 +82,8 @@ void StripeCount::updateNavData(NavigationType& displ, NavigationType& vel)
 void StripeCount::queryKeyence(NavigationType& displ, NavigationType& vel, bool real)
 {
   getReadings();
+  log_.INFO("NAV", "Readings: %d, %d. Prev readings: %d, %d.", readings_[0].count.value,
+    readings_[1].count.value, prev_readings_[0].count.value, prev_readings_[1].count.value);
 
   for (int i = 0; i < Sensors::kNumKeyence; i++) {
     // Check new readings
@@ -114,3 +129,4 @@ void StripeCount::queryKeyence(NavigationType& displ, NavigationType& vel, bool 
   updateReadings();
 }
 }}
+

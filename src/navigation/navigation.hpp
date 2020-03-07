@@ -28,6 +28,7 @@
 #include "data/data_point.hpp"
 #include "sensors/imu.hpp"
 #include "navigation/kalman_filter.hpp"
+#include "navigation/stripe_count.hpp"
 #include "utils/logger.hpp"
 #include "utils/math/integrator.hpp"
 #include "utils/math/statistics.hpp"
@@ -223,6 +224,8 @@ namespace navigation {
 
       // Stripe counter (rolling values)
       DataPoint<uint32_t> stripe_counter_;
+      // OFFICIAL STRIPE COUNTER
+      StripeCount stripe_Counter_;
       // Keyence data read
       KeyenceDataArray keyence_readings_;
       // Previous keyence data for comparison

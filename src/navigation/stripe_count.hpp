@@ -16,8 +16,8 @@
  *    limitations under the License.
  */
 
-#ifndef NAVIGATION_STRIPECOUNT_HPP
-#define NAVIGATION_STRIPECOUNT_HPP
+#ifndef NAVIGATION_STRIPE_COUNT_HPP_
+#define NAVIGATION_STRIPE_COUNT_HPP_
 
 #include <math.h>
 #include <array>
@@ -56,12 +56,12 @@ namespace navigation {
        * @param displ_unc Reference to uncertainty in displacement
        * @param vel_unc Reference to uncertainty in velocity
        */
-      explicit StripeCount(Logger& log, Data& data, uint32_t init_time,
-      NavigationType& displ_unc, NavigationType& vel_unc, NavigationType stripe_dist);
+      explicit StripeCount(Logger& log, Data& data, NavigationType& displ_unc,
+        NavigationType& vel_unc, NavigationType stripe_dist);
 
       /**
        * @brief Check if stripe has been detected
-       * 
+       *
        * @param displ Current displacement
        * @param vel Current velocity
        * @param real Whether or not the sensors are real
@@ -69,19 +69,30 @@ namespace navigation {
       void queryKeyence(NavigationType& displ, NavigationType& vel, bool real);
       /**
        * @brief Check if submodule should enter kCriticalFailure
-       * 
+       *
        * @param displ Current displacement for comparison
-       * 
+       *
        * @return bool to enter kCriticalFailure or not
        */
       bool checkFailure(NavigationType displ);
       /**
-       * @brief Update nav data
-       *  
-       * @param displ Current displacement
-       * @param vel Current velocity
+       * @brief Sets the initial time
+       *
+       * @param init_time initial timestamp
        */
-      void updateNavData(NavigationType& displ, NavigationType& vel);
+      void set_init(uint32_t init_time);
+      /**
+       * @brief Get the current stripe count
+       *
+       * @return number of stripes hit
+       */
+      uint16_t getStripeCount();
+      /**
+       * @brief Get the current number of failures
+       *
+       * @return number of failures
+       */
+      uint8_t getFailureCount();
 
     private:
       // Central logging and data struct
@@ -107,6 +118,13 @@ namespace navigation {
       NavigationType& vel_unc_;
 
       /**
+       * @brief Update nav data
+       *
+       * @param displ Current displacement
+       * @param vel Current velocity
+       */
+      void updateNavData(NavigationType& displ, NavigationType& vel);
+      /**
        * @brief update prev_readings
        */
       void updateReadings();
@@ -114,7 +132,7 @@ namespace navigation {
        * @brief get current readings
        */
       void getReadings();
-
   };
 }}
-#endif // NAVIGATION_STRIPECOUNT_HPP
+#endif  // NAVIGATION_STRIPE_COUNT_HPP_
+

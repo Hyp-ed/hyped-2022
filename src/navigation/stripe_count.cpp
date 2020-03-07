@@ -30,9 +30,7 @@ StripeCount::StripeCount(Logger& log, Data& data, NavigationType& displ_unc,
     stripe_counter_(0, 0),
     failure_counter_(0),
     stripe_dist_(stripe_dist)
-    {
-      prev_readings_ = data_.getSensorsKeyenceData();
-    }
+    {}
 
 void StripeCount::getReadings()
 {
@@ -47,12 +45,14 @@ void StripeCount::updateReadings()
 void StripeCount::set_init(uint32_t init_time)
 {
   init_time_ = init_time;
+  prev_readings_ = data_.getSensorsKeyenceData();
 }
 
 uint16_t StripeCount::getStripeCount()
 {
   return stripe_counter_.value;
 }
+
 uint8_t StripeCount::getFailureCount()
 {
   return failure_counter_;
@@ -82,8 +82,6 @@ void StripeCount::updateNavData(NavigationType& displ, NavigationType& vel)
 void StripeCount::queryKeyence(NavigationType& displ, NavigationType& vel, bool real)
 {
   getReadings();
-  log_.INFO("NAV", "Readings: %d, %d. Prev readings: %d, %d.", readings_[0].count.value,
-    readings_[1].count.value, prev_readings_[0].count.value, prev_readings_[1].count.value);
 
   for (int i = 0; i < Sensors::kNumKeyence; i++) {
     // Check new readings
@@ -110,6 +108,8 @@ void StripeCount::queryKeyence(NavigationType& displ, NavigationType& vel, bool 
       if ((displ_change < (-2) * allowed_uncertainty) ||
           (displ_change > 2 * allowed_uncertainty))
       {
+        log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_change,
+          allowed_uncertainty);
         failure_counter_++;
         failure_counter_ += floor(abs(displ_change) / stripe_dist_);
       }
@@ -121,10 +121,11 @@ void StripeCount::queryKeyence(NavigationType& displ, NavigationType& vel, bool 
 
       // Ensure velocity uncertainty is positive
       vel_unc_ = abs(vel_unc_);
+      updateNavData(displ, vel);
+
       break;
     }
   }
-  updateNavData(displ, vel);
   // Update old keyence readings with current ones
   updateReadings();
 }

@@ -450,7 +450,7 @@ void Navigation::updateData()
 
   data_.setNavigationData(nav_data);
 
-  if (counter_ % 100 == 0) {  // kPrintFreq
+  if (counter_ % 1000 == 0) {  // kPrintFreq
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", //NOLINT
                counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
                stripe_Counter_.getStripeCount()*kStripeDistance);

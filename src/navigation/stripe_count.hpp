@@ -76,7 +76,7 @@ namespace navigation {
        */
       bool checkFailure(NavigationType displ);
       /**
-       * @brief Sets the initial time
+       * @brief Sets the initial time and keyence data
        *
        * @param init_time initial timestamp
        */

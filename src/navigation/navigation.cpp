@@ -45,7 +45,7 @@ Navigation::Navigation(Logger& log, unsigned int axis/*=0*/)
            displ_unc_(0.),
            velocity_uncertainty_(0.),
            init_time_set_(false),
-           stripe_Counter_(log_, data_, displ_unc_,
+           stripe_counter_(log_, data_, displ_unc_,
             velocity_uncertainty_, kStripeDistance),
            acceleration_integrator_(&velocity_),
            velocity_integrator_(&displacement_)
@@ -453,9 +453,9 @@ void Navigation::updateData()
   if (counter_ % 1000 == 0) {  // kPrintFreq
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", //NOLINT
                counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
-               stripe_Counter_.getStripeCount()*kStripeDistance);
+               stripe_counter_.getStripeCount()*kStripeDistance);
     log_.DBG("NAV", "%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d",
-               counter_, velocity_uncertainty_, displ_unc_, stripe_Counter_.getFailureCount());
+               counter_, velocity_uncertainty_, displ_unc_, stripe_counter_.getFailureCount());
   }
   counter_++;
   // Update all prev measurements
@@ -468,8 +468,8 @@ void Navigation::navigate()
 {
   queryImus();
   if (keyence_used_) {
-    stripe_Counter_.queryKeyence(displacement_.value, velocity_.value, keyence_real_);
-    if (stripe_Counter_.checkFailure(displacement_.value))
+    stripe_counter_.queryKeyence(displacement_.value, velocity_.value, keyence_real_);
+    if (stripe_counter_.checkFailure(displacement_.value))
       status_ = ModuleStatus::kCriticalFailure;
   }
   if (counter_ > 1000) updateUncertainty();
@@ -487,9 +487,6 @@ void Navigation::initTimestamps()
   init_timestamp_ = utils::Timer::getTimeMicros();
   log_.DBG3("NAV", "Initial timestamp:%d", init_timestamp_);
   prev_timestamp_ = utils::Timer::getTimeMicros();
-  // First iteration --> get initial keyence data
-  // (should be zero counters and corresponding timestamp)
-  prev_keyence_readings_ = data_.getSensorsKeyenceData();
-  stripe_Counter_.set_init(init_timestamp_);
+  stripe_counter_.set_init(init_timestamp_);
 }
 }}  // namespace hyped::navigation

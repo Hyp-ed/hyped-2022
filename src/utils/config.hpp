@@ -59,6 +59,7 @@ struct ModuleEntry;
   V(Telemetry)          \
   V(Embrakes)           \
   V(Sensors)            \
+  V(MotorControl)       \
   V(InterfaceFactory)
 
 #define CREATE_ENUM(module) \
@@ -100,6 +101,10 @@ class Config {
     std::vector<int> hp_shutoff;
     int checktime;
   } sensors;
+
+  struct MotorControl {
+    int isFaulty;
+  } motor_control;
 
   struct InterfaceFactory {
   // Module used in this context refers to the namespace containing the interface.

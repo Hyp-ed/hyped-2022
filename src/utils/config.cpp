@@ -191,6 +191,17 @@ void Config::parseEmbrakes(char* line)
   }
 }
 
+void Config::parseMotorControl(char* line)
+{
+  char* token = strtok(line, " ");
+  if (strcmp(token, "isFaulty") == 0) {
+    char* value = strtok(NULL, " ");
+    if (value) {
+      motor_control.isFaulty = atoi(value);
+    }
+  }
+}
+
 // if there is no creator configured to an interface, we use this one to prevent calling
 // a null pointer function
 template<class T>

@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   sys.fake_temperature = 1;
   sys.fake_embrakes = 1;
   sys.fake_motors = 1;
-  sys.fake_keyence = 0;
+  sys.fake_keyence = 1;
 
   // Initialise sensors
   hyped::sensors::Main* sensors_main = new hyped::sensors::Main(1, *log_nav);

@@ -37,7 +37,7 @@ namespace telemetry {
 
 class Client : public ClientInterface {
   public:
-    explicit Client();
+    Client();
     ~Client();
     bool connect() override;
     bool sendData(std::string message) override;

@@ -46,13 +46,12 @@ int main(int argc, char* argv[])
   static Data& data = Data::getInstance();
   Logger* log_nav = new Logger(sys.verbose_nav, sys.debug_nav);
 
-  // Keyence must be disabled
-  sys.official_run = 0;
   if (sys.stationary_run) {
     log_nav->INFO("NAV", "STATIONARY RUN INITIALISED");
-  } else {
+  } else if (sys.outside_run) {
     log_nav->INFO("NAV", "OUTSIDE RUN INITIALISED");
-    sys.outside_run = 1;
+  } else {
+    log_nav->INFO("NAV", "OFFICIAL RUN INITIALISED");
   }
 
   // use all fake sensors

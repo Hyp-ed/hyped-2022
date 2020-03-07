@@ -37,7 +37,7 @@ namespace navigation {
     Data& data = Data::getInstance();
     bool navigation_complete = false;
 
-    if (!(sys_.outside_run || sys_.official_run)) nav_.Navigation::disableKeyenceUsage();
+    if (!sys_.official_run) nav_.Navigation::disableKeyenceUsage();
     if (sys_.fake_keyence) nav_.Navigation::setKeyenceFake();
     if (sys_.nav_write) nav_.logWrite();
 

@@ -271,7 +271,7 @@ System::System(int argc, char* argv[])
         if (optarg) fake_keyence_fail = atoi(optarg);
         else        fake_keyence_fail = 1;
         break;
-      case 'L':   // fake_temeperature_fail
+      case 'L':   // fake_temperature_fail
         if (optarg) fake_temperature_fail = atoi(optarg);
         else        fake_temperature_fail = 1;
         break;

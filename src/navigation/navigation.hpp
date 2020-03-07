@@ -221,11 +221,10 @@ namespace navigation {
       // Counter of how many IMUs have failed
       uint32_t nOutlierImus_;
 
-      // OFFICIAL STRIPE COUNTER
+      // Stripe counter object
       StripeCount stripe_counter_;
-      // Keyence data read
+      // Flags if keyences are used and if real
       bool keyence_used_;
-      // Is the keyence used fake or real?
       bool keyence_real_;
 
       // To store estimated values

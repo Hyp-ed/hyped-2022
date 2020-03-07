@@ -37,6 +37,8 @@ Navigation::Navigation(Logger& log, unsigned int axis/*=0*/)
            curr_msmt_(0),
            imu_reliable_ {{true, true, true, true}},
            nOutlierImus_(0),
+           stripe_counter_(log_, data_, displ_unc_,
+            velocity_uncertainty_, kStripeDistance),
            keyence_used_(true),
            keyence_real_(true),
            acceleration_(0, 0.),
@@ -45,8 +47,6 @@ Navigation::Navigation(Logger& log, unsigned int axis/*=0*/)
            displ_unc_(0.),
            velocity_uncertainty_(0.),
            init_time_set_(false),
-           stripe_counter_(log_, data_, displ_unc_,
-            velocity_uncertainty_, kStripeDistance),
            acceleration_integrator_(&velocity_),
            velocity_integrator_(&displacement_)
 {

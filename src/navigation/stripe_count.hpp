@@ -110,12 +110,12 @@ namespace navigation {
       // Distance between stripes
       NavigationType stripe_dist_;
 
-      // initial timestamp
-      uint32_t init_time_;
       // displacement uncertainty
       NavigationType& displ_unc_;
       // velocity uncertainty
       NavigationType& vel_unc_;
+      // initial timestamp
+      uint32_t init_time_;
 
       /**
        * @brief Update nav data

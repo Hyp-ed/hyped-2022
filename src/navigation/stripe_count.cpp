@@ -25,11 +25,11 @@ StripeCount::StripeCount(Logger& log, Data& data, NavigationType& displ_unc,
   NavigationType& vel_unc, NavigationType stripe_dist)
   : log_(log),
     data_(data),
-    displ_unc_(displ_unc),
-    vel_unc_(vel_unc),
     stripe_counter_(0, 0),
     failure_counter_(0),
-    stripe_dist_(stripe_dist)
+    stripe_dist_(stripe_dist),
+    displ_unc_(displ_unc),
+    vel_unc_(vel_unc)
     {}
 
 void StripeCount::getReadings()

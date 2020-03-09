@@ -27,7 +27,7 @@ CPPCHECK_TARGET := $(CPPCHECK_DIR)/cppcheck
 CPPCHECK_EXEC   := $(shell command -v cppcheck || echo ./$(CPPCHECK_TARGET))
 CPPCHECK_FLAGS=--quiet --error-exitcode=1 --inline-suppr --suppressions-list=$(TEST_DIR)/lib/cppcheck-suppress
 
-# dependency checks
+# Dependency checks
 ## Is 1 when python is installed
 PYTHON=$(shell python2.7 -V  >/dev/null 2>&1 && echo "1" )
 

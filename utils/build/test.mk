@@ -7,7 +7,7 @@ T_TARGET  := testrunner
 T_MAIN    := main.test.cpp
 T_OBJ_DIR := $(OBJS_DIR)/$(TEST_DIR)
 
-# defines T_SRCS
+# Defines T_SRCS
 include $(TEST_DIR)/$(SRCS_DIR)/Test.files
 T_SRCS      += $(T_MAIN)
 T_OBJS      := $(patsubst %.cpp,$(T_OBJ_DIR)/%.o,$(T_SRCS))

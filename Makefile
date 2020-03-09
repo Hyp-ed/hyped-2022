@@ -12,7 +12,7 @@ NOLINT  := 0
 VERBOSE := 0
 RELEASE := 0
 
-# include helper files
+# Include helper files
 HELPERS_DIR  := utils/build
 include $(HELPERS_DIR)/config.mk
 include $(HELPERS_DIR)/build.mk

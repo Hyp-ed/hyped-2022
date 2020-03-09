@@ -36,8 +36,8 @@ PYTHONCHECK=$(shell [[ -z "$(PYTHON)" ]] && echo "0" || echo "1")
 # Checks manual override and python flag defined in config
 RUNLINTER=$(shell [[ $(NOLINT) == 0 && $(PYTHONCHECK) == 1 ]] && echo 1 )
 
-#pass this option to run static checker with specified severity
-# e.g. make static STATIC_ENABLE=style
+# Pass this option to run static checker with specified severity.
+# E.g. make static STATIC_ENABLE=style
 STATIC_ENABLE=
 
 .PHONY: test

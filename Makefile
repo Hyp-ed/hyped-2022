@@ -1,5 +1,5 @@
 
-# default build configuration
+# Default build configuration
 # TARGET  - define the binary name to compile into
 # MAIN    - define application entry point
 # CROSS   - set to 1 to use a cross-compiler, to compile on a laptop and run on BBB

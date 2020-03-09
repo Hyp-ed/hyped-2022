@@ -1,5 +1,5 @@
 
-# libaries for generating TARGET
+# Libaries for generating TARGET
 EIGEN     := $(LIBS_DIR)/Eigen
 RAPIDJSON := $(LIBS_DIR)/rapidjson
 GITHOOKS  := .git/hooks

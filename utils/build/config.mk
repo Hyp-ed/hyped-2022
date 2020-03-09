@@ -1,5 +1,5 @@
-# this makefile contains common configuration that should be use throughout the project
-# it defines ROOT variable which points to the root of this project
+# This makefile contains common configuration that should be use throughout the project.
+# It defines ROOT variable which points to the root of this project.
 
 SRCS_DIR := src
 OBJS_DIR := bin

@@ -26,3 +26,4 @@ $ motor_control.txt
 > InterfaceFactory
 ImuInterface Imu
 DemoInterface Implementation1
+ClientInterface Client

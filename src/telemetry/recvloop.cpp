@@ -44,7 +44,7 @@ void RecvLoop::run()
 
   while (true) {
     try {
-      message = main_ref_.client_.receiveData();
+      message = main_ref_.client_->receiveData();
     }
     catch (std::exception& e) {
       log_.ERR("Telemetry", "%s", e.what());
@@ -81,6 +81,9 @@ void RecvLoop::run()
     } else if (message == "NOMINAL_RETRACT") {
       log_.INFO("Telemetry", "FROM SERVER: NOMINAL_RETRACT");
       telem_data_struct.nominal_braking_command = false;
+    } else if (message == "FAKE_ACK") {
+      log_.DBG3("Telemetry", "FROM SERVER: FAKE_ACK");
+      // do nothing when we get a ping from fake client - avoids clogging LOG.INFO
     } else {
       log_.ERR("Telemetry", "Unrecognized input from server, ENTERING CRITICAL FAILURE");
       telem_data_struct.module_status = ModuleStatus::kCriticalFailure;

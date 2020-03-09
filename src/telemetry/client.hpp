@@ -25,26 +25,29 @@
 #include "telemetry/signalhandler.hpp"
 #include "utils/logger.hpp"
 #include "utils/config.hpp"
+#include "client_interface.hpp"
 
 namespace hyped {
 
 using utils::Logger;
+using utils::Config;
+using utils::System;
 
 namespace telemetry {
 
-class Client {
+class Client : public ClientInterface {
   public:
-    explicit Client(Logger& log);
+    Client();
     ~Client();
-    bool connect();
-    bool sendData(std::string message);
-    std::string receiveData();
+    bool connect() override;
+    bool sendData(std::string message) override;
+    std::string receiveData() override;
 
   private:
-    Client(Logger& log, const utils::Config& config);
-
-    int sockfd_;
+    // void init(Logger& log, const utils::Config* config);
     Logger& log_;
+    Config* config_;
+    int sockfd_;
     const char* kPort;
     const char* kServerIP;
 };

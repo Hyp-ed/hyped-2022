@@ -26,21 +26,19 @@
 #include <string>
 #include "telemetry/client.hpp"
 #include "utils/system.hpp"
+#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace telemetry {
 
-Client::Client(Logger& log)
-  : Client {log, *utils::System::getSystem().config}
-{}
-
-Client::Client(Logger& log, const utils::Config& config)
-  : log_ {log},
-    kPort {config.telemetry.Port.c_str()},
-    kServerIP {config.telemetry.IP.c_str()}
-{
-  log_.DBG("Telemetry", "Client object created");
-}
+Client::Client()
+  : log_(utils::System::getLogger()),
+    config_(utils::System::getSystem().config),
+    kPort(config_->telemetry.Port.c_str()),
+    kServerIP(config_->telemetry.IP.c_str())
+    {
+      log_.DBG("Telemetry", "Client object created");
+    }
 
 bool Client::connect()
 {
@@ -128,6 +126,17 @@ std::string Client::receiveData()
   log_.DBG1("Telemetry", "Finished receiving from server");
 
   return std::string(buffer);
+}
+
+namespace {
+// this is how the config system will create the instance of Client
+ClientInterface* createClient()
+{
+  return new Client();
+}
+// register the implementation with the factory
+bool reg_impl = utils::InterfaceFactory<ClientInterface>
+                ::registerCreator("Client", createClient);
 }
 
 }  // namespace client

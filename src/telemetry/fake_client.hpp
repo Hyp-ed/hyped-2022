@@ -1,5 +1,5 @@
 /*
- * Author: Neil Weidinger
+ * Author: J. Ridley
  * Organisation: HYPED
  * Date: March 2019
  * Description:
@@ -18,34 +18,37 @@
  *    limitations under the License.
  */
 
-#ifndef TELEMETRY_MAIN_HPP_
-#define TELEMETRY_MAIN_HPP_
+#ifndef TELEMETRY_FAKE_CLIENT_HPP_
+#define TELEMETRY_FAKE_CLIENT_HPP_
 
-#include "telemetry/client.hpp"
+#include <string>
+#include "telemetry/signalhandler.hpp"
+#include "utils/logger.hpp"
+#include "utils/config.hpp"
+#include "client_interface.hpp"
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
-#include "telemetry/client_interface.hpp"
 
 namespace hyped {
 
-using utils::concurrent::Thread;
 using utils::Logger;
 
 namespace telemetry {
 
-class Main: public Thread {
+class FakeClient : public ClientInterface {
   public:
-    Main(uint8_t id, Logger& log);
-    void run() override;
+    FakeClient();
+    ~FakeClient();
+    bool connect() override;
+    bool sendData(std::string message) override;
+    std::string receiveData() override;
 
   private:
-    friend class SendLoop;
-    friend class RecvLoop;
-    data::Data& data_;
-    ClientInterface* client_;
+    Logger& log_;
+    data::Data& data;
 };
 
 }  // namespace telemetry
 }  // namespace hyped
 
-#endif  // TELEMETRY_MAIN_HPP_
+#endif  // TELEMETRY_FAKE_CLIENT_HPP_

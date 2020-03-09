@@ -34,11 +34,14 @@
  * class name, not the full namespaced name.
  */
 
+
 // use format REGISTER(module/namespace, class)
 // e.g.       REGISTER(utils::config::fancy::typed::here, MyFancyInterface)
 #define INTERFACE_LIST(REGISTER) \
   REGISTER(sensors, ImuInterface) \
-  REGISTER(demo, DemoInterface)
+  REGISTER(demo, DemoInterface) \
+  REGISTER(telemetry, ClientInterface)
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

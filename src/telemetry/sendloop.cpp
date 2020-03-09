@@ -46,7 +46,7 @@ void SendLoop::run()
     writer.packAdditionalData();
     writer.end();
 
-    if (!main_ref_.client_.sendData(writer.getString())) {
+    if (!main_ref_.client_->sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");
       data::Telemetry telem_data_struct = data_.getTelemetryData();
       telem_data_struct.module_status = data::ModuleStatus::kCriticalFailure;

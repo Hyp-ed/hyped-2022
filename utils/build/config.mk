@@ -9,7 +9,7 @@ LIBS_DIR := lib
 SHELL := /bin/bash
 
 ifeq ($(RELEASE),1)
-  OBJS_DIR += /release
+  OBJS_DIR := $(OBJS_DIR)/release
 endif
 
 UNAME := $(shell uname)

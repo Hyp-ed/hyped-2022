@@ -40,6 +40,10 @@ ifeq ($(CROSS), 1)
 	CC := hyped-cross-g++
 	LFLAGS := $(LFLAGS) -static
   endif
+else
+  ifeq ($(UNAME), Linux)
+    CFLAGS += -DLINUX
+  endif
 endif
 
 CFLAGS += -DARCH_$(ARCH)

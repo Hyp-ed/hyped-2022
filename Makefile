@@ -85,7 +85,7 @@ USAGE := "make <target>\n"\
 "clean    - delete all binary object files to recompile everything\n"\
 "print VARIABLE=<variable>  - print content of a makefile variable to see that it will be when running targets\n"\
 "                           - e.g. make print VARIABLE=CFLAGS\n"
-.PHONE: help
+.PHONY: help
 help:
 	$(Echo) -e $(USAGE)
 

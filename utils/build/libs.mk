@@ -10,7 +10,7 @@ DEPENDENCIES  := $(EIGEN) $(RAPIDJSON) $(GITHOOKS)
 # EIGEN is a header only lib, no compilation needed
 $(EIGEN): $(EIGEN).tar.gz
 	$(Echo) Unpacking Eigen library $@
-	$(Verb) tar -zxvf $@.tar.gz -C lib > /dev/null
+	$(Verb) tar -zxvf $@.tar.gz -C $(LIBS_DIR) > /dev/null
 	$(Verb) touch $@
 
 # Re-install rapidjson library if the tar file changes

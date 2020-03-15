@@ -5,6 +5,8 @@ LFLAGS   := $(LFLAGS) -lpthread -pthread
 CC       := g++
 INC_DIR  := $(INC_DIR) -I$(SRCS_DIR) -I$(LIBS_DIR)
 DEPFLAGS  = -MT $@ -MMD -MP -MF $(OBJS_DIR)/$*.d
+# DEPFLAGS ensures that changes to headers trigger recompilation properly. More info on the wiki:
+# https://github.com/Hyp-ed/hyped-2020/wiki/Makefiles#what-is-the-line-depflags----mt---mmd--mp--mf-objs_dird-in-buildmk
 
 ifeq ($(RELEASE),1)
   CFLAGS += -O2

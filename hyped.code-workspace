@@ -13,11 +13,13 @@
     "files.autoSave": "onWindowChange",
     "files.exclude": {
       "**/.cpplint-cache": true,
+      ".ccls-cache": true,
       "bin": true,
-      "**/build": true,
+      "**/googletest/build/*": true,
       "**/*.a": true,
       "**/testrunner*": true,
-      "hyped*": true
+      "hyped": true,
+      "hyped.exe": true,
     },
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
@@ -32,6 +34,6 @@
     ],
     "editor.detectIndentation": false,
     "C_Cpp.default.cppStandard": "c++11",
-    "C_Cpp.default.cStandard": "c11"
+    "C_Cpp.default.cStandard": "c11",
   }
 }

@@ -1,10 +1,9 @@
-
 #!/bin/bash
 
 echo "Running pre-commit hook"
 
-if command -v hostnamectl>/dev/null; then
-  if hostnamectl | grep beaglebone>/dev/null; then
+if command -v hostnamectl > /dev/null; then
+  if hostnamectl |& grep beaglebone &> /dev/null; then
     OPTION=""
   else
     OPTION="-j4"
@@ -13,12 +12,14 @@ else
   OPTION="-j4"
 fi
 
+# show what is actually run
+set -x
+
 # compile and link, lint on src/
 make "$OPTION"
 
 # compile and link, lint on test/src
-make test/lib/libtest.a  "$OPTION"
-make -C test/ testrunner lint "$OPTION"
+make test test-lint $OPTION
 
-# run static analyzer on src test/src 
+# run static analyzer on src test/src
 # make static # off for now

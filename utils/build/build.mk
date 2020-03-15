@@ -62,14 +62,14 @@ MAIN_OBJ  := $(patsubst run/%.cpp, $(OBJS_DIR)/%.o, $(MAIN))
 
 $(TARGET): $(DEPENDENCIES) $(OBJS) $(MAIN_OBJ)
 	$(Echo) "Linking executable $(MAIN) into $@"
-	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS)
+	$(Verb) $(LL)  -o $@ $(OBJS) $(MAIN_OBJ) $(LFLAGS) $(COVERAGE_FLAGS)
 
 $(MAIN_OBJ): $(OBJS_DIR)/%.o: $(MAIN)
 	$(Echo) "Compiling main: $<"
 	$(Verb) mkdir -p $(dir $@)
-	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $< $(COVERAGE_FLAGS)
 
 $(OBJS): $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
-	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $<
+	$(Verb) $(CC) $(DEPFLAGS) $(CFLAGS) -o $@ -c $(INC_DIR) $< $(COVERAGE_FLAGS)

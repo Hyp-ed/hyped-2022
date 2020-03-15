@@ -50,7 +50,7 @@ test-all: $(T_TARGET)
 test-filter: $(T_TARGET)
 	$(Verb) ./$< --gtest_filter=$(GTEST_FILTERS)
 
-coverage: $(T_TARGET)
+coverage: test
 	$(Verb) ./test/utils/get_code_cov.sh
 
 test-lint:

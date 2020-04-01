@@ -302,30 +302,27 @@ System::System(int argc, char* argv[])
       case 's':   // elevator_run
         if (optarg) {
           elevator_run = atoi(optarg);
-          official_run = 0;
         } else {
           elevator_run = 1;
-          official_run = 0;
         }
+        official_run = 0;
         break;
       case 't':   // stationary_run
         if (optarg) {
           stationary_run = atoi(optarg);
-          official_run = 0;
         } else {
           stationary_run = 1;
-          official_run = 0;
         }
+        official_run = 0;
         nav_write = stationary_run;
         break;
       case 'w':   // outside_run
         if (optarg) {
           outside_run = atoi(optarg);
-          official_run = 0;
         } else {
           outside_run = 1;
-          official_run = 0;
         }
+        official_run = 0;
         break;
       case 'x':   // telemetry_off
         if (optarg) telemetry_off = atoi(optarg);

@@ -37,16 +37,16 @@ Navigation::Navigation(Logger& log, unsigned int axis/*=0*/)
            curr_msmt_(0),
            imu_reliable_ {{true, true, true, true}},
            nOutlierImus_(0),
-           stripe_counter_(log_, data_, displ_unc_,
-            velocity_uncertainty_, kStripeDistance),
-           keyence_used_(true),
-           keyence_real_(true),
            acceleration_(0, 0.),
            velocity_(0, 0.),
            displacement_(0, 0.),
            displ_unc_(0.),
-           velocity_uncertainty_(0.),
+           vel_unc_(0.),
            init_time_set_(false),
+           stripe_counter_(log_, data_, displ_unc_,
+            vel_unc_, kStripeDistance),
+           keyence_used_(true),
+           keyence_real_(true),
            acceleration_integrator_(&velocity_),
            velocity_integrator_(&displacement_)
 {
@@ -140,8 +140,8 @@ void Navigation::calibrateGravity()
         if (nav_write_) {
           std::ofstream writefile;
           writefile.open("src/navigation/testing/nav_data.csv", std::ios::app);
-          writefile << j           << delimiter << imu_data[0] << delimiter <<
-                       imu_data[1] << delimiter << imu_data[2] << std::endl;
+          writefile << j           << kDelimiter << imu_data[0] << kDelimiter <<
+                       imu_data[1] << kDelimiter << imu_data[2] << std::endl;
           writefile.close();
         }
       }
@@ -303,7 +303,7 @@ void Navigation::updateUncertainty()
   double delta_t = (displacement_.timestamp - prev_timestamp_)/1000000.0;
   NavigationType abs_delta_acc = abs(getAcceleration() - prev_acc_);
   // Random walk uncertainty
-  velocity_uncertainty_ += abs_delta_acc*delta_t/2.;
+  vel_unc_ += abs_delta_acc*delta_t/2.;
   // Processing uncertainty
   NavigationType acc_variance = 0.0;
   for (int i = 0; i < Sensors::kNumImus; i++) {
@@ -311,9 +311,9 @@ void Navigation::updateUncertainty()
   }
   acc_variance = acc_variance/Sensors::kNumImus;
   NavigationType acc_stdDev = sqrt(acc_variance);
-
-  velocity_uncertainty_ += acc_stdDev*delta_t;
-  displ_unc_ += velocity_uncertainty_*delta_t;
+  // uncertainty in velocity is the std deviation of acceleration integrated
+  vel_unc_ += acc_stdDev*delta_t;
+  displ_unc_ += vel_unc_*delta_t;
   // Random walk uncertainty
   displ_unc_ += abs(getVelocity() - prev_vel_) * delta_t / 2.;
 }
@@ -455,7 +455,7 @@ void Navigation::updateData()
                counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
                stripe_counter_.getStripeCount()*kStripeDistance);
     log_.DBG("NAV", "%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d",
-               counter_, velocity_uncertainty_, displ_unc_, stripe_counter_.getFailureCount());
+               counter_, vel_unc_, displ_unc_, stripe_counter_.getFailureCount());
   }
   counter_++;
   // Update all prev measurements

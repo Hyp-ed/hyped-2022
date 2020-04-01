@@ -155,7 +155,7 @@ namespace navigation {
        */
       void setKeyenceFake();
       /**
-       * @brief Write to file nav_data.csv
+       * @brief Enable writing to file nav_data.csv
        */
       void logWrite();
 
@@ -166,7 +166,7 @@ namespace navigation {
       // number of previous measurements stored
       static constexpr int kPreviousMeasurements = 1000;
 
-      static constexpr char delimiter = '\t';
+      static constexpr char kDelimiter = '\t';
 
       static constexpr int kPrintFreq = 1;
       static constexpr NavigationType kEmergencyDeceleration = 24;
@@ -221,12 +221,6 @@ namespace navigation {
       // Counter of how many IMUs have failed
       uint32_t nOutlierImus_;
 
-      // Stripe counter object
-      StripeCount stripe_counter_;
-      // Flags if keyences are used and if real
-      bool keyence_used_;
-      bool keyence_real_;
-
       // To store estimated values
       ImuDataPointArray sensor_readings_;
       DataPoint<NavigationType> acceleration_;
@@ -241,13 +235,19 @@ namespace navigation {
       // Uncertainty in distance
       NavigationType displ_unc_;
       // Uncertainty in velocity
-      NavigationType velocity_uncertainty_;
+      NavigationType vel_unc_;
       // Previous acceleration measurement, necessary for uncertainty determination
       NavigationType prev_acc_;
       // Previous velocity measurement
       NavigationType prev_vel_;
       // Have initial timestamps been set?
       bool init_time_set_;
+
+      // Stripe counter object
+      StripeHandler stripe_counter_;
+      // Flags if keyences are used and if real
+      bool keyence_used_;
+      bool keyence_real_;
 
       // To convert acceleration -> velocity -> distance
       Integrator<NavigationType> acceleration_integrator_;  // acceleration to velocity

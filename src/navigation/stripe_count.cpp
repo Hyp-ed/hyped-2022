@@ -16,52 +16,53 @@
  *    limitations under the License.
  */
 
+#include <algorithm>
 #include "navigation/stripe_count.hpp"
 
 namespace hyped {
 namespace navigation {
 
-StripeCount::StripeCount(Logger& log, Data& data, NavigationType& displ_unc,
+StripeHandler::StripeHandler(Logger& log, Data& data, NavigationType& displ_unc,
   NavigationType& vel_unc, NavigationType stripe_dist)
-  : log_(log),
-    data_(data),
-    stripe_counter_(0, 0),
-    failure_counter_(0),
-    stripe_dist_(stripe_dist),
-    displ_unc_(displ_unc),
-    vel_unc_(vel_unc)
-    {}
+    : log_(log),
+      data_(data),
+      stripe_counter_(0, 0),
+      nMissed_stripes_(0),
+      stripe_dist_(stripe_dist),
+      displ_unc_(displ_unc),
+      vel_unc_(vel_unc)
+{}
 
-void StripeCount::getReadings()
+void StripeHandler::getReadings()
 {
   readings_ = data_.getSensorsKeyenceData();
 }
 
-void StripeCount::updateReadings()
+void StripeHandler::updateReadings()
 {
   prev_readings_ = readings_;
 }
 
-void StripeCount::set_init(uint32_t init_time)
+void StripeHandler::set_init(uint32_t init_time)
 {
   init_time_ = init_time;
   prev_readings_ = data_.getSensorsKeyenceData();
 }
 
-uint16_t StripeCount::getStripeCount()
+uint16_t StripeHandler::getStripeCount()
 {
   return stripe_counter_.value;
 }
 
-uint8_t StripeCount::getFailureCount()
+uint8_t StripeHandler::getFailureCount()
 {
-  return failure_counter_;
+  return nMissed_stripes_;
 }
 
-bool StripeCount::checkFailure(NavigationType displ)
+bool StripeHandler::checkFailure(NavigationType displ)
 {
   // Failure if more than one disagreement
-  if (failure_counter_ > 1) {
+  if (nMissed_stripes_ > 1) {
     log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
     return true;
   }
@@ -72,59 +73,55 @@ bool StripeCount::checkFailure(NavigationType displ)
   return false;
 }
 
-void StripeCount::updateNavData(NavigationType& displ, NavigationType& vel)
+void StripeHandler::updateNavData(NavigationType& displ, NavigationType& vel)
 {
-  NavigationType displ_change = displ - stripe_counter_.value*stripe_dist_;
-  vel -= displ_change*1e6/(stripe_counter_.timestamp - init_time_);
-  displ -= displ_change;
+  NavigationType displ_offset = displ - stripe_counter_.value*stripe_dist_;
+  vel -= displ_offset*1e6/(stripe_counter_.timestamp - init_time_);
+  displ -= displ_offset;
 }
 
-void StripeCount::queryKeyence(NavigationType& displ, NavigationType& vel, bool real)
+void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, bool real)
 {
   getReadings();
 
   for (int i = 0; i < Sensors::kNumKeyence; i++) {
-    // Check new readings
-    if (prev_readings_[i].count.value != readings_[i].count.value &&
-         readings_[i].count.timestamp - stripe_counter_.timestamp > 1e5) {
+    // Check new readings and ensure new stripe has been hit
+    if (prev_readings_[i].count.value == readings_[i].count.value ||
+         readings_[i].count.timestamp - stripe_counter_.timestamp < 1e5)
+         continue;
+    stripe_counter_.value++;
+    stripe_counter_.timestamp = readings_[i].count.timestamp;
+    if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
+
+    NavigationType minimum_uncertainty = stripe_dist_ / 5.;
+    NavigationType allowed_uncertainty = std::max(displ_unc_, minimum_uncertainty);
+    NavigationType displ_offset = displ - stripe_counter_.value*stripe_dist_;
+
+    // Allow up to one missed stripe
+    if (displ_offset > stripe_dist_ - allowed_uncertainty &&
+        displ_offset < stripe_dist_ + allowed_uncertainty &&
+        displ > stripe_counter_.value*stripe_dist_ + 0.5*stripe_dist_) {
       stripe_counter_.value++;
-      stripe_counter_.timestamp = readings_[i].count.timestamp;
-      if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
-
-      NavigationType allowed_uncertainty = displ_unc_;
-      NavigationType minimum_uncertainty = stripe_dist_ / 5.;
-
-      if (displ_unc_ < minimum_uncertainty) allowed_uncertainty = minimum_uncertainty;
-      NavigationType displ_change = displ - stripe_counter_.value*stripe_dist_;
-
-      // Allow up to one missed stripe
-      if (displ_change > stripe_dist_ - allowed_uncertainty &&
-          displ_change < stripe_dist_ + allowed_uncertainty &&
-          displ > stripe_counter_.value*stripe_dist_ + 0.5*stripe_dist_) {
-        stripe_counter_.value++;
-        displ_change -= stripe_dist_;
-      }
-      // Too large disagreement
-      if ((displ_change < (-2) * allowed_uncertainty) ||
-          (displ_change > 2 * allowed_uncertainty))
-      {
-        log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_change,
-          allowed_uncertainty);
-        failure_counter_++;
-        failure_counter_ += floor(abs(displ_change) / stripe_dist_);
-      }
-      // Lower the uncertainty in velocity
-      vel_unc_ -= abs(displ_change*1e6/(stripe_counter_.timestamp - init_time_));
-      log_.DBG("NAV", "Stripe detected!");
-      log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_time_);
-      log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
-
-      // Ensure velocity uncertainty is positive
-      vel_unc_ = abs(vel_unc_);
-      updateNavData(displ, vel);
-
-      break;
+      displ_offset -= stripe_dist_;
     }
+    // Too large disagreement
+    if (std::abs(displ_offset) > 2 * allowed_uncertainty) {
+      log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_offset,
+        allowed_uncertainty);
+      nMissed_stripes_++;
+      nMissed_stripes_ += floor(abs(displ_offset) / stripe_dist_);
+    }
+    // Lower the uncertainty in velocity
+    vel_unc_ -= abs(displ_offset*1e6/(stripe_counter_.timestamp - init_time_));
+    log_.DBG("NAV", "Stripe detected!");
+    log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_time_);
+    log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
+
+    // Ensure velocity uncertainty is positive
+    vel_unc_ = abs(vel_unc_);
+    updateNavData(displ, vel);
+
+    break;
   }
   // Update old keyence readings with current ones
   updateReadings();

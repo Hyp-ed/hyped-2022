@@ -43,96 +43,100 @@ using std::array;
 
 namespace navigation {
 
-  class StripeCount {
-    public:
-      typedef array<data::StripeCounter, Sensors::kNumKeyence> KeyenceDataArray;
+class StripeHandler {
+ public:
+  typedef array<data::StripeCounter, Sensors::kNumKeyence> KeyenceDataArray;
 
-      /**
-       * @brief Construct a new Stripe Counter object
-       *
-       * @param log System logger
-       * @param data Central data struct
-       * @param init_time Initial timestamp (for comparison)
-       * @param displ_unc Reference to uncertainty in displacement
-       * @param vel_unc Reference to uncertainty in velocity
-       */
-      explicit StripeCount(Logger& log, Data& data, NavigationType& displ_unc,
-        NavigationType& vel_unc, NavigationType stripe_dist);
+  /**
+   * @brief Construct a new Stripe Counter object
+   *
+   * @param log System logger
+   * @param data Central data struct
+   * @param init_time Initial timestamp (for comparison)
+   * @param displ_unc Reference to uncertainty in displacement, read only
+   * @param vel_unc Reference to uncertainty in velocity, this is written to
+   */
+  explicit StripeHandler(Logger& log, Data& data, NavigationType& displ_unc,
+    NavigationType& vel_unc, NavigationType stripe_dist);
 
-      /**
-       * @brief Check if stripe has been detected
-       *
-       * @param displ Current displacement
-       * @param vel Current velocity
-       * @param real Whether or not the sensors are real
-       */
-      void queryKeyence(NavigationType& displ, NavigationType& vel, bool real);
-      /**
-       * @brief Check if submodule should enter kCriticalFailure
-       *
-       * @param displ Current displacement for comparison
-       *
-       * @return bool to enter kCriticalFailure or not
-       */
-      bool checkFailure(NavigationType displ);
-      /**
-       * @brief Sets the initial time and keyence data
-       *
-       * @param init_time initial timestamp
-       */
-      void set_init(uint32_t init_time);
-      /**
-       * @brief Get the current stripe count
-       *
-       * @return number of stripes hit
-       */
-      uint16_t getStripeCount();
-      /**
-       * @brief Get the current number of failures
-       *
-       * @return number of failures
-       */
-      uint8_t getFailureCount();
+  /**
+   * @brief Check if stripe has been detected and changes the displacement
+   *        and velocity input from the navigation class accordingly
+   *
+   * @param displ Current displacement
+   * @param vel Current velocity
+   * @param real Whether or not the sensors are real
+   */
+  void queryKeyence(NavigationType& displ, NavigationType& vel, bool real);
+  /**
+   * @brief Check if submodule should enter kCriticalFailure
+   *
+   * @param displ Current displacement from all sensors for comparison
+   *
+   * @return bool to enter kCriticalFailure or not
+   */
+  bool checkFailure(NavigationType displ);
+  /**
+   * @brief Sets the initial time and keyence data
+   *        Occurs on the first iteration when nav-
+   *        main is moved to accelerating state
+   *
+   * @param init_time initial timestamp
+   */
+  void set_init(uint32_t init_time);
+  /**
+   * @brief Get the current stripe count
+   *
+   * @return number of stripes hit
+   */
+  uint16_t getStripeCount();
+  /**
+   * @brief Get the current number of failures
+   *
+   * @return number of failures
+   */
+  uint8_t getFailureCount();
 
-    private:
-      // Central logging and data struct
-      Logger& log_;
-      Data& data_;
+ private:
+  // Distance between stripes
+  const NavigationType stripe_dist_;
 
-      // Number of stripes hit & most recent timestamp
-      DataPoint<uint16_t> stripe_counter_;
-      // Keyence data read
-      KeyenceDataArray readings_;
-      // Previous keyence data for comparison
-      KeyenceDataArray prev_readings_;
-      // Number of significant sensor disagreements
-      uint8_t failure_counter_;
-      // Distance between stripes
-      NavigationType stripe_dist_;
+  /**
+   * @brief Update nav data
+   *
+   * @param displ Current displacement
+   * @param vel Current velocity
+   */
+  void updateNavData(NavigationType& displ, NavigationType& vel);
+  /**
+   * @brief update prev_readings
+   */
+  void updateReadings();
+  /**
+   * @brief get current readings
+   */
+  void getReadings();
 
-      // displacement uncertainty
-      NavigationType& displ_unc_;
-      // velocity uncertainty
-      NavigationType& vel_unc_;
-      // initial timestamp
-      uint32_t init_time_;
+  // Central logging and data struct
+  Logger& log_;
+  Data& data_;
 
-      /**
-       * @brief Update nav data
-       *
-       * @param displ Current displacement
-       * @param vel Current velocity
-       */
-      void updateNavData(NavigationType& displ, NavigationType& vel);
-      /**
-       * @brief update prev_readings
-       */
-      void updateReadings();
-      /**
-       * @brief get current readings
-       */
-      void getReadings();
-  };
+  // Number of stripes hit & most recent timestamp
+  DataPoint<uint16_t> stripe_counter_;
+  // Keyence data read
+  KeyenceDataArray readings_;
+  // Previous keyence data for comparison
+  KeyenceDataArray prev_readings_;
+  // Number of significant sensor disagreements
+  uint8_t nMissed_stripes_;
+
+  // displacement uncertainty
+  NavigationType& displ_unc_;
+  // velocity uncertainty
+  NavigationType& vel_unc_;
+  // initial timestamp
+  uint32_t init_time_;
+};
 }}
 #endif  // NAVIGATION_STRIPE_COUNT_HPP_
 

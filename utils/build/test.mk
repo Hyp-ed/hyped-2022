@@ -13,7 +13,8 @@ T_SRCS      += $(T_MAIN)
 T_OBJS      := $(patsubst %.cpp,$(T_OBJ_DIR)/%.o,$(T_SRCS))
 T_DEPFLAGS   = -MT $@ -MMD -MP -MF $(T_OBJ_DIR)/$*.d
 
-ifeq ($(RELEASE),0)
+# Only add coverage flag if not also cross compiling
+ifeq ($(RELEASE)$(CROSS), 00)
   COVERAGE_FLAGS := --coverage
 endif
 

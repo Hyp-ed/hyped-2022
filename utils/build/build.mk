@@ -52,7 +52,7 @@ CFLAGS += -DARCH_$(ARCH)
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )
-	$(warning compiler $(CC) is not installed)
+    $(error Compiler $(CC) is not installed)
 endif
 
 LL := $(CC)

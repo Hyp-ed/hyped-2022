@@ -39,7 +39,7 @@ ifeq ($(CROSS), 1)
 	LFLAGS := $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=mac-crosscompiler/sysroot
   else
     $(info cross-compiling using Linux host)
-	CC := hyped-cross-g++
+	CC := arm-linux-gnueabihf-g++
 	LFLAGS := $(LFLAGS) -static
   endif
 else

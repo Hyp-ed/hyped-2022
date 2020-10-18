@@ -52,12 +52,12 @@ class StripeHandler {
    *
    * @param log System logger
    * @param data Central data struct
-   * @param init_time Initial timestamp (for comparison)
    * @param displ_unc Reference to uncertainty in displacement, read only
    * @param vel_unc Reference to uncertainty in velocity, this is written to
+   * @param stripe_dist Distance between two stripes
    */
   explicit StripeHandler(Logger& log, Data& data, const NavigationType& displ_unc,
-                         NavigationType& vel_unc, NavigationType stripe_dist);
+                         NavigationType& vel_unc, const NavigationType stripe_dist);
 
   /**
    * @brief Check if stripe has been detected and changes the displacement
@@ -99,7 +99,7 @@ class StripeHandler {
 
  private:
   // Distance between stripes
-  const NavigationType stripe_dist_;
+  const NavigationType kStripeDist;
 
   /**
    * @brief Update nav data

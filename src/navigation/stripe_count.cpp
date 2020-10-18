@@ -23,8 +23,8 @@ namespace hyped {
 namespace navigation {
 
 StripeHandler::StripeHandler(Logger& log, Data& data, const NavigationType& displ_unc,
-                             NavigationType& vel_unc, NavigationType stripe_dist)
-    : stripe_dist_(stripe_dist),
+                             NavigationType& vel_unc, const NavigationType stripe_dist)
+    : kStripeDist(stripe_dist),
       log_(log),
       data_(data),
       stripe_counter_(0, 0),
@@ -66,8 +66,8 @@ bool StripeHandler::checkFailure(NavigationType displ)
     log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
     return true;
   }
-  if (displ - stripe_counter_.value*stripe_dist_ > 4 * stripe_dist_) {
-    log_.ERR("NAV", "IMU distance at least 3 * stripe_dist_ ahead, entering kCriticalFailure.");
+  if (displ - stripe_counter_.value*kStripeDist > 4 * kStripeDist) {
+    log_.ERR("NAV", "IMU distance at least 3 * kStripeDist ahead, entering kCriticalFailure.");
     return true;
   }
   return false;
@@ -75,7 +75,7 @@ bool StripeHandler::checkFailure(NavigationType displ)
 
 void StripeHandler::updateNavData(NavigationType& displ, NavigationType& vel)
 {
-  NavigationType displ_offset = displ - stripe_counter_.value*stripe_dist_;
+  NavigationType displ_offset = displ - stripe_counter_.value*kStripeDist;
   vel -= displ_offset*1e6/(stripe_counter_.timestamp - init_time_);
   displ -= displ_offset;
 }
@@ -93,23 +93,23 @@ void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, boo
     stripe_counter_.timestamp = readings_[i].count.timestamp;
     if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
 
-    NavigationType minimum_uncertainty = stripe_dist_ / 5.;
+    NavigationType minimum_uncertainty = kStripeDist / 5.;
     NavigationType allowed_uncertainty = std::max(displ_unc_, minimum_uncertainty);
-    NavigationType displ_offset = displ - stripe_counter_.value*stripe_dist_;
+    NavigationType displ_offset = displ - stripe_counter_.value*kStripeDist;
 
     // Allow up to one missed stripe
-    if (displ_offset > stripe_dist_ - allowed_uncertainty &&
-        displ_offset < stripe_dist_ + allowed_uncertainty &&
-        displ > stripe_counter_.value*stripe_dist_ + 0.5*stripe_dist_) {
+    if (displ_offset > kStripeDist - allowed_uncertainty &&
+        displ_offset < kStripeDist + allowed_uncertainty &&
+        displ > stripe_counter_.value*kStripeDist + 0.5*kStripeDist) {
       stripe_counter_.value++;
-      displ_offset -= stripe_dist_;
+      displ_offset -= kStripeDist;
     }
     // Too large disagreement
     if (std::abs(displ_offset) > 2 * allowed_uncertainty) {
       log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_offset,
         allowed_uncertainty);
       n_missed_stripes_++;
-      n_missed_stripes_ += floor(abs(displ_offset) / stripe_dist_);
+      n_missed_stripes_ += floor(abs(displ_offset) / kStripeDist);
     }
     // Lower the uncertainty in velocity
     vel_unc_ -= abs(displ_offset*1e6/(stripe_counter_.timestamp - init_time_));

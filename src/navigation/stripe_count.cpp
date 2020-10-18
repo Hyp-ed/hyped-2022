@@ -23,7 +23,7 @@ namespace hyped {
 namespace navigation {
 
 StripeHandler::StripeHandler(Logger& log, Data& data, NavigationType& displ_unc,
-  NavigationType& vel_unc, NavigationType stripe_dist)
+                             NavigationType& vel_unc, NavigationType stripe_dist)
     : log_(log),
       data_(data),
       stripe_counter_(0, 0),
@@ -127,4 +127,3 @@ void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, boo
   updateReadings();
 }
 }}
-

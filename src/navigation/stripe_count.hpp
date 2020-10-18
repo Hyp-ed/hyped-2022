@@ -128,7 +128,7 @@ class StripeHandler {
   // Previous keyence data for comparison
   KeyenceDataArray prev_readings_;
   // Number of significant sensor disagreements
-  uint8_t nMissed_stripes_;
+  uint8_t n_missed_stripes_;
 
   // displacement uncertainty
   NavigationType& displ_unc_;

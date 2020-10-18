@@ -17,7 +17,7 @@
  */
 
 #include <algorithm>
-#include "navigation/stripe_count.hpp"
+#include "navigation/stripe_handler.hpp"
 
 namespace hyped {
 namespace navigation {

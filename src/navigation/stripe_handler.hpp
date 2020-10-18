@@ -16,8 +16,8 @@
  *    limitations under the License.
  */
 
-#ifndef NAVIGATION_STRIPE_COUNT_HPP_
-#define NAVIGATION_STRIPE_COUNT_HPP_
+#ifndef NAVIGATION_STRIPE_HANDLER_HPP_
+#define NAVIGATION_STRIPE_HANDLER_HPP_
 
 #include <cstdint>
 #include <array>
@@ -138,4 +138,4 @@ class StripeHandler {
   uint32_t init_time_;
 };
 }}
-#endif  // NAVIGATION_STRIPE_COUNT_HPP_
+#endif  // NAVIGATION_STRIPE_HANDLER_HPP_

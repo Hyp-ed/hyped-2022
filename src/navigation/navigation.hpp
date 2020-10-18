@@ -28,7 +28,7 @@
 #include "data/data_point.hpp"
 #include "sensors/imu.hpp"
 #include "navigation/kalman_filter.hpp"
-#include "navigation/stripe_count.hpp"
+#include "navigation/stripe_handler.hpp"
 #include "utils/logger.hpp"
 #include "utils/math/integrator.hpp"
 #include "utils/math/statistics.hpp"

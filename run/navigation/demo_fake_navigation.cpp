@@ -55,12 +55,12 @@ int main(int argc, char* argv[])
   }
 
   // use all fake sensors
-  sys.fake_imu = 1;
-  sys.fake_batteries = 1;
-  sys.fake_temperature = 1;
-  sys.fake_embrakes = 1;
-  sys.fake_motors = 1;
-  sys.fake_keyence = 1;
+  sys.fake_imu = true;
+  sys.fake_batteries = true;
+  sys.fake_temperature = true;
+  sys.fake_embrakes = true;
+  sys.fake_motors = true;
+  sys.fake_keyence = true;
 
   // Initialise sensors
   hyped::sensors::Main* sensors_main = new hyped::sensors::Main(1, *log_nav);

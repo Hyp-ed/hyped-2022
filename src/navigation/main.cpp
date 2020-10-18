@@ -39,7 +39,7 @@ namespace navigation {
 
     if (!sys_.official_run) nav_.Navigation::disableKeyenceUsage();
     if (sys_.fake_keyence) nav_.Navigation::setKeyenceFake();
-    if (sys_.nav_write) nav_.logWrite();
+    if (sys_.enable_nav_write) nav_.logWrite();
 
     // wait for calibration state for calibration
     while (sys_.running_ && !navigation_complete) {

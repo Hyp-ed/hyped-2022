@@ -19,9 +19,9 @@
 #ifndef NAVIGATION_STRIPE_COUNT_HPP_
 #define NAVIGATION_STRIPE_COUNT_HPP_
 
-#include <cmath>
-#include <array>
 #include <cstdint>
+#include <array>
+#include <cmath>
 
 #include "data/data.hpp"
 #include "data/data_point.hpp"
@@ -56,8 +56,8 @@ class StripeHandler {
    * @param displ_unc Reference to uncertainty in displacement, read only
    * @param vel_unc Reference to uncertainty in velocity, this is written to
    */
-  explicit StripeHandler(Logger& log, Data& data, NavigationType& displ_unc,
-    NavigationType& vel_unc, NavigationType stripe_dist);
+  explicit StripeHandler(Logger& log, Data& data, const NavigationType& displ_unc,
+                         NavigationType& vel_unc, NavigationType stripe_dist);
 
   /**
    * @brief Check if stripe has been detected and changes the displacement
@@ -130,8 +130,8 @@ class StripeHandler {
   // Number of significant sensor disagreements
   uint8_t n_missed_stripes_;
 
-  // displacement uncertainty
-  NavigationType& displ_unc_;
+  // displacement uncertainty, const because this is never written to
+  const NavigationType& displ_unc_;
   // velocity uncertainty
   NavigationType& vel_unc_;
   // initial timestamp

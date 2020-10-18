@@ -93,7 +93,7 @@ class System {
   bool stationary_run;
   bool outside_run;
   // Write acc,vel,pos to file
-  bool nav_write;
+  bool enable_nav_write;
 
   // Telemetry
   bool telemetry_off;

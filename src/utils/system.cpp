@@ -314,7 +314,7 @@ System::System(int argc, char* argv[])
           stationary_run = 1;
         }
         official_run = 0;
-        nav_write = stationary_run;
+        enable_nav_write = stationary_run;
         break;
       case 'w':   // outside_run
         if (optarg) {

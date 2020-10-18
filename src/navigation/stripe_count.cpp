@@ -22,13 +22,13 @@
 namespace hyped {
 namespace navigation {
 
-StripeHandler::StripeHandler(Logger& log, Data& data, NavigationType& displ_unc,
+StripeHandler::StripeHandler(Logger& log, Data& data, const NavigationType& displ_unc,
                              NavigationType& vel_unc, NavigationType stripe_dist)
-    : log_(log),
+    : stripe_dist_(stripe_dist),
+      log_(log),
       data_(data),
       stripe_counter_(0, 0),
-      nMissed_stripes_(0),
-      stripe_dist_(stripe_dist),
+      n_missed_stripes_(0),
       displ_unc_(displ_unc),
       vel_unc_(vel_unc)
 {}
@@ -56,13 +56,13 @@ uint16_t StripeHandler::getStripeCount()
 
 uint8_t StripeHandler::getFailureCount()
 {
-  return nMissed_stripes_;
+  return n_missed_stripes_;
 }
 
 bool StripeHandler::checkFailure(NavigationType displ)
 {
   // Failure if more than one disagreement
-  if (nMissed_stripes_ > 1) {
+  if (n_missed_stripes_ > 1) {
     log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
     return true;
   }
@@ -108,8 +108,8 @@ void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, boo
     if (std::abs(displ_offset) > 2 * allowed_uncertainty) {
       log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_offset,
         allowed_uncertainty);
-      nMissed_stripes_++;
-      nMissed_stripes_ += floor(abs(displ_offset) / stripe_dist_);
+      n_missed_stripes_++;
+      n_missed_stripes_ += floor(abs(displ_offset) / stripe_dist_);
     }
     // Lower the uncertainty in velocity
     vel_unc_ -= abs(displ_offset*1e6/(stripe_counter_.timestamp - init_time_));

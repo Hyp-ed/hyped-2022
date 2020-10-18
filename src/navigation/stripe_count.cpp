@@ -126,4 +126,4 @@ void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, boo
   // Update old keyence readings with current ones
   updateReadings();
 }
-}}
+}}  // namespace hyped::navigation

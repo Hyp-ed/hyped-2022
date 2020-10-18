@@ -19,7 +19,7 @@
 #ifndef NAVIGATION_STRIPE_COUNT_HPP_
 #define NAVIGATION_STRIPE_COUNT_HPP_
 
-#include <math.h>
+#include <cmath>
 #include <array>
 #include <cstdint>
 

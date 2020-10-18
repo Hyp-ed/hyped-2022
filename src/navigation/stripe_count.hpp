@@ -69,7 +69,7 @@ class StripeHandler {
    */
   void queryKeyence(NavigationType& displ, NavigationType& vel, bool real);
   /**
-   * @brief Check if submodule should enter kCriticalFailure
+   * @brief Checks if submodule should enter kCriticalFailure
    *
    * @param displ Current displacement from all sensors for comparison
    *
@@ -139,4 +139,3 @@ class StripeHandler {
 };
 }}
 #endif  // NAVIGATION_STRIPE_COUNT_HPP_
-

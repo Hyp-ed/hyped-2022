@@ -19,14 +19,16 @@
 #ifndef NAVIGATION_NAVIGATION_HPP_
 #define NAVIGATION_NAVIGATION_HPP_
 
+#include <math.h>
 #include <array>
 #include <cstdint>
-#include <math.h>
+#include <fstream>
 
 #include "data/data.hpp"
 #include "data/data_point.hpp"
 #include "sensors/imu.hpp"
 #include "navigation/kalman_filter.hpp"
+#include "navigation/stripe_handler.hpp"
 #include "utils/logger.hpp"
 #include "utils/math/integrator.hpp"
 #include "utils/math/statistics.hpp"
@@ -59,7 +61,6 @@ namespace navigation {
       typedef array<NavigationType, Sensors::kNumImus>            NavigationArray;
       typedef array<NavigationType, Sensors::kNumImus-1>          NavigationArrayOneFaulty;
       typedef array<KalmanFilter, Sensors::kNumImus>              FilterArray;
-      typedef array<data::StripeCounter, Sensors::kNumKeyence>    KeyenceDataArray;
 
       /**
        * @brief Construct a new Navigation object
@@ -92,7 +93,7 @@ namespace navigation {
        *
        * @return NavigationType Returns the forward component of displacement vector [m]
        */
-      NavigationType getDistance() const;
+      NavigationType getDisplacement() const;
       /**
        * @brief Get the emergency braking distance [m]
        *
@@ -153,6 +154,10 @@ namespace navigation {
        * @brief Set the keyence used to fake, so the system knows to use central timestamps.
        */
       void setKeyenceFake();
+      /**
+       * @brief Enable writing to file nav_data.csv
+       */
+      void logWrite();
 
     private:
       static constexpr int kCalibrationAttempts = 3;
@@ -160,6 +165,8 @@ namespace navigation {
 
       // number of previous measurements stored
       static constexpr int kPreviousMeasurements = 1000;
+
+      static constexpr char kDelimiter = '\t';
 
       static constexpr int kPrintFreq = 1;
       static constexpr NavigationType kEmergencyDeceleration = 24;
@@ -191,7 +198,6 @@ namespace navigation {
 
       // acceptable variances for calibration measurements: {x, y, z}
       array<float, 3> calibration_limits_;
-
       // Calibration variances in each dimension, necessary for vibration checking
       array<NavigationType, 3> calibration_variance_;
 
@@ -201,6 +207,9 @@ namespace navigation {
       uint16_t curr_msmt_;
       // Boolean value to check if the array has been filled, to not wrong variance
       bool prev_filled_;
+
+      // Flag to write to file
+      bool nav_write_;
 
       // Kalman filters to filter each IMU measurement individually
       FilterArray filters_;
@@ -212,27 +221,11 @@ namespace navigation {
       // Counter of how many IMUs have failed
       uint32_t nOutlierImus_;
 
-      // Stripe counter (rolling values)
-      DataPoint<uint32_t> stripe_counter_;
-      // Keyence data read
-      KeyenceDataArray keyence_readings_;
-      // Previous keyence data for comparison
-      KeyenceDataArray prev_keyence_readings_;
-      // Are the keyence sensors used or ignored?
-      bool keyence_used_;
-      // Is the keyence used fake or real?
-      bool keyence_real_;
-      // This counts the number of times the keyence readings disagree with the IMU data more than
-      // allowed due to uncertainty. It is used at the moment to check if the calculated
-      // uncertainty is acceptable.
-      uint32_t keyence_failure_counter_;
-
-
       // To store estimated values
       ImuDataPointArray sensor_readings_;
       DataPoint<NavigationType> acceleration_;
       DataPoint<NavigationType> velocity_;
-      DataPoint<NavigationType> distance_;
+      DataPoint<NavigationType> displacement_;
       NavigationVectorArray gravity_calibration_;
 
       // Initial timestamp (for comparisons)
@@ -240,15 +233,21 @@ namespace navigation {
       // Previous timestamp
       uint32_t prev_timestamp_;
       // Uncertainty in distance
-      NavigationType distance_uncertainty_;
+      NavigationType displ_unc_;
       // Uncertainty in velocity
-      NavigationType velocity_uncertainty_;
+      NavigationType vel_unc_;
       // Previous acceleration measurement, necessary for uncertainty determination
       NavigationType prev_acc_;
       // Previous velocity measurement
       NavigationType prev_vel_;
       // Have initial timestamps been set?
       bool init_time_set_;
+
+      // Stripe counter object
+      StripeHandler stripe_counter_;
+      // Flags if keyences are used and if real
+      bool keyence_used_;
+      bool keyence_real_;
 
       // To convert acceleration -> velocity -> distance
       Integrator<NavigationType> acceleration_integrator_;  // acceleration to velocity

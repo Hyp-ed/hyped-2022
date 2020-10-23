@@ -19,7 +19,6 @@
 #include "gtest/gtest.h"
 #include "utils/logger.hpp"
 #include "data/data.hpp"
-#include "state_machine/hyped-machine.hpp"
 
 using hyped::data::Data;
 void t()

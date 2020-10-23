@@ -17,14 +17,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include <cstdint>
-
 #include "state_machine/main.hpp"
+
+#include <cstdint>
 
 namespace hyped {
 namespace state_machine {
 
-Main::Main(uint8_t id, Logger& log) : Thread(id, log)
+Main::Main(uint8_t id, Logger &log) : Thread(id, log)
 {
   // constructing state objects
   idling_          = new Idling(log_, this);
@@ -39,15 +39,15 @@ Main::Main(uint8_t id, Logger& log) : Thread(id, log)
 }
 
 /**
-  *  @brief  Runs state machine thread.
-  */
+ *  @brief  Runs state machine thread.
+ */
 void Main::run()
 {
-  utils::System& sys = utils::System::getSystem();
-  data::Data& data = data::Data::getInstance();
+  utils::System &sys = utils::System::getSystem();
+  data::Data &data   = data::Data::getInstance();
 
   data::StateMachine sm_data = data.getStateMachineData();
-  sm_data.current_state = data::State::kReady;  // set current state in data structure
+  sm_data.current_state      = data::State::kReady;  // set current state in data structure
   data.setStateMachineData(sm_data);
 
   while (sys.running_) {

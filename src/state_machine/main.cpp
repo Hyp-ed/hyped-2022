@@ -26,12 +26,16 @@ namespace state_machine {
 
 Main::Main(uint8_t id, Logger& log) : Thread(id, log)
 {
-  ready_ = new Ready(log_, this);  // constructing state object for Idle
-  accelerating_ = new Accelerating(log_, this);  // constructing state object for Accelerating
-  braking_ = new Braking(log_, this);  // constructing state object for Braking
-  finished_ = new Finished(log_, this);  // constructing state object for Finished
+  // constructing state objects
+  idling_          = new Idling(log_, this);
+  calibrating_     = new Calibrating(log_, this);
+  ready_           = new Ready(log_, this);
+  accelerating_    = new Accelerating(log_, this);
+  nominal_braking_ = new NominalBraking(log_, this);
+  finished_        = new Finished(log_, this);
+  failure_braking_ = new FailureBraking(log_, this);
 
-  current_state_ = ready_;  // set current state to point to Idle
+  current_state_ = idling_;  // set current state to point to Idle
 }
 
 /**

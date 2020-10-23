@@ -39,21 +39,29 @@ using data::ModuleStatus;
 
 namespace state_machine {
 
+class Idling;
+class Calibrating;
 class State;
 class Ready;
 class Accelerating;
-class Braking;
+class NominalBraking;
 class Finished;
+class FailureBraking;
+class FailureStopped;
 class Main: public Thread {
  public:
   explicit Main(uint8_t id, Logger& log);
   void run() override;
 
   State          *current_state_;
+  Idling         *idling_;
+  Calibrating    *calibrating_;
   Ready          *ready_;
   Accelerating   *accelerating_;
-  Braking        *braking_;
+  NominalBraking *nominal_braking_;
   Finished       *finished_;
+  FailureBraking *failure_braking_;
+  FailureStopped *failure_stopped_;
 };
 
 }  // namespace state_machine

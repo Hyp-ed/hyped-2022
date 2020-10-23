@@ -32,36 +32,50 @@ State::State(Logger& log, Main* state_machine)
 
 void State::checkEmergencyStop()
 {
-  telemetry_data_ = data_.getTelemetryData();
-  sm_data_        = data_.getStateMachineData();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::StateMachine sm_data     = data_.getStateMachineData();
 
-  if (telemetry_data_.emergency_stop_command) {
+  if (telemetry_data.emergency_stop_command) {
     log_.ERR("STM", "STOP command received");
-    telemetry_data_.emergency_stop_command = false;
-    data_.setTelemetryData(telemetry_data_);
+    telemetry_data.emergency_stop_command = false;
+    data_.setTelemetryData(telemetry_data);
 
-    sm_data_.current_state = data::State::kFinished;
-    data_.setStateMachineData(sm_data_);
+    sm_data.current_state = data::State::kFinished;
+    data_.setStateMachineData(sm_data);
 
     state_machine_->current_state_ = state_machine_->finished_;
   }
+}
+
+// Idling state
+
+void Idling::transitionCheck()
+{
+  // TODO(Efe): Implement this
+}
+
+// Calibrating state
+
+void Calibrating::transitionCheck()
+{
+  // TODO(Efe): Implement this
 }
 
 // Ready state
 
 void Ready::transitionCheck()
 {
-  telemetry_data_ = data_.getTelemetryData();
-  sm_data_        = data_.getStateMachineData();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::StateMachine sm_data     = data_.getStateMachineData();
 
-  if (telemetry_data_.launch_command) {
+  if (telemetry_data.launch_command) {
     log_.INFO("STM", "launch command received");
-    telemetry_data_.launch_command = false;
-    data_.setTelemetryData(telemetry_data_);
+    telemetry_data.launch_command = false;
+    data_.setTelemetryData(telemetry_data);
     log_.DBG("STM", "launch command cleared");
 
-    sm_data_.current_state = data::State::kAccelerating;
-    data_.setStateMachineData(sm_data_);
+    sm_data.current_state = data::State::kAccelerating;
+    data_.setStateMachineData(sm_data);
 
     state_machine_->current_state_ = state_machine_->accelerating_;
     log_.DBG("STM", "Transitioned to 'Accelerating'");
@@ -72,37 +86,37 @@ void Ready::transitionCheck()
 
 void Accelerating::transitionCheck()
 {
-  nav_data_       = data_.getNavigationData();
-  sm_data_        = data_.getStateMachineData();
-  telemetry_data_ = data_.getTelemetryData();
+  data::Navigation navigation_data = data_.getNavigationData();
+  data::Telemetry telemetry_data   = data_.getTelemetryData();
+  data::StateMachine sm_data       = data_.getStateMachineData();
 
-  if (nav_data_.displacement +
-      nav_data_.braking_distance +
-      nav_data_.braking_distance >= telemetry_data_.run_length) {
+  if (navigation_data.displacement +
+      navigation_data.braking_distance +
+      navigation_data.braking_distance >= telemetry_data.run_length) {
     log_.INFO("STM", "max distance reached");
     log_.INFO("STM", "current distance: %fm, braking distance: %fm",
-              nav_data_.displacement, nav_data_.braking_distance);
+              navigation_data.displacement, navigation_data.braking_distance);
 
-    sm_data_.current_state = data::State::kNominalBraking;
-    data_.setStateMachineData(sm_data_);
+    sm_data.current_state = data::State::kNominalBraking;
+    data_.setStateMachineData(sm_data);
 
-    state_machine_->current_state_ = state_machine_->braking_;
+    state_machine_->current_state_ = state_machine_->nominal_braking_;
     log_.DBG("STM", "Transitioned to 'Nominal Braking'");
   }
 }
 
 // Braking state
 
-void Braking::transitionCheck()
+void NominalBraking::transitionCheck()
 {
-  nav_data_ = data_.getNavigationData();
-  sm_data_ = data_.getStateMachineData();
+  data::Navigation navigation_data      = data_.getNavigationData();
+  data::StateMachine sm_data            = data_.getStateMachineData();
 
-  if (nav_data_.velocity <= 0) {
+  if (navigation_data.velocity <= 0) {
     log_.INFO("STM", "zero velocity reached");
 
-    sm_data_.current_state = data::State::kFinished;
-    data_.setStateMachineData(sm_data_);
+    sm_data.current_state = data::State::kFinished;
+    data_.setStateMachineData(sm_data);
 
     state_machine_->current_state_ = state_machine_->finished_;
     log_.INFO("STM", "Transitioned to 'Finished'");
@@ -113,15 +127,24 @@ void Braking::transitionCheck()
 
 void Finished::transitionCheck()
 {
-  utils::System& sys = utils::System::getSystem();
-  telemetry_data_ = data_.getTelemetryData();
-  sm_data_        = data_.getStateMachineData();
+  utils::System& sys             = utils::System::getSystem();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
 
-  if (telemetry_data_.reset_command) {
+  if (telemetry_data.reset_command) {
     log_.INFO("STM", "Reset command received");
     log_.INFO("STM", "System is shutting down");
     sys.running_ = false;
   }
+}
+
+void FailureBraking::transitionCheck()
+{
+  // TODO(Franz): Implement this.
+}
+
+void FailureStopped::transitionCheck()
+{
+  // TODO(Yining): Implment this.
 }
 
 }  // namespace state_machine

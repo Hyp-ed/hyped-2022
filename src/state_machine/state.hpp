@@ -48,15 +48,26 @@ class State {
   Logger&               log_;
   data::Data&           data_;
 
-  data::Telemetry       telemetry_data_;
-  data::Navigation      nav_data_;
-  data::StateMachine    sm_data_;
-  data::Motors          motor_data_;
-  data::Sensors         sensors_data_;
-  data::EmergencyBrakes brakes_data_;
-
  protected:
   Main* state_machine_;
+};
+
+class Idling : public State {
+ public:
+  Idling(Logger& log, Main* state_machine) : State(log, state_machine) {}
+
+  /*
+   * @brief   Checks for calibration command
+   */
+  void transitionCheck();
+};
+
+class Calibrating : public State {
+ public:
+  Calibrating(Logger& log, Main* state_machine) : State(log, state_machine) {}
+
+  // TODO(Efe): Add comment.
+  void transitionCheck();
 };
 
 class Ready : public State {
@@ -79,9 +90,9 @@ class Accelerating : public State {
   void transitionCheck();
 };
 
-class Braking : public State {
+class NominalBraking : public State {
  public:
-  Braking(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  NominalBraking(Logger& log, Main* state_machine) : State(log, state_machine) {}
   void transitionCheck();
 };
 
@@ -92,6 +103,22 @@ class Finished : public State {
   /*
    * @brief   Checks if command to reset was sent
    */
+  void transitionCheck();
+};
+
+class FailureBraking : public State {
+ public:
+  FailureBraking(Logger& log, Main* state_machine) : State(log, state_machine) {}
+
+  // TODO(Franz): Add comment.
+  void transitionCheck();
+};
+
+class FailureStopped : public State {
+ public:
+  FailureStopped(Logger& log, Main* state_machine) : State(log, state_machine) {}
+
+  // TODO(Yining): Add comment.
   void transitionCheck();
 };
 

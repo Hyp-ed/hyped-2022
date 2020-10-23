@@ -24,11 +24,12 @@ namespace hyped {
 
 namespace state_machine {
 
-State::State(Logger& log, Main* state_machine)
-  : log_(log),
-    data_(data::Data::getInstance()),
-    state_machine_(state_machine)
-{}
+State::State(Logger &log, Main *state_machine)
+    : log_(log),
+      data_(data::Data::getInstance()),
+      state_machine_(state_machine)
+{
+}
 
 void State::checkEmergencyStop()
 {
@@ -84,18 +85,53 @@ void Ready::transitionCheck()
 
 // Accelerating state
 
+void Accelerating::checkEmergencyStop()
+{
+  data::StateMachine sm_data     = data_.getStateMachineData();
+  data::Navigation nav_data      = data_.getNavigationData();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::Sensors sensors_data     = data_.getSensorsData();
+  data::Motors motors_data       = data_.getMotorData();
+
+  bool encoutered_failure = false;
+
+  if (telemetry_data.emergency_stop_command) {
+    encoutered_failure = true;
+    log_.ERR("STM", "STOP command received");
+    telemetry_data.emergency_stop_command = false;
+    data_.setTelemetryData(telemetry_data);
+  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in navigation");
+  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in telemetry");
+  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in sensors");
+  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in motors");
+  }
+
+  if (encoutered_failure) {
+    log_.ERR("STM", "Engaging emergency brakes");
+    sm_data.current_state = data::State::kEmergencyBraking;
+    data_.setStateMachineData(sm_data);
+    state_machine_->current_state_ = state_machine_->failure_braking_;
+  }
+}
+
 void Accelerating::transitionCheck()
 {
-  data::Navigation navigation_data = data_.getNavigationData();
-  data::Telemetry telemetry_data   = data_.getTelemetryData();
-  data::StateMachine sm_data       = data_.getStateMachineData();
+  data::Navigation nav_data      = data_.getNavigationData();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::StateMachine sm_data     = data_.getStateMachineData();
 
-  if (navigation_data.displacement +
-      navigation_data.braking_distance +
-      navigation_data.braking_distance >= telemetry_data.run_length) {
+  if (telemetry_data.run_length <= nav_data.displacement + nav_data.braking_distance) {
     log_.INFO("STM", "max distance reached");
-    log_.INFO("STM", "current distance: %fm, braking distance: %fm",
-              navigation_data.displacement, navigation_data.braking_distance);
+    log_.INFO("STM", "current distance: %fm, braking distance: %fm", nav_data.displacement,
+              nav_data.braking_distance);
 
     sm_data.current_state = data::State::kNominalBraking;
     data_.setStateMachineData(sm_data);
@@ -109,10 +145,10 @@ void Accelerating::transitionCheck()
 
 void NominalBraking::transitionCheck()
 {
-  data::Navigation navigation_data      = data_.getNavigationData();
-  data::StateMachine sm_data            = data_.getStateMachineData();
+  data::Navigation nav_data  = data_.getNavigationData();
+  data::StateMachine sm_data = data_.getStateMachineData();
 
-  if (navigation_data.velocity <= 0) {
+  if (nav_data.velocity <= 0) {
     log_.INFO("STM", "zero velocity reached");
 
     sm_data.current_state = data::State::kFinished;
@@ -123,11 +159,48 @@ void NominalBraking::transitionCheck()
   }
 }
 
+void NominalBraking::checkEmergencyStop()
+{
+  data::StateMachine sm_data     = data_.getStateMachineData();
+  data::Navigation nav_data      = data_.getNavigationData();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::Sensors sensors_data     = data_.getSensorsData();
+  data::Motors motors_data       = data_.getMotorData();
+
+  bool encoutered_failure = false;
+
+  if (telemetry_data.emergency_stop_command) {
+    encoutered_failure = true;
+    log_.ERR("STM", "STOP command received");
+    telemetry_data.emergency_stop_command = false;
+    data_.setTelemetryData(telemetry_data);
+  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in navigation");
+  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in telemetry");
+  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in sensors");
+  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in motors");
+  }
+
+  if (encoutered_failure) {
+    log_.ERR("STM", "Engaging emergency brakes");
+    sm_data.current_state = data::State::kEmergencyBraking;
+    data_.setStateMachineData(sm_data);
+    state_machine_->current_state_ = state_machine_->failure_braking_;
+  }
+}
+
 // Finished state
 
 void Finished::transitionCheck()
 {
-  utils::System& sys             = utils::System::getSystem();
+  utils::System &sys             = utils::System::getSystem();
   data::Telemetry telemetry_data = data_.getTelemetryData();
 
   if (telemetry_data.reset_command) {
@@ -139,7 +212,22 @@ void Finished::transitionCheck()
 
 void FailureBraking::transitionCheck()
 {
+  data::StateMachine sm_data     = data_.getStateMachineData();
+  data::Navigation nav_data      = data_.getNavigationData();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::Sensors sensors_data     = data_.getSensorsData();
+  data::Motors motor_data        = data_.getMotorData();
+
   // TODO(Franz): Implement this.
+  if (nav_data.velocity <= 0) {
+    log_.INFO("STM", "zero velocity reached");
+
+    sm_data.current_state = data::State::kFailureStopped;
+    data_.setStateMachineData(sm_data);
+
+    state_machine_->current_state_ = state_machine_->failure_stopped_;
+    log_.INFO("STM", "Transitioned to 'FailureStopped'");
+  }
 }
 
 void FailureStopped::transitionCheck()

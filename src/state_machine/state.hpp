@@ -30,8 +30,8 @@
 
 namespace hyped {
 
-using utils::Logger;
 using data::ModuleStatus;
+using utils::Logger;
 
 namespace state_machine {
 
@@ -39,22 +39,22 @@ class Main;  // Forward declaration
 
 class State {
  public:
-  State(Logger& log, Main* state_machine);
+  State(Logger &log, Main *state_machine);
 
   void checkEmergencyStop();
 
   virtual void transitionCheck() = 0;
 
-  Logger&               log_;
-  data::Data&           data_;
+  Logger &log_;
+  data::Data &data_;
 
  protected:
-  Main* state_machine_;
+  Main *state_machine_;
 };
 
 class Idling : public State {
  public:
-  Idling(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  Idling(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   /*
    * @brief   Checks for calibration command
@@ -64,7 +64,7 @@ class Idling : public State {
 
 class Calibrating : public State {
  public:
-  Calibrating(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  Calibrating(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   // TODO(Efe): Add comment.
   void transitionCheck();
@@ -72,7 +72,7 @@ class Calibrating : public State {
 
 class Ready : public State {
  public:
-  Ready(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  Ready(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   /*
    * @brief   Checks for launch command
@@ -82,7 +82,12 @@ class Ready : public State {
 
 class Accelerating : public State {
  public:
-  Accelerating(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  Accelerating(Logger &log, Main *state_machine) : State(log, state_machine) {}
+
+  /*
+   * @brief   Checks for critical failure during run.
+   */
+  void checkEmergencyStop();
 
   /*
    * @brief   Checks if max distance reached
@@ -92,13 +97,22 @@ class Accelerating : public State {
 
 class NominalBraking : public State {
  public:
-  NominalBraking(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  NominalBraking(Logger &log, Main *state_machine) : State(log, state_machine) {}
+
+  /*
+   * @brief   Checks for critical failure during run.
+   */
+  void checkEmergencyStop();
+
+  /*
+   * @brief   Checks whether the pod has stopped.
+   */
   void transitionCheck();
 };
 
 class Finished : public State {
  public:
-  Finished(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  Finished(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   /*
    * @brief   Checks if command to reset was sent
@@ -108,7 +122,7 @@ class Finished : public State {
 
 class FailureBraking : public State {
  public:
-  FailureBraking(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  FailureBraking(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   // TODO(Franz): Add comment.
   void transitionCheck();
@@ -116,7 +130,7 @@ class FailureBraking : public State {
 
 class FailureStopped : public State {
  public:
-  FailureStopped(Logger& log, Main* state_machine) : State(log, state_machine) {}
+  FailureStopped(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   // TODO(Yining): Add comment.
   void transitionCheck();

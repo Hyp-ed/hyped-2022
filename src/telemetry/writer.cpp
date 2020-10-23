@@ -22,9 +22,25 @@
 
 #include "writer.hpp"
 #include "data/data.hpp"
+#include "chrono"
+#include "cstdint"
+#include "iostream"
 
 namespace hyped {
 namespace telemetry {
+
+//The current time in milliseconds that will be used later
+void Writer::packTime()
+{ 
+  rjwriter_.Key("time");
+  uint64_t timeSinceEpochMillisec()
+  {
+    using namespace std::chrono;
+    return duration_case<milliseconds>(system_clock::now().time_since_epoch()).count)
+  }
+  rjwriter_.Uint64(timeSinceEpochMillisec())
+}
+
 
 // additional data points that are displayed in the GUI data section
 // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points

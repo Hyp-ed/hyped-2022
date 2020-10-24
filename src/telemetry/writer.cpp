@@ -29,16 +29,14 @@
 namespace hyped {
 namespace telemetry {
 
-//The current time in milliseconds that will be used later
+
+
+// The current time in milliseconds that will be used later
 void Writer::packTime()
-{ 
+{
   rjwriter_.Key("time");
-  uint64_t timeSinceEpochMillisec()
-  {
-    using namespace std::chrono;
-    return duration_case<milliseconds>(system_clock::now().time_since_epoch()).count);
-  }
-  rjwriter_.Uint64(timeSinceEpochMillisec());
+  using namespace std::chrono;
+  rjwriter_.Uint64(duration_cast< milliseconds >(system_clock::now().time_since_epoch()).count());
 }
 
 

@@ -36,9 +36,9 @@ void Writer::packTime()
   uint64_t timeSinceEpochMillisec()
   {
     using namespace std::chrono;
-    return duration_case<milliseconds>(system_clock::now().time_since_epoch()).count)
+    return duration_case<milliseconds>(system_clock::now().time_since_epoch()).count);
   }
-  rjwriter_.Uint64(timeSinceEpochMillisec())
+  rjwriter_.Uint64(timeSinceEpochMillisec());
 }
 
 

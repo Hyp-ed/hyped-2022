@@ -39,7 +39,7 @@ ifeq ($(CROSS), 1)
 	LFLAGS := $(LFLAGS) --target=arm-linux-gnueabihf -L$(COMPILER_PATH) --sysroot=mac-crosscompiler/sysroot
   else
     $(info cross-compiling using Linux host)
-	CC := hyped-cross-g++
+	CC := arm-linux-gnueabihf-g++
 	LFLAGS := $(LFLAGS) -static
   endif
 else
@@ -52,7 +52,7 @@ CFLAGS += -DARCH_$(ARCH)
 
 # test if compiler is installed
 ifeq ($(shell which $(CC)), )
-	$(warning compiler $(CC) is not installed)
+    $(error Compiler $(CC) is not installed)
 endif
 
 LL := $(CC)

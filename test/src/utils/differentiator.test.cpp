@@ -23,12 +23,15 @@
 
 using hyped::data::DataPoint;
 using hyped::utils::math::Differentiator;
+
 // Used for Test Fixture
 struct differentiator_test : public ::testing::Test {
   protected:
     Differentiator<float> diff_test;
     DataPoint<float> test_point;
     DataPoint<float> second_point;
+    DataPoint<float> third_point;
+
         
     void SetUp() 
     {
@@ -38,6 +41,9 @@ struct differentiator_test : public ::testing::Test {
 
       second_point.value = 18.6;
       second_point.timestamp = 2;
+
+      third_point.value= second_point.value;
+      third_point.timestamp = 3;
     }
         
     /**
@@ -67,10 +73,15 @@ struct differentiator_test : public ::testing::Test {
 };
 
 // Test fixture for determining whether initalisation works correctly
-TEST_F(differentiator_test, DifferentiatorInitialised)
+TEST_F(differentiator_test, DifferentiatorInitialisedValue)
 { 
   ASSERT_EQ(diff_test.update(test_point).value, 0);
 };
+
+TEST_F(differentiator_test, DifferentiatorInitialisedTimestamp)
+{
+  ASSERT_EQ(diff_test.update(test_point).timestamp, test_point.timestamp);
+}
 
 // Test fixture for ensuring gradient is correct
 TEST_F(differentiator_test, DifferentiatorGradient)
@@ -84,4 +95,12 @@ TEST_F(differentiator_test, DifferentiatorTimestampReturn)
 {
   diff_test.update(test_point);
   ASSERT_EQ(diff_test.update(second_point).timestamp, second_point.timestamp);
+}
+
+// Test fixture for testing the derivative of the same value of timestamps.
+TEST_F(differentiator_test, DerivativeOfSameValue)
+{
+  diff_test.update(test_point);
+  diff_test.update(second_point);
+  ASSERT_EQ(diff_test.update(third_point).value, 0);
 }

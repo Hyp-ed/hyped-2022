@@ -233,6 +233,14 @@ void FailureBraking::transitionCheck()
 void FailureStopped::transitionCheck()
 {
   // TODO(Yining): Implment this.
+  utils::System &sys             = utils::System::getSystem();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+
+  if (telemetry_data.reset_command) {
+    log_.INFO("STM", "FailureStopped command received");
+    log_.INFO("STM", "System is shutting down");
+    sys.running_ = false;
+  }
 }
 
 }  // namespace state_machine

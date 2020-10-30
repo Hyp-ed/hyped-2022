@@ -21,15 +21,10 @@
 
 #include <chrono>
 #include <cstdint>
-
 #include <string>
 
 #include "writer.hpp"
 #include "data/data.hpp"
-
-
-
-
 
 namespace hyped {
 namespace telemetry {
@@ -39,7 +34,7 @@ namespace telemetry {
 void Writer::packTime()
 {
   rjwriter_.Key("time");
-  rjwriter_.Uint64(std::chrono::duration_cast< std::chrono::milliseconds >
+  rjwriter_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>
   (std::chrono::system_clock::now().time_since_epoch()).count());
 }
 

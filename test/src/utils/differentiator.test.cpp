@@ -134,32 +134,6 @@ struct difference_differentiator : public ::testing::Test {
     }  
 };
 
-struct differentiator_product_rule : public ::testing::Test {
-    protected:
-    Differentiator<float> diff_square;
-    Differentiator<float> diff_double;
-    Differentiator<float> diff_function;
-    DataPoint<float> square_data[100];
-    DataPoint<float> double_data[100];
-    DataPoint<float> function_data[100];
-    DataPoint<float> data_point;
-    
-    float square_function(int x) { return pow(x, 2); }
-    float double_function(int x) {return x*2; }
-    
-    void SetUp()
-    {
-      for (int i = 0; i < 100; i++) {
-        data_point = DataPoint<float>(i*pow(10, 6), square_function(i));
-        square_data[i] = data_point;
-        data_point  = DataPoint<float>(i*pow(10, 6), double_function(i));
-        double_data[i] = data_point;
-        data_point  = DataPoint<float>(i*pow(10, 6), square_function(i) * double_function(i));
-        function_data[i] = data_point;
-      }
-    }  
-};
-
 struct differentiator_chain_rule : public ::testing::Test {
     protected:
     Differentiator<float> diff_inner;
@@ -178,33 +152,7 @@ struct differentiator_chain_rule : public ::testing::Test {
       }
     }  
 };
-struct differentiator_quotient_rule : public ::testing::Test {
-    protected:
-    Differentiator<float> diff_numerator;
-    Differentiator<float> diff_denominator;
-    Differentiator<float> diff_fraction;
-    DataPoint<float> numerator_data[100];
-    DataPoint<float> denominator_data[100];
-    DataPoint<float> fraction_data[100];
-    DataPoint<float> data_point;
-    float numerator_function(int x) { return 3*x; }
-    float denominator_function(int x) { return 2*x; }
-    float fractional_function(int n, int d) { 
-      return (numerator_function(n) / denominator_function(d));
-    }
-    
-    void SetUp()
-    {
-      for (int i = 1; i < 100; i++) {
-        data_point  = DataPoint<float>(i*1e6, numerator_function(i));
-        numerator_data[i] = data_point;
-        data_point  = DataPoint<float>(i*1e6, denominator_function(i));
-        denominator_data[i] = data_point;
-        data_point = DataPoint<float>(i*1e6, fractional_function(i, i));
-        fraction_data[i] = data_point;
-      }
-    }  
-};
+
 // Test fixture sfor determining whether initalisation works correctly
 TEST_F(differentiator_test, DifferentiatorInitialisedValue)
 { 
@@ -274,17 +222,6 @@ TEST_F(difference_differentiator, DifferentiatorDifferenceOfDerivatives)
   }
 }
 
-/*
-TEST_F(differentiator_product_rule, DifferentiatorProductRule)
-{
-  for (int i = 0; i < 100; i++) {
-    float square = diff_square.update(square_data[i]).value;
-    float Double = diff_double.update(double_data[i]).value;
-    float function  = diff_function.update(function_data[i]).value;
-    ASSERT_EQ(function, (square * double_function(i)) + (square_function(i) * Double));
-  }
-}
-*/
 TEST_F(differentiator_chain_rule, DifferentiatorChainRule)
   {
   for (int i = 0; i < 100; i++) {
@@ -295,23 +232,3 @@ TEST_F(differentiator_chain_rule, DifferentiatorChainRule)
   }
   };
 
-/*
-TEST_F(differentiator_quotient_rule, DifferentiatorQuotientRule)
-{
-  diff_numerator.update(numerator_data[0]);
-  diff_denominator.update(denominator_data[0]);
-  diff_fraction.update(fraction_data[0]);
-
-  for (int i = 1; i < 100; i++){
-    float numerator = diff_numerator.update(numerator_data[i]).value;
-    float denominator = diff_denominator.update(denominator_data[i]).value;
-    float fraction = diff_fraction.update(fraction_data[i]).value;
-
-    std::cout << "NumData : " << numerator_data[i].value << " | DenomData :" << denominator_data[i].value << " | FractionData :" << fraction_data[i].value << "\n";
-    std::cout << "Num : " << numerator << " | Denom : " << denominator << " | Fraction : " << fraction << "\n";
-
-    float quotient_rule = ((numerator * denominator_function(i)) - (denominator * numerator_function(i)))/(pow(denominator_function(i),2.0));
-    ASSERT_FLOAT_EQ(fraction, quotient_rule);
-  }
-};
-*/

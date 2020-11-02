@@ -132,7 +132,9 @@ class FailureStopped : public State {
  public:
   FailureStopped(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
-  // TODO(Yining): Add comment.
+    /*
+   * @brief   Checks if command to stop was sent
+   */
   void transitionCheck();
 };
 

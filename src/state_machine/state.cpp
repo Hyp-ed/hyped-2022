@@ -218,7 +218,7 @@ void FailureBraking::transitionCheck()
   data::Sensors sensors_data     = data_.getSensorsData();
   data::Motors motor_data        = data_.getMotorData();
 
-  // TODO(Franz): Implement this.
+
   if (nav_data.velocity <= 0) {
     log_.INFO("STM", "zero velocity reached");
 
@@ -232,7 +232,7 @@ void FailureBraking::transitionCheck()
 
 void FailureStopped::transitionCheck()
 {
-  // TODO(Yining): Implment this.
+
   utils::System &sys             = utils::System::getSystem();
   data::Telemetry telemetry_data = data_.getTelemetryData();
 

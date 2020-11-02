@@ -34,6 +34,7 @@ Main::Main(uint8_t id, Logger &log) : Thread(id, log)
   nominal_braking_ = new NominalBraking(log_, this);
   finished_        = new Finished(log_, this);
   failure_braking_ = new FailureBraking(log_, this);
+  failure_stopped_ = new FailureStopped(log_, this);
 
   current_state_ = idling_;  // set current state to point to Idle
 }

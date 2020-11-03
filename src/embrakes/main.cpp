@@ -58,8 +58,8 @@ void Main::run()
     switch (sm_data_.current_state) {
       case data::State::kIdle:
         if (!tlm_data_.nominal_braking_command) {
-          log_.INFO("Brakes", "RETRACT COMMAND");
           if (brake_1->checkClamped()) {
+            log_.INFO("Brakes", "RETRACT COMMAND");
             brake_1->sendRetract();
           }
           // if(brake_2->checkClamped()){
@@ -78,8 +78,8 @@ void Main::run()
           // brake_4->checkHome();
 
         } else if (tlm_data_.nominal_braking_command) {
-          log_.INFO("Brakes", "ENGAGE COMMAND");
           if (!brake_1->checkClamped()) {
+            log_.INFO("Brakes", "ENGAGE COMMAND");
             brake_1->sendClamp();
           }
           // if(!brake_2->checkClamped()){

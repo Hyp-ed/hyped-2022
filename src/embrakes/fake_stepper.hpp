@@ -70,7 +70,7 @@ class FakeStepper : public StepperInterface {
   bool checkClamped() override;
 
  private:
-  uint8_t fake_button_;
+  bool fake_button_;
   utils::Logger& log_;
   data::Data& data_;
   data::EmergencyBrakes em_brakes_data_;

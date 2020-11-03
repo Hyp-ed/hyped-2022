@@ -35,34 +35,48 @@ FakeStepper::FakeStepper(Logger& log, uint8_t id)
       is_clamped_(true),
       fake_button_(true) {}
 
-void FakeStepper::checkHome()  // WHAT'S THE PURPOSE OF CHECKHOME?!
+void FakeStepper::checkHome()
 {
-  return;
+  if (fake_button_ && !em_brakes_data_.brakes_retracted[brake_id_-1]) {
+    em_brakes_data_.brakes_retracted[brake_id_-1] = true;
+    data_.setEmergencyBrakesData(em_brakes_data_);
+  } else if (!fake_button_ && em_brakes_data_.brakes_retracted[brake_id_-1]) {
+    em_brakes_data_.brakes_retracted[brake_id_-1] = false;
+    data_.setEmergencyBrakesData(em_brakes_data_);
+  }
 }
 
 void FakeStepper::sendRetract()
 {
   log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
-  // set data to zero
+  fake_button_ = true;
   is_clamped_ = false;
 }
 
 void FakeStepper::sendClamp()
 {
   log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
-  // set data to one
+  fake_button_ = false;
   is_clamped_ = true;
 }
 
 void FakeStepper::checkAccFailure()
 {
-  // For now, doesn't fail.
+  if (!fake_button_) {
+    log_.ERR("Brakes", "Brake %b failure", brake_id_);
+    em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(em_brakes_data_);
+  }
   return;
 }
 
 void FakeStepper::checkBrakingFailure()
 {
-  // For now, fake brakes don't fail.
+  if (fake_button_) {
+    log_.ERR("Brakes", "Brake %b failure", brake_id_);
+    em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(em_brakes_data_);
+  }
   return;
 }
 

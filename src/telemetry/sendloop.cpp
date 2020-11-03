@@ -41,6 +41,7 @@ void SendLoop::run()
     Writer writer(data_);
 
     writer.start();
+    writer.packTime();
     writer.packCrucialData();
     writer.packStatusData();
     writer.packAdditionalData();

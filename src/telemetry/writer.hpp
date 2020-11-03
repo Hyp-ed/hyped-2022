@@ -49,6 +49,7 @@ class Writer {
   explicit Writer(data::Data& data);
 
   // separate functions that allow to better manage data points based on their purpose
+  void packTime();
   void packCrucialData();
   void packStatusData();
   void packAdditionalData();

@@ -25,6 +25,7 @@
 #include "utils/system.hpp"
 #include "utils/concurrent/thread.hpp"
 #include "data/data.hpp"
+#include "embrakes/interface.hpp"
 
 namespace hyped {
 
@@ -35,7 +36,7 @@ using data::ModuleStatus;
 
 namespace embrakes {
 
-class Stepper {
+class Stepper : public StepperInterface {
  public:
   /**
    * @brief Construct a new Stepper object
@@ -46,26 +47,26 @@ class Stepper {
   /**
    * @brief {checks if brake's button is pressed, notes change in the data struct}
    */
-  void checkHome();
+  void checkHome() override;
 
   /**
    * @brief sends retract message
    */
-  void sendRetract();
+  void sendRetract() override;
 
   /**
    * @brief sends clamp message
    */
-  void sendClamp();
+  void sendClamp() override;
 
   /**
    * @brief checks for brake failure during acceleration
    */
-  void checkAccFailure();
+  void checkAccFailure() override;
 
-  void checkBrakingFailure();
+  void checkBrakingFailure() override;
 
-  bool checkClamped();
+  bool checkClamped() override;
 
  private:
   utils::Logger&        log_;

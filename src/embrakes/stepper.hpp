@@ -1,5 +1,5 @@
 /*
-* Author: Kornelija Sukyte
+* Author: Kornelija Sukyte, Atte Niemi
 * Organisation: HYPED
 * Date:
 * Description:

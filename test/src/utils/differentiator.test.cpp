@@ -34,49 +34,49 @@ using hyped::utils::math::Differentiator;
  * Struct used for test fixtures testing functionality.
  */
 struct DifferentiatorFunctionality : public ::testing::Test {
-  protected:
-    Differentiator<float> diff_test;
-    DataPoint<float> test_point;
-    DataPoint<float> second_point;
-    DataPoint<float> third_point;
+ protected:
+  Differentiator<float> diff_test;
+  DataPoint<float> test_point;
+  DataPoint<float> second_point;
+  DataPoint<float> third_point;
 
-    void SetUp()
-    {
-      // Sets values of Data points
-      test_point.value = 10.5;
-      test_point.timestamp = 1;
+  void SetUp()
+  {
+    // Sets values of Data points
+    test_point.value = 10.5;
+    test_point.timestamp = 1;
 
-      second_point.value = 18.6;
-      second_point.timestamp = 2;
+    second_point.value = 18.6;
+    second_point.timestamp = 2;
 
-      third_point.value= second_point.value;
-      third_point.timestamp = 3;
-    }
+    third_point.value= second_point.value;
+    third_point.timestamp = 3;
+  }
 
-    /**
-     * @brief Returns the difference between two data point values.
-    */
-    float deltaValue(DataPoint<float> point_1, DataPoint<float> prev_point)
-    {
-      return point_1.value - prev_point.value;
-    }
+  /**
+   * @brief Returns the difference between two data point values.
+  */
+  float deltaValue(DataPoint<float> point_1, DataPoint<float> prev_point)
+  {
+    return point_1.value - prev_point.value;
+  }
 
-    /**
-     * @brief Returns the difference between two data point timestamps
-    */
-    float deltaTime(DataPoint<float> point_1, DataPoint<float> prev_point)
-    {
-      return point_1.timestamp- prev_point.timestamp;
-    }
+  /**
+   * @brief Returns the difference between two data point timestamps
+  */
+  float deltaTime(DataPoint<float> point_1, DataPoint<float> prev_point)
+  {
+    return point_1.timestamp- prev_point.timestamp;
+  }
 
-    /**
-     * @brief Returns the gradient between two data points
-    */
-    float gradientOfPoints(DataPoint<float> point_1, DataPoint<float> prev_point)
-    {
-      return (deltaValue(point_1, prev_point))/((deltaTime(point_1, prev_point))/1e6);
-    }
-    void TearDown() {}
+  /**
+   * @brief Returns the gradient between two data points
+  */
+  float gradientOfPoints(DataPoint<float> point_1, DataPoint<float> prev_point)
+  {
+    return (deltaValue(point_1, prev_point))/((deltaTime(point_1, prev_point))/1e6);
+  }
+  void TearDown() {}
 };
 
 /**
@@ -131,23 +131,23 @@ TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
  * Struct used in Testing the Differentiator special cases for linear and constants.
  */
 struct SpecialCases : public ::testing::Test {
-  protected:
-    Differentiator<float> diff_linear;
-    DataPoint<float> linear_data[100];
-    DataPoint<float> linear_data_point;
-    Differentiator<float> diff_constant;
-    DataPoint<float> function_constant[100];
-    DataPoint<float> constant_data_point;
-    const float kConstant = 10;
+ protected:
+  Differentiator<float> diff_linear;
+  DataPoint<float> linear_data[100];
+  DataPoint<float> linear_data_point;
+  Differentiator<float> diff_constant;
+  DataPoint<float> function_constant[100];
+  DataPoint<float> constant_data_point;
+  const float kConstant = 10;
 
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
-        linear_data_point = DataPoint<float>(i*pow(10, 6), i);
-        linear_data[i] = linear_data_point;
-        constant_data_point = DataPoint<float>(i*pow(10, 6), kConstant);
-        function_constant[i] = constant_data_point;
-      }
+      linear_data_point = DataPoint<float>(i*pow(10, 6), i);
+      linear_data[i] = linear_data_point;
+      constant_data_point = DataPoint<float>(i*pow(10, 6), kConstant);
+      function_constant[i] = constant_data_point;
+    }
   }
 };
 
@@ -185,27 +185,27 @@ TEST_F(SpecialCases, differentiatorConstantCase)
  * Creates a list of DataPoint for the linear, quadratic, and function data.
  */
 struct DifferentiatorProperty : public ::testing::Test {
-  protected:
-    Differentiator<float> diff_linear;
-    Differentiator<float> diff_quadratic;
-    Differentiator<float> diff_function;
-    DataPoint<float> linear_data[100];
-    DataPoint<float> quadratic_data[100];
-    DataPoint<float> function_data[100];
-    DataPoint<float> data_point;
+ protected:
+  Differentiator<float> diff_linear;
+  Differentiator<float> diff_quadratic;
+  Differentiator<float> diff_function;
+  DataPoint<float> linear_data[100];
+  DataPoint<float> quadratic_data[100];
+  DataPoint<float> function_data[100];
+  DataPoint<float> data_point;
 
-    // Populates the lists with the output of their functions
-    void SetUp()
-    {
-      for (int i = 0; i < 100; i++) {
-        data_point = DataPoint<float>(i*pow(10, 6), i);
-        linear_data[i] = data_point;
-        data_point  = DataPoint<float>(i*pow(10, 6), i*i);
-        quadratic_data[i] = data_point;
-        data_point  = DataPoint<float>(i*pow(10, 6), i*i+i);
-        function_data[i] = data_point;
-      }
+  // Populates the lists with the output of their functions
+  void SetUp()
+  {
+    for (int i = 0; i < 100; i++) {
+      data_point = DataPoint<float>(i*pow(10, 6), i);
+      linear_data[i] = data_point;
+      data_point  = DataPoint<float>(i*pow(10, 6), i*i);
+      quadratic_data[i] = data_point;
+      data_point  = DataPoint<float>(i*pow(10, 6), i*i+i);
+      function_data[i] = data_point;
     }
+  }
 };
 
 /**
@@ -228,27 +228,27 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
  * difference .
  */
 struct DifferentiatorDifference : public ::testing::Test {
-  protected:
-    Differentiator<float> diff_linear;
-    Differentiator<float> diff_quadratic;
-    Differentiator<float> diff_function;
-    DataPoint<float> linear_data[100];
-    DataPoint<float> quadratic_data[100];
-    DataPoint<float> function_data[100];
-    DataPoint<float> data_point;
+ protected:
+  Differentiator<float> diff_linear;
+  Differentiator<float> diff_quadratic;
+  Differentiator<float> diff_function;
+  DataPoint<float> linear_data[100];
+  DataPoint<float> quadratic_data[100];
+  DataPoint<float> function_data[100];
+  DataPoint<float> data_point;
 
     // Populates the lists with their functions outputs.
-    void SetUp()
-    {
-      for (int i = 0; i < 100; i++) {
-        data_point = DataPoint<float>(i*pow(10, 6), i);
-        linear_data[i] = data_point;
-        data_point  = DataPoint<float>(i*pow(10, 6), i*i);
-        quadratic_data[i] = data_point;
-        data_point  = DataPoint<float>(i*pow(10, 6), i*i-i);
-        function_data[i] = data_point;
-      }
+  void SetUp()
+  {
+    for (int i = 0; i < 100; i++) {
+      data_point = DataPoint<float>(i*pow(10, 6), i);
+      linear_data[i] = data_point;
+      data_point  = DataPoint<float>(i*pow(10, 6), i*i);
+      quadratic_data[i] = data_point;
+      data_point  = DataPoint<float>(i*pow(10, 6), i*i-i);
+      function_data[i] = data_point;
     }
+  }
 };
 
 /**
@@ -271,23 +271,23 @@ TEST_F(DifferentiatorDifference, differentiatorDifferenceOfDerivatives)
  * and inner functions and stores their DataPoints.
  */
 struct DifferentiatorChainRule : public ::testing::Test {
-    protected:
-    Differentiator<float> diff_inner;
-    Differentiator<float> diff_outer;
-    DataPoint<float> inner_function[100];
-    DataPoint<float> outer_function[100];
-    DataPoint<float> data_point;
+ protected:
+  Differentiator<float> diff_inner;
+  Differentiator<float> diff_outer;
+  DataPoint<float> inner_function[100];
+  DataPoint<float> outer_function[100];
+  DataPoint<float> data_point;
 
-    // Populates the lists with their function's outputs
-    void SetUp()
-    {
-      for (int i = 0; i < 100; i++) {
-        data_point  = DataPoint<float>(i*1e6, pow(2*i + 1, 2));
-        inner_function[i] = data_point;
-        data_point  = DataPoint<float>(i*1e6, 3 * inner_function[i].value);
-        outer_function[i] = data_point;
-      }
+  // Populates the lists with their function's outputs
+  void SetUp()
+  {
+    for (int i = 0; i < 100; i++) {
+      data_point  = DataPoint<float>(i*1e6, pow(2*i + 1, 2));
+      inner_function[i] = data_point;
+      data_point  = DataPoint<float>(i*1e6, 3 * inner_function[i].value);
+      outer_function[i] = data_point;
     }
+  }
 };
 
 /**

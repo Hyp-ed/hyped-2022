@@ -138,21 +138,21 @@ struct SpecialCases : public ::testing::Test {
     Differentiator<float> diff_constant;
     DataPoint<float> function_constant[100];
     DataPoint<float> constant_data_point;
-    const float constant = 10;
+    const float kConstant = 10;
 
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
         linear_data_point = DataPoint<float>(i*pow(10, 6), i);
         linear_data[i] = linear_data_point;
-        constant_data_point = DataPoint<float>(i*pow(10, 6), constant);
+        constant_data_point = DataPoint<float>(i*pow(10, 6), kConstant);
         function_constant[i] = constant_data_point;
       }
   }
 };
 
 /**
- * Test For the Linear Case, we expect a perfect fit. As the gradient of a line is always constant.
+ * Test For the Linear Case, we expect a perfect fit. As the gradient of a line is always kConstant.
  */
 TEST_F(SpecialCases, differentiatorLinearCase)
 {

@@ -68,7 +68,7 @@ class Vector {
   Vector<T, dimension>& operator-=(const Vector<T, dimension>& rhs);
 
   /**
-   * @brief    Addition or subtraction of every element by a constant.
+   * @brief    Addition or subtraction of every element by a kConstant.
    */
   Vector<T, dimension>& operator+=(const T rhs);
   Vector<T, dimension>& operator-=(const T rhs);

@@ -35,5 +35,13 @@
     "editor.detectIndentation": false,
     "C_Cpp.default.cppStandard": "c++11",
     "C_Cpp.default.cStandard": "c11",
+    "files.associations": {
+      "bit": "cpp",
+      "optional": "cpp",
+      "limits": "cpp",
+      "functional": "cpp",
+      "tuple": "cpp",
+      "type_traits": "cpp"
+    },
   }
 }

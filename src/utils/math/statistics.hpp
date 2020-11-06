@@ -106,7 +106,7 @@ RollingStatistics<T>::RollingStatistics(std::size_t window_size) : window_size_(
 
 /**
  * @brief Advances the window by one position, updating the outputs accordingly. Running time is
- *        constant. Implemented using a numerically stable method described here:
+ *        kConstant. Implemented using a numerically stable method described here:
  *        http://jonisalonen.com/2014/efficient-and-accurate-rolling-standard-deviation/
  *
  * @tparam T Underlying numeric type

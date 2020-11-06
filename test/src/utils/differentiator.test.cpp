@@ -152,7 +152,7 @@ struct SpecialCases : public ::testing::Test {
 };
 
 /**
- * Test For the Linear Case, we expect a perfect fit. As the gradient of a line is always kConstant.
+ * Test For the Linear Case, we expect a perfect fit. As the gradient of a line is always constant.
  */
 TEST_F(SpecialCases, differentiatorLinearCase)
 {

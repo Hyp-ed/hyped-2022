@@ -20,10 +20,6 @@
 
 #include "embrakes/fake_stepper.hpp"
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 namespace hyped {
 namespace embrakes {
 

@@ -19,7 +19,6 @@
 #ifndef EMBRAKES_STEPPER_HPP_
 #define EMBRAKES_STEPPER_HPP_
 
-#include "utils/timer.hpp"
 #include "utils/logger.hpp"
 #include "utils/io/gpio.hpp"
 #include "utils/system.hpp"
@@ -76,7 +75,6 @@ class Stepper : public StepperInterface {
   GPIO                  button_;
   uint8_t               brake_id_;
   uint8_t               is_clamped_;
-  uint64_t              timer;
 };
 
 }}  // namespace hyped::embrakes

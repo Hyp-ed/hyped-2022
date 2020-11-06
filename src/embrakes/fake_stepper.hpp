@@ -26,7 +26,7 @@
 #include "utils/concurrent/thread.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "utils/timer.hpp"
+#include "utils/concurrent/thread.hpp"
 
 namespace hyped {
 
@@ -76,7 +76,6 @@ class FakeStepper : public StepperInterface {
   data::EmergencyBrakes em_brakes_data_;
   uint8_t brake_id_;
   uint8_t is_clamped_;
-  uint64_t timer;
 };
 
 }  // namespace embrakes

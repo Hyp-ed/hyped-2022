@@ -166,7 +166,7 @@ void BMS::getData(BatteryData* battery)
   battery->high_voltage_cell = 0;
 
   // charge calculation
-  if (battery->voltage >= 252) {                                     // kConstant high
+  if (battery->voltage >= 252) {                                     // constant high
     battery->charge = 95;
   } else if (252 > battery->voltage && battery->voltage >= 210) {    // linear high
     battery->charge = static_cast<uint8_t>(std::round((battery->voltage - 198.8) * (25/14)));
@@ -176,7 +176,7 @@ void BMS::getData(BatteryData* battery)
     battery->charge = 10;
   } else if (200 > battery->voltage && battery->voltage >= 189) {    // binomial low
     battery->charge = 5;
-  } else {                                                           // kConstant low
+  } else {                                                           // constant low
     battery->charge = 0;
   }
 }

@@ -32,6 +32,8 @@ using hyped::utils::math::Differentiator;
 
 /**
  * Struct used for test fixtures testing functionality.
+ * Constructor sets the values of the DataPoint objects.
+ * Helper functions defined to assist in testing
  */
 struct DifferentiatorFunctionality : public ::testing::Test {
  protected:
@@ -81,46 +83,57 @@ struct DifferentiatorFunctionality : public ::testing::Test {
 
 /**
  * Test fixture used for determining whether initialisation works correctly.
+ * The value should always return 0
 */
 TEST_F(DifferentiatorFunctionality, differentiatorInitialisedValue)
 {
-  ASSERT_EQ(diff_test.update(test_point).value, 0);
+  ASSERT_EQ(diff_test.update(test_point).value, 0)
+    << "Initalised value should be 0";
 }
 
 /**
  * Test fixture used for determining whether initialisation works correctly.
+ * The timestamp should always be returned unchanged
 */
 TEST_F(DifferentiatorFunctionality, differentiatorInitialisedTimestamp)
 {
-  ASSERT_EQ(diff_test.update(test_point).timestamp, test_point.timestamp);
+  ASSERT_EQ(diff_test.update(test_point).timestamp, test_point.timestamp)
+    << "Timestamp of Data Point shouldnt change on update";
 }
 
 /**
  * Test fixture used for checking the correctness of the gradient between two points.
+ * The Value of update should return the same as the gradient between the two points.
  */
 TEST_F(DifferentiatorFunctionality, differentiatorGradient)
 {
   diff_test.update(test_point);
-  ASSERT_FLOAT_EQ(diff_test.update(second_point).value, gradientOfPoints(second_point, test_point));
+  ASSERT_FLOAT_EQ(diff_test.update(second_point).value, gradientOfPoints(second_point, test_point))
+    << "Derivative differs from the gradient between the two points";
 }
 
 /**
  * Test fixture used for ensuring timestamp remains unchanged.
+ * Timestamp should always return unchanged whenever update is called.
  */
 TEST_F(DifferentiatorFunctionality, differentiatorTimestampReturn)
 {
   diff_test.update(test_point);
-  ASSERT_EQ(diff_test.update(second_point).timestamp, second_point.timestamp);
+  ASSERT_EQ(diff_test.update(second_point).timestamp, second_point.timestamp)
+    << "Timestamp should remain unchanged on Update";
 }
 
 /**
- * Test fixture for testing the derivative of the same value of timestamps.
+ * Test fixture for testing the derivative of the same value.
+ * Derivative should always return as 0 since the two points are the same
+ * so the gradient between them is 0.
  */
 TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
 {
   diff_test.update(test_point);
   diff_test.update(second_point);
-  ASSERT_EQ(diff_test.update(third_point).value, 0);
+  ASSERT_EQ(diff_test.update(third_point).value, 0)
+    << "Derivative of same values should return 0";
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -129,6 +142,8 @@ TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
 
 /**
  * Struct used in Testing the Differentiator special cases for linear and constants.
+ * Constructor populates an array of DataPoints with sample data for each of the functions.
+ * These arrays are then accessed in the Test's for Test data.
  */
 struct SpecialCases : public ::testing::Test {
  protected:
@@ -159,7 +174,8 @@ TEST_F(SpecialCases, differentiatorLinearCase)
   diff_linear.update(linear_data[0]);
   for (int i = 1; i < 100; i++) {
     float value = diff_linear.update(linear_data[i]).value;
-    ASSERT_EQ(1, value) << "You Expect a perfect fit for linear case, please review implementation";
+    ASSERT_EQ(1, value)
+      << "You Expect a perfect fit for linear case, please review implementation";
   }
 }
 
@@ -172,7 +188,8 @@ TEST_F(SpecialCases, differentiatorConstantCase)
   diff_constant.update(function_constant[0]);
   for (int i = 1; i < 100; i++) {
     float value = diff_constant.update(function_constant[i]).value;
-    ASSERT_EQ(0, value) << "You Expect a perfect fit for linear case, please review implementation";
+    ASSERT_EQ(0, value)
+      << "You Expect a perfect fit for linear case, please review implementation";
   }
 }
 
@@ -182,7 +199,8 @@ TEST_F(SpecialCases, differentiatorConstantCase)
 
 /**
  * Struct used for checking the Sum of Derivatives property
- * Creates a list of DataPoint for the linear, quadratic, and function data.
+ * Creates an Array of DataPoints for the linear, quadratic, and function data.
+ * These arrays are later accessed in the tests for Test Data.
  */
 struct DifferentiatorProperty : public ::testing::Test {
  protected:
@@ -194,7 +212,6 @@ struct DifferentiatorProperty : public ::testing::Test {
   DataPoint<float> function_data[100];
   DataPoint<float> data_point;
 
-  // Populates the lists with the output of their functions
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
@@ -210,6 +227,8 @@ struct DifferentiatorProperty : public ::testing::Test {
 
 /**
  * Test fixture used for checking the sum of derivatives.
+ * The derivative of the sum of two functions should always return equal to the sum
+ * of the derivatives of the two functions.
  */
 TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
 {
@@ -218,7 +237,8 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
     float function  = diff_function.update(function_data[i]).value;
 
-    ASSERT_EQ(function, linear+quadratic);
+    ASSERT_EQ(function, linear+quadratic)
+      << "The derivative should be the same as the sum of the two derivatives";
   }
 }
 
@@ -226,6 +246,8 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
  * Struct used in Testing the difference of derivatives. Similar
  * to the struct used for finding the sum except it finds the
  * difference .
+ * Populates arrays of DataPoints with sample values drawn from the function
+ * outputs.
  */
 struct DifferentiatorDifference : public ::testing::Test {
  protected:
@@ -237,7 +259,6 @@ struct DifferentiatorDifference : public ::testing::Test {
   DataPoint<float> function_data[100];
   DataPoint<float> data_point;
 
-    // Populates the lists with their functions outputs.
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
@@ -253,6 +274,8 @@ struct DifferentiatorDifference : public ::testing::Test {
 
 /**
  * Test fixture used for checking the difference of derivatives.
+ * The Test checks whether the derivative of the difference of two functions is equal
+ * to the difference of their derivatives
  */
 TEST_F(DifferentiatorDifference, differentiatorDifferenceOfDerivatives)
 {
@@ -261,7 +284,8 @@ TEST_F(DifferentiatorDifference, differentiatorDifferenceOfDerivatives)
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
     float function  = diff_function.update(function_data[i]).value;
 
-    ASSERT_EQ(function, quadratic-linear);
+    ASSERT_EQ(function, quadratic-linear)
+      << "The derivative should be the same as the difference of the two derivatives";
   }
 }
 
@@ -278,7 +302,6 @@ struct DifferentiatorChainRule : public ::testing::Test {
   DataPoint<float> outer_function[100];
   DataPoint<float> data_point;
 
-  // Populates the lists with their function's outputs
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
@@ -299,6 +322,7 @@ TEST_F(DifferentiatorChainRule, differentiatorChainRule)
     float inner = diff_inner.update(inner_function[i]).value;
     float outer = diff_outer.update(outer_function[i]).value;
 
-    ASSERT_EQ(outer, (3 * inner));
+    ASSERT_EQ(outer, (3 * inner))
+      << "Chain rule doesn't hold.";
   }
 };

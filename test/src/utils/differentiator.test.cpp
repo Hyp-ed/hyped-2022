@@ -128,27 +128,33 @@ TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used as text fiture, it will be used to test the linear case.
- * Therefore it will create a list of DataPoints of the function y = x.
+ * Struct used in Testing the Differentiator special cases for linear and constants.
  */
-struct DifferentiatorLinear : public ::testing::Test {
+struct SpecialCases : public ::testing::Test {
   protected:
     Differentiator<float> diff_linear;
     DataPoint<float> linear_data[100];
     DataPoint<float> linear_data_point;
-    void SetUp()
-    {
-      for (int i = 0; i < 100; i++) {
+    Differentiator<float> diff_constant;
+    DataPoint<float> function_constant[100];
+    DataPoint<float> constant_data_point;
+    const float constant = 10;
+
+  void SetUp()
+  {
+    for (int i = 0; i < 100; i++) {
         linear_data_point = DataPoint<float>(i*pow(10, 6), i);
         linear_data[i] = linear_data_point;
+        constant_data_point = DataPoint<float>(i*pow(10, 6), constant);
+        function_constant[i] = constant_data_point;
       }
-    }
+  }
 };
 
 /**
  * Test For the Linear Case, we expect a perfect fit. As the gradient of a line is always constant.
  */
-TEST_F(DifferentiatorLinear, differentiatorLinearCase)
+TEST_F(SpecialCases, differentiatorLinearCase)
 {
   diff_linear.update(linear_data[0]);
   for (int i = 1; i < 100; i++) {
@@ -158,29 +164,10 @@ TEST_F(DifferentiatorLinear, differentiatorLinearCase)
 }
 
 /**
- * Struct used as text fixture, it will be used to test the constant case.
- * Therefore it will create a list of DataPoints of the function y = a.
- */
-struct DifferentiatorConstant : public :: testing::Test {
-  protected:
-    Differentiator<float> diff_constant;
-    DataPoint<float> function_constant[100];
-    DataPoint<float> constant_data_point;
-    const float constant = 10;
-    void SetUp()
-    {
-      for (int i = 0; i < 100; i++) {
-        constant_data_point = DataPoint<float>(i*pow(10, 6), constant);
-        function_constant[i] = constant_data_point;
-      }
-    }
-};
-
-/**
  * Test For the Constant Case, we expect a perfect fit. As the gradient of this function should
  * always be 0.
  */
-TEST_F(DifferentiatorConstant, differentiatorConstantCase)
+TEST_F(SpecialCases, differentiatorConstantCase)
 {
   diff_constant.update(function_constant[0]);
   for (int i = 1; i < 100; i++) {

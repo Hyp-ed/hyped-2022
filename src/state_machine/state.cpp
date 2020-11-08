@@ -93,7 +93,7 @@ void Idling::transitionCheck()
                         && battery_data.module_status == ModuleStatus::kInit;
 
     if (modules_init) {
-      log_.INFO("STM", "calibrate command received");
+      log_.INFO("STM", "calibrate command received and all modules initialised");
       telemetry_data.calibrate_command = false;
       data_.setTelemetryData(telemetry_data);
       log_.DBG("STM", "calibrate command cleared");

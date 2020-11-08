@@ -53,6 +53,52 @@ void State::checkEmergencyStop()
 void Idling::transitionCheck()
 {
   // TODO(Efe): Implement this
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::StateMachine sm_data     = data_.getStateMachineData();
+  data::Navigation nav_data      = data_.getNavigationData();
+  data::Sensors sensors_data     = data_.getSensorsData();
+  data::Motors motors_data       = data_.getMotorData();
+
+  bool encoutered_failure = false;
+
+  if (telemetry_data.emergency_stop_command) {
+    encoutered_failure = true;
+    log_.ERR("STM", "STOP command received");
+    telemetry_data.emergency_stop_command = false;
+    data_.setTelemetryData(telemetry_data);
+  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in navigation");
+  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in telemetry");
+  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in sensors");
+  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in motors");
+  }
+
+  if (encoutered_failure) {
+    log_.ERR("STM", "Transitioning to Failure Stopped");
+    sm_data.current_state = data::State::kFailureStopped;
+    data_.setStateMachineData(sm_data);
+    state_machine_->current_state_ = state_machine_->failure_stopped_;
+  }
+
+  if (telemetry_data.calibrate_command && encoutered_failure == false) {
+    log_.INFO("STM", "calibrate command received");
+    telemetry_data.calibrate_command = false;
+    data_.setTelemetryData(telemetry_data);
+    log_.DBG("STM", "calibrate command cleared");
+
+    sm_data.current_state = data::State::kCalibrating;
+    data_.setStateMachineData(sm_data);
+
+    state_machine_->current_state_ = state_machine_->calibrating_;
+    log_.DBG("STM", "Transitioned to 'Calibrating'");
+  }
 }
 
 // Calibrating state
@@ -60,6 +106,48 @@ void Idling::transitionCheck()
 void Calibrating::transitionCheck()
 {
   // TODO(Efe): Implement this
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  data::StateMachine sm_data     = data_.getStateMachineData();
+  data::Navigation nav_data      = data_.getNavigationData();
+  data::Sensors sensors_data     = data_.getSensorsData();
+  data::Motors motors_data       = data_.getMotorData();
+
+  bool encoutered_failure = false;
+
+  if (telemetry_data.emergency_stop_command) {
+    encoutered_failure = true;
+    log_.ERR("STM", "STOP command received");
+    telemetry_data.emergency_stop_command = false;
+    data_.setTelemetryData(telemetry_data);
+  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in navigation");
+  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in telemetry");
+  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in sensors");
+  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encoutered_failure = true;
+    log_.ERR("STM", "Critical failure in motors");
+  }
+
+  if (encoutered_failure) {
+    log_.ERR("STM", "Transitioning to Failure Stopped");
+    sm_data.current_state = data::State::kFailureStopped;
+    data_.setStateMachineData(sm_data);
+    state_machine_->current_state_ = state_machine_->failure_stopped_;
+  } else {
+    log_.INFO("STM", "Calibration successful");
+
+    sm_data.current_state = data::State::kReady;
+    data_.setStateMachineData(sm_data);
+
+    state_machine_->current_state_ = state_machine_->ready_;
+    log_.DBG("STM", "Transitioned to 'Ready'");
+  }
+
 }
 
 // Ready state

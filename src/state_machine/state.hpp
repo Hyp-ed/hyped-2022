@@ -66,7 +66,10 @@ class Calibrating : public State {
  public:
   Calibrating(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
-  // TODO(Efe): Add comment.
+  /*
+   * @brief   Checks if the pod encountered any failure during calibration
+   *          and transitions to ready if not
+   */
   void transitionCheck();
 };
 

@@ -1,6 +1,6 @@
 
 /*
- * Authors: Kornelija Sukyte
+ * Authors: Kornelija Sukyte, Franz Miltz, Efe Ozbatur, Yining Wang
  * Organisation: HYPED
  * Date:
  * Description:
@@ -33,18 +33,42 @@ State::State(Logger &log, Main *state_machine)
 
 void State::checkEmergencyStop()
 {
-  data::Telemetry telemetry_data = data_.getTelemetryData();
-  data::StateMachine sm_data     = data_.getStateMachineData();
+  data::EmergencyBrakes embrakes_data = data_.getEmergencyBrakesData();
+  data::StateMachine sm_data          = data_.getStateMachineData();
+  data::Navigation nav_data           = data_.getNavigationData();
+  data::Batteries batteries_data      = data_.getBatteriesData();
+  data::Telemetry telemetry_data      = data_.getTelemetryData();
+  data::Motors motors_data            = data_.getMotorData();
+
+  bool encountered_failure = false;
 
   if (telemetry_data.emergency_stop_command) {
+    encountered_failure = true;
     log_.ERR("STM", "STOP command received");
     telemetry_data.emergency_stop_command = false;
     data_.setTelemetryData(telemetry_data);
+  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in navigation");
+  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in telemetry");
+  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in motors");
+  } else if (embrakes_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in embrakes");
+  } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in batteries");
+  }
 
-    sm_data.current_state = data::State::kFinished;
+  if (encountered_failure) {
+    sm_data.current_state = data::State::kFailureStopped;
     data_.setStateMachineData(sm_data);
 
-    state_machine_->current_state_ = state_machine_->finished_;
+    state_machine_->current_state_ = state_machine_->failure_stopped_;
   }
 }
 
@@ -52,52 +76,34 @@ void State::checkEmergencyStop()
 
 void Idling::transitionCheck()
 {
-  // TODO(Efe): Implement this
   data::Telemetry telemetry_data = data_.getTelemetryData();
-  data::StateMachine sm_data     = data_.getStateMachineData();
-  data::Navigation nav_data      = data_.getNavigationData();
-  data::Sensors sensors_data     = data_.getSensorsData();
-  data::Motors motors_data       = data_.getMotorData();
 
-  bool encoutered_failure = false;
+  if (telemetry_data.calibrate_command) {
+    data::StateMachine sm_data   = data_.getStateMachineData();
+    data::Navigation nav_data    = data_.getNavigationData();
+    data::Batteries battery_data = data_.getBatteriesData();
+    data::Sensors sensors_data   = data_.getSensorsData();
+    data::Motors motors_data     = data_.getMotorData();
+    // TODO: Only check the individual conditions if they haven't been found to be true before.
+    // all modules must be initialised (except embrakes, they don't do that for some reason)
+    bool modules_init = telemetry_data.module_status == ModuleStatus::kInit
+                        && nav_data.module_status == ModuleStatus::kInit
+                        && motors_data.module_status == ModuleStatus::kInit
+                        && sensors_data.module_status == ModuleStatus::kInit
+                        && battery_data.module_status == ModuleStatus::kInit;
 
-  if (telemetry_data.emergency_stop_command) {
-    encoutered_failure = true;
-    log_.ERR("STM", "STOP command received");
-    telemetry_data.emergency_stop_command = false;
-    data_.setTelemetryData(telemetry_data);
-  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in navigation");
-  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in telemetry");
-  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in sensors");
-  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in motors");
-  }
+    if (modules_init) {
+      log_.INFO("STM", "calibrate command received");
+      telemetry_data.calibrate_command = false;
+      data_.setTelemetryData(telemetry_data);
+      log_.DBG("STM", "calibrate command cleared");
 
-  if (encoutered_failure) {
-    log_.ERR("STM", "Transitioning to Failure Stopped");
-    sm_data.current_state = data::State::kFailureStopped;
-    data_.setStateMachineData(sm_data);
-    state_machine_->current_state_ = state_machine_->failure_stopped_;
-  }
+      sm_data.current_state = data::State::kCalibrating;
+      data_.setStateMachineData(sm_data);
 
-  if (telemetry_data.calibrate_command && encoutered_failure == false) {
-    log_.INFO("STM", "calibrate command received");
-    telemetry_data.calibrate_command = false;
-    data_.setTelemetryData(telemetry_data);
-    log_.DBG("STM", "calibrate command cleared");
-
-    sm_data.current_state = data::State::kCalibrating;
-    data_.setStateMachineData(sm_data);
-
-    state_machine_->current_state_ = state_machine_->calibrating_;
-    log_.DBG("STM", "Transitioned to 'Calibrating'");
+      state_machine_->current_state_ = state_machine_->calibrating_;
+      log_.DBG("STM", "Transitioned to 'Calibrating'");
+    }
   }
 }
 
@@ -105,40 +111,18 @@ void Idling::transitionCheck()
 
 void Calibrating::transitionCheck()
 {
-  // TODO(Efe): Implement this
-  data::Telemetry telemetry_data = data_.getTelemetryData();
-  data::StateMachine sm_data     = data_.getStateMachineData();
-  data::Navigation nav_data      = data_.getNavigationData();
-  data::Sensors sensors_data     = data_.getSensorsData();
-  data::Motors motors_data       = data_.getMotorData();
+  data::EmergencyBrakes embrakes_data = data_.getEmergencyBrakesData();
+  data::StateMachine sm_data          = data_.getStateMachineData();
+  data::Navigation nav_data           = data_.getNavigationData();
+  data::Motors motors_data            = data_.getMotorData();
 
-  bool encoutered_failure = false;
+  // TODO: Only check the individual conditions if they haven't been found to be true before.
+  // navigation, motors and embrakes must be ready
+  bool modules_ready = nav_data.module_status == ModuleStatus::kReady
+                       && motors_data.module_status == ModuleStatus::kReady
+                       && embrakes_data.module_status == ModuleStatus::kReady;
 
-  if (telemetry_data.emergency_stop_command) {
-    encoutered_failure = true;
-    log_.ERR("STM", "STOP command received");
-    telemetry_data.emergency_stop_command = false;
-    data_.setTelemetryData(telemetry_data);
-  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in navigation");
-  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in telemetry");
-  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in sensors");
-  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in motors");
-  }
-
-  if (encoutered_failure) {
-    log_.ERR("STM", "Transitioning to Failure Stopped");
-    sm_data.current_state = data::State::kFailureStopped;
-    data_.setStateMachineData(sm_data);
-    state_machine_->current_state_ = state_machine_->failure_stopped_;
-  } else {
+  if (modules_ready) {
     log_.INFO("STM", "Calibration successful");
 
     sm_data.current_state = data::State::kReady;
@@ -147,7 +131,6 @@ void Calibrating::transitionCheck()
     state_machine_->current_state_ = state_machine_->ready_;
     log_.DBG("STM", "Transitioned to 'Ready'");
   }
-
 }
 
 // Ready state
@@ -175,34 +158,38 @@ void Ready::transitionCheck()
 
 void Accelerating::checkEmergencyStop()
 {
-  data::StateMachine sm_data     = data_.getStateMachineData();
-  data::Navigation nav_data      = data_.getNavigationData();
-  data::Telemetry telemetry_data = data_.getTelemetryData();
-  data::Sensors sensors_data     = data_.getSensorsData();
-  data::Motors motors_data       = data_.getMotorData();
+  data::EmergencyBrakes embrakes_data = data_.getEmergencyBrakesData();
+  data::StateMachine sm_data          = data_.getStateMachineData();
+  data::Navigation nav_data           = data_.getNavigationData();
+  data::Batteries batteries_data      = data_.getBatteriesData();
+  data::Telemetry telemetry_data      = data_.getTelemetryData();
+  data::Motors motors_data            = data_.getMotorData();
 
-  bool encoutered_failure = false;
+  bool encountered_failure = false;
 
   if (telemetry_data.emergency_stop_command) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "STOP command received");
     telemetry_data.emergency_stop_command = false;
     data_.setTelemetryData(telemetry_data);
   } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "Critical failure in navigation");
   } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "Critical failure in telemetry");
-  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in sensors");
   } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "Critical failure in motors");
+  } else if (embrakes_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in embrakes");
+  } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in batteries");
   }
 
-  if (encoutered_failure) {
+  if (encountered_failure) {
     log_.ERR("STM", "Engaging emergency brakes");
     sm_data.current_state = data::State::kEmergencyBraking;
     data_.setStateMachineData(sm_data);
@@ -212,9 +199,9 @@ void Accelerating::checkEmergencyStop()
 
 void Accelerating::transitionCheck()
 {
+  data::StateMachine sm_data     = data_.getStateMachineData();
   data::Navigation nav_data      = data_.getNavigationData();
   data::Telemetry telemetry_data = data_.getTelemetryData();
-  data::StateMachine sm_data     = data_.getStateMachineData();
 
   if (telemetry_data.run_length <= nav_data.displacement + nav_data.braking_distance) {
     log_.INFO("STM", "max distance reached");
@@ -249,34 +236,38 @@ void NominalBraking::transitionCheck()
 
 void NominalBraking::checkEmergencyStop()
 {
-  data::StateMachine sm_data     = data_.getStateMachineData();
-  data::Navigation nav_data      = data_.getNavigationData();
-  data::Telemetry telemetry_data = data_.getTelemetryData();
-  data::Sensors sensors_data     = data_.getSensorsData();
-  data::Motors motors_data       = data_.getMotorData();
+  data::EmergencyBrakes embrakes_data = data_.getEmergencyBrakesData();
+  data::StateMachine sm_data          = data_.getStateMachineData();
+  data::Navigation nav_data           = data_.getNavigationData();
+  data::Batteries batteries_data      = data_.getBatteriesData();
+  data::Telemetry telemetry_data      = data_.getTelemetryData();
+  data::Motors motors_data            = data_.getMotorData();
 
-  bool encoutered_failure = false;
+  bool encountered_failure = false;
 
   if (telemetry_data.emergency_stop_command) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "STOP command received");
     telemetry_data.emergency_stop_command = false;
     data_.setTelemetryData(telemetry_data);
   } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "Critical failure in navigation");
   } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "Critical failure in telemetry");
-  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
-    log_.ERR("STM", "Critical failure in sensors");
   } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
-    encoutered_failure = true;
+    encountered_failure = true;
     log_.ERR("STM", "Critical failure in motors");
+  } else if (embrakes_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in embrakes");
+  } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
+    encountered_failure = true;
+    log_.ERR("STM", "Critical failure in batteries");
   }
 
-  if (encoutered_failure) {
+  if (encountered_failure) {
     log_.ERR("STM", "Engaging emergency brakes");
     sm_data.current_state = data::State::kEmergencyBraking;
     data_.setStateMachineData(sm_data);

@@ -67,8 +67,7 @@ class Calibrating : public State {
   Calibrating(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   /*
-   * @brief   Checks if the pod encountered any failure during calibration
-   *          and transitions to ready if not
+   * @brief   Checks if the calibration has been completed.
    */
   void transitionCheck();
 };
@@ -127,7 +126,9 @@ class FailureBraking : public State {
  public:
   FailureBraking(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
-  // TODO(Franz): Add comment.
+  /*
+   * @brief   Cheks whether the pod has stopped.
+   */
   void transitionCheck();
 };
 

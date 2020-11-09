@@ -145,7 +145,7 @@ struct Telemetry : public Module {
   static constexpr float run_length = 1250;  // m
   bool calibrate_command = false;
   bool launch_command = false;
-  bool reset_command = false;
+  bool shutdown_command = false;
   bool service_propulsion_go = false;
   bool emergency_stop_command = false;
   bool nominal_braking_command = true;

@@ -282,8 +282,8 @@ void Finished::transitionCheck()
   utils::System &sys             = utils::System::getSystem();
   data::Telemetry telemetry_data = data_.getTelemetryData();
 
-  if (telemetry_data.reset_command) {
-    log_.INFO("STM", "Reset command received");
+  if (telemetry_data.shutdown_command) {
+    log_.INFO("STM", "Shutdown command received");
     log_.INFO("STM", "System is shutting down");
     sys.running_ = false;
   }
@@ -310,8 +310,8 @@ void FailureStopped::transitionCheck()
   utils::System &sys             = utils::System::getSystem();
   data::Telemetry telemetry_data = data_.getTelemetryData();
 
-  if (telemetry_data.reset_command) {
-    log_.INFO("STM", "FailureStopped command received");
+  if (telemetry_data.shutdown_command) {
+    log_.INFO("STM", "Shutdown command received");
     log_.INFO("STM", "System is shutting down");
     sys.running_ = false;
   }

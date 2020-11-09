@@ -54,32 +54,32 @@ struct DifferentiatorFunctionality : public ::testing::Test {
     third_point.value= second_point.value;
     third_point.timestamp = 3;
   }
-
-  /**
-   * @brief Returns the difference between two data point values.
-  */
-  float deltaValue(DataPoint<float> point_1, DataPoint<float> prev_point)
-  {
-    return point_1.value - prev_point.value;
-  }
-
-  /**
-   * @brief Returns the difference between two data point timestamps
-  */
-  float deltaTime(DataPoint<float> point_1, DataPoint<float> prev_point)
-  {
-    return point_1.timestamp- prev_point.timestamp;
-  }
-
-  /**
-   * @brief Returns the gradient between two data points
-  */
-  float gradientOfPoints(DataPoint<float> point_1, DataPoint<float> prev_point)
-  {
-    return (deltaValue(point_1, prev_point))/((deltaTime(point_1, prev_point))/1e6);
-  }
   void TearDown() {}
 };
+
+/**
+ * @brief Returns the difference between two data point values.
+*/
+float deltaValue(DataPoint<float> point_1, DataPoint<float> prev_point)
+{
+  return point_1.value - prev_point.value;
+}
+
+/**
+ * @brief Returns the difference between two data point timestamps
+*/
+float deltaTime(DataPoint<float> point_1, DataPoint<float> prev_point)
+{
+  return point_1.timestamp- prev_point.timestamp;
+}
+
+/**
+ * @brief Returns the gradient between two data points
+*/
+float gradientOfPoints(DataPoint<float> point_1, DataPoint<float> prev_point)
+{
+    return (deltaValue(point_1, prev_point))/((deltaTime(point_1, prev_point))/1e6);
+}
 
 /**
  * Test fixture used for determining whether initialisation works correctly.
@@ -153,7 +153,7 @@ struct SpecialCases : public ::testing::Test {
   Differentiator<float> diff_constant;
   DataPoint<float> function_constant[100];
   DataPoint<float> constant_data_point;
-  const float kConstant = 10;
+  const float kConstant = rand() % 100;
 
   void SetUp()
   {
@@ -189,7 +189,7 @@ TEST_F(SpecialCases, differentiatorConstantCase)
   for (int i = 1; i < 100; i++) {
     float value = diff_constant.update(function_constant[i]).value;
     ASSERT_EQ(0, value)
-      << "You Expect a perfect fit for linear case, please review implementation";
+      << "You Expect a perfect fit for constant case, please review implementation";
   }
 }
 
@@ -290,34 +290,25 @@ TEST_F(DifferentiatorDifference, differentiatorDifferenceOfDerivatives)
 }
 
 /**
- * Struct used for testing that the chain rule applies in the
- * differentiator. Creates 2 lists of DataPoints for the outer
- * and inner functions and stores their DataPoints.
+ * Test fixture for checking the Chain Rule property of derivatives.
  */
-struct DifferentiatorChainRule : public ::testing::Test {
- protected:
+TEST(DifferentiatorChainRule, differentiatorChainRule)
+{
   Differentiator<float> diff_inner;
   Differentiator<float> diff_outer;
   DataPoint<float> inner_function[100];
   DataPoint<float> outer_function[100];
   DataPoint<float> data_point;
 
-  void SetUp()
-  {
-    for (int i = 0; i < 100; i++) {
-      data_point  = DataPoint<float>(i*1e6, pow(2*i + 1, 2));
-      inner_function[i] = data_point;
-      data_point  = DataPoint<float>(i*1e6, 3 * inner_function[i].value);
-      outer_function[i] = data_point;
-    }
+  // Populates the array of datapoints with the output of functions
+  for (int i = 0; i < 100; i++) {
+    data_point  = DataPoint<float>(i*1e6, pow(2*i + 1, 2));
+    inner_function[i] = data_point;
+    data_point  = DataPoint<float>(i*1e6, 3 * inner_function[i].value);
+    outer_function[i] = data_point;
   }
-};
 
-/**
- * Test fixture for checking the Chain Rule property of derivatives.
- */
-TEST_F(DifferentiatorChainRule, differentiatorChainRule)
-{
+  // Iterates through the arrays testing whether the chain rule holds
   for (int i = 0; i < 100; i++) {
     float inner = diff_inner.update(inner_function[i]).value;
     float outer = diff_outer.update(outer_function[i]).value;

@@ -117,7 +117,7 @@ class Finished : public State {
   Finished(Logger &log, Main *state_machine) : State(log, state_machine) {}
 
   /*
-   * @brief   Checks if command to reset was sent
+   * @brief   Checks if command to shut down was sent
    */
   void transitionCheck();
 };

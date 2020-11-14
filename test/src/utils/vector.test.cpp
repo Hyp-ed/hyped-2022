@@ -163,6 +163,26 @@ TEST_F(Associativity, isAutoAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+TEST_F(Associativity, isMultiplicationAssociative)
+{
+  vector_result_one *= vector_one;
+  vector_result_one *= vector_two;
+  vector_result_one *= vector_three;
+  vector_result_two *= vector_two;
+  vector_result_two *= vector_three;
+  vector_result_two *= vector_one;
+  for (int i = 0;i < dimension;i++) {
+    ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
+  }
+}
+TEST_F(Associativity, isAutoMultiplicationAssociative)
+{
+  vector_result_one = (vector_one * vector_two) * vector_three;
+  vector_result_two = vector_one * (vector_two * vector_three);
+  for (int i = 0;i < dimension;i++) {
+    ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
+  }
+}
 struct Commutativity : public ::testing::Test
 {
   const int dimension = 3;
@@ -271,15 +291,40 @@ TEST_F(IdentityOperations, hadlesAutoAdditonIdentity)
     ASSERT_EQ(vector[i], output[i]);
   }
 }
-TEST_F(IdentityOperations, handlesAutoSubstractionIdentities){
+TEST_F(IdentityOperations, handlesAutoSubstractionIdentities)
+{
   Vector<int, 3> output = vector - identity_vector;
   for (int i = 0;i < dimension;i++) {
     ASSERT_EQ(output[i], values[i]);
   }
-
   output = vector - vector;
   for (int i = 0;i < dimension;i++) {
     ASSERT_EQ(output[i], identity_vector[i]);
+  }
+}
+TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
+{
+  identity_vector = Vector<int, 3>(1);
+  Vector<int, 3> output = vector * identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(output[i], vector[i]);
+  }
+  identity_vector = Vector<int, 3>();
+  output = vector * identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(output[i], 0);
+  }
+}TEST_F(IdentityOperations, handlesMultiplicationIdentities)
+{
+  identity_vector = Vector<int, 3>(1);
+  vector *= identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], values[i]);
+  }
+  identity_vector = Vector<int, 3>();
+  vector *= identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], 0);
   }
 }
 struct EqualityOperation: public :: testing::Test
@@ -294,7 +339,6 @@ struct EqualityOperation: public :: testing::Test
     vector_one = Vector<int, 3>(values);
     vector_two = Vector<int, 3>(values);
   }
-
 };
 TEST_F(EqualityOperation, handlesEqualityIdentity)
 {

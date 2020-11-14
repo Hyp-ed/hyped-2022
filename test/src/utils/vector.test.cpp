@@ -214,6 +214,24 @@ TEST_F(Commutativity, isAutoSubstractionNotCommutative)
   ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
+TEST_F(Commutativity, isMultiplicationCommutative)
+{
+  vector_result_one *= vector_two;
+  vector_result_one *= vector_one;
+  vector_result_two *= vector_one;
+  vector_result_two *= vector_two;
+  for (int i = 0;i < dimension;i++) {
+  ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
+  }
+}
+TEST_F(Commutativity, isAutoMultiplicationCommutative)
+{
+  vector_result_one = vector_two * vector_one;
+  vector_result_two = vector_one * vector_two;
+  for (int i = 0;i < dimension;i++) {
+  ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
+  }
+}
 
 struct IdentityOperations : public ::testing::Test
 {
@@ -252,6 +270,51 @@ TEST_F(IdentityOperations, hadlesAutoAdditonIdentity)
   for (int i = 0; i < dimension;i++) {
     ASSERT_EQ(vector[i], output[i]);
   }
+}
+TEST_F(IdentityOperations, handlesAutoSubstractionIdentities){
+  Vector<int, 3> output = vector - identity_vector;
+  for (int i = 0;i < dimension;i++) {
+    ASSERT_EQ(output[i], values[i]);
+  }
+
+  output = vector - vector;
+  for (int i = 0;i < dimension;i++) {
+    ASSERT_EQ(output[i], identity_vector[i]);
+  }
+}
+struct EqualityOperation: public :: testing::Test
+{
+  const int dimension = 3;
+  std::array<int, 3> values;
+  Vector<int, 3> vector_one;
+  Vector<int, 3> vector_two;
+  void SetUp()
+  {
+    values = createRandomArray();
+    vector_one = Vector<int, 3>(values);
+    vector_two = Vector<int, 3>(values);
+  }
+
+};
+TEST_F(EqualityOperation, handlesEqualityIdentity)
+{
+  Vector<int, 3> identiy = Vector<int, 3>();
+  Vector<int, 3> vector_two = vector_one - identiy;
+  ASSERT_TRUE(vector_one == vector_two);
+  vector_two = vector_one - vector_one;
+  ASSERT_TRUE(vector_two == identiy);
+}
+TEST_F(EqualityOperation, handlesEquality)
+{
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i]);
+  }
+  ASSERT_TRUE(vector_one == vector_two);
+}
+TEST_F(EqualityOperation, handlesSymmetry)
+{
+  ASSERT_TRUE(vector_one == vector_two);
+  ASSERT_TRUE(vector_two == vector_one);
 }
 }
 }

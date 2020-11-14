@@ -1,5 +1,5 @@
 /*
- * Author: Kornelija Sukyte
+ * Author: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
  * Description:
@@ -25,43 +25,36 @@
 #define STATE_MACHINE_MAIN_HPP_
 
 #include <cstdint>
-#include "utils/concurrent/thread.hpp"
+
 #include "data/data.hpp"
-#include "utils/system.hpp"
 #include "state_machine/state.hpp"
+#include "utils/concurrent/thread.hpp"
 #include "utils/config.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
-using utils::concurrent::Thread;
-using utils::Logger;
 using data::ModuleStatus;
+using utils::Logger;
+using utils::concurrent::Thread;
 
 namespace state_machine {
 
-class Idling;
-class Calibrating;
-class State;
-class Ready;
-class Accelerating;
-class NominalBraking;
-class Finished;
-class FailureBraking;
-class FailureStopped;
-class Main: public Thread {
+class State;  // Forward declaration
+
+class Main : public Thread {
  public:
-  explicit Main(uint8_t id, Logger& log);
+  explicit Main(uint8_t id, Logger &log);
+
+  /**
+   *  @brief  Runs state machine thread.
+   */
   void run() override;
 
-  State          *current_state_;
-  Idling         *idling_;
-  Calibrating    *calibrating_;
-  Ready          *ready_;
-  Accelerating   *accelerating_;
-  NominalBraking *nominal_braking_;
-  Finished       *finished_;
-  FailureBraking *failure_braking_;
-  FailureStopped *failure_stopped_;
+  /*
+   * @brief  Current state of the pod
+   */
+  State *current_state_;
 };
 
 }  // namespace state_machine

@@ -1,6 +1,6 @@
 
 /*
- * Authors: Kornelija Sukyte
+ * Authors: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
  * Description:
@@ -24,6 +24,7 @@
 
 #include "data/data.hpp"
 #include "state_machine/main.hpp"
+#include "state_machine/transitions.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 #include "utils/timer.hpp"
@@ -40,107 +41,57 @@ class Main;  // Forward declaration
 class State {
  public:
   State(Logger &log, Main *state_machine);
+  static void initialise(Logger &log, Main *state_machine);
+  static State *instance_;
 
-  void checkEmergencyStop();
+  virtual void enter() = 0;
+  virtual void exit()  = 0;
 
-  virtual void transitionCheck() = 0;
+  virtual State *checkTransition() = 0;
 
   Logger &log_;
   data::Data &data_;
 
  protected:
   Main *state_machine_;
+
+  data::EmergencyBrakes embrakes_data_;
+  data::Navigation nav_data_;
+  data::Batteries batteries_data_;
+  data::Telemetry telemetry_data_;
+  data::Sensors sensors_data_;
+  data::Motors motors_data_;
+  void updateModuleData();
 };
 
-class Idling : public State {
- public:
-  Idling(Logger &log, Main *state_machine) : State(log, state_machine) {}
+/*
+ * @brief   Generates a specific state S following the pattern of State.
+ */
+#define MAKE_STATE(S)                                                                              \
+  class S : public State {                                                                         \
+   public:                                                                                         \
+    static S *instance_;                                                                           \
+    S(Logger &log, Main *state_machine) : State(log, state_machine) {}                             \
+                                                                                                   \
+    State *checkTransition();                                                                      \
+    void enter();                                                                                  \
+    void exit();                                                                                   \
+  };
 
-  /*
-   * @brief   Checks for calibration command
-   */
-  void transitionCheck();
-};
+/*
+ * Generating structs for all the states
+ */
 
-class Calibrating : public State {
- public:
-  Calibrating(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks if the calibration has been completed.
-   */
-  void transitionCheck();
-};
-
-class Ready : public State {
- public:
-  Ready(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks for launch command
-   */
-  void transitionCheck();
-};
-
-class Accelerating : public State {
- public:
-  Accelerating(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks for critical failure during run.
-   */
-  void checkEmergencyStop();
-
-  /*
-   * @brief   Checks if max distance reached
-   */
-  void transitionCheck();
-};
-
-class NominalBraking : public State {
- public:
-  NominalBraking(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks for critical failure during run.
-   */
-  void checkEmergencyStop();
-
-  /*
-   * @brief   Checks whether the pod has stopped.
-   */
-  void transitionCheck();
-};
-
-class Finished : public State {
- public:
-  Finished(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks if command to shut down was sent
-   */
-  void transitionCheck();
-};
-
-class FailureBraking : public State {
- public:
-  FailureBraking(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Cheks whether the pod has stopped.
-   */
-  void transitionCheck();
-};
-
-class FailureStopped : public State {
- public:
-  FailureStopped(Logger &log, Main *state_machine) : State(log, state_machine) {}
-
-  /*
-   * @brief   Checks if command to stop was sent
-   */
-  void transitionCheck();
-};
+MAKE_STATE(Idling)          // State on startup
+MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
+MAKE_STATE(Ready)           // After calibration has finished
+MAKE_STATE(Accelerating)    // First phase of the run
+MAKE_STATE(NominalBraking)  // Second phase of the run
+MAKE_STATE(Finished)        // State after the run
+MAKE_STATE(FailureBraking)  // Entered upon failure during the run
+MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
+                            // FailureBraking
+MAKE_STATE(Off)             // Only exists for the enter() method
 
 }  // namespace state_machine
 }  // namespace hyped

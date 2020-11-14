@@ -32,7 +32,7 @@ std::array<int, 3> createRandomArray()
 {
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
-    output[i] = rand();
+    output[i] = rand()%1000;
   }
   return output;
 }
@@ -123,6 +123,99 @@ TEST(OperationsTest, allowsAdding)
   vector_one+=vector_two;
   for (int i = 0;i <dimension;i++) {
     ASSERT_EQ(vector_one[i], vector_two[i]+array_one[i]);
+  }
+}
+struct OperationsByConstant : public::testing::Test
+{
+  const int dimension = 3;
+  Vector<int, 3> vector_one;
+  Vector<int, 3> vector_two;
+  Vector<int, 3> vector_three;
+  Vector<int, 3> vector_result_one;
+  Vector<int, 3> vector_result_two;
+  int kValue = rand()%1000;
+  void SetUp()
+  {
+    vector_one = Vector<int, 3>(createRandomArray());
+    vector_two = Vector<int, 3>(createRandomArray());
+    vector_three = Vector<int, 3>(createRandomArray());
+    vector_result_one = Vector<int, 3>();
+    vector_result_two = Vector<int, 3>();
+  }
+};
+TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
+{
+  vector_result_one = vector_one + kValue;
+  vector_result_two = kValue + vector_one;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
+    ASSERT_EQ(vector_result_two[i], vector_one[i] + kValue);
+  }
+}
+TEST_F(OperationsByConstant, handlesAdditionWithConstant)
+{
+  vector_result_one += kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], kValue);
+  }
+  vector_result_one += vector_one;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
+  }
+}
+TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
+{
+  vector_result_one = vector_result_one * kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], 0);
+  }
+  vector_result_one = vector_one * kValue;
+  vector_result_two = kValue * vector_one;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
+    ASSERT_EQ(vector_result_two[i], vector_one[i] * kValue);
+  }
+}
+TEST_F(OperationsByConstant, handlesMultiplicationWithConstant)
+{
+  vector_result_one *= kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], 0);
+  }
+  vector_result_one = Vector<int, 3>(1);
+  vector_result_one *= kValue;
+  vector_result_one *= vector_one;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
+  }
+}
+TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
+{
+  while (kValue == 0) {
+    kValue = rand() % 1000;
+  }
+  vector_result_one = vector_result_one / kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], 0);
+  }
+  vector_result_one = vector_one / kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
+  }
+}
+TEST_F(OperationsByConstant, handlesDivisionWithConstant)
+{
+  while (kValue == 0) {
+    kValue = rand() % 1000;
+  }
+  vector_result_one /= kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], 0);
+  }
+  vector_result_one = vector_one;
+  vector_result_one /= kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
   }
 }
 struct Associativity : public::testing::Test

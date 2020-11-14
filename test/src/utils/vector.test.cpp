@@ -163,6 +163,26 @@ TEST_F(OperationsByConstant, handlesAdditionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
   }
 }
+TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
+{
+  vector_result_one = vector_one - kValue;
+  vector_result_two = kValue - vector_one;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
+    ASSERT_EQ(vector_result_two[i], -vector_one[i] + kValue);
+  }
+}
+TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
+{
+  vector_result_one -= kValue;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], -kValue);
+  }
+  vector_result_one += vector_one;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
+  }
+}
 TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
 {
   vector_result_one = vector_result_one * kValue;

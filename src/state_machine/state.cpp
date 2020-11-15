@@ -49,7 +49,7 @@ void State::updateModuleData()
 //  Idling State
 //--------------------------------------------------------------------------------------
 
-Idling *Idling::instance_;
+Idling *Idling::instance_ = NULL;
 
 State *Idling::checkTransition()
 {
@@ -85,7 +85,7 @@ void Idling::exit()
 //  Calibrating
 //--------------------------------------------------------------------------------------
 
-Calibrating *Calibrating::instance_;
+Calibrating *Calibrating::instance_ = NULL;
 
 State *Calibrating::checkTransition()
 {
@@ -120,7 +120,7 @@ void Calibrating::exit()
 //  Ready
 //--------------------------------------------------------------------------------------
 
-Ready *Ready::instance_;
+Ready *Ready::instance_ = NULL;
 
 State *Ready::checkTransition()
 {
@@ -156,7 +156,7 @@ void Ready::exit()
 //  Accelerating
 //--------------------------------------------------------------------------------------
 
-Accelerating *Accelerating::instance_;
+Accelerating *Accelerating::instance_ = NULL;
 
 State *Accelerating::checkTransition()
 {
@@ -192,7 +192,7 @@ void Accelerating::exit()
 //  Nominal Braking
 //--------------------------------------------------------------------------------------
 
-NominalBraking *NominalBraking::instance_;
+NominalBraking *NominalBraking::instance_ = NULL;
 
 State *NominalBraking::checkTransition()
 {
@@ -227,7 +227,7 @@ void NominalBraking::exit()
 //  Finished
 //--------------------------------------------------------------------------------------
 
-Finished *Finished::instance_;
+Finished *Finished::instance_ = NULL;
 
 State *Finished::checkTransition()
 {
@@ -254,7 +254,7 @@ void Finished::exit()
 //  FailureBraking
 //--------------------------------------------------------------------------------------
 
-FailureBraking *FailureBraking::instance_;
+FailureBraking *FailureBraking::instance_ = NULL;
 
 State *FailureBraking::checkTransition()
 {
@@ -281,7 +281,7 @@ void FailureBraking::exit()
 //  FailureStopped
 //--------------------------------------------------------------------------------------
 
-FailureStopped *FailureStopped::instance_;
+FailureStopped *FailureStopped::instance_ = NULL;
 
 State *FailureStopped::checkTransition()
 {

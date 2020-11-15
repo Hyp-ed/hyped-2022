@@ -27,16 +27,6 @@ namespace state_machine {
 Main::Main(uint8_t id, Logger &log) : Thread(id, log)
 {
   // Initialise all the state instances.
-  Idling::instance_         = new Idling(log_, this);
-  Calibrating::instance_    = new Calibrating(log_, this);
-  Ready::instance_          = new Ready(log_, this);
-  Accelerating::instance_   = new Accelerating(log_, this);
-  NominalBraking::instance_ = new NominalBraking(log_, this);
-  Finished::instance_       = new Finished(log_, this);
-  FailureBraking::instance_ = new FailureBraking(log_, this);
-  FailureStopped::instance_ = new FailureStopped(log_, this);
-  Off::instance_            = new Off(log_, this);
-
   current_state_ = Idling::instance_;  // set current state to point to Idle
 }
 
@@ -52,10 +42,10 @@ void Main::run()
   State *new_state;
   while (sys.running_) {
     // checkTransition returns a new state or NULL
-    if ((new_state = current_state_->checkTransition())) {
-      current_state_->exit();
+    if ((new_state = current_state_->checkTransition(log_))) {
+      current_state_->exit(log_);
       current_state_ = new_state;
-      current_state_->enter();
+      current_state_->enter(log_);
     }
   }
 

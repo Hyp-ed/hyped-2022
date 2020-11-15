@@ -28,10 +28,7 @@ namespace state_machine {
 //  General State
 //--------------------------------------------------------------------------------------
 
-State::State(Logger &log, Main *state_machine)
-    : log_(log),
-      data_(data::Data::getInstance()),
-      state_machine_(state_machine)
+State::State() : data_(data::Data::getInstance())
 {
 }
 
@@ -49,282 +46,282 @@ void State::updateModuleData()
 //  Idling State
 //--------------------------------------------------------------------------------------
 
-Idling *Idling::instance_ = NULL;
+Idling *Idling::instance_ = new Idling();
 
-State *Idling::checkTransition()
+State *Idling::checkTransition(Logger &log)
 {
   updateModuleData();
 
   State *next;
-  next = checkEmergencyStationery(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyStationery(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (next) return next;
 
-  next = checkModulesInitialised(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkModulesInitialised(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                  sensors_data_, motors_data_);
 
   if (next) return next;
   return NULL;
 }
 
-void Idling::enter()
+void Idling::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering Idling state");
+  log.INFO("STM", "Entering Idling state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kIdle;
   data_.setStateMachineData(sm_data);
 }
 
-void Idling::exit()
+void Idling::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting Idling state");
+  log.INFO("STM", "Exiting Idling state");
 }
 
 //--------------------------------------------------------------------------------------
 //  Calibrating
 //--------------------------------------------------------------------------------------
 
-Calibrating *Calibrating::instance_ = NULL;
+Calibrating *Calibrating::instance_ = new Calibrating();
 
-State *Calibrating::checkTransition()
+State *Calibrating::checkTransition(Logger &log)
 {
   updateModuleData();
 
   State *next;
-  next = checkEmergencyStationery(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyStationery(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (next) return next;
 
-  next = checkModulesReady(log_, embrakes_data_, nav_data_, motors_data_);
+  next = checkModulesReady(log, embrakes_data_, nav_data_, motors_data_);
   if (next) return next;
 
   return NULL;
 }
 
-void Calibrating::enter()
+void Calibrating::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering Calibrating state");
+  log.INFO("STM", "Entering Calibrating state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kCalibrating;
   data_.setStateMachineData(sm_data);
 }
 
-void Calibrating::exit()
+void Calibrating::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting Calibrating state");
+  log.INFO("STM", "Exiting Calibrating state");
 }
 
 //--------------------------------------------------------------------------------------
 //  Ready
 //--------------------------------------------------------------------------------------
 
-Ready *Ready::instance_ = NULL;
+Ready *Ready::instance_ = new Ready();
 
-State *Ready::checkTransition()
+State *Ready::checkTransition(Logger &log)
 {
   updateModuleData();
 
   State *next;
 
-  next = checkEmergencyStationery(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyStationery(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (next) return next;
 
-  next = checkLaunchCommand(log_, telemetry_data_);
+  next = checkLaunchCommand(log, telemetry_data_);
   if (next) return next;
 
   return NULL;
 }
 
-void Ready::enter()
+void Ready::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering Ready state");
+  log.INFO("STM", "Entering Ready state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kReady;
   data_.setStateMachineData(sm_data);
 }
 
-void Ready::exit()
+void Ready::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting Ready state");
+  log.INFO("STM", "Exiting Ready state");
 }
 
 //--------------------------------------------------------------------------------------
 //  Accelerating
 //--------------------------------------------------------------------------------------
 
-Accelerating *Accelerating::instance_ = NULL;
+Accelerating *Accelerating::instance_ = new Accelerating();
 
-State *Accelerating::checkTransition()
+State *Accelerating::checkTransition(Logger &log)
 {
   updateModuleData();
 
   State *next;
 
-  next = checkEmergencyMoving(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyMoving(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                               sensors_data_, motors_data_);
   if (next) return next;
 
-  next = checkEnteredBrakingZone(log_, nav_data_, telemetry_data_);
+  next = checkEnteredBrakingZone(log, nav_data_, telemetry_data_);
   if (next) return next;
 
   return NULL;
 }
 
-void Accelerating::enter()
+void Accelerating::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering Accelerating state");
+  log.INFO("STM", "Entering Accelerating state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kAccelerating;
   data_.setStateMachineData(sm_data);
 }
 
-void Accelerating::exit()
+void Accelerating::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting Accelerating state");
+  log.INFO("STM", "Exiting Accelerating state");
 }
 
 //--------------------------------------------------------------------------------------
 //  Nominal Braking
 //--------------------------------------------------------------------------------------
 
-NominalBraking *NominalBraking::instance_ = NULL;
+NominalBraking *NominalBraking::instance_ = new NominalBraking();
 
-State *NominalBraking::checkTransition()
+State *NominalBraking::checkTransition(Logger &log)
 {
   updateModuleData();
 
   State *next;
 
-  next = checkEmergencyMoving(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyMoving(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                               sensors_data_, motors_data_);
   if (next) return next;
 
-  next = checkPodStoppedNominal(log_, nav_data_);
+  next = checkPodStoppedNominal(log, nav_data_);
   if (next) return next;
   return NULL;
 }
 
-void NominalBraking::enter()
+void NominalBraking::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering NominalBraking state");
+  log.INFO("STM", "Entering NominalBraking state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kNominalBraking;
   data_.setStateMachineData(sm_data);
 }
 
-void NominalBraking::exit()
+void NominalBraking::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting NominalBraking state");
+  log.INFO("STM", "Exiting NominalBraking state");
 }
 
 //--------------------------------------------------------------------------------------
 //  Finished
 //--------------------------------------------------------------------------------------
 
-Finished *Finished::instance_ = NULL;
+Finished *Finished::instance_ = new Finished();
 
-State *Finished::checkTransition()
+State *Finished::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  return checkShutdownCommand(log_, telemetry_data_);
+  return checkShutdownCommand(log, telemetry_data_);
 }
 
-void Finished::enter()
+void Finished::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering Finished state");
+  log.INFO("STM", "Entering Finished state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kFinished;
   data_.setStateMachineData(sm_data);
 }
 
-void Finished::exit()
+void Finished::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting Finished state");
+  log.INFO("STM", "Exiting Finished state");
 }
 
 //--------------------------------------------------------------------------------------
 //  FailureBraking
 //--------------------------------------------------------------------------------------
 
-FailureBraking *FailureBraking::instance_ = NULL;
+FailureBraking *FailureBraking::instance_ = new FailureBraking();
 
-State *FailureBraking::checkTransition()
+State *FailureBraking::checkTransition(Logger &log)
 {
   // We only need to update navigation data.
   nav_data_ = data_.getNavigationData();
-  return checkPodStoppedEmergency(log_, nav_data_);
+  return checkPodStoppedEmergency(log, nav_data_);
 }
 
-void FailureBraking::enter()
+void FailureBraking::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering FailureBraking state");
+  log.INFO("STM", "Entering FailureBraking state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kEmergencyBraking;
   data_.setStateMachineData(sm_data);
 }
 
-void FailureBraking::exit()
+void FailureBraking::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting FailureBraking state");
+  log.INFO("STM", "Exiting FailureBraking state");
 }
 
 //--------------------------------------------------------------------------------------
 //  FailureStopped
 //--------------------------------------------------------------------------------------
 
-FailureStopped *FailureStopped::instance_ = NULL;
+FailureStopped *FailureStopped::instance_ = new FailureStopped();
 
-State *FailureStopped::checkTransition()
+State *FailureStopped::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  return checkShutdownCommand(log_, telemetry_data_);
+  return checkShutdownCommand(log, telemetry_data_);
 }
 
-void FailureStopped::enter()
+void FailureStopped::enter(Logger &log)
 {
-  log_.INFO("STM", "Entering FailureStopped state");
+  log.INFO("STM", "Entering FailureStopped state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kFailureStopped;
   data_.setStateMachineData(sm_data);
 }
 
-void FailureStopped::exit()
+void FailureStopped::exit(Logger &log)
 {
-  log_.INFO("STM", "Exiting FailureStopped state");
+  log.INFO("STM", "Exiting FailureStopped state");
 }
 
 //--------------------------------------------------------------------------------------
 //  Off
 //--------------------------------------------------------------------------------------
 
-Off *Off::instance_;
+Off *Off::instance_ = new Off();
 
-State *Off::checkTransition()
+State *Off::checkTransition(Logger &log)
 {
   // This function should never be called.
-  log_.ERR("STM", "Tried to transition from Off state");
+  log.ERR("STM", "Tried to transition from Off state");
   return NULL;
 }
 
-void Off::enter()
+void Off::enter(Logger &log)
 {
   utils::System &sys = utils::System::getSystem();
-  log_.INFO("STM", "System is shutting down");
+  log.INFO("STM", "System is shutting down");
   sys.running_ = false;
 }
 
-void Off::exit()
+void Off::exit(Logger &log)
 {
   // We never exit this state anyways...
 }

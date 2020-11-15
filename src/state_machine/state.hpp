@@ -40,21 +40,19 @@ class Main;  // Forward declaration
 
 class State {
  public:
-  State(Logger &log, Main *state_machine);
-  static void initialise(Logger &log, Main *state_machine);
+  State();
   static State *instance_;
+  static State *getInstance();
+  static void initialise();
 
-  virtual void enter() = 0;
-  virtual void exit()  = 0;
+  virtual void enter(Logger &log) = 0;
+  virtual void exit(Logger &log)  = 0;
 
-  virtual State *checkTransition() = 0;
+  virtual State *checkTransition(Logger &log) = 0;
 
-  Logger &log_;
   data::Data &data_;
 
  protected:
-  Main *state_machine_;
-
   data::EmergencyBrakes embrakes_data_;
   data::Navigation nav_data_;
   data::Batteries batteries_data_;
@@ -70,12 +68,14 @@ class State {
 #define MAKE_STATE(S)                                                                              \
   class S : public State {                                                                         \
    public:                                                                                         \
+    S() {}                                                                                         \
     static S *instance_;                                                                           \
-    S(Logger &log, Main *state_machine) : State(log, state_machine) {}                             \
+    static S *getInstance() { return S::instance_; }                                               \
+    static void initialise() { S::instance_ = new S(); }                                           \
                                                                                                    \
-    State *checkTransition();                                                                      \
-    void enter();                                                                                  \
-    void exit();                                                                                   \
+    State *checkTransition(Logger &log);                                                           \
+    void enter(Logger &log);                                                                       \
+    void exit(Logger &log);                                                                        \
   };
 
 /*

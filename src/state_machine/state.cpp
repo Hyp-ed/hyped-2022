@@ -53,7 +53,7 @@ State *Idling::checkTransition(Logger &log)
   updateModuleData();
 
   State *next;
-  next = checkEmergencyStationery(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyStationary(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (next) return next;
 
@@ -89,7 +89,7 @@ State *Calibrating::checkTransition(Logger &log)
   updateModuleData();
 
   State *next;
-  next = checkEmergencyStationery(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyStationary(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (next) return next;
 
@@ -125,7 +125,7 @@ State *Ready::checkTransition(Logger &log)
 
   State *next;
 
-  next = checkEmergencyStationery(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  next = checkEmergencyStationary(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (next) return next;
 

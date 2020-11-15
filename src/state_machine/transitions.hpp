@@ -49,7 +49,7 @@ class State;  // Forward declaration
 /*
  * @brief   Returns the FailureStopped if there's an emergency and NULL otherwise.
  */
-State *checkEmergencyStationery(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+State *checkEmergencyStationary(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
                                 Batteries batteries_data, Telemetry telemetry_data,
                                 Sensors sensors_data, Motors motors_data);
 

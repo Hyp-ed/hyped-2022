@@ -60,7 +60,7 @@ inline bool checkEmergencyGeneral(Logger &log, EmergencyBrakes embrakes_data, Na
   return false;
 }
 
-State *checkEmergencyStationery(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+State *checkEmergencyStationary(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
                                 Batteries batteries_data, Telemetry telemetry_data,
                                 Sensors sensors_data, Motors motors_data)
 {

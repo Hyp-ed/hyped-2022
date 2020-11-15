@@ -122,7 +122,7 @@ State *checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation 
 
 State *checkLaunchCommand(Logger &log, Telemetry telemetry_data)
 {
-  if (!telemetry_data.calibrate_command) return NULL;
+  if (!telemetry_data.launch_command) return NULL;
 
   log.INFO("STM", "Launch command received");
   return Accelerating::getInstance();

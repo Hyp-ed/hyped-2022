@@ -41,7 +41,6 @@ class Main;  // Forward declaration
 class State {
  public:
   State();
-  static State *instance_;
   static State *getInstance();
   static void initialise();
 
@@ -53,6 +52,7 @@ class State {
   data::Data &data_;
 
  protected:
+  static State *instance_;
   data::EmergencyBrakes embrakes_data_;
   data::Navigation nav_data_;
   data::Batteries batteries_data_;

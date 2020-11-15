@@ -68,7 +68,7 @@ State *checkEmergencyStationery(Logger &log, EmergencyBrakes embrakes_data, Navi
                              sensors_data, motors_data)) {
     return NULL;
   }
-  return FailureStopped::instance_;
+  return FailureStopped::getInstance();
 }
 
 State *checkEmergencyMoving(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
@@ -79,7 +79,7 @@ State *checkEmergencyMoving(Logger &log, EmergencyBrakes embrakes_data, Navigati
                              sensors_data, motors_data)) {
     return NULL;
   }
-  return FailureBraking::instance_;
+  return FailureBraking::getInstance();
 }
 
 //--------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ State *checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navig
   if (motors_data.module_status != ModuleStatus::kInit) return NULL;
 
   log.INFO("STM", "Calibrate command received and all modules initialised");
-  return Calibrating::instance_;
+  return Calibrating::getInstance();
 }
 
 State *checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
@@ -113,7 +113,7 @@ State *checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation 
   if (motors_data.module_status != ModuleStatus::kReady) return NULL;
 
   log.INFO("STM", "All modules calibrated");
-  return Ready::instance_;
+  return Ready::getInstance();
 }
 
 //--------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ State *checkLaunchCommand(Logger &log, Telemetry telemetry_data)
   if (!telemetry_data.calibrate_command) return NULL;
 
   log.INFO("STM", "Launch command received");
-  return Accelerating::instance_;
+  return Accelerating::getInstance();
 }
 
 State *checkShutdownCommand(Logger &log, Telemetry telemetry_data)
@@ -133,7 +133,7 @@ State *checkShutdownCommand(Logger &log, Telemetry telemetry_data)
   if (!telemetry_data.shutdown_command) return NULL;
 
   log.INFO("STM", "Shutdown command received");
-  return Off::instance_;
+  return Off::getInstance();
 }
 
 //--------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data, Telemetry &tel
   if (telemetry_data.run_length > nav_data.displacement + nav_data.braking_distance) return NULL;
 
   log.INFO("STM", "Entered braking zone");
-  return NominalBraking::instance_;
+  return NominalBraking::getInstance();
 }
 
 /*
@@ -163,13 +163,13 @@ inline bool checkPodStopped(Logger &log, Navigation &nav_data)
 State *checkPodStoppedNominal(Logger &log, Navigation &nav_data)
 {
   if (!checkPodStopped(log, nav_data)) return NULL;
-  return Finished::instance_;
+  return Finished::getInstance();
 }
 
 State *checkPodStoppedEmergency(Logger &log, Navigation &nav_data)
 {
   if (!checkPodStopped(log, nav_data)) return NULL;
-  return FailureStopped::instance_;
+  return FailureStopped::getInstance();
 }
 
 }  // namespace state_machine

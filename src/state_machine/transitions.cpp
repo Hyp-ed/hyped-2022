@@ -140,10 +140,10 @@ State *checkShutdownCommand(Logger &log, Telemetry telemetry_data)
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 
-State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data, Telemetry &telemetry_data)
+State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
   // TODO(Franz): Fix braking buffer.
-  if (telemetry_data.run_length > nav_data.displacement + nav_data.braking_distance) return NULL;
+  if (nav_data.run_length > nav_data.displacement + nav_data.braking_distance) return NULL;
 
   log.INFO("STM", "Entered braking zone");
   return NominalBraking::getInstance();

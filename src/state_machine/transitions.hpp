@@ -99,7 +99,7 @@ State *checkShutdownCommand(Logger &log, Telemetry telemetry_data);
 /*
  * @brief   Returns the Braking state if the pod is close enough to the end of the track.
  */
-State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data, Telemetry &telemetry_data);
+State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data);
 
 /*
  * @brief   Returns the Finished state if the pod has stopped and NULL otherwise.

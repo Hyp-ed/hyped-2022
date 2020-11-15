@@ -165,7 +165,7 @@ State *Accelerating::checkTransition(Logger &log)
                               sensors_data_, motors_data_);
   if (next) return next;
 
-  next = checkEnteredBrakingZone(log, nav_data_, telemetry_data_);
+  next = checkEnteredBrakingZone(log, nav_data_);
   if (next) return next;
 
   return NULL;

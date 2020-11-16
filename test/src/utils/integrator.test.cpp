@@ -38,23 +38,14 @@ namespace math {
  *
  */
 template <typename T>
-std::vector<T> linspace(T a, T b, size_t N)
+std::vector<T> linspace(T a, T b, size_t n)
 {
-  T h = (b - a) / static_cast<T>(N - 1);
-  std::vector<T> xs(N);
+  T h = (b - a) / static_cast<T>(n - 1);
+  std::vector<T> xs(n);
   typename std::vector<T>::iterator x;
   T val;
   for (x = xs.begin(), val = a; x != xs.end(); ++x, val += h) *x = val;
   return xs;
-}
-/**
- * @brief Helper function used make an assert and print an error message in a non-intrusive way.
- *
- */
-template <typename T, typename Y>
-void myAssert_EQ(T value_one, Y value_two, std::string message)
-{
-  ASSERT_EQ(value_one, value_two) << message;
 }
 // -------------------------------------------------------------------------------------------------
 // Functionality Tests
@@ -72,10 +63,10 @@ TEST(IntegratorFunctionalityTest, handlesInitializationTest)
   integrator.update(firstPoint);
   std::string message_one = "The first value should just change the lower bound of the integral, "
   "it should not affect the total area. Please review implementation";
-  myAssert_EQ(0, output.value, message_one);
+  ASSERT_EQ(0, output.value) << message_one;
   std::string message_two = "The timeStep should change to the one given by "
   "the first point, Plese review implementation";
-  myAssert_EQ(pow(10, 6), output.timestamp, message_two);
+  ASSERT_EQ(pow(10, 6), output.timestamp) << message_two;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -119,7 +110,8 @@ struct IntegratorPropertyTest : public ::testing:: Test
 /**
  * @brief Test designed to check if one of the most important properties of integrals holds with
  * the given implementation. The addition property
- * If I have a function like f(x) = x^2 +x then the definite integral of f(x) is the same as the integral of x^2 added to the integral of x.
+ * If I have a function like f(x) = x^2 +x then the definite integral of f(x) is the same as
+ * the integral of x^2 added to the integral of x.
  * This should hold for any function f(x)
  */
 TEST_F(IntegratorPropertyTest, AdditionPropertyTest)
@@ -138,11 +130,13 @@ TEST_F(IntegratorPropertyTest, AdditionPropertyTest)
     linear_integrator.update(datax[i]);
     cube_integrator.update(dataxcube[i]);
   }
-  myAssert_EQ(velocity.value, velocity_2.value+velocity_3.value+velocity_4.value, message);
+  ASSERT_EQ(velocity.value, velocity_2.value+velocity_3.value+velocity_4.value) << message;
 }
 /**
- * @brief Test designed to check if one of the most important properties of integrals holds with the given implementation. The Interval property.
- * If I have a function f(x) then the definite integral of f(x) over a to b is the same as the integral of f(x) over a to b/2 added to the integral of f(x) over b/2 to b.
+ * @brief Test designed to check if one of the most important properties of integrals
+ * and it should hold with the given implementation. The Interval property.
+ * If I have a function f(x) then the definite integral of f(x) over a to b is the same as
+ * the integral of f(x) over a to b/2 added to the integral of f(x) over b/2 to b.
  * This should hold for any function f(x)
  */
 TEST_F(IntegratorPropertyTest, IntervalTest)
@@ -157,22 +151,24 @@ TEST_F(IntegratorPropertyTest, IntervalTest)
   DataPoint<float> velocity_3 = DataPoint<float>(0, 0);
   Integrator<float> interval_2_integrator = Integrator<float>(&velocity_3);
 
-  for (int i = 0; i < 101;i++) {
+  for (int i = 0; i < 101; i++) {
     function_integrator.update(datafunction[i]);
   }
   for (int i = 0; i < 50; i++) {
     interval_1_integrator.update(datafunction[i]);
   }
-  for (int i =49 ;i < 101;i++) {
+  for (int i = 49; i < 101; i++) {
     interval_2_integrator.update(datafunction[i]);
   }
-  myAssert_EQ(velocity.value, velocity_2.value+velocity_3.value, message);
+  ASSERT_EQ(velocity.value, velocity_2.value+velocity_3.value) << message;
 }
 /**
- * @brief Test designed to check if one of the most important properties of integrals holds with the given implementation. The Constant property.
+ * @brief Test designed to check if one of the most important properties of integrals holds
+ *  with the given implementation. The Constant property.
  * If I have a function f(x)= C*g(x) where C is a constant
- * then the definite integral of f(x) over a to b is the same as the integral of g(x) from a to b multiplied by the constant C
- * This should hold for any function of the form of f(x)
+ * then the definite integral of f(x) over a to b is the same as the integral of g(x) from a to b
+ * multiplied by the constant C
+ * This should hold for any function of the form of f(x) = C*g(x).
  */
 TEST_F(IntegratorPropertyTest, ConstantMultiplyTest)
 {
@@ -182,15 +178,15 @@ TEST_F(IntegratorPropertyTest, ConstantMultiplyTest)
   DataPoint<float> velocity_2 = DataPoint<float>(0, 0);
   Integrator<float> function_integrator_multiplied_by_constant = Integrator<float>(&velocity_2);
   DataPoint<float> data_function_by_constant[101];
-  for (int i =0;i <101;i++) {
+  for (int i = 0; i < 101; i++) {
     float value = datafunction[i].value;
     data_function_by_constant[i] = DataPoint<float>(i*pow(10, 6), constant*value);
   }
-  for (int i =0;i <101;i++) {
+  for (int i = 0; i < 101; i++) {
     function_integrator.update(datafunction[i]);
     function_integrator_multiplied_by_constant.update(data_function_by_constant[i]);
   }
-  myAssert_EQ(constant*velocity.value, velocity_2.value, message);
+  ASSERT_EQ(constant*velocity.value, velocity_2.value) << message;
 }
 // -------------------------------------------------------------------------------------------------
 // Linear Tests
@@ -222,8 +218,10 @@ struct IntegratorTestLinear : public ::testing::Test {
   void TearDown() {}
 };
 /**
- * @brief Test used to verify that we get a perfect fit in the case of a linear function of the form f(x) = x
- * If we don't get this perfect fit the integrator is doing something wrong as getting the area under a line should be trivial.
+ * @brief Test used to verify that we get a perfect fit in the case of a linear function of the form
+ * f(x) = x
+ * If we don't get this perfect fit the integrator is doing something wrong
+ * getting the area under a line should be trivial.
  */
 TEST_F(IntegratorTestLinear, linearAreaTest)
 {
@@ -234,11 +232,13 @@ TEST_F(IntegratorTestLinear, linearAreaTest)
     reference = integratetry.update(datatry[i]);
   }
   float expected_value = max_time*max_time/2;
-  myAssert_EQ(expected_value, reference.value, message);
+  ASSERT_EQ(expected_value, reference.value) << message;
 }
 /**
- * @brief Test used to verify that we get a perfect fit in the case of a linear function of the form f(x) = C*x
- * If we don't get this perfect fit the integrator is doing something wrong as getting the area under a line should be trivial.
+ * @brief Test used to verify that we get a perfect fit in the case of a linear function of the form
+ * f(x) = C*x
+ * If we don't get this perfect fit the integrator is doing something wrong
+ * getting the area under a line should be trivial.
  */
 TEST_F(IntegratorTestLinear, linearAreaTest2)
 {
@@ -249,15 +249,17 @@ TEST_F(IntegratorTestLinear, linearAreaTest2)
     reference = integratetry.update(datatry2[i]);
   }
   float expected_value =kConstant*max_time*max_time/2;
-  myAssert_EQ(expected_value, reference.value, message);
+  ASSERT_EQ(expected_value, reference.value) << message;
 }
 
 // -------------------------------------------------------------------------------------------------
 // Quadratic Tests
 // -------------------------------------------------------------------------------------------------
 /**
- * @brief Test used to verify that we get a expect a good fit in the case of a quadratic function of the form f(x) = x^2
- * If we don't get this good fit the integrator is doing something wrong as are still close to the case y = x.
+ * @brief Test used to verify that we get a expect a good fit in the case of a quadratic function
+ * of the form f(x) = x^2
+ * If we don't get this good fit the integrator is doing something wrong
+ * as We are still close to the case y = x.
  */
 TEST(IntegratorTestQuadratic, QuadraticTest)
 {
@@ -272,7 +274,7 @@ TEST(IntegratorTestQuadratic, QuadraticTest)
   float timer;
   for (t = data_time.begin(); t != data_time.end(); t++) {
     timer = *t;
-    datatimeAndAcc = DataPoint<float>(timer * pow(10, 6), timer*timer);
+    datatimeAndAcc = DataPoint<float>(timer * pow(10, 6), timer * timer);
     data_to_integrate[count] = datatimeAndAcc;
     count++;
   }
@@ -283,7 +285,7 @@ TEST(IntegratorTestQuadratic, QuadraticTest)
   for (int i = 0; i < 10001; i++) {
     reference = integratetry.update(data_to_integrate[i]);
   }
-  myAssert_EQ(reference.value <= 333333 + 50 && reference.value >= 333333 - 50, true, message);
+  ASSERT_EQ(reference.value <= 333333 + 50 && reference.value >= 333333 - 50, true) << message;
 }
 }
 }}

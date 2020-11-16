@@ -32,8 +32,9 @@ namespace math {
 // Helper Functions
 // -------------------------------------------------------------------------------------------------
 /**
- * @brief Helper function used to divide an interval in a number of points
+ * @brief Helper function used to divide an interval in a number of points.
  * evenly spaced.
+ * Does not work for integers.
  *
  */
 template <typename T>
@@ -60,7 +61,8 @@ void myAssert_EQ(T value_one, Y value_two, std::string message)
 // -------------------------------------------------------------------------------------------------
 /**
  * @brief Test designed to see if the integraotr is initialized properly.
- * It will check if the first value that updates the integrator just changes the lower bound of the integral.
+ * It will check if the first value that updates the integrator just changes the lower bound of the
+ * integral.
  */
 TEST(IntegratorFunctionalityTest, handlesInitializationTest)
 {
@@ -97,7 +99,7 @@ struct IntegratorPropertyTest : public ::testing:: Test
   DataPoint<float> quadraticterm;
   DataPoint<float> linerarterm;
   std::string message =
-  "This values should be equal as the property of addition holds for any function, "
+  "This values should be equal as the property of addition holds for any function,"
   "Please review the current implementation.The tested code does not represent a good integral";
 
   void SetUp()
@@ -115,7 +117,8 @@ struct IntegratorPropertyTest : public ::testing:: Test
   }
 };
 /**
- * @brief Test designed to check if one of the most important properties of integrals holds with the given implementation. The addition property
+ * @brief Test designed to check if one of the most important properties of integrals holds with
+ * the given implementation. The addition property
  * If I have a function like f(x) = x^2 +x then the definite integral of f(x) is the same as the integral of x^2 added to the integral of x.
  * This should hold for any function f(x)
  */

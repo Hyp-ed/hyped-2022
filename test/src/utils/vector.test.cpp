@@ -440,6 +440,17 @@ TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
     ASSERT_EQ(vector[i], 0);
   }
 }
+TEST_F(IdentityOperations, handlesChangeOfSignIdentity)
+{
+  identity_vector = -identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(identity_vector[i], 0);
+  }
+  Vector<int, 3> vector_two = -vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(identity_vector[i], vector_two[i] + vector[i]);
+  }
+}
 struct EqualityOperation: public :: testing::Test
 {
   const int dimension = 3;
@@ -453,6 +464,7 @@ struct EqualityOperation: public :: testing::Test
     vector_two = Vector<int, 3>(values);
   }
 };
+
 TEST_F(EqualityOperation, handlesEqualityIdentity)
 {
   Vector<int, 3> identiy = Vector<int, 3>();

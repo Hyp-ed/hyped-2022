@@ -28,21 +28,20 @@ struct KalmanFunctionality : public ::testing::Test {
  protected:
   unsigned int n = 1;
   unsigned int m = 2;
-  unsigned int p = 3;
-  unsigned int q = 4;
+  int p = 3;
+  float initial_val = 1;
 
   KalmanMultivariate kalman = KalmanMultivariate(n, m, 0);
-  MatrixXf A = MatrixXf::Constant(n, m);
-  MatrixXf B = MatrixXf::Constant(n, p);
-  MatrixXf Q = MatrixXf::Constant(p, m);
-  MatrixXf R = MatrixXf::Constant(p, q);
-  MatrixXf p0 = MatrixXf::Constant(n, n);
   VectorXf x0 = VectorXf::Zero(n);
   VectorXf x1 = VectorXf::Zero(m);
+  MatrixXf A = MatrixXf::Constant(p, p, initial_val);
+  MatrixXf covariance = MatrixXf::Constant(p, p, initial_val);
 
   void SetUp()
   {
-    kalman.setInitial(x0, p0);
+    std::cout << "A:" << "\n \n" << A << "\n";
+    std::cout << "Covariance Matrix:" << "\n \n" << covariance << "\n";
+    kalman.setInitial(x0, covariance);
   }
   void TearDown() {}
 };
@@ -54,5 +53,5 @@ TEST_F(KalmanFunctionality, returnsStateEstimate)
 
 TEST_F(KalmanFunctionality, returnsStateCovariance)
 {
-  ASSERT_EQ(kalman.getStateCovariance(), p0);
+  ASSERT_EQ(kalman.getStateCovariance(), covariance);
 }

@@ -6,3 +6,5 @@ T_SRCS := \
   state_machine/dummy.test.cpp \
   utils/config.test.cpp \
   utils/integrator.test.cpp \
+  utils/differentiator.test.cpp \
+

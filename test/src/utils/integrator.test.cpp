@@ -130,7 +130,7 @@ TEST_F(IntegratorPropertyTest, AdditionPropertyTest)
     linear_integrator.update(datax[i]);
     cube_integrator.update(dataxcube[i]);
   }
-  ASSERT_EQ(velocity.value, velocity_2.value+velocity_3.value+velocity_4.value) << message;
+  ASSERT_EQ(velocity.value, velocity_2.value + velocity_3.value+velocity_4.value) << message;
 }
 /**
  * @brief Test designed to check if one of the most important properties of integrals
@@ -160,7 +160,7 @@ TEST_F(IntegratorPropertyTest, IntervalTest)
   for (int i = 49; i < 101; i++) {
     interval_2_integrator.update(datafunction[i]);
   }
-  ASSERT_EQ(velocity.value, velocity_2.value+velocity_3.value) << message;
+  ASSERT_EQ(velocity.value, velocity_2.value + velocity_3.value) << message;
 }
 /**
  * @brief Test designed to check if one of the most important properties of integrals holds
@@ -186,7 +186,7 @@ TEST_F(IntegratorPropertyTest, ConstantMultiplyTest)
     function_integrator.update(datafunction[i]);
     function_integrator_multiplied_by_constant.update(data_function_by_constant[i]);
   }
-  ASSERT_EQ(constant*velocity.value, velocity_2.value) << message;
+  ASSERT_EQ(constant * velocity.value, velocity_2.value) << message;
 }
 // -------------------------------------------------------------------------------------------------
 // Linear Tests
@@ -228,10 +228,10 @@ TEST_F(IntegratorTestLinear, linearAreaTest)
   DataPoint <float> reference;
   DataPoint <float> velocity = DataPoint<float>(0, 0);
   Integrator<float> integratetry = Integrator<float>(&velocity);
-  for (int i = 0; i < 101;i++) {
+  for (int i = 0; i < 101; i++) {
     reference = integratetry.update(datatry[i]);
   }
-  float expected_value = max_time*max_time/2;
+  float expected_value = max_time * max_time / 2;
   ASSERT_EQ(expected_value, reference.value) << message;
 }
 /**
@@ -248,7 +248,7 @@ TEST_F(IntegratorTestLinear, linearAreaTest2)
   for (int i = 0; i < 101; i++) {
     reference = integratetry.update(datatry2[i]);
   }
-  float expected_value =kConstant*max_time*max_time/2;
+  float expected_value =kConstant * max_time * max_time / 2;
   ASSERT_EQ(expected_value, reference.value) << message;
 }
 

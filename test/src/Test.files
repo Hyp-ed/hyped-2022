@@ -6,4 +6,5 @@ T_SRCS := \
   state_machine/dummy.test.cpp \
   utils/config.test.cpp \
   utils/online_statistics.test.cpp \
-  utils/rolling_statistics.test.cpp
+  utils/rolling_statistics.test.cpp \
+  

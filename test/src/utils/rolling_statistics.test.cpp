@@ -3,7 +3,7 @@
  * Author: Florica Margaritescu
  * Organisation: HYPED
  * Date: 29/10/2020
- * Description: Testing OnlineStatistics class from Statistics.hpp. Tests 
+ * Description: Testing OnlineStatistics class from Statistics.hpp.
  * functionality and statistical properties of OnlineStatistics class from statistics.hpp.
  *
  *    Copyright 2020 HYPED
@@ -18,11 +18,6 @@
  *    limitations under the License.
  */
 
-/**
- * Description:
- * Tests functionality and statistical properties of OnlineStatistics class from statistics.hpp.
- */
-
 #include <math.h>
 #include <iostream>
 #include <cmath>
@@ -34,10 +29,17 @@ namespace hyped {
 namespace utils {
 namespace math {
 
+// -------------------------------------------------------------------------------------------------
+// Helper Functions
+// -------------------------------------------------------------------------------------------------
+
 /**
-* @brief generates a random float between two given floats. 
+* @brief generates a random float between two given floats. Code from: https://tinyurl.com/y2phu2q2
+* @tparam T Underlying numeric type
+* @param lower Lower bound for randomly generated values
+* @param upper Upper bound for randomly generated values
 */
-float RandomFloat(float a, float b) 
+float RandomFloatRolling(float a, float b) 
 { 
   float random = (static_cast<float>(rand()))/ static_cast<float>(RAND_MAX);
   float diff = b - a;
@@ -59,6 +61,10 @@ T meanCalc(T a[], int size_a)
   mean = (static_cast<double>(sum))/(static_cast<double>((size_a)));
   return mean;
 }
+
+// -------------------------------------------------------------------------------------------------
+// Property and Functionality Tests for Integer Values
+// -------------------------------------------------------------------------------------------------
  
 /**
 * @brief Struct used to verify/test integer values/properties for RollingStatistics
@@ -75,7 +81,7 @@ struct rollingStatistics_test_int : public ::testing::Test
   int sum = 0;
   int mean = 0;
   int var;
-  float c = RandomFloat(1, 1000); 
+  float c = RandomFloatRolling(1, 1000); 
 
   void SetUp() 
   {
@@ -87,31 +93,6 @@ struct rollingStatistics_test_int : public ::testing::Test
   void TearDown() {}
 };
      
-/**
-* @brief Struct used to verify/test float values/properties for RollingStatistics
-*/
-struct rollingStatistics_test_float : public ::testing::Test 
-{
-  protected:
-  std::size_t window = 2000;
-  RollingStatistics<float> test_stats_float = RollingStatistics<float>(window);
-    
-  // Declaring variables to be used
-  int values_counter = 1000;
-  float values_f[1000];
-  float sum_f = 0.0;
-  float mean_f = 0.0;
-  float var_f;
-  float c = RandomFloat(1, 1000);
-
-  void SetUp() 
-  {
-    for (int i = 0; i < values_counter;i++) {
-      values_f[i] = RandomFloat(1, 1000);
-    }
-  }
-  void TearDown() {}
-};
 
 /**
 * Tests if the class correctly calculates statistics for one integer variable only. 
@@ -124,19 +105,6 @@ TEST_F(rollingStatistics_test_int, test_default_int_rolling)
   ASSERT_EQ(0 , test_stats_int.getStdDev());
   ASSERT_EQ(values[0] , test_stats_int.getSum());
   ASSERT_EQ(0 , test_stats_int.getVariance());
-}
-
-/**
-* Tests if the class correctly calculates statistics for one float variable only. 
-* Variance property to be assesed: Var(C) = 0, where C is a constant.
-*/
-TEST_F(rollingStatistics_test_float, test_default_float_rolling)
-{
-  test_stats_float.update(values_f[0]);
-  ASSERT_EQ(values_f[0], test_stats_float.getMean());
-  ASSERT_EQ(0 , test_stats_float.getStdDev());
-  ASSERT_EQ(values_f[0] , test_stats_float.getSum());
-  ASSERT_EQ(0 , test_stats_float.getVariance());
 }
 
 /**
@@ -155,21 +123,6 @@ TEST_F(rollingStatistics_test_int, test_mean_sum_int_rolling)
 }
   
 /**
-* Tests if the mean and sum are calculated correctly if the class receives an array of n 
-* floats (taken one by one - using OnlineStatistics.update(<value>))
-*/
-TEST_F(rollingStatistics_test_float, test_mean_sum_float_rolling)
-{
-  for (int i =0; i < values_counter;i++) {
-    test_stats_float.update(values_f[i]);
-  }
-  mean_f = meanCalc<float>(values_f, values_counter);
-  sum_f = std::accumulate(values_f, values_f+values_counter, sum_f);
-  ASSERT_EQ(mean_f , test_stats_float.getMean());
-  ASSERT_EQ(sum_f , test_stats_float.getSum());
-}
-
-/**
 * Checks if the standard deviance is equal to the root of the variance for an array of n 
 * integers (taken one by one - using OnlineStatistics.update(<value>))
 */
@@ -179,19 +132,6 @@ TEST_F(rollingStatistics_test_int, test_var_std_int_rolling)
     test_stats_int.update(values[i]);
     int var_test = static_cast<int>((sqrt(test_stats_int.getVariance())));
     ASSERT_EQ(var_test, test_stats_int.getStdDev());
-  }
-}
-
-/**
-* Checks if the standard deviance is equal to the root of the variance for an array of n 
-* floats (taken one by one - using OnlineStatistics.update(<value>))
-*/
-TEST_F(rollingStatistics_test_float, test_var_std_float_rolling)
-{
-  for (int i =0; i < values_counter;i++) {
-    test_stats_float.update(values_f[i]);
-    float var_test_f = static_cast<float>(sqrt(test_stats_float.getVariance()));
-    ASSERT_EQ(var_test_f, test_stats_float.getStdDev());
   }
 }
 
@@ -215,60 +155,6 @@ TEST_F(rollingStatistics_test_int, test_int_outliers_rolling)
   EXPECT_LT(mean_prev, test_stats_int.getMean());
   EXPECT_LT(var_prev, test_stats_int.getVariance());
   EXPECT_LT(std_dev_prev, test_stats_int.getStdDev());
-}
-
-/**
-* Checks if variance, standard deviance and mean of an float array is affected by outliers as it
-* should(in this case, outliers will be a random float from 100 to 200 added onto (3*standard deviance + mean).  
-*/
-TEST_F(rollingStatistics_test_float, test_float_outliers_rolling)
-{
-  for (int i =0; i < values_counter;i++) {
-    test_stats_float.update(values_f[i]);
-  }
-  float var_prev = test_stats_float.getVariance();
-  float mean_prev = test_stats_float.getMean();
-  float std_dev_prev = test_stats_float.getStdDev();
-  float threshold = mean_prev + 3*std_dev_prev;
-
-  for (int i = 0;i < (static_cast<int>(values_counter/10));i++) {
-    test_stats_float.update(threshold +  RandomFloat(100, 200));
-  }
-
-  EXPECT_LT(mean_prev, test_stats_float.getMean());
-  EXPECT_LT(var_prev, test_stats_float.getVariance());
-  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev());
-}
-
-/**
-* Check if statistics update correctly if window size is exceeded (new elments being float outliers 
-* if considering statistics for the original set) and last elements are removed from calculations.
-*/
-TEST_F(rollingStatistics_test_float, test_float_window_rolling)
-{
-  for (int i = 0; i < values_counter;i++) {
-    test_stats_float.update(values_f[i]);
-  }
-  // Filling up the rest of the window - 2000 items
-  for (int i = 0;i < values_counter;i++) {
-    test_stats_float.update(RandomFloat(0, 1000));
-  }
-
-  float mean_prev = test_stats_float.getMean();
-  float sum_prev = test_stats_float.getSum();
-  float var_prev = test_stats_float.getVariance();
-  float std_dev_prev = test_stats_float.getStdDev();
-
-  for (int i = 0; i <= (static_cast<int>(values_counter/10));i++) {
-    // We will purposely assign a larger value for easy comparison
-    float new_variable = RandomFloat(2000, 3000); 
-    test_stats_float.update(new_variable);
-  }
-
-  EXPECT_LT(mean_prev, test_stats_float.getMean());
-  EXPECT_LT(sum_prev, test_stats_float.getSum());
-  EXPECT_LT(var_prev, test_stats_float.getVariance());
-  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev());
 }
 
 /**
@@ -304,4 +190,134 @@ TEST_F(rollingStatistics_test_int, test_int_window_rolling)
   EXPECT_LT(var_prev, test_stats_int.getVariance());
   EXPECT_LT(std_dev_prev, test_stats_int.getStdDev());
 }
+
+// -------------------------------------------------------------------------------------------------
+// Property and Functionality Tests for Float Values
+// -------------------------------------------------------------------------------------------------
+ 
+/**
+* @brief Struct used to verify/test float values/properties for RollingStatistics
+*/
+struct rollingStatistics_test_float : public ::testing::Test 
+{
+  protected:
+  std::size_t window = 2000;
+  RollingStatistics<float> test_stats_float = RollingStatistics<float>(window);
+    
+  // Declaring variables to be used
+  int values_counter = 1000;
+  float values_f[1000];
+  float sum_f = 0.0;
+  float mean_f = 0.0;
+  float var_f;
+  float c = RandomFloatRolling(1, 1000);
+
+  void SetUp() 
+  {
+    for (int i = 0; i < values_counter;i++) {
+      values_f[i] = RandomFloatRolling(1, 1000);
+    }
+  }
+  void TearDown() {}
+};
+
+
+/**
+* Tests if the class correctly calculates statistics for one float variable only. 
+* Variance property to be assesed: Var(C) = 0, where C is a constant.
+*/
+TEST_F(rollingStatistics_test_float, test_default_float_rolling)
+{
+  test_stats_float.update(values_f[0]);
+  ASSERT_EQ(values_f[0], test_stats_float.getMean());
+  ASSERT_EQ(0 , test_stats_float.getStdDev());
+  ASSERT_EQ(values_f[0] , test_stats_float.getSum());
+  ASSERT_EQ(0 , test_stats_float.getVariance());
+}
+
+
+/**
+* Tests if the mean and sum are calculated correctly if the class receives an array of n 
+* floats (taken one by one - using OnlineStatistics.update(<value>))
+*/
+TEST_F(rollingStatistics_test_float, test_mean_sum_float_rolling)
+{
+  for (int i =0; i < values_counter;i++) {
+    test_stats_float.update(values_f[i]);
+  }
+  mean_f = meanCalc<float>(values_f, values_counter);
+  sum_f = std::accumulate(values_f, values_f+values_counter, sum_f);
+  ASSERT_EQ(mean_f , test_stats_float.getMean());
+  ASSERT_EQ(sum_f , test_stats_float.getSum());
+}
+
+
+
+/**
+* Checks if the standard deviance is equal to the root of the variance for an array of n 
+* floats (taken one by one - using OnlineStatistics.update(<value>))
+*/
+TEST_F(rollingStatistics_test_float, test_var_std_float_rolling)
+{
+  for (int i =0; i < values_counter;i++) {
+    test_stats_float.update(values_f[i]);
+    float var_test_f = static_cast<float>(sqrt(test_stats_float.getVariance()));
+    ASSERT_EQ(var_test_f, test_stats_float.getStdDev());
+  }
+}
+
+/**
+* Checks if variance, standard deviance and mean of an float array is affected by outliers as it
+* should(in this case, outliers will be a random float from 100 to 200 added onto (3*standard deviance + mean).  
+*/
+TEST_F(rollingStatistics_test_float, test_float_outliers_rolling)
+{
+  for (int i =0; i < values_counter;i++) {
+    test_stats_float.update(values_f[i]);
+  }
+  float var_prev = test_stats_float.getVariance();
+  float mean_prev = test_stats_float.getMean();
+  float std_dev_prev = test_stats_float.getStdDev();
+  float threshold = mean_prev + 3*std_dev_prev;
+
+  for (int i = 0;i < (static_cast<int>(values_counter/10));i++) {
+    test_stats_float.update(threshold +  RandomFloatRolling(100, 200));
+  }
+
+  EXPECT_LT(mean_prev, test_stats_float.getMean());
+  EXPECT_LT(var_prev, test_stats_float.getVariance());
+  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev());
+}
+
+/**
+* Checks if statistics update correctly if window size is exceeded (new elments being float outliers 
+* if considering statistics for the original set) and last elements are removed from calculations.
+*/
+TEST_F(rollingStatistics_test_float, test_float_window_rolling)
+{
+  for (int i = 0; i < values_counter;i++) {
+    test_stats_float.update(values_f[i]);
+  }
+  // Filling up the rest of the window - 2000 items
+  for (int i = 0;i < values_counter;i++) {
+    test_stats_float.update(RandomFloatRolling(0, 1000));
+  }
+
+  float mean_prev = test_stats_float.getMean();
+  float sum_prev = test_stats_float.getSum();
+  float var_prev = test_stats_float.getVariance();
+  float std_dev_prev = test_stats_float.getStdDev();
+
+  for (int i = 0; i <= (static_cast<int>(values_counter/10));i++) {
+    // We will purposely assign a larger value for easy comparison
+    float new_variable = RandomFloatRolling(2000, 3000); 
+    test_stats_float.update(new_variable);
+  }
+
+  EXPECT_LT(mean_prev, test_stats_float.getMean());
+  EXPECT_LT(sum_prev, test_stats_float.getSum());
+  EXPECT_LT(var_prev, test_stats_float.getVariance());
+  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev());
+}
+
 }}}  // hyped::utils::math

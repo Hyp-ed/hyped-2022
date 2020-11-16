@@ -29,13 +29,17 @@ namespace hyped {
 namespace utils {
 namespace math {
 
+// -------------------------------------------------------------------------------------------------
+// Helper Functions
+// -------------------------------------------------------------------------------------------------
+
 /**
 * @brief generates a random float between two given floats. Code from: https://tinyurl.com/y2phu2q2
 * @tparam T Underlying numeric type
 * @param lower Lower bound for randomly generated values
 * @param upper Upper bound for randomly generated values
 */
-float RandomFloatTesting(float lower, float upper)
+float RandomFloatOnline(float lower, float upper)
 {
   float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
   float diff = upper - lower;
@@ -61,6 +65,10 @@ T meanCalc(T a[], int size_a)
   return mean;
 }
 
+// -------------------------------------------------------------------------------------------------
+// Property and Functionality Tests for Integer Values
+// -------------------------------------------------------------------------------------------------
+
 /**
 * Struct used for test fixtures checking class functionality and properties for integer values.
 */
@@ -73,7 +81,7 @@ struct onlineStatistics_test_int : public ::testing::Test
     int sum = 0;
     int mean = 0;
     int var;
-    float c = RandomFloatTesting(1, 1000);
+    float c = RandomFloatOnline(1, 1000);
 
   void SetUp()
   {
@@ -83,32 +91,6 @@ struct onlineStatistics_test_int : public ::testing::Test
     }
   }
   void TearDown() {}
-};
-
-/**
-* Struct used for test fixtures checking class functionality and properties for float values.
-*/
-struct onlineStatistics_test_float : public ::testing::Test 
-{
-    protected:
-      hyped::utils::math::OnlineStatistics<float> test_stats_float;
-      // Declaring variables to be used
-      int values_counter = 1000;
-      float values_f[1000];
-      float sum_f = 0.0;
-      float mean_f = 0.0;
-      float var_f;
-      float c = RandomFloatTesting(1, 1000);
-
-    void SetUp()
-    {
-      // Populating the array to be used with random floats
-       for (int i = 0; i < values_counter;i++) {
-           values_f[i] = RandomFloatTesting(1, 1000);
-        }
-    }
-   
-    void TearDown() {}
 };
 
 /**
@@ -123,20 +105,6 @@ TEST_F(onlineStatistics_test_int, test_default_int)
   ASSERT_EQ(0 , test_stats_int.getStdDev());
   ASSERT_EQ(values[0] , test_stats_int.getSum());
   ASSERT_EQ(0 , test_stats_int.getVariance());
-}
-
-/**
-* Tests if the class correctly calculates statistics for one float variable only. 
-* Variance property to be assesed: Var(C) = 0, where C is a constant.
-*/
-
-TEST_F(onlineStatistics_test_float, test_default_float)
-{
-  test_stats_float.update(values_f[0]);
-  ASSERT_EQ(values_f[0], test_stats_float.getMean());
-  ASSERT_EQ(0 , test_stats_float.getStdDev());
-  ASSERT_EQ(values_f[0] , test_stats_float.getSum());
-  ASSERT_EQ(0 , test_stats_float.getVariance());
 }
 
 /**
@@ -157,23 +125,6 @@ TEST_F(onlineStatistics_test_int, test_mean_sum_int)
 }
     
 /**
-* Tests if the mean and sum are calculated correctly if the class receives an array of n 
-* floats (taken one by one - using OnlineStatistics.update(<value>))
-*/
-TEST_F(onlineStatistics_test_float, test_mean_sum_float) 
-{
-  for (int i = 0; i < values_counter; i++) {
-    test_stats_float.update(values_f[i]);
-  }
-  mean_f = meanCalc<float>(values_f, values_counter);
-  sum_f = std::accumulate(values_f, values_f+values_counter, sum_f);
-  ASSERT_EQ(mean_f, test_stats_float.getMean());
-  float sum_f_test = (static_cast<float>(test_stats_float.getSum()));
-  ASSERT_EQ(sum_f_test/values_counter, test_stats_float.getMean());
-  ASSERT_EQ(sum_f, test_stats_float.getSum());
-}
-    
-/**
 * Checks if the standard deviance is equal to the root of the variance for an
 * array of n integers (taken one by one - using OnlineStatistics.update(<value>))
 */
@@ -183,19 +134,6 @@ TEST_F(onlineStatistics_test_int, test_var_std_int)
     test_stats_int.update(values[i]);
   int var_test = static_cast<int>(sqrt(test_stats_int.getVariance()));
   ASSERT_EQ(var_test, test_stats_int.getStdDev());
-  }
-}
-
-/**
-* Checks if the standard deviance is equal to the root of the variance for
-* an array of n floats (taken one by one - using OnlineStatistics.update(<value>))
-*/
-TEST_F(onlineStatistics_test_float, test_var_std_float) 
-{
-  for (int i = 0; i < values_counter; i++) {
-    test_stats_float.update(values_f[i]);
-    float var_f_test =  static_cast<float>(sqrt(test_stats_float.getVariance()));
-    ASSERT_EQ(var_f_test, test_stats_float.getStdDev());
   }
 }
 
@@ -223,6 +161,80 @@ TEST_F(onlineStatistics_test_int, test_int_outliers)
   EXPECT_LT(std_dev_prev, test_stats_int.getStdDev());
 }
 
+// -------------------------------------------------------------------------------------------------
+// Property and Functionality Tests for Float Values
+// -------------------------------------------------------------------------------------------------
+
+/**
+* Struct used for test fixtures checking class functionality and properties for float values.
+*/
+struct onlineStatistics_test_float : public ::testing::Test 
+{
+    protected:
+      hyped::utils::math::OnlineStatistics<float> test_stats_float;
+      // Declaring variables to be used
+      int values_counter = 1000;
+      float values_f[1000];
+      float sum_f = 0.0;
+      float mean_f = 0.0;
+      float var_f;
+      float c = RandomFloatOnline(1, 1000);
+
+    void SetUp()
+    {
+      // Populating the array to be used with random floats
+       for (int i = 0; i < values_counter;i++) {
+           values_f[i] = RandomFloatOnline(1, 1000);
+        }
+    }
+   
+    void TearDown() {}
+};
+
+/**
+* Tests if the class correctly calculates statistics for one float variable only. 
+* Variance property to be assesed: Var(C) = 0, where C is a constant.
+*/
+
+TEST_F(onlineStatistics_test_float, test_default_float)
+{
+  test_stats_float.update(values_f[0]);
+  ASSERT_EQ(values_f[0], test_stats_float.getMean());
+  ASSERT_EQ(0 , test_stats_float.getStdDev());
+  ASSERT_EQ(values_f[0] , test_stats_float.getSum());
+  ASSERT_EQ(0 , test_stats_float.getVariance());
+}
+
+/**
+* Tests if the mean and sum are calculated correctly if the class receives an array of n 
+* floats (taken one by one - using OnlineStatistics.update(<value>))
+*/
+TEST_F(onlineStatistics_test_float, test_mean_sum_float) 
+{
+  for (int i = 0; i < values_counter; i++) {
+    test_stats_float.update(values_f[i]);
+  }
+  mean_f = meanCalc<float>(values_f, values_counter);
+  sum_f = std::accumulate(values_f, values_f+values_counter, sum_f);
+  ASSERT_EQ(mean_f, test_stats_float.getMean());
+  float sum_f_test = (static_cast<float>(test_stats_float.getSum()));
+  ASSERT_EQ(sum_f_test/values_counter, test_stats_float.getMean());
+  ASSERT_EQ(sum_f, test_stats_float.getSum());
+}
+    
+/**
+* Checks if the standard deviance is equal to the root of the variance for
+* an array of n floats (taken one by one - using OnlineStatistics.update(<value>))
+*/
+TEST_F(onlineStatistics_test_float, test_var_std_float) 
+{
+  for (int i = 0; i < values_counter; i++) {
+    test_stats_float.update(values_f[i]);
+    float var_f_test =  static_cast<float>(sqrt(test_stats_float.getVariance()));
+    ASSERT_EQ(var_f_test, test_stats_float.getStdDev());
+  }
+}
+
 /**
 * Checks if variance, standard deviance and mean of an float array is affected by outliers as it 
 * should(in this case, outliers will be a random float from 100 to 200 added onto (3*standard deviance + mean).  
@@ -240,7 +252,7 @@ TEST_F(onlineStatistics_test_float, test_float_outliers)
 
   //  Introducing the outliers in our data
   for (int i = 0;i < (static_cast<int>(values_counter)/10);i++) {
-    test_stats_float.update(threshold +  RandomFloatTesting(100, 200));
+    test_stats_float.update(threshold +  RandomFloatOnline(100, 200));
   }
         
   EXPECT_LT(mean_prev, test_stats_float.getMean());

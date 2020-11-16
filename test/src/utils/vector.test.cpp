@@ -36,6 +36,17 @@ std::array<int, 3> createRandomArray()
   }
   return output;
 }
+std::array<int, 3> createRandomWithoutZeroesArray()
+{
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+    while (output[i] == 0) {
+      output[i] = rand()%1000;
+    }
+  }
+  return output;
+}
 template<int dimension>
 void fillRandomArray(std::array<int, dimension>&a)
 {
@@ -100,12 +111,27 @@ TEST(ConstructorTest, handlesDifferentTypeVector)
     ASSERT_EQ(array_two[i], vector_two[i]);
   }
 }
-TEST(OperationsTest, allowsAccessAndModification)
+
+struct OperationsTest : public::testing::Test
 {
   const int dimension = 3;
+  std::array<int, 3> array_one;
+  std::array<int, 3> array_two;
+  Vector<int, 3> vector_one;
+  Vector<int, 3> vector_two;
+  void SetUp()
+{
+    array_one = createRandomArray();
+    array_two = createRandomWithoutZeroesArray();
+    vector_one = Vector<int, 3>(array_one);
+    vector_two = Vector<int, 3>(array_two);
+  }
+};
+TEST_F(OperationsTest, allowsAccessAndModification)
+{
   const int element = 10;
   const int new_element = 11;
-  Vector<int, dimension> vector_one = Vector<int, dimension>(element);
+  vector_one = Vector<int, 3>(element);
   float norm_one = vector_one.norm();
   vector_one[0] = new_element;
   float norm_new = vector_one.norm();
@@ -113,16 +139,60 @@ TEST(OperationsTest, allowsAccessAndModification)
   ASSERT_NE(vector_one[0], 10);
   ASSERT_EQ(vector_one[0], 11);
 }
-TEST(OperationsTest, allowsAdding)
+TEST_F(OperationsTest, allowsAddition)
 {
-  const int dimension = 3;
-  std::array<int, dimension> array_one = createRandomArray();
-  Vector<int, dimension> vector_one = Vector<int, dimension>(array_one);
-  std::array<int, dimension> array_two = createRandomArray();
-  Vector<int, dimension> vector_two = Vector<int, dimension>(array_two);
   vector_one+=vector_two;
   for (int i = 0;i <dimension;i++) {
     ASSERT_EQ(vector_one[i], vector_two[i]+array_one[i]);
+  }
+}
+TEST_F(OperationsTest, allowsAutoAddition)
+{
+  vector_one = vector_one + vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
+  }
+}
+TEST_F(OperationsTest, allowsSubstraction)
+{
+  vector_one-=vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
+  }
+}
+TEST_F(OperationsTest, allowsAutoSubstraction)
+{
+  vector_one = vector_one - vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
+  }
+}
+TEST_F(OperationsTest, allowsMultiplication)
+{
+  vector_one*=vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
+  }
+}
+TEST_F(OperationsTest, allowsAutoMultiplication)
+{
+  vector_one = vector_one * vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
+  }
+}
+TEST_F(OperationsTest, allowsAutoDivision)
+{
+  vector_one = vector_one / vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
+  }
+}
+TEST_F(OperationsTest, allowsDivision)
+{
+  vector_one/=vector_two;
+  for (int i = 0;i <dimension;i++) {
+    ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i]/vector_two[i]));
   }
 }
 struct OperationsByConstant : public::testing::Test
@@ -449,6 +519,42 @@ TEST_F(IdentityOperations, handlesChangeOfSignIdentity)
   Vector<int, 3> vector_two = -vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(identity_vector[i], vector_two[i] + vector[i]);
+  }
+}
+TEST_F(IdentityOperations, handlesAutoDivisionIdentities)
+{
+  vector = Vector<int, 3>(createRandomWithoutZeroesArray());
+  Vector<int, 3> output =  identity_vector / vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(output[i], identity_vector[i]);
+  }
+  identity_vector = Vector<int, 3>(1);
+  output =  vector/vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(output[i], identity_vector[i]);
+  }
+  output =  vector/identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], output[i]);
+  }
+}
+TEST_F(IdentityOperations, handlesDivisionIdentities)
+{
+  vector = Vector<int, 3>(createRandomWithoutZeroesArray());
+  identity_vector /= vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(0, identity_vector[i]);
+  }
+  identity_vector = Vector<int, 3>(1);
+  vector /= vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], identity_vector[i]);
+  }
+  std::array<int, 3>values = createRandomWithoutZeroesArray();
+  vector = Vector<int, 3>(values);
+  vector /=  identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], values[i]);
   }
 }
 struct EqualityOperation: public :: testing::Test

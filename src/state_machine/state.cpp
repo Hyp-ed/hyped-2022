@@ -47,6 +47,8 @@ void State::updateModuleData()
 //--------------------------------------------------------------------------------------
 
 Idle Idle::instance_;
+data::State Idle::enum_value_       = data::kIdle;
+char Idle::string_representation_[] = "Idle";
 
 State *Idle::checkTransition(Logger &log)
 {
@@ -63,25 +65,13 @@ State *Idle::checkTransition(Logger &log)
   return nullptr;
 }
 
-void Idle::enter(Logger &log)
-{
-  log.INFO("STM", "Entering Idle state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kIdle;
-  data_.setStateMachineData(sm_data);
-}
-
-void Idle::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting Idle state");
-}
-
 //--------------------------------------------------------------------------------------
 //  Calibrating
 //--------------------------------------------------------------------------------------
 
 Calibrating Calibrating::instance_;
+data::State Calibrating::enum_value_       = data::kCalibrating;
+char Calibrating::string_representation_[] = "Calibrating";
 
 State *Calibrating::checkTransition(Logger &log)
 {
@@ -97,25 +87,13 @@ State *Calibrating::checkTransition(Logger &log)
   return nullptr;
 }
 
-void Calibrating::enter(Logger &log)
-{
-  log.INFO("STM", "Entering Calibrating state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kCalibrating;
-  data_.setStateMachineData(sm_data);
-}
-
-void Calibrating::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting Calibrating state");
-}
-
 //--------------------------------------------------------------------------------------
 //  Ready
 //--------------------------------------------------------------------------------------
 
 Ready Ready::instance_;
+data::State Ready::enum_value_       = data::kReady;
+char Ready::string_representation_[] = "Ready";
 
 State *Ready::checkTransition(Logger &log)
 {
@@ -131,25 +109,13 @@ State *Ready::checkTransition(Logger &log)
   return nullptr;
 }
 
-void Ready::enter(Logger &log)
-{
-  log.INFO("STM", "Entering Ready state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kReady;
-  data_.setStateMachineData(sm_data);
-}
-
-void Ready::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting Ready state");
-}
-
 //--------------------------------------------------------------------------------------
 //  Accelerating
 //--------------------------------------------------------------------------------------
 
 Accelerating Accelerating::instance_;
+data::State Accelerating::enum_value_       = data::kAccelerating;
+char Accelerating::string_representation_[] = "Accelerating";
 
 State *Accelerating::checkTransition(Logger &log)
 {
@@ -165,25 +131,13 @@ State *Accelerating::checkTransition(Logger &log)
   return nullptr;
 }
 
-void Accelerating::enter(Logger &log)
-{
-  log.INFO("STM", "Entering Accelerating state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kAccelerating;
-  data_.setStateMachineData(sm_data);
-}
-
-void Accelerating::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting Accelerating state");
-}
-
 //--------------------------------------------------------------------------------------
 //  Nominal Braking
 //--------------------------------------------------------------------------------------
 
 NominalBraking NominalBraking::instance_;
+data::State NominalBraking::enum_value_       = data::kNominalBraking;
+char NominalBraking::string_representation_[] = "NominalBraking";
 
 State *NominalBraking::checkTransition(Logger &log)
 {
@@ -198,25 +152,13 @@ State *NominalBraking::checkTransition(Logger &log)
   return nullptr;
 }
 
-void NominalBraking::enter(Logger &log)
-{
-  log.INFO("STM", "Entering NominalBraking state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kNominalBraking;
-  data_.setStateMachineData(sm_data);
-}
-
-void NominalBraking::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting NominalBraking state");
-}
-
 //--------------------------------------------------------------------------------------
 //  Finished
 //--------------------------------------------------------------------------------------
 
 Finished Finished::instance_;
+data::State Finished::enum_value_       = data::kFinished;
+char Finished::string_representation_[] = "Finished";
 
 State *Finished::checkTransition(Logger &log)
 {
@@ -226,25 +168,13 @@ State *Finished::checkTransition(Logger &log)
   return nullptr;
 }
 
-void Finished::enter(Logger &log)
-{
-  log.INFO("STM", "Entering Finished state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kFinished;
-  data_.setStateMachineData(sm_data);
-}
-
-void Finished::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting Finished state");
-}
-
 //--------------------------------------------------------------------------------------
 //  FailureBraking
 //--------------------------------------------------------------------------------------
 
 FailureBraking FailureBraking::instance_;
+data::State FailureBraking::enum_value_       = data::kEmergencyBraking;
+char FailureBraking::string_representation_[] = "FailureBraking";
 
 State *FailureBraking::checkTransition(Logger &log)
 {
@@ -254,25 +184,13 @@ State *FailureBraking::checkTransition(Logger &log)
   return nullptr;
 }
 
-void FailureBraking::enter(Logger &log)
-{
-  log.INFO("STM", "Entering FailureBraking state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kEmergencyBraking;
-  data_.setStateMachineData(sm_data);
-}
-
-void FailureBraking::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting FailureBraking state");
-}
-
 //--------------------------------------------------------------------------------------
 //  FailureStopped
 //--------------------------------------------------------------------------------------
 
 FailureStopped FailureStopped::instance_;
+data::State FailureStopped::enum_value_       = data::kFailureStopped;
+char FailureStopped::string_representation_[] = "FailureStopped";
 
 State *FailureStopped::checkTransition(Logger &log)
 {
@@ -280,20 +198,6 @@ State *FailureStopped::checkTransition(Logger &log)
   telemetry_data_ = data_.getTelemetryData();
   if (checkShutdownCommand(log, telemetry_data_)) { return Off::getInstance(); }
   return nullptr;
-}
-
-void FailureStopped::enter(Logger &log)
-{
-  log.INFO("STM", "Entering FailureStopped state");
-
-  data::StateMachine sm_data = data_.getStateMachineData();
-  sm_data.current_state      = data::State::kFailureStopped;
-  data_.setStateMachineData(sm_data);
-}
-
-void FailureStopped::exit(Logger &log)
-{
-  log.INFO("STM", "Exiting FailureStopped state");
 }
 
 //--------------------------------------------------------------------------------------
@@ -304,21 +208,8 @@ Off Off::instance_;
 
 State *Off::checkTransition(Logger &log)
 {
-  // This function should never be called.
   log.ERR("STM", "Tried to transition from Off state");
   return nullptr;
-}
-
-void Off::enter(Logger &log)
-{
-  utils::System &sys = utils::System::getSystem();
-  log.INFO("STM", "System is shutting down");
-  sys.running_ = false;
-}
-
-void Off::exit(Logger &log)
-{
-  // We never exit this state anyways...
 }
 
 }  // namespace state_machine

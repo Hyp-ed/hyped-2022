@@ -70,13 +70,22 @@ class State {
     static S *getInstance() { return &S::instance_; }                                              \
                                                                                                    \
     State *checkTransition(Logger &log);                                                           \
-    void enter(Logger &log);                                                                       \
-    void exit(Logger &log);                                                                        \
+    /* @brief   Prints log message and sets appropriate public enum value.*/                       \
+    void enter(Logger &log)                                                                        \
+    {                                                                                              \
+      log.INFO("STM", "Entering %s state", S::string_representation_);                             \
+      data::StateMachine sm_data = data_.getStateMachineData();                                    \
+      sm_data.current_state      = S::enum_value_;                                                 \
+      data_.setStateMachineData(sm_data);                                                          \
+    }                                                                                              \
+    void exit(Logger &log) { log.INFO("STM", "Exiting %s state", S::string_representation_); }     \
                                                                                                    \
    private:                                                                                        \
     static S instance_;                                                                            \
-                                                                                                   \
-  };  
+    /* # converts an argument to a string literal*/                                                \
+    static char string_representation_[];                                                          \
+    static data::State enum_value_;                                                                \
+  };
 
 /*
  * Generating structs for all the states
@@ -91,7 +100,29 @@ MAKE_STATE(Finished)        // State after the run
 MAKE_STATE(FailureBraking)  // Entered upon failure during the run
 MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
                             // FailureBraking
-MAKE_STATE(Off)             // Only exists for the enter() method
+
+// We need to implement Off separately because it works a bit differently
+class Off : public State {
+ public:
+  Off() {}
+  static Off *getInstance() { return &Off::instance_; }
+
+  State *checkTransition(Logger &log);
+
+  void enter(Logger &log)
+  {
+    log.INFO("STM", "Shutting down");
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = false;
+  }
+
+  void exit(Logger &log)
+  {  // We nevere exit this state
+  }
+
+ private:
+  static Off instance_;
+};
 
 }  // namespace state_machine
 }  // namespace hyped

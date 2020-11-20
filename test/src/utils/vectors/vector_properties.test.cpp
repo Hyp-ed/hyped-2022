@@ -26,6 +26,12 @@ namespace utils
 {
 namespace math
 {
+/**
+ * @brief Struct used to set up all the variables used in the tests one porperty present in some
+ * of the operations defined for vectors
+ * Associativity.
+ * This tests will check if Associativity holds in multiplication and addition.
+ */
 struct Associativity : public::testing::Test
 {
   const int dimension = 3;
@@ -43,12 +49,16 @@ struct Associativity : public::testing::Test
     vector_result_two = Vector<int, 3>();
   }
 };
-
+/**
+ * Test used to check if the operator (+=) is associative given three random 3D vectors.
+ * (a + b) + c = a + (b + c).
+ */
 TEST_F(Associativity, isAdditionAssociative)
 {
   vector_result_one += vector_one;
   vector_result_one += vector_two;
   vector_result_one += vector_three;
+
   vector_result_two += vector_two;
   vector_result_two += vector_three;
   vector_result_two += vector_one;
@@ -56,6 +66,10 @@ TEST_F(Associativity, isAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+/**
+ * Test used to check if the operator (+) is associative given three random 3D vectors.
+ * (a + b) + c = a + (b + c).
+ */
 TEST_F(Associativity, isAutoAdditionAssociative)
 {
   vector_result_one = (vector_one+ vector_two) + vector_three;
@@ -64,6 +78,10 @@ TEST_F(Associativity, isAutoAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+/**
+ * Test used to check if the operator (*=) is associative given three random 3D vectors.
+ * (a * b) * c = a * (b * c).
+ */
 TEST_F(Associativity, isMultiplicationAssociative)
 {
   vector_result_one *= vector_one;
@@ -76,6 +94,10 @@ TEST_F(Associativity, isMultiplicationAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+/**
+ * Test used to check if the operator (*) is associative given three random 3D vectors.
+ * (a * b) * c = a * (b * c).
+ */
 TEST_F(Associativity, isAutoMultiplicationAssociative)
 {
   vector_result_one = (vector_one * vector_two) * vector_three;
@@ -84,6 +106,13 @@ TEST_F(Associativity, isAutoMultiplicationAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+/**
+ * @brief Struct used to set up all the variables used in the tests for checking if
+ * one porperty is resent in some of the operations defined for vectors
+ * Commutativity.
+ * This tests will check if Commutativity holds in multiplication and addition.
+ * Also checks that substraction is anticommutative.
+ */
 struct Commutativity : public ::testing::Test
 {
   const int dimension = 3;
@@ -99,6 +128,10 @@ struct Commutativity : public ::testing::Test
     vector_result_two = Vector<int, 3>();
   }
 };
+/**
+ * Test used to check if the operator (+=) is commutative given two random 3D vectors.
+ * a + b = b + a.
+ */
 TEST_F(Commutativity, isAdditionCommutative)
 {
   vector_result_one += vector_one;
@@ -109,16 +142,10 @@ TEST_F(Commutativity, isAdditionCommutative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
-TEST_F(Commutativity, isSubstractionNotCommutative)
-{
-  vector_result_one += vector_one;
-  vector_result_one -= vector_two;
-  vector_result_two += vector_two;
-  vector_result_two -= vector_one;
-  for (int i = 0;i < dimension;i++) {
-    ASSERT_EQ(vector_result_two[i], -vector_result_one[i]);
-  }
-}
+/**
+ * Test used to check if the operator (+) is commutative given two random 3D vectors.
+ * a + b = b + a.
+ */
 TEST_F(Commutativity, isAutoAdditionCommutative)
 {
   vector_result_one = vector_two + vector_one;
@@ -127,14 +154,10 @@ TEST_F(Commutativity, isAutoAdditionCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
-TEST_F(Commutativity, isAutoSubstractionNotCommutative)
-{
-  vector_result_one = vector_two - vector_one;
-  vector_result_two = vector_one - vector_two;
-  for (int i = 0;i < dimension;i++) {
-  ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
-  }
-}
+/**
+ * Test used to check if the operator (*=) is commutative given two random 3D vectors.
+ * a * b = b * a.
+ */
 TEST_F(Commutativity, isMultiplicationCommutative)
 {
   vector_result_one *= vector_two;
@@ -145,12 +168,42 @@ TEST_F(Commutativity, isMultiplicationCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+/**
+ * Test used to check if the operator (*) is commutative given two random 3D vectors.
+ * a * b = b * a.
+ */
 TEST_F(Commutativity, isAutoMultiplicationCommutative)
 {
   vector_result_one = vector_two * vector_one;
   vector_result_two = vector_one * vector_two;
   for (int i = 0;i < dimension;i++) {
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
+  }
+}
+/**
+ * Test used to check if the operator (-=) is anticommutative given two random 3D vectors.
+ * a - b = -(b - a).
+ */
+TEST_F(Commutativity, isSubstractionNotCommutative)
+{
+  vector_result_one += vector_one;
+  vector_result_one -= vector_two;
+  vector_result_two += vector_two;
+  vector_result_two -= vector_one;
+  for (int i = 0;i < dimension;i++) {
+    ASSERT_EQ(vector_result_two[i], -vector_result_one[i]);
+  }
+}
+/**
+ * Test used to check if the operator (-) is anticommutative given two random 3D vectors.
+ * a - b = -(b - a).
+ */
+TEST_F(Commutativity, isAutoSubstractionNotCommutative)
+{
+  vector_result_one = vector_two - vector_one;
+  vector_result_two = vector_one - vector_two;
+  for (int i = 0;i < dimension;i++) {
+  ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
 

@@ -47,14 +47,14 @@ class State;  // Forward declaration
 //--------------------------------------------------------------------------------------
 
 /*
- * @brief   Returns the FailureStopped if there's an emergency and NULL otherwise.
+ * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
 State *checkEmergencyStationary(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
                                 Batteries batteries_data, Telemetry telemetry_data,
                                 Sensors sensors_data, Motors motors_data);
 
 /*
- * @brief   Returns the FailureBraking if there's an emergency and NULL otherwise.
+ * @brief   Returns the FailureBraking if there's an emergency and nullptr otherwise.
  */
 State *checkEmergencyMoving(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
                             Batteries batteries_data, Telemetry telemetry_data,
@@ -102,12 +102,12 @@ State *checkShutdownCommand(Logger &log, Telemetry telemetry_data);
 State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data);
 
 /*
- * @brief   Returns the Finished state if the pod has stopped and NULL otherwise.
+ * @brief   Returns the Finished state if the pod has stopped and nullptr otherwise.
  */
 State *checkPodStoppedNominal(Logger &log, Navigation &nav_data);
 
 /*
- * @brief   Returns the FailureStopped state if the pod has stopped and NULL otherwise.
+ * @brief   Returns the FailureStopped state if the pod has stopped and nullptr otherwise.
  */
 State *checkPodStoppedEmergency(Logger &log, Navigation &nav_data);
 

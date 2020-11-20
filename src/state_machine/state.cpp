@@ -61,7 +61,7 @@ State *Idling::checkTransition(Logger &log)
                                  sensors_data_, motors_data_);
 
   if (next) return next;
-  return NULL;
+  return nullptr;
 }
 
 void Idling::enter(Logger &log)
@@ -96,7 +96,7 @@ State *Calibrating::checkTransition(Logger &log)
   next = checkModulesReady(log, embrakes_data_, nav_data_, motors_data_);
   if (next) return next;
 
-  return NULL;
+  return nullptr;
 }
 
 void Calibrating::enter(Logger &log)
@@ -132,7 +132,7 @@ State *Ready::checkTransition(Logger &log)
   next = checkLaunchCommand(log, telemetry_data_);
   if (next) return next;
 
-  return NULL;
+  return nullptr;
 }
 
 void Ready::enter(Logger &log)
@@ -168,7 +168,7 @@ State *Accelerating::checkTransition(Logger &log)
   next = checkEnteredBrakingZone(log, nav_data_);
   if (next) return next;
 
-  return NULL;
+  return nullptr;
 }
 
 void Accelerating::enter(Logger &log)
@@ -203,7 +203,7 @@ State *NominalBraking::checkTransition(Logger &log)
 
   next = checkPodStoppedNominal(log, nav_data_);
   if (next) return next;
-  return NULL;
+  return nullptr;
 }
 
 void NominalBraking::enter(Logger &log)
@@ -311,7 +311,7 @@ State *Off::checkTransition(Logger &log)
 {
   // This function should never be called.
   log.ERR("STM", "Tried to transition from Off state");
-  return NULL;
+  return nullptr;
 }
 
 void Off::enter(Logger &log)

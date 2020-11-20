@@ -40,7 +40,7 @@ void Main::run()
 
   State *new_state;
   while (sys.running_) {
-    // checkTransition returns a new state or NULL
+    // checkTransition returns a new state or nullptr
     if ((new_state = current_state_->checkTransition(log_))) {
       current_state_->exit(log_);
       current_state_ = new_state;

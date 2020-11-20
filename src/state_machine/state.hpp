@@ -42,7 +42,6 @@ class State {
  public:
   State();
   static State *getInstance();
-  static void initialise();
 
   virtual void enter(Logger &log) = 0;
   virtual void exit(Logger &log)  = 0;
@@ -71,7 +70,6 @@ class State {
     S() {}                                                                                         \
     static S *instance_;                                                                           \
     static S *getInstance() { return S::instance_; }                                               \
-    static void initialise() { S::instance_ = new S(); }                                           \
                                                                                                    \
     State *checkTransition(Logger &log);                                                           \
     void enter(Logger &log);                                                                       \

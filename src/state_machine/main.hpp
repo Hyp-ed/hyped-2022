@@ -2,10 +2,9 @@
  * Author: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description:
- * Main instantiates HypedMachine. It also monitors other data and generates Events
- * for the HypedMachine. Note, StateMachine structure in Data is not updated here but
- * in HypedMachine.
+ * Description: Main is the state machine. This is where all the state is stored and how we interact
+ * with the rest of HYPED. The SM only provides a frame work though, the actual logic is implemented
+ * in the other files.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");

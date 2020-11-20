@@ -2,10 +2,9 @@
  * Author: Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description:
- * Main instantiates HypedMachine. It also monitors other data and generates Events
- * for the HypedMachine. Note, StateMachine structure in Data is not updated here but
- * in HypedMachine.
+ * Description: Here we declare helper functions to determine, based on specific inputs, wether a
+ * condition is met. Those conditions can be very simple or very complicated. We also log notable
+ * observations that have been made.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");

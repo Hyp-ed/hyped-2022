@@ -1,9 +1,10 @@
 
 /*
- * Authors: Kornelija Sukyte, Franz Miltz, Efe Ozbatur, Yining Wang
+ * Authors: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description:
+ * Description: Implements the concrete behaviour for each state based on the observations made by
+ * the functions in transitions.(ch)pp
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");

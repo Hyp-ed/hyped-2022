@@ -2,10 +2,8 @@
  * Author: Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description:
- * Main instantiates HypedMachine. It also monitors other data and generates Events
- * for the HypedMachine. Note, StateMachine structure in Data is not updated here but
- * in HypedMachine.
+ * Description: We implement the transition conditions declared in transitions.hpp based on the
+ * desired behaviour.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");

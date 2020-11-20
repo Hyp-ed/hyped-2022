@@ -144,7 +144,12 @@ TEST(ConstructorTest, handlesDifferentTypeVector)
     ASSERT_EQ(array_two[i], vector_two[i]);
   }
 }
-
+/**
+ * @brief Struct used to set up all the variables (vectors) used in the tests for basic operations
+ * of vector with other vectors.
+ * This tests will check if that basic operations are performed the way that they should. However,
+ * they do not test properties.
+ */
 struct OperationsTest : public::testing::Test
 {
   const int dimension = 3;
@@ -160,6 +165,10 @@ struct OperationsTest : public::testing::Test
     vector_two = Vector<int, 3>(array_two);
   }
 };
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows accessing
+ * and modifying the elements of a vector in a normal way using [] operator.
+ */
 TEST_F(OperationsTest, allowsAccessAndModification)
 {
   const int element = 10;
@@ -172,6 +181,12 @@ TEST_F(OperationsTest, allowsAccessAndModification)
   ASSERT_NE(vector_one[0], 10);
   ASSERT_EQ(vector_one[0], 11);
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows adding  a
+ * vector to another vector in place in a normal way (element by element),
+ * this tests the operator (+=).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsAddition)
 {
   vector_one+=vector_two;
@@ -179,6 +194,11 @@ TEST_F(OperationsTest, allowsAddition)
     ASSERT_EQ(vector_one[i], vector_two[i]+array_one[i]);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows adding in
+ * a normal way (element by element), this tests the operator (+).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsAutoAddition)
 {
   vector_one = vector_one + vector_two;
@@ -186,6 +206,12 @@ TEST_F(OperationsTest, allowsAutoAddition)
     ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * substracting a vector to another vector in place in a normal way (element by element),
+ * this tests the operator (-=).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsSubstraction)
 {
   vector_one-=vector_two;
@@ -193,6 +219,12 @@ TEST_F(OperationsTest, allowsSubstraction)
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * substracting a vector to another vector in place in a normal way (element by element),
+ * this tests the operator (-).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsAutoSubstraction)
 {
   vector_one = vector_one - vector_two;
@@ -200,6 +232,12 @@ TEST_F(OperationsTest, allowsAutoSubstraction)
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * multipliying a vector to another vector in place in a normal way (element by element),
+ * this tests the operator (*=).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsMultiplication)
 {
   vector_one*=vector_two;
@@ -207,6 +245,12 @@ TEST_F(OperationsTest, allowsMultiplication)
     ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * multipliying a vector to another vector in place in a normal way (element by element),
+ * this tests the operator (*).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsAutoMultiplication)
 {
   vector_one = vector_one * vector_two;
@@ -214,6 +258,12 @@ TEST_F(OperationsTest, allowsAutoMultiplication)
     ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * dividing a vector to another vector in a normal way (element by element),
+ * this tests the operator (/).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsAutoDivision)
 {
   vector_one = vector_one / vector_two;
@@ -221,6 +271,12 @@ TEST_F(OperationsTest, allowsAutoDivision)
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * dividing a vector to another vector in place in a normal way (element by element),
+ * this tests the operator (/=).
+ * The test will be performed using two random 3D vectors.
+ */
 TEST_F(OperationsTest, allowsDivision)
 {
   vector_one/=vector_two;

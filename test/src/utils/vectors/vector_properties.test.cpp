@@ -206,7 +206,11 @@ TEST_F(Commutativity, isAutoSubstractionNotCommutative)
   ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
-
+/**
+ * @brief Struct used to set up all the variables used in the tests for checking if
+ * some porperties with the identity vectors (0,0,0) or (1,1,1) hold for the operations defined for
+ * vectors
+ */
 struct IdentityOperations : public ::testing::Test
 {
   std::array<int, 3> values = createRandomArray();
@@ -219,7 +223,10 @@ struct IdentityOperations : public ::testing::Test
     vector = Vector<int, 3>(values);
   }
 };
-
+/**
+ * @brief Test used to check if adding the identity vector (0,0,0) using += just leaves the vector
+ * unchanged.
+ */
 TEST_F(IdentityOperations, handlesAdditionIdentity)
 {
   vector+=identity_vector;
@@ -227,6 +234,23 @@ TEST_F(IdentityOperations, handlesAdditionIdentity)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+/**
+ * @brief Test used to check if adding the identity vector (0,0,0) using + just returns the vector
+ * unchanged.
+ */
+TEST_F(IdentityOperations, hadlesAutoAdditonIdentity)
+{
+  Vector<int, 3> output = vector + identity_vector;
+  for (int i = 0; i < dimension;i++) {
+    ASSERT_EQ(vector[i], output[i]);
+  }
+}
+/**
+ * @brief Test used to check if substracting the identity vector (0,0,0) using -=
+ * just leaves the vector unchanged.
+ * It will also check that if we substract a vectgor to itself then the original vector is changed
+ * to the identity vector (-=).
+ */
 TEST_F(IdentityOperations, handlesSubstractionIdentities)
 {
   vector -= identity_vector;
@@ -238,13 +262,11 @@ TEST_F(IdentityOperations, handlesSubstractionIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
-TEST_F(IdentityOperations, hadlesAutoAdditonIdentity)
-{
-  Vector<int, 3> output = vector + identity_vector;
-  for (int i = 0; i < dimension;i++) {
-    ASSERT_EQ(vector[i], output[i]);
-  }
-}
+/**
+ * @brief Test used to check if substracting the identity vector (0,0,0) using -
+ * just returns the vector unchanged.
+ * It will also check that if we substract a vectgor to itself then we get back the identity vector.
+ */
 TEST_F(IdentityOperations, handlesAutoSubstractionIdentities)
 {
   Vector<int, 3> output = vector - identity_vector;
@@ -256,19 +278,13 @@ TEST_F(IdentityOperations, handlesAutoSubstractionIdentities)
     ASSERT_EQ(output[i], identity_vector[i]);
   }
 }
-TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
-{
-  identity_vector = Vector<int, 3>(1);
-  Vector<int, 3> output = vector * identity_vector;
-  for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(output[i], vector[i]);
-  }
-  identity_vector = Vector<int, 3>();
-  output = vector * identity_vector;
-  for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(output[i], 0);
-  }
-}TEST_F(IdentityOperations, handlesMultiplicationIdentities)
+/**
+ * @brief Test used to check if multiplying the vector with the identity vector (0,0,0) using *=
+ * just it changes the vector to the the identity vector.
+ * It will also check that if we multiply a vector by the identity vector (1,1,1) then our original
+ * vector is unchanged.
+ */
+TEST_F(IdentityOperations, handlesMultiplicationIdentities)
 {
   identity_vector = Vector<int, 3>(1);
   vector *= identity_vector;
@@ -281,6 +297,31 @@ TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
     ASSERT_EQ(vector[i], 0);
   }
 }
+/**
+ * @brief Test used to check if multiplying the vector with the identity vector (0,0,0) using *
+ * just returns identity vector.
+ * It will also check that if we multiply a vector by the identity vector (1,1,1) then we get our
+ * original vector.
+ */
+TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
+{
+  identity_vector = Vector<int, 3>(1);
+  Vector<int, 3> output = vector * identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(output[i], vector[i]);
+  }
+  identity_vector = Vector<int, 3>();
+  output = vector * identity_vector;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(output[i], 0);
+  }
+}
+/**
+ * @brief Test used to check if changing the sign of the identity vector (0,0,0) using -
+ * just leave the vector unchanged identity vector.
+ * It will also check that if we change the sign of a vector and then add it to the original I will
+ * end up with the identity vector (0,0,0).
+ */
 TEST_F(IdentityOperations, handlesChangeOfSignIdentity)
 {
   identity_vector = -identity_vector;
@@ -292,6 +333,14 @@ TEST_F(IdentityOperations, handlesChangeOfSignIdentity)
     ASSERT_EQ(identity_vector[i], vector_two[i] + vector[i]);
   }
 }
+/**
+ * @brief Test used to check divide the identity vector (0,0,0) by any vector using /
+ * we get the identity back.
+ * It will also check that if we divide a vector by itself /. We get the identity vector (1,1,1) as
+ * result
+ * Finally it checks that if we divide a vector by the identity vector (1,1,1) we get the original
+ * vector as result.
+ */
 TEST_F(IdentityOperations, handlesAutoDivisionIdentities)
 {
   vector = Vector<int, 3>(createRandomWithoutZeroesArray());
@@ -309,6 +358,14 @@ TEST_F(IdentityOperations, handlesAutoDivisionIdentities)
     ASSERT_EQ(vector[i], output[i]);
   }
 }
+/**
+ * @brief Test used to check divide the identity vector (0,0,0) by any vector using /=
+ * we the identity vector is unchanged.
+ * It will also check that if we divide a vector by itself /=. The vector will be changed
+ * to the identity vector (1,1,1).
+ * Finally it checks that if we divide a vector by the identity vector (1,1,1) our original vector
+ * is unchanged.
+ */
 TEST_F(IdentityOperations, handlesDivisionIdentities)
 {
   vector = Vector<int, 3>(createRandomWithoutZeroesArray());
@@ -328,6 +385,9 @@ TEST_F(IdentityOperations, handlesDivisionIdentities)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+/**
+ * @brief Struct used to set up all the variables used in the test the equality operation of vectors
+ */
 struct EqualityOperation: public :: testing::Test
 {
   const int dimension = 3;
@@ -341,7 +401,11 @@ struct EqualityOperation: public :: testing::Test
     vector_two = Vector<int, 3>(values);
   }
 };
-
+/**
+ * @brief Test used to some equality properties with the identiy vector (0,0,0)
+ * It checks that a vetor minus the identity is equal to the original vector.
+ * It also checks that if we substract the vector to itself the the result is equal to the identity.
+ */
 TEST_F(EqualityOperation, handlesEqualityIdentity)
 {
   Vector<int, 3> identiy = Vector<int, 3>();
@@ -350,6 +414,9 @@ TEST_F(EqualityOperation, handlesEqualityIdentity)
   vector_two = vector_one - vector_one;
   ASSERT_TRUE(vector_two == identiy);
 }
+/**
+ * @brief Test used to check if the Equality is implemented in a correct way.
+ */
 TEST_F(EqualityOperation, handlesEquality)
 {
   for (int i = 0; i < dimension; i++) {
@@ -357,6 +424,9 @@ TEST_F(EqualityOperation, handlesEquality)
   }
   ASSERT_TRUE(vector_one == vector_two);
 }
+/**
+ * @brief Test used to check if the Equality is symmetric.
+ */
 TEST_F(EqualityOperation, handlesSymmetry)
 {
   ASSERT_TRUE(vector_one == vector_two);

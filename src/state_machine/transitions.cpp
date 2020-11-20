@@ -34,9 +34,9 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-inline bool checkEmergencyGeneral(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                                  Batteries batteries_data, Telemetry telemetry_data,
-                                  Sensors sensors_data, Motors motors_data)
+bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                    Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
+                    Motors motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
     log.ERR("STM", "STOP command received");
@@ -60,116 +60,82 @@ inline bool checkEmergencyGeneral(Logger &log, EmergencyBrakes embrakes_data, Na
   return false;
 }
 
-State *checkEmergencyStationary(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                                Batteries batteries_data, Telemetry telemetry_data,
-                                Sensors sensors_data, Motors motors_data)
-{
-  if (!checkEmergencyGeneral(log, embrakes_data, nav_data, batteries_data, telemetry_data,
-                             sensors_data, motors_data)) {
-    return nullptr;
-  }
-  return FailureStopped::getInstance();
-}
-
-State *checkEmergencyMoving(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                            Batteries batteries_data, Telemetry telemetry_data,
-                            Sensors sensors_data, Motors motors_data)
-{
-  if (!checkEmergencyGeneral(log, embrakes_data, nav_data, batteries_data, telemetry_data,
-                             sensors_data, motors_data)) {
-    return nullptr;
-  }
-  return FailureBraking::getInstance();
-}
-
 //--------------------------------------------------------------------------------------
 // Module Status
 //--------------------------------------------------------------------------------------
 
-State *checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                               Batteries batteries_data, Telemetry telemetry_data,
-                               Sensors sensors_data, Motors motors_data)
+bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                             Batteries batteries_data, Telemetry telemetry_data,
+                             Sensors sensors_data, Motors motors_data)
 {
-  if (!telemetry_data.calibrate_command) return nullptr;
+  if (!telemetry_data.calibrate_command) return false;
 
-  if (embrakes_data.module_status != ModuleStatus::kInit) return nullptr;
-  if (nav_data.module_status != ModuleStatus::kInit) return nullptr;
-  if (batteries_data.module_status != ModuleStatus::kInit) return nullptr;
-  if (telemetry_data.module_status != ModuleStatus::kInit) return nullptr;
-  if (sensors_data.module_status != ModuleStatus::kInit) return nullptr;
-  if (motors_data.module_status != ModuleStatus::kInit) return nullptr;
+  if (embrakes_data.module_status != ModuleStatus::kInit) return false;
+  if (nav_data.module_status != ModuleStatus::kInit) return false;
+  if (batteries_data.module_status != ModuleStatus::kInit) return false;
+  if (telemetry_data.module_status != ModuleStatus::kInit) return false;
+  if (sensors_data.module_status != ModuleStatus::kInit) return false;
+  if (motors_data.module_status != ModuleStatus::kInit) return false;
 
   log.INFO("STM", "Calibrate command received and all modules initialised");
-  return Calibrating::getInstance();
+  return true;
 }
 
-State *checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                         Motors motors_data)
+bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                       Motors motors_data)
 {
   // We're only checking Navigation, Motors and Embrakes because only those modules are doing
   // calibration.
-  if (embrakes_data.module_status != ModuleStatus::kReady) return nullptr;
-  if (nav_data.module_status != ModuleStatus::kReady) return nullptr;
-  if (motors_data.module_status != ModuleStatus::kReady) return nullptr;
+  if (embrakes_data.module_status != ModuleStatus::kReady) return false;
+  if (nav_data.module_status != ModuleStatus::kReady) return false;
+  if (motors_data.module_status != ModuleStatus::kReady) return false;
 
   log.INFO("STM", "All modules calibrated");
-  return Ready::getInstance();
+  return true;
 }
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
-State *checkLaunchCommand(Logger &log, Telemetry telemetry_data)
+bool checkLaunchCommand(Logger &log, Telemetry telemetry_data)
 {
-  if (!telemetry_data.launch_command) return nullptr;
+  if (!telemetry_data.launch_command) return false;
 
   log.INFO("STM", "Launch command received");
-  return Accelerating::getInstance();
+  return true;
 }
 
-State *checkShutdownCommand(Logger &log, Telemetry telemetry_data)
+bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
 {
-  if (!telemetry_data.shutdown_command) return nullptr;
+  if (!telemetry_data.shutdown_command) return false;
 
   log.INFO("STM", "Shutdown command received");
-  return Off::getInstance();
+  return true;
 }
 
 //--------------------------------------------------------------------------------------
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 
-State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
+bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
   // TODO(Franz): Fix braking buffer.
-  if (nav_data.run_length > nav_data.displacement + nav_data.braking_distance) return nullptr;
+  if (nav_data.run_length > nav_data.displacement + nav_data.braking_distance) return false;
 
   log.INFO("STM", "Entered braking zone");
-  return NominalBraking::getInstance();
+  return true;
 }
 
 /*
  * @brief    Returns true if the pod has stopped moving.
  */
-inline bool checkPodStopped(Logger &log, Navigation &nav_data)
+bool checkPodStopped(Logger &log, Navigation &nav_data)
 {
   if (nav_data.velocity > 0) return false;
 
   log.INFO("STM", "The pod has stopped");
   return true;
-}
-
-State *checkPodStoppedNominal(Logger &log, Navigation &nav_data)
-{
-  if (!checkPodStopped(log, nav_data)) return nullptr;
-  return Finished::getInstance();
-}
-
-State *checkPodStoppedEmergency(Logger &log, Navigation &nav_data)
-{
-  if (!checkPodStopped(log, nav_data)) return nullptr;
-  return FailureStopped::getInstance();
 }
 
 }  // namespace state_machine

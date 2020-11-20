@@ -49,68 +49,55 @@ class State;  // Forward declaration
 /*
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
-State *checkEmergencyStationary(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                                Batteries batteries_data, Telemetry telemetry_data,
-                                Sensors sensors_data, Motors motors_data);
-
-/*
- * @brief   Returns the FailureBraking if there's an emergency and nullptr otherwise.
- */
-State *checkEmergencyMoving(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                            Batteries batteries_data, Telemetry telemetry_data,
-                            Sensors sensors_data, Motors motors_data);
+bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                    Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
+                    Motors motors_data);
 
 //--------------------------------------------------------------------------------------
 // Module Status
 //--------------------------------------------------------------------------------------
 
 /*
- * @brief   Returns the Calibrating state if the command has been received and all modules are
+ * @brief   Returns true iff the command has been received and all modules are
  *          initialised.
  */
-State *checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                               Batteries batteries_data, Telemetry telemetry_data,
-                               Sensors sensors_data, Motors motors_data);
+bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                             Batteries batteries_data, Telemetry telemetry_data,
+                             Sensors sensors_data, Motors motors_data);
 
 /*
- * @brief    Returns the Ready state if all Embrakes, Navigation and Motors are ready.
+ * @brief    Returns true iff all of Embrakes, Navigation and Motors are ready.
  */
-State *checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                         Motors motors_data);
+bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                       Motors motors_data);
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
 /*
- * @brief   Returns the Accelerating state if the launch command has been received.
+ * @brief   Returns true iff the launch command has been received.
  */
-State *checkLaunchCommand(Logger &log, Telemetry telemetry_data);
+bool checkLaunchCommand(Logger &log, Telemetry telemetry_data);
 
 /*
- * @brief    Returns the Stopped state if the shutdown command has been received.
+ * @brief    Returns true iff the shutdown command has been received.
  */
-State *checkShutdownCommand(Logger &log, Telemetry telemetry_data);
+bool checkShutdownCommand(Logger &log, Telemetry telemetry_data);
 
 //--------------------------------------------------------------------------------------
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 
 /*
- * @brief   Returns the Braking state if the pod is close enough to the end of the track.
+ * @brief   Returns true iff the pod is close enough to the end of the track.
  */
-State *checkEnteredBrakingZone(Logger &log, Navigation &nav_data);
+bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data);
 
 /*
- * @brief   Returns the Finished state if the pod has stopped and nullptr otherwise.
+ * @brief   Returns true iff the pod has reached zero velocity.
  */
-State *checkPodStoppedNominal(Logger &log, Navigation &nav_data);
-
-/*
- * @brief   Returns the FailureStopped state if the pod has stopped and nullptr otherwise.
- */
-State *checkPodStoppedEmergency(Logger &log, Navigation &nav_data);
-
+bool checkPodStopped(Logger &log, Navigation &nav_data);
 }  // namespace state_machine
 
 }  // namespace hyped

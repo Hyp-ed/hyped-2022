@@ -2,7 +2,7 @@
  * Author: Pablo Morandé & Flori
  * Organisation: HYPED
  * Date: 13/11/2020
- * Description: Testing file for data.cpp
+ * Description: Testing file for vector.cpp
  *
  *    Copyright 2018 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file

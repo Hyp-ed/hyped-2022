@@ -3,7 +3,7 @@
  * Authors: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description: Here we eclare the general state and the layout of all the specific states. We do not specify actual behaviour.
+ * Description: Here we declare the general state and the layout of all the specific states. We do not specify actual behaviour.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");

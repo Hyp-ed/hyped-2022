@@ -43,12 +43,12 @@ void State::updateModuleData()
 }
 
 //--------------------------------------------------------------------------------------
-//  Idling State
+//  Idle State
 //--------------------------------------------------------------------------------------
 
-Idling Idling::instance_;
+Idle Idle::instance_;
 
-State *Idling::checkTransition(Logger &log)
+State *Idle::checkTransition(Logger &log)
 {
   updateModuleData();
 
@@ -63,18 +63,18 @@ State *Idling::checkTransition(Logger &log)
   return nullptr;
 }
 
-void Idling::enter(Logger &log)
+void Idle::enter(Logger &log)
 {
-  log.INFO("STM", "Entering Idling state");
+  log.INFO("STM", "Entering Idle state");
 
   data::StateMachine sm_data = data_.getStateMachineData();
   sm_data.current_state      = data::State::kIdle;
   data_.setStateMachineData(sm_data);
 }
 
-void Idling::exit(Logger &log)
+void Idle::exit(Logger &log)
 {
-  log.INFO("STM", "Exiting Idling state");
+  log.INFO("STM", "Exiting Idle state");
 }
 
 //--------------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ State *FailureStopped::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  if (checkShutdownCommand(log, telemetry_data_)) {return Off::getInstance();}
+  if (checkShutdownCommand(log, telemetry_data_)) { return Off::getInstance(); }
   return nullptr;
 }
 

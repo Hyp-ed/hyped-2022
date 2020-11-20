@@ -26,7 +26,7 @@ namespace state_machine {
 
 Main::Main(uint8_t id, Logger &log) : Thread(id, log)
 {
-  current_state_ = Idling::getInstance();  // set current state to point to Idle
+  current_state_ = Idle::getInstance();  // set current state to point to Idle
 }
 
 void Main::run()

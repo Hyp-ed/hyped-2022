@@ -79,7 +79,7 @@ class State {
  * Generating structs for all the states
  */
 
-MAKE_STATE(Idling)          // State on startup
+MAKE_STATE(Idle)          // State on startup
 MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
 MAKE_STATE(Ready)           // After calibration has finished
 MAKE_STATE(Accelerating)    // First phase of the run

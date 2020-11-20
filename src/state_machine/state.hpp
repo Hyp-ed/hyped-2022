@@ -67,19 +67,22 @@ class State {
   class S : public State {                                                                         \
    public:                                                                                         \
     S() {}                                                                                         \
-    static S instance_;                                                                           \
-    static S *getInstance() { return &S::instance_; }                                               \
+    static S *getInstance() { return &S::instance_; }                                              \
                                                                                                    \
     State *checkTransition(Logger &log);                                                           \
     void enter(Logger &log);                                                                       \
     void exit(Logger &log);                                                                        \
-  };
+                                                                                                   \
+   private:                                                                                        \
+    static S instance_;                                                                            \
+                                                                                                   \
+  };  
 
 /*
  * Generating structs for all the states
  */
 
-MAKE_STATE(Idle)          // State on startup
+MAKE_STATE(Idle)            // State on startup
 MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
 MAKE_STATE(Ready)           // After calibration has finished
 MAKE_STATE(Accelerating)    // First phase of the run

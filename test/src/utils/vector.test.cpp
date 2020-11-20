@@ -284,6 +284,12 @@ TEST_F(OperationsTest, allowsDivision)
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i]/vector_two[i]));
   }
 }
+/**
+ * @brief Struct used to set up all the variables used in the tests for basic operationsof a vector
+ * with constants.
+ * This tests will check if that basic operations with constants are performed the way  they should.
+ * However, they do not test properties.
+ */
 struct OperationsByConstant : public::testing::Test
 {
   const int dimension = 3;
@@ -302,6 +308,12 @@ struct OperationsByConstant : public::testing::Test
     vector_result_two = Vector<int, 3>();
   }
 };
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows adding in
+ * a vector with a constant in normal way (adding the constant to each element),
+ * this tests the operator (+).
+ * The test will be performed using one random 3D vector and a random constant.
+ */
 TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
 {
   vector_result_one = vector_one + kValue;
@@ -311,6 +323,12 @@ TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
     ASSERT_EQ(vector_result_two[i], vector_one[i] + kValue);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows adding
+ * a vector with a constant in place (updating the initial vector) in a normal way
+ * (adding the constant to each element), this tests the operator (+=).
+ * The test will be performed using one random 3D vector and a random constant.
+ */
 TEST_F(OperationsByConstant, handlesAdditionWithConstant)
 {
   vector_result_one += kValue;
@@ -322,6 +340,12 @@ TEST_F(OperationsByConstant, handlesAdditionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * substracting a constant to a vector in normal way (substracting the constant to each element),
+ * this tests the operator (-).
+ * The test will be performed using one random 3D vector and a random constant.
+ */
 TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
 {
   vector_result_one = vector_one - kValue;
@@ -331,6 +355,13 @@ TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
     ASSERT_EQ(vector_result_two[i], -vector_one[i] + kValue);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * substracting a constant to a vector in place (updating the initial vector)
+ * in normal way (substracting the constant to each element),
+ * this tests the operator (-=).
+ * The test will be performed using one random 3D vector and a random constant.
+ */
 TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
 {
   vector_result_one -= kValue;
@@ -342,6 +373,12 @@ TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * multiplying a constant to a vector in normal way (multiplying the constant with each element),
+ * this tests the operator (*).
+ * The test will be performed using one random 3D vector and a random constant.
+ */
 TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
 {
   vector_result_one = vector_result_one * kValue;
@@ -355,6 +392,13 @@ TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
     ASSERT_EQ(vector_result_two[i], vector_one[i] * kValue);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * multiplying a constant to a vector in place (updating the initial vector)
+ * in normal way (multiplying the constant with each element),
+ * this tests the operator (*=).
+ * The test will be performed using one random 3D vector and a random constant.
+ */
 TEST_F(OperationsByConstant, handlesMultiplicationWithConstant)
 {
   vector_result_one *= kValue;
@@ -368,6 +412,14 @@ TEST_F(OperationsByConstant, handlesMultiplicationWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * multiplying a constant to a vector in normal way (dividing each element by the constant),
+ * this tests the operator (=).
+ * The test will be performed using one random 3D vector and a random constant.
+ * It is important to be sure that the constant is not zero to avoid
+ * division 0/0
+ */
 TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
 {
   while (kValue == 0) {
@@ -382,6 +434,15 @@ TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
   }
 }
+/**
+ * @brief Test used to determine if the current implementation of the class vector allows
+ * multiplying a constant to a vector in place (updating the initial vector)
+ * in normal way (dividing each element by the constant),
+ * this tests the operator (/=).
+ * The test will be performed using one random 3D vector and a random constant.
+ * It is important to be sure that the constant is not zero to avoid
+ * division 0/0
+ */
 TEST_F(OperationsByConstant, handlesDivisionWithConstant)
 {
   while (kValue == 0) {

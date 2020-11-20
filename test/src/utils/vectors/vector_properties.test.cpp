@@ -385,53 +385,6 @@ TEST_F(IdentityOperations, handlesDivisionIdentities)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
-/**
- * @brief Struct used to set up all the variables used in the test the equality operation of vectors
- */
-struct EqualityOperation: public :: testing::Test
-{
-  const int dimension = 3;
-  std::array<int, 3> values;
-  Vector<int, 3> vector_one;
-  Vector<int, 3> vector_two;
-  void SetUp()
-  {
-    values = createRandomArray();
-    vector_one = Vector<int, 3>(values);
-    vector_two = Vector<int, 3>(values);
-  }
-};
-/**
- * @brief Test used to some equality properties with the identiy vector (0,0,0)
- * It checks that a vetor minus the identity is equal to the original vector.
- * It also checks that if we substract the vector to itself the the result is equal to the identity.
- */
-TEST_F(EqualityOperation, handlesEqualityIdentity)
-{
-  Vector<int, 3> identiy = Vector<int, 3>();
-  Vector<int, 3> vector_two = vector_one - identiy;
-  ASSERT_TRUE(vector_one == vector_two);
-  vector_two = vector_one - vector_one;
-  ASSERT_TRUE(vector_two == identiy);
-}
-/**
- * @brief Test used to check if the Equality is implemented in a correct way.
- */
-TEST_F(EqualityOperation, handlesEquality)
-{
-  for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(vector_one[i], vector_two[i]);
-  }
-  ASSERT_TRUE(vector_one == vector_two);
-}
-/**
- * @brief Test used to check if the Equality is symmetric.
- */
-TEST_F(EqualityOperation, handlesSymmetry)
-{
-  ASSERT_TRUE(vector_one == vector_two);
-  ASSERT_TRUE(vector_two == vector_one);
-}
 }
 }
 }

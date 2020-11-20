@@ -41,7 +41,7 @@ namespace math {
 */
 float RandomFloatOnline(float lower, float upper)
 {
-  float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
+  float random = (static_cast<float>(rand())) / RAND_MAX;
   float diff = upper - lower;
   float r = random * diff;
   return lower + r;
@@ -61,7 +61,7 @@ T meanCalc(T a[], int size_a)
   for (int i = 0; i <size_a;i++) {
     sum = sum + a[i];
   }
-  mean = (static_cast<double>(sum))/(static_cast<float>(size_a));
+  mean = sum/size_a;
   return mean;
 }
 
@@ -70,9 +70,9 @@ T meanCalc(T a[], int size_a)
 // -------------------------------------------------------------------------------------------------
 
 /**
-* Struct used for test fixtures checking class functionality and properties for integer values.
+* @brief struct used for test fixtures checking class functionality and properties for integer values.
 */
-struct onlineStatistics_test_int : public ::testing::Test 
+struct OnlineStatisticsTestInt : public ::testing::Test 
 {
   protected:
     hyped::utils::math::OnlineStatistics<int> test_stats_int;
@@ -94,11 +94,11 @@ struct onlineStatistics_test_int : public ::testing::Test
 };
 
 /**
-* Tests if the class correctly calculates statistics for one integer variable only. 
+* @brief tests if the class calculates statistics correctly for one integer variable only. 
 * Variance property to be assesed: Var(C) = 0, where C is a constant.
 */
 
-TEST_F(onlineStatistics_test_int, test_default_int)
+TEST_F(OnlineStatisticsTestInt, testDefaultIntOnline)
 {
   test_stats_int.update(values[0]);
   ASSERT_EQ(values[0] , test_stats_int.getMean());
@@ -108,10 +108,10 @@ TEST_F(onlineStatistics_test_int, test_default_int)
 }
 
 /**
-* Tests if the mean and sum are calculated correctly if the class receives an array of n 
-* integers (taken one by one - using OnlineStatistics.update(<value>))
+* @brief tests if the mean and sum are calculated correctly if the class receives an array of n 
+* integers.
 */
-TEST_F(onlineStatistics_test_int, test_mean_sum_int) 
+TEST_F(OnlineStatisticsTestInt, testMeanSumIntOnline) 
 {
   for (int i = 0; i < values_counter;i++) {
     test_stats_int.update(values[i]);
@@ -125,24 +125,25 @@ TEST_F(onlineStatistics_test_int, test_mean_sum_int)
 }
     
 /**
-* Checks if the standard deviance is equal to the root of the variance for an
-* array of n integers (taken one by one - using OnlineStatistics.update(<value>))
+* @brief checks if the standard deviation is equal to the root of the variance for an
+* array of n integers.
 */
-TEST_F(onlineStatistics_test_int, test_var_std_int) 
+TEST_F(OnlineStatisticsTestInt, testVarStdIntOnline) 
 {
   for (int i = 0; i < values_counter; i++) {
     test_stats_int.update(values[i]);
   int var_test = static_cast<int>(sqrt(test_stats_int.getVariance()));
-  ASSERT_EQ(var_test, test_stats_int.getStdDev());
+  ASSERT_EQ(var_test, test_stats_int.getStdDev())
+      << "Standard deviation is not the root of the variance as expected";
   }
 }
 
 /**
-* Checks if variance, standard deviance and mean of an integer array is 
-* affected by outliers as it  should(in this case, outliers will be a random
-* integer from 100 to 200 added onto (3*standard deviance + mean).  
+* @brief checks if variance, standard deviation and mean of an integer array are
+* affected by outliers as they should(in this case, outliers will be random
+* integers from 100 to 200 added onto (3*standard deviation + mean).  
 */
-TEST_F(onlineStatistics_test_int, test_int_outliers) 
+TEST_F(OnlineStatisticsTestInt, testOutliersIntOnline) 
 {
   for (int i = 0; i < values_counter; i++) {
     test_stats_int.update(values[i]);
@@ -156,9 +157,13 @@ TEST_F(onlineStatistics_test_int, test_int_outliers)
   for (int i = 0;i < (static_cast<int>(values_counter)/10);i++) {
     test_stats_int.update(threshold +  rand() % 200 + 100);
   }
-  EXPECT_LT(mean_prev, test_stats_int.getMean());
-  EXPECT_LT(var_prev, test_stats_int.getVariance());
-  EXPECT_LT(std_dev_prev, test_stats_int.getStdDev());
+  EXPECT_LT(mean_prev, test_stats_int.getMean())
+      << "Outliers do not affect the mean as expected.";
+  EXPECT_LT(var_prev, test_stats_int.getVariance())
+      << "Outliers do not affect the variance as expected.";
+  EXPECT_LT(std_dev_prev, test_stats_int.getStdDev())
+      << "Outliers do not affect the standard deviation as expected.";
+
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -166,9 +171,9 @@ TEST_F(onlineStatistics_test_int, test_int_outliers)
 // -------------------------------------------------------------------------------------------------
 
 /**
-* Struct used for test fixtures checking class functionality and properties for float values.
+* @brief struct used for test fixtures checking class functionality and properties for float values.
 */
-struct onlineStatistics_test_float : public ::testing::Test 
+struct OnlineStatisticsTestFloat : public ::testing::Test 
 {
     protected:
       hyped::utils::math::OnlineStatistics<float> test_stats_float;
@@ -192,11 +197,11 @@ struct onlineStatistics_test_float : public ::testing::Test
 };
 
 /**
-* Tests if the class correctly calculates statistics for one float variable only. 
+* @brief tests if the class calculates statistics correctly for one float variable only. 
 * Variance property to be assesed: Var(C) = 0, where C is a constant.
 */
 
-TEST_F(onlineStatistics_test_float, test_default_float)
+TEST_F(OnlineStatisticsTestFloat, testDefaultFloatOnline)
 {
   test_stats_float.update(values_f[0]);
   ASSERT_EQ(values_f[0], test_stats_float.getMean());
@@ -206,10 +211,10 @@ TEST_F(onlineStatistics_test_float, test_default_float)
 }
 
 /**
-* Tests if the mean and sum are calculated correctly if the class receives an array of n 
-* floats (taken one by one - using OnlineStatistics.update(<value>))
+* @brief tests if the mean and sum are calculated correctly if the class receives an array of n 
+* floats.
 */
-TEST_F(onlineStatistics_test_float, test_mean_sum_float) 
+TEST_F(OnlineStatisticsTestFloat, testMeanSumFloatOnline) 
 {
   for (int i = 0; i < values_counter; i++) {
     test_stats_float.update(values_f[i]);
@@ -223,23 +228,24 @@ TEST_F(onlineStatistics_test_float, test_mean_sum_float)
 }
     
 /**
-* Checks if the standard deviance is equal to the root of the variance for
-* an array of n floats (taken one by one - using OnlineStatistics.update(<value>))
+* @brief checks if the standard deviation is equal to the root of the variance for
+* an array of n floats.
 */
-TEST_F(onlineStatistics_test_float, test_var_std_float) 
+TEST_F(OnlineStatisticsTestFloat, testVarStdFloatOnline) 
 {
   for (int i = 0; i < values_counter; i++) {
     test_stats_float.update(values_f[i]);
-    float var_f_test =  static_cast<float>(sqrt(test_stats_float.getVariance()));
-    ASSERT_EQ(var_f_test, test_stats_float.getStdDev());
+    float var_f_test = sqrt(test_stats_float.getVariance());
+    ASSERT_EQ(var_f_test, test_stats_float.getStdDev()) 
+       << "Standard deviation is not the root of the variance as expected";
   }
 }
 
 /**
-* Checks if variance, standard deviance and mean of an float array is affected by outliers as it 
-* should(in this case, outliers will be a random float from 100 to 200 added onto (3*standard deviance + mean).  
+* @brief checks if variance, standard deviation and mean of an float array are affected by outliers as they
+* should(in this case, outliers will be random floats from 100 to 200 added onto (3*standard deviation + mean).  
 */
-TEST_F(onlineStatistics_test_float, test_float_outliers) 
+TEST_F(OnlineStatisticsTestFloat, testOutliersFloatOnline) 
 {
   for (int i = 0; i < values_counter;i++) {
     test_stats_float.update(values_f[i]);
@@ -255,8 +261,11 @@ TEST_F(onlineStatistics_test_float, test_float_outliers)
     test_stats_float.update(threshold +  RandomFloatOnline(100, 200));
   }
         
-  EXPECT_LT(mean_prev, test_stats_float.getMean());
-  EXPECT_LT(var_prev, test_stats_float.getVariance());
-  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev());
+  EXPECT_LT(mean_prev, test_stats_float.getMean()) 
+     << "Outliers do not affect mean as expected.";
+  EXPECT_LT(var_prev, test_stats_float.getVariance()) 
+     << "Outliers do not affect the variance as expected.";
+  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev())
+     << "Outliers do not affect the standard deviation as expected.";
 }
     }}}  // hyped::utils::math

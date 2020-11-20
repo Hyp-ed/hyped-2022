@@ -41,7 +41,7 @@ namespace math {
 */
 float RandomFloatRolling(float a, float b) 
 { 
-  float random = (static_cast<float>(rand()))/ static_cast<float>(RAND_MAX);
+  float random = (static_cast<float>(rand()))/ RAND_MAX;
   float diff = b - a;
   float r = random * diff;
   return a + r;
@@ -58,7 +58,7 @@ T meanCalc(T a[], int size_a)
   for (int i =0; i <size_a;i++) {
     sum = sum + a[i];
   }
-  mean = (static_cast<double>(sum))/(static_cast<double>((size_a)));
+  mean = sum/size_a;
   return mean;
 }
 
@@ -67,9 +67,9 @@ T meanCalc(T a[], int size_a)
 // -------------------------------------------------------------------------------------------------
  
 /**
-* @brief Struct used to verify/test integer values/properties for RollingStatistics
+* @brief struct used to verify/test integer values/properties for RollingStatistics
 */
-struct rollingStatistics_test_int : public ::testing::Test 
+struct RollingStatisticsTestInt : public ::testing::Test 
 {
   protected:
   std::size_t window = 2000;
@@ -95,10 +95,10 @@ struct rollingStatistics_test_int : public ::testing::Test
      
 
 /**
-* Tests if the class correctly calculates statistics for one integer variable only. 
-* Variance property to be assesed: Var(C) = 0, where C is a constant.
+* @brief tests if the class calculates statistics coerrectly for one integer variable 
+only. Variance property to be assesed: Var(C) = 0, where C is a constant.
 */
-TEST_F(rollingStatistics_test_int, test_default_int_rolling)
+TEST_F(RollingStatisticsTestInt, testDefaultIntRolling)
 {
   test_stats_int.update(values[0]);
   ASSERT_EQ(values[0] , test_stats_int.getMean());
@@ -108,10 +108,10 @@ TEST_F(rollingStatistics_test_int, test_default_int_rolling)
 }
 
 /**
-* Tests if the mean and sum are calculated correctly if the class receives an array of n 
-* integers (taken one by one - using OnlineStatistics.update(<value>))
+* @brief tests if the mean and sum are calculated correctly if the class receives an array of n 
+* integers.
 */
-TEST_F(rollingStatistics_test_int, test_mean_sum_int_rolling)
+TEST_F(RollingStatisticsTestInt, testMeanSumIntRolling)
 {
   for (int i =0; i < values_counter;i++) {
     test_stats_int.update(values[i]);
@@ -123,23 +123,24 @@ TEST_F(rollingStatistics_test_int, test_mean_sum_int_rolling)
 }
   
 /**
-* Checks if the standard deviance is equal to the root of the variance for an array of n 
-* integers (taken one by one - using OnlineStatistics.update(<value>))
+* @brief checks if the standard deviation is equal to the root of the variance for an array of n 
+* integers.
 */
-TEST_F(rollingStatistics_test_int, test_var_std_int_rolling)
+TEST_F(RollingStatisticsTestInt, testVarStdIntRolling)
 {
   for (int i =0; i < values_counter;i++) {
     test_stats_int.update(values[i]);
     int var_test = static_cast<int>((sqrt(test_stats_int.getVariance())));
-    ASSERT_EQ(var_test, test_stats_int.getStdDev());
+    ASSERT_EQ(var_test, test_stats_int.getStdDev())
+      << "Standard deviation is not the root of the variance as expected";
   }
 }
 
 /**
-* Checks if variance, standard deviance and mean of an integer array is affected by outliers as it 
-* should(in this case, outliers will be a random integer from 100 to 200 added onto (3*standard deviance + mean).  
+* @brief checks if variance, standard deviation and mean of an integer array are affected by outliers as they 
+* should(in this case, outliers will be random integers from 100 to 200 added onto (3*standard deviation + mean).  
 */
-TEST_F(rollingStatistics_test_int, test_int_outliers_rolling)
+TEST_F(RollingStatisticsTestInt, testOutlierrsIntRolling)
 {
   for (int i =0; i < values_counter;i++) {
     test_stats_int.update(values[i]);
@@ -152,18 +153,20 @@ TEST_F(rollingStatistics_test_int, test_int_outliers_rolling)
   for (int i = 0;i < (static_cast<int>(values_counter/10));i++) {
     test_stats_int.update(threshold +  rand() % 200 + 100);
   }
-  EXPECT_LT(mean_prev, test_stats_int.getMean());
-  EXPECT_LT(var_prev, test_stats_int.getVariance());
-  EXPECT_LT(std_dev_prev, test_stats_int.getStdDev());
+  EXPECT_LT(mean_prev, test_stats_int.getMean())
+    << "Outliers do not affect the mean as expected.";
+  EXPECT_LT(var_prev, test_stats_int.getVariance())
+      << "Outliers do not affect the variance as expected.";
+  EXPECT_LT(std_dev_prev, test_stats_int.getStdDev())
+      << "Outliers do not affect the standard deviation as expected.";
 }
 
 /**
- * Check if statistics update correctly if window size is exceeded (new elments 
- * being integer outliers if considering statistics for the original set) and last 
- * elements are removed from calculations.
+ * @brief check if statistics update correctly if window size is exceeded (using outliers for easy 
+ * comparison) and last elements are removed from calculations.
  */
 
-TEST_F(rollingStatistics_test_int, test_int_window_rolling)
+TEST_F(RollingStatisticsTestInt, testWindowIntRolling)
 {
   for (int i = 0; i < values_counter;i++) {
     test_stats_int.update(values[i]);
@@ -196,9 +199,9 @@ TEST_F(rollingStatistics_test_int, test_int_window_rolling)
 // -------------------------------------------------------------------------------------------------
  
 /**
-* @brief Struct used to verify/test float values/properties for RollingStatistics
+* @brief struct used to verify/test float values/properties for RollingStatistics
 */
-struct rollingStatistics_test_float : public ::testing::Test 
+struct RollingStatisticsTestFloat : public ::testing::Test 
 {
   protected:
   std::size_t window = 2000;
@@ -223,10 +226,10 @@ struct rollingStatistics_test_float : public ::testing::Test
 
 
 /**
-* Tests if the class correctly calculates statistics for one float variable only. 
+* @brief tests if the class calculates statistics correctly for one float variable only. 
 * Variance property to be assesed: Var(C) = 0, where C is a constant.
 */
-TEST_F(rollingStatistics_test_float, test_default_float_rolling)
+TEST_F(RollingStatisticsTestFloat, testDefaultFloatRolling)
 {
   test_stats_float.update(values_f[0]);
   ASSERT_EQ(values_f[0], test_stats_float.getMean());
@@ -237,10 +240,10 @@ TEST_F(rollingStatistics_test_float, test_default_float_rolling)
 
 
 /**
-* Tests if the mean and sum are calculated correctly if the class receives an array of n 
-* floats (taken one by one - using OnlineStatistics.update(<value>))
+* @brief tests if the mean and sum are calculated correctly if the class receives an array of n 
+* floats.
 */
-TEST_F(rollingStatistics_test_float, test_mean_sum_float_rolling)
+TEST_F(RollingStatisticsTestFloat, testMeanSumFloatRolling)
 {
   for (int i =0; i < values_counter;i++) {
     test_stats_float.update(values_f[i]);
@@ -254,23 +257,24 @@ TEST_F(rollingStatistics_test_float, test_mean_sum_float_rolling)
 
 
 /**
-* Checks if the standard deviance is equal to the root of the variance for an array of n 
-* floats (taken one by one - using OnlineStatistics.update(<value>))
+* @brief checks if the standard deviation is equal to the root of the variance for an array of n 
+* floats.
 */
-TEST_F(rollingStatistics_test_float, test_var_std_float_rolling)
+TEST_F(RollingStatisticsTestFloat, testVarStdFloatRolling)
 {
   for (int i =0; i < values_counter;i++) {
     test_stats_float.update(values_f[i]);
-    float var_test_f = static_cast<float>(sqrt(test_stats_float.getVariance()));
-    ASSERT_EQ(var_test_f, test_stats_float.getStdDev());
+    float var_test_f = sqrt(test_stats_float.getVariance());
+    ASSERT_EQ(var_test_f, test_stats_float.getStdDev())
+      << "Standard deviation is not the root of the variance as expected";
   }
 }
 
 /**
-* Checks if variance, standard deviance and mean of an float array is affected by outliers as it
-* should(in this case, outliers will be a random float from 100 to 200 added onto (3*standard deviance + mean).  
+* @brief checks if variance, standard deviation and mean of an float array are affected by outliers as they
+* should(in this case, outliers will be random floats from 100 to 200 added onto (3*standard deviation + mean).  
 */
-TEST_F(rollingStatistics_test_float, test_float_outliers_rolling)
+TEST_F(RollingStatisticsTestFloat, testOutliersFloatRolling)
 {
   for (int i =0; i < values_counter;i++) {
     test_stats_float.update(values_f[i]);
@@ -284,16 +288,19 @@ TEST_F(rollingStatistics_test_float, test_float_outliers_rolling)
     test_stats_float.update(threshold +  RandomFloatRolling(100, 200));
   }
 
-  EXPECT_LT(mean_prev, test_stats_float.getMean());
-  EXPECT_LT(var_prev, test_stats_float.getVariance());
-  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev());
+  EXPECT_LT(mean_prev, test_stats_float.getMean())
+      << "Outliers do not affect the mean as expected.";
+  EXPECT_LT(var_prev, test_stats_float.getVariance())
+      << "Outliers do not affect the variance as expected.";
+  EXPECT_LT(std_dev_prev, test_stats_float.getStdDev())
+      << "Outliers do not affect the standard deviation as expected.";
 }
 
 /**
-* Checks if statistics update correctly if window size is exceeded (new elments being float outliers 
-* if considering statistics for the original set) and last elements are removed from calculations.
+* @brief checks if statistics update correctly if window size is exceeded (adding outliers for 
+* easy comparison) and last elements are removed from calculations.
 */
-TEST_F(rollingStatistics_test_float, test_float_window_rolling)
+TEST_F(RollingStatisticsTestFloat, testWindowsFloatRolling)
 {
   for (int i = 0; i < values_counter;i++) {
     test_stats_float.update(values_f[i]);

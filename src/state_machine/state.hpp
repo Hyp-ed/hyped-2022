@@ -51,7 +51,6 @@ class State {
   data::Data &data_;
 
  protected:
-  static State *instance_;
   data::EmergencyBrakes embrakes_data_;
   data::Navigation nav_data_;
   data::Batteries batteries_data_;
@@ -68,8 +67,8 @@ class State {
   class S : public State {                                                                         \
    public:                                                                                         \
     S() {}                                                                                         \
-    static S *instance_;                                                                           \
-    static S *getInstance() { return S::instance_; }                                               \
+    static S instance_;                                                                           \
+    static S *getInstance() { return &S::instance_; }                                               \
                                                                                                    \
     State *checkTransition(Logger &log);                                                           \
     void enter(Logger &log);                                                                       \

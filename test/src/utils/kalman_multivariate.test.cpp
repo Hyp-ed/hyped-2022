@@ -33,14 +33,11 @@ struct KalmanFunctionality : public ::testing::Test {
 
   KalmanMultivariate kalman = KalmanMultivariate(n, m, 0);
   VectorXf x0 = VectorXf::Zero(n);
-  VectorXf x1 = VectorXf::Zero(m);
   MatrixXf A = MatrixXf::Constant(p, p, initial_val);
   MatrixXf covariance = MatrixXf::Constant(p, p, initial_val);
 
   void SetUp()
   {
-    std::cout << "A:" << "\n \n" << A << "\n";
-    std::cout << "Covariance Matrix:" << "\n \n" << covariance << "\n";
     kalman.setInitial(x0, covariance);
   }
   void TearDown() {}
@@ -48,7 +45,7 @@ struct KalmanFunctionality : public ::testing::Test {
 
 TEST_F(KalmanFunctionality, returnsStateEstimate)
 {
-  ASSERT_EQ(kalman.getStateEstimate(), x1);
+  ASSERT_EQ(kalman.getStateEstimate(), x0);
 }
 
 TEST_F(KalmanFunctionality, returnsStateCovariance)

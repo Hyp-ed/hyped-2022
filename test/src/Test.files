@@ -5,4 +5,4 @@
 T_SRCS := \
   state_machine/dummy.test.cpp \
   utils/config.test.cpp \
-  utils/vector.test.cpp \
+  utils/vectors/vector_properties.test.cpp \

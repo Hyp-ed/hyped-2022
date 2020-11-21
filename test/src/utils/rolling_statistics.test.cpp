@@ -3,8 +3,7 @@
  * Author: Florica Margaritescu
  * Organisation: HYPED
  * Date: 29/10/2020
- * Description: Testing OnlineStatistics class from Statistics.hpp.
- * functionality and statistical properties of OnlineStatistics class from statistics.hpp.
+ * Description: Tests functionality and statistical properties of RollingStatistics class from statistics.hpp.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -30,7 +29,7 @@ namespace utils {
 namespace math {
 
 // -------------------------------------------------------------------------------------------------
-// Helper Functions
+// Helper Functions 
 // -------------------------------------------------------------------------------------------------
 
 /**
@@ -82,6 +81,11 @@ struct RollingStatisticsTestInt : public ::testing::Test
   int mean = 0;
   int var;
   float c = RandomFloatRolling(1, 1000); 
+  std::string messageVarStdDev = "Standard deviation is not the root of the variance as expected";
+  std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
+  std::string messageOutlierVar = "Outliers do not affect the variance as expected.";
+  std::string messageOutlierStdDev = "Outliers do not affect the standard deviation as expected.";
+
 
   void SetUp() 
   {
@@ -132,7 +136,7 @@ TEST_F(RollingStatisticsTestInt, testVarStdIntRolling)
     test_stats_int.update(values[i]);
     int var_test = static_cast<int>((sqrt(test_stats_int.getVariance())));
     ASSERT_EQ(var_test, test_stats_int.getStdDev())
-      << "Standard deviation is not the root of the variance as expected";
+      << messageVarStdDev;
   }
 }
 
@@ -154,11 +158,11 @@ TEST_F(RollingStatisticsTestInt, testOutlierrsIntRolling)
     test_stats_int.update(threshold +  rand() % 200 + 100);
   }
   EXPECT_LT(mean_prev, test_stats_int.getMean())
-    << "Outliers do not affect the mean as expected.";
+    << messageOutlierMean;
   EXPECT_LT(var_prev, test_stats_int.getVariance())
-      << "Outliers do not affect the variance as expected.";
+      << messageOutlierVar;
   EXPECT_LT(std_dev_prev, test_stats_int.getStdDev())
-      << "Outliers do not affect the standard deviation as expected.";
+      << messageOutlierStdDev;
 }
 
 /**
@@ -214,6 +218,11 @@ struct RollingStatisticsTestFloat : public ::testing::Test
   float mean_f = 0.0;
   float var_f;
   float c = RandomFloatRolling(1, 1000);
+  std::string messageVarStdDev = "Standard deviation is not the root of the variance as expected";
+  std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
+  std::string messageOutlierVar = "Outliers do not affect the variance as expected.";
+  std::string messageOutlierStdDev = "Outliers do not affect the standard deviation as expected.";
+
 
   void SetUp() 
   {
@@ -266,7 +275,7 @@ TEST_F(RollingStatisticsTestFloat, testVarStdFloatRolling)
     test_stats_float.update(values_f[i]);
     float var_test_f = sqrt(test_stats_float.getVariance());
     ASSERT_EQ(var_test_f, test_stats_float.getStdDev())
-      << "Standard deviation is not the root of the variance as expected";
+      << messageVarStdDev;
   }
 }
 
@@ -289,9 +298,9 @@ TEST_F(RollingStatisticsTestFloat, testOutliersFloatRolling)
   }
 
   EXPECT_LT(mean_prev, test_stats_float.getMean())
-      << "Outliers do not affect the mean as expected.";
+      << messageOutlierMean;
   EXPECT_LT(var_prev, test_stats_float.getVariance())
-      << "Outliers do not affect the variance as expected.";
+      << messageOutlierVar;
   EXPECT_LT(std_dev_prev, test_stats_float.getStdDev())
       << "Outliers do not affect the standard deviation as expected.";
 }

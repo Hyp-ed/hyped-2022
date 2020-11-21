@@ -19,6 +19,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <string>
 #include <cmath>
 #include <numeric>
 #include "utils/math/statistics.hpp"
@@ -81,10 +82,14 @@ struct OnlineStatisticsTestInt : public ::testing::Test
     int mean = 0;
     int var;
     float c = RandomFloatOnline(1, 1000);
-    std::string messageVarStdDev = "Standard deviation is not the root of the variance as expected";
-    std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
-    std::string messageOutlierVar = "Outliers do not affect the variance as expected.";
-    std::string messageOutlierStdDev = "Outliers do not affect the standard deviation as expected.";
+    std::string messageVarStdDev = 
+       "Standard deviation is not the root of the variance as expected";
+    std::string messageOutlierMean = 
+       "Outliers do not affect the mean as expected.";
+    std::string messageOutlierVar = 
+       "Outliers do not affect the variance as expected.";
+    std::string messageOutlierStdDev = 
+       "Outliers do not affect the standard deviation as expected.";
 
 
   void SetUp()
@@ -187,10 +192,14 @@ struct OnlineStatisticsTestFloat : public ::testing::Test
       float mean_f = 0.0;
       float var_f;
       float c = RandomFloatOnline(1, 1000);
-      std::string messageVarStdDev = "Standard deviation is not the root of the variance as expected";
-      std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
-      std::string messageOutlierVar = "Outliers do not affect the variance as expected.";
-      std::string messageOutlierStdDev = "Outliers do not affect the standard deviation as expected.";
+      std::string messageVarStdDev = 
+         "Standard deviation is not the root of the variance as expected";
+      std::string messageOutlierMean = 
+         "Outliers do not affect the mean as expected.";
+      std::string messageOutlierVar = 
+         "Outliers do not affect the variance as expected.";
+      std::string messageOutlierStdDev = 
+         "Outliers do not affect the standard deviation as expected.";
 
 
     void SetUp()

@@ -397,6 +397,14 @@ TEST_F(IdentityOperations, handlesSqrtIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
+TEST_F(IdentityOperations, handlesNormIdentities)
+{
+  double norm = identity_vector.norm();
+  ASSERT_EQ(norm, 0);
+  identity_vector = Vector<int, 3>(1);
+  norm = identity_vector.norm();
+  ASSERT_EQ(norm, std::sqrt(3));
+}
 }
 }
 }

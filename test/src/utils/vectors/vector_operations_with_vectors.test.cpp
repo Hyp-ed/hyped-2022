@@ -203,6 +203,24 @@ TEST_F(OperationsTest, allowsSqrt)
     ASSERT_EQ(static_cast<int>(std::sqrt(vector_one[i])), result_one[i]);
   }
 }
+TEST_F(OperationsTest, allowsNorm)
+{
+  double norm = vector_one.norm();
+  double result = 0;
+  for (int i = 0; i < dimension; i++) {
+    result += vector_one[i] * vector_one[i];
+  }
+  result = std::sqrt(result);
+  ASSERT_EQ(result, norm);
+}
+TEST_F(OperationsTest, allowsToUnitVector)
+{
+  Vector<int, 3> result_one = vector_one.toUnitVector();
+  double norm = vector_one.norm();
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(result_one[i], static_cast<int>(vector_one[i]/norm));
+  }
+}
 /**
  * @brief Struct used to set up all the variables used in the test the equality operation of vectors
  */

@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
+#include "math.h"
+#include "ctime"
 /*
  * Author: Pablo Morandé
  * Organisation: HYPED
@@ -31,6 +33,7 @@ namespace math
  */
 std::array<int, 3> createRandomArray()
 {
+  std::srand(time(0));
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
     output[i] = rand()%1000;
@@ -191,6 +194,13 @@ TEST_F(OperationsTest, allowsDivision)
   vector_one/=vector_two;
   for (int i = 0;i <dimension;i++) {
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i]/vector_two[i]));
+  }
+}
+TEST_F(OperationsTest, allowsSqrt)
+{
+  Vector<int, 3> result_one = vector_one.sqrt();
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(static_cast<int>(std::sqrt(vector_one[i])), result_one[i]);
   }
 }
 /**

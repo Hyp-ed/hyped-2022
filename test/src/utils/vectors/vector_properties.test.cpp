@@ -385,6 +385,18 @@ TEST_F(IdentityOperations, handlesDivisionIdentities)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+TEST_F(IdentityOperations, handlesSqrtIdentities)
+{
+  vector = identity_vector.sqrt();
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], identity_vector[i]);
+  }
+  identity_vector = Vector <int, 3>(1);
+  vector = identity_vector.sqrt();
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector[i], identity_vector[i]);
+  }
+}
 }
 }
 }

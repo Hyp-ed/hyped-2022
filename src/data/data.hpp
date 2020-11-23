@@ -58,6 +58,7 @@ struct Module {
 typedef float NavigationType;
 typedef Vector<NavigationType, 3> NavigationVector;
 struct Navigation : public Module {
+  static constexpr float run_length = 1250;  // m
   NavigationType  displacement;  // m
   NavigationType  velocity;  // m/s
   NavigationType  acceleration;  // m/s^2
@@ -142,7 +143,6 @@ struct Motors : public Module {
 // -------------------------------------------------------------------------------------------------
 
 struct Telemetry : public Module {
-  static constexpr float run_length = 1250;  // m
   bool calibrate_command = false;
   bool launch_command = false;
   bool shutdown_command = false;

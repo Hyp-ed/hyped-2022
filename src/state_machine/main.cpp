@@ -1,8 +1,8 @@
 /*
- * Author:Kornelija Sukyte
+ * Author: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description:
+ * Description: Implements the behaviour described in main.hpp
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,23 +26,9 @@ namespace state_machine {
 
 Main::Main(uint8_t id, Logger &log) : Thread(id, log)
 {
-  // constructing state objects
-  idling_          = new Idling(log_, this);
-  calibrating_     = new Calibrating(log_, this);
-  ready_           = new Ready(log_, this);
-  accelerating_    = new Accelerating(log_, this);
-  nominal_braking_ = new NominalBraking(log_, this);
-  finished_        = new Finished(log_, this);
-  failure_braking_ = new FailureBraking(log_, this);
-  failure_stopped_ = new FailureStopped(log_, this);
-
-
-  current_state_ = idling_;  // set current state to point to Idle
+  current_state_ = Idle::getInstance();  // set current state to point to Idle
 }
 
-/**
- *  @brief  Runs state machine thread.
- */
 void Main::run()
 {
   utils::System &sys = utils::System::getSystem();
@@ -52,9 +38,14 @@ void Main::run()
   sm_data.current_state      = data::State::kReady;  // set current state in data structure
   data.setStateMachineData(sm_data);
 
+  State *new_state;
   while (sys.running_) {
-    current_state_->checkEmergencyStop();
-    current_state_->transitionCheck();
+    // checkTransition returns a new state or nullptr
+    if ((new_state = current_state_->checkTransition(log_))) {
+      current_state_->exit(log_);
+      current_state_ = new_state;
+      current_state_->enter(log_);
+    }
   }
 
   sm_data = data.getStateMachineData();

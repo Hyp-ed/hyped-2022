@@ -1,3 +1,4 @@
+
 /*
  * Author: Branislav Pilnan
  * Organisation: HYPED
@@ -79,7 +80,9 @@ void OnlineStatistics<T>::update(T new_value)
   this->sum_ += new_value;
   this->mean_ = this->sum_/n_;
   s_ += delta * (new_value - this->mean_);
-  this->variance_ = s_ / (n_ - 1);
+  if (n_ > 1) {
+    this->variance_ = s_ / (n_ - 1);
+    } 
 }
 
 /**

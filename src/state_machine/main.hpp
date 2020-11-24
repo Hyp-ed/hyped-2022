@@ -3,7 +3,7 @@
  * Organisation: HYPED
  * Date:
  * Description: Main is the state machine. This is where all the state is stored and how we interact
- * with the rest of HYPED. The SM only provides a frame work though, the actual logic is implemented
+ * with the rest of HYPED. The SM only provides a framework though, the actual logic is implemented
  * in the other files.
  *
  *    Copyright 2020 HYPED

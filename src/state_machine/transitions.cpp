@@ -120,7 +120,7 @@ bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
   float remaining_distance = nav_data.run_length - nav_data.displacement;
   float required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
-  if (remaining_distance <= required_distance) return false;
+  if (remaining_distance > required_distance) return false;
 
   log.INFO("STM", "Entered braking zone");
   return true;

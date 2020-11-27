@@ -67,7 +67,7 @@ struct KalmanFunctionality : public ::testing::Test {
  */
 TEST_F(KalmanFunctionality, handlesZeroStateEstimate)
 {
-  ASSERT_EQ(kalman.getStateEstimate(), x0);
+  ASSERT_EQ(kalman.getStateEstimate(), x0) << "Should handle zero vector as state estimate";
 }
 
 /**
@@ -77,7 +77,7 @@ TEST_F(KalmanFunctionality, handlesZeroStateEstimate)
 TEST_F(KalmanFunctionality, handlesArbitraryStateEstimate)
 {
   kalman.setInitial(x1, P);
-  ASSERT_EQ(kalman.getStateEstimate(), x1);
+  ASSERT_EQ(kalman.getStateEstimate(), x1) << "Should handle any arbitrary state estimate";
 }
 
 /**
@@ -87,7 +87,7 @@ TEST_F(KalmanFunctionality, handlesArbitraryStateEstimate)
 TEST_F(KalmanFunctionality, handlesZeroStateCovariance)
 {
   kalman.setInitial(x0, P0);
-  ASSERT_EQ(kalman.getStateCovariance(), P0);
+  ASSERT_EQ(kalman.getStateCovariance(), P0) << "Should handle zero state covariance";
 }
 
 /**
@@ -96,7 +96,7 @@ TEST_F(KalmanFunctionality, handlesZeroStateCovariance)
  */
 TEST_F(KalmanFunctionality, handlesArbitraryStateCovariance)
 {
-  ASSERT_EQ(kalman.getStateCovariance(), P);
+  ASSERT_EQ(kalman.getStateCovariance(), P) << "Should handle arbitrary state covariance";
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -184,8 +184,10 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
     x = x + K * (z - H * x);
     p = (I - K * H) * p;
 
-    ASSERT_EQ(kalmanMathWithoutControl.getStateEstimate(), x);
-    ASSERT_EQ(kalmanMathWithoutControl.getStateCovariance(), p);
+    ASSERT_EQ(kalmanMathWithoutControl.getStateEstimate(), x)
+      << "Filter state estimate isnt same as expected state estimate";
+    ASSERT_EQ(kalmanMathWithoutControl.getStateCovariance(), p)
+       << "Filter state covariance should isnt the same as expected state covariance";
   }
 }
 
@@ -220,7 +222,9 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
     x = x + K * (z - H * x);
     p = (I - K * H) * p;
 
-    ASSERT_EQ(kalmanMathWithControl.getStateEstimate(), x);
-    ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p);
+    ASSERT_EQ(kalmanMathWithControl.getStateEstimate(), x)
+      << "Filter state estimate isnt same as expected state estimate";
+    ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p)
+      << "Filter state covariance isnt same as expected state covariance";
   }
 }

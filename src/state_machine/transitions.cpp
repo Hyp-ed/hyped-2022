@@ -118,8 +118,9 @@ bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
 
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
-  // TODO(Franz): Fix braking buffer.
-  if (nav_data.run_length > nav_data.displacement + nav_data.braking_distance) return false;
+  float remaining_distance = nav_data.run_length - nav_data.displacement;
+  float required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
+  if (remaining_distance <= required_distance) return false;
 
   log.INFO("STM", "Entered braking zone");
   return true;

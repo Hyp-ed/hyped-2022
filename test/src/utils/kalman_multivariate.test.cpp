@@ -17,6 +17,7 @@
  */
 
 #include <iostream>
+#include <string>
 #include "math.h"
 #include "gtest/gtest.h"
 #include "utils/math/kalman_multivariate.hpp"
@@ -29,7 +30,7 @@ using hyped::utils::math::KalmanMultivariate;
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used foor test fixtures testing the functionality of Kalman_Multivaraite.hpp. Constructor
+ * Struct used for test fixtures testing the functionality of Kalman_Multivaraite.hpp. Constructor
  * sets the values of relevant Vector and Matrix objects using Random values. Naming for these
  * vectors and matrices are based off the implementation in kalman_filter.cpp and
  * the variable names within the kalman_multivariate.hpp
@@ -51,6 +52,10 @@ struct KalmanFunctionality : public ::testing::Test {
   MatrixXf H = MatrixXf::Random(m, n);
   MatrixXf R = MatrixXf::Random(m, m);
   MatrixXf P = MatrixXf::Random(n, n);
+  std::string zero_state_estimate_err = "Should handle zero vector as state estimate";
+  std::string arb_state_estimate_err = "Should handle any arbitrary vector as state estimate";
+  std::string zero_covariance_err = "Should handle zero state covariance";
+  std::string arb_covariance_err = "Should handle any arbitrary state covariance";
 
   void SetUp()
   {
@@ -67,7 +72,7 @@ struct KalmanFunctionality : public ::testing::Test {
  */
 TEST_F(KalmanFunctionality, handlesZeroStateEstimate)
 {
-  ASSERT_EQ(kalman.getStateEstimate(), x0) << "Should handle zero vector as state estimate";
+  ASSERT_EQ(kalman.getStateEstimate(), x0) << zero_state_estimate_err;
 }
 
 /**
@@ -77,7 +82,7 @@ TEST_F(KalmanFunctionality, handlesZeroStateEstimate)
 TEST_F(KalmanFunctionality, handlesArbitraryStateEstimate)
 {
   kalman.setInitial(x1, P);
-  ASSERT_EQ(kalman.getStateEstimate(), x1) << "Should handle any arbitrary state estimate";
+  ASSERT_EQ(kalman.getStateEstimate(), x1) << arb_state_estimate_err;
 }
 
 /**
@@ -87,7 +92,7 @@ TEST_F(KalmanFunctionality, handlesArbitraryStateEstimate)
 TEST_F(KalmanFunctionality, handlesZeroStateCovariance)
 {
   kalman.setInitial(x0, P0);
-  ASSERT_EQ(kalman.getStateCovariance(), P0) << "Should handle zero state covariance";
+  ASSERT_EQ(kalman.getStateCovariance(), P0) << zero_covariance_err;
 }
 
 /**
@@ -96,7 +101,7 @@ TEST_F(KalmanFunctionality, handlesZeroStateCovariance)
  */
 TEST_F(KalmanFunctionality, handlesArbitraryStateCovariance)
 {
-  ASSERT_EQ(kalman.getStateCovariance(), P) << "Should handle arbitrary state covariance";
+  ASSERT_EQ(kalman.getStateCovariance(), P) << arb_covariance_err;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -126,29 +131,21 @@ struct KalmanMathematics : public::testing::Test {
   MatrixXf R_Data[100];
   MatrixXf P_Data[100];
   MatrixXf I = MatrixXf::Identity(n, n);
-
+  std::string expected_state_estimate_err = "State estimate isnt same as expected state estimate";
+  std::string expected_covariance_err = "Covariance isnt the same as expected state covariance";
   void SetUp()
   {
     // Populates the arrays defined above with 100 random values
     for (int i = 0; i < 100; i++) {
-      VectorXf x1 = VectorXf::Random(n);
-      x1_Data[i] = x1;
-      VectorXf z = VectorXf::Random(m);
-      z_Data[i] = z;
-      VectorXf u = VectorXf::Random(k);
-      u_Data[i] = u;
-      MatrixXf A = MatrixXf::Random(n, n);
-      A_Data[i] = A;
-      MatrixXf B = MatrixXf::Random(n, k);
-      B_Data[i] = B;
-      MatrixXf Q = MatrixXf::Random(n, n);
-      Q_Data[i] = Q;
-      MatrixXf H = MatrixXf::Random(m, n);
-      H_Data[i] = H;
-      MatrixXf R = MatrixXf::Random(m, m);
-      R_Data[i] = R;
-      MatrixXf P = MatrixXf::Random(n, n);
-      P_Data[i] = P;
+      x1_Data[i] = VectorXf::Random(n);
+      z_Data[i] = VectorXf::Random(m);
+      u_Data[i] = VectorXf::Random(k);
+      A_Data[i] = MatrixXf::Random(n, n);
+      B_Data[i] = MatrixXf::Random(n, k);
+      Q_Data[i] = MatrixXf::Random(n, n);
+      H_Data[i] = MatrixXf::Random(m, n);
+      R_Data[i] = MatrixXf::Random(m, m);
+      P_Data[i] = MatrixXf::Random(n, n);
     }
   }
 
@@ -185,9 +182,9 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
     p = (I - K * H) * p;
 
     ASSERT_EQ(kalmanMathWithoutControl.getStateEstimate(), x)
-      << "Filter state estimate isnt same as expected state estimate";
+      << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithoutControl.getStateCovariance(), p)
-       << "Filter state covariance should isnt the same as expected state covariance";
+       << expected_covariance_err;
   }
 }
 
@@ -223,8 +220,8 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
     p = (I - K * H) * p;
 
     ASSERT_EQ(kalmanMathWithControl.getStateEstimate(), x)
-      << "Filter state estimate isnt same as expected state estimate";
+      << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p)
-      << "Filter state covariance isnt same as expected state covariance";
+      << expected_covariance_err;
   }
 }

@@ -1,3 +1,4 @@
+
 /*
  * Author: Florica Margaritescu
  * Organisation: HYPED
@@ -17,12 +18,9 @@
  */
 
 #include <math.h>
-#include <iostream>
-#include <cmath>
-#include <numeric>
-#include "utils/math/vector.hpp"
+#include <cstdlib>
 #include "gtest/gtest.h"
-#include <fstream>
+#include "utils/math/vector.hpp"
 
 namespace hyped {
 namespace utils {
@@ -51,13 +49,13 @@ float RandomFloatTestingVector(float lower, float upper)
  * @param vector_T array of 100 float values
  * @returns magnitude of vector with corresponding values to array
  */
-double CalculateVectorMagnitude(std::array<float, 100> vector_T) {
-   double sum_of_squares = 0;
-
-   for(int i = 0; i < 100; i++) {
-      sum_of_squares = sum_of_squares + vector_T[i]*vector_T[i];
-   }
-   return std::sqrt(sum_of_squares);
+double CalculateVectorMagnitude(std::array<float, 100> vector_T) 
+{
+    double sum_of_squares = 0;
+    for (int i = 0; i < 100; i++) {
+       sum_of_squares = sum_of_squares + vector_T[i]*vector_T[i];
+    }
+     return std::sqrt(sum_of_squares);
 }
 
 /**
@@ -66,10 +64,11 @@ double CalculateVectorMagnitude(std::array<float, 100> vector_T) {
  * @param elem2 float number 
  * @returns truth value of equality between the two numbers to 5 decimal places
  */
-bool CompareFloats5DP(float elem1, float elem2) {
-   int elem1_int = static_cast<int>(elem1*(pow(10,5)));
-   int elem2_int = static_cast<int>(elem2*(pow(10,5)));
-   return elem1_int == elem2_int;
+bool CompareFloats5DP(float elem1, float elem2) 
+{
+    int elem1_int = static_cast<int>((elem1 + 0.0000005)*(pow(10, 5)));
+    int elem2_int = static_cast<int>((elem2 + 0.0000005)*(pow(10, 5)));
+    return elem1_int == elem2_int;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -84,8 +83,8 @@ struct vector_test_float : public ::testing::Test
    protected:
     Vector<float, 100> test_vector1_float;
     Vector<float, 100> test_vector2_float;
-    Vector<float,100> test_vector_default = Vector<float, 100>(0);
-    float constant = RandomFloatTestingVector(0,1000);
+    Vector<float, 100> test_vector_default = Vector<float, 100>(0);
+    float constant = RandomFloatTestingVector(0, 1000);
     Vector<float, 100> test_vector_constant;
     Vector<float, 100> test_vector_diff;
     Vector<float, 100> test_vector_sum;
@@ -103,17 +102,16 @@ struct vector_test_float : public ::testing::Test
     void SetUp() 
     {
        // Construct two vectors with random elements and their corresponding unit vectors
-        for (int i = 0; i < dimension;i++) {
-           elements1[i] = RandomFloatTestingVector(0,1000);
+        for (int i = 0; i < dimension; i++) {
+           elements1[i] = RandomFloatTestingVector(0, 1000);
         }
         test_vector1_float =  Vector<float, 100>(elements1);
 
         for (int i = 0; i < dimension; i++) {
-           elements2[i] = RandomFloatTestingVector(0,1000);
+           elements2[i] = RandomFloatTestingVector(0, 1000);
         }
         test_vector2_float =  Vector<float, 100>(elements2);
-        unit_vector2 = test_vector1_float.toUnitVector();
-        
+        unit_vector2 = test_vector1_float.toUnitVector();   
     }
 
   void TearDown() {}
@@ -140,7 +138,8 @@ TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 
     // Checking vector operations
     ASSERT_EQ(0, test_vector_default.operator*=(test_vector1_float).operator[](ran_index));
-    ASSERT_EQ(0, test_vector_default.operator+=(test_vector1_float).operator-=(test_vector1_float).operator[](ran_index));
+    test_vector_default.operator+=(test_vector1_float).operator-=(test_vector1_float);
+    ASSERT_EQ(0, test_vector_default.operator[](ran_index));
 }
 
 /**
@@ -156,7 +155,8 @@ TEST_F(vector_test_float, testVectorConstantConstructor)
     // Checking scalar operations
     ran_index = rand() % 100 + 1;
     int a = rand() % 1000 + 1;
-    bool equal = CompareFloats5DP(constant, test_vector_constant.operator+=(a).operator-=(a).operator[](ran_index));
+    float elem = test_vector_constant.operator+=(a).operator-=(a).operator[](ran_index);
+    bool equal = CompareFloats5DP(constant, elem);
     ASSERT_TRUE(equal);
     ASSERT_EQ(constant*a, test_vector_constant.operator*=(a).operator[](ran_index));
 }
@@ -183,11 +183,11 @@ TEST_F(vector_test_float, testVectorConstructorArray)
 */
 TEST_F(vector_test_float, testElemWiseDifference) 
 {
-   test_vector_diff = test_vector2_float.operator-=(test_vector1_float);
+    test_vector_diff = test_vector2_float.operator-=(test_vector1_float);
    
-   for (int i = 0; i < dimension; i++) {
+    for (int i = 0; i < dimension; i++) {
       ASSERT_EQ(elements2[i] - elements1[i], test_vector_diff.operator[](i)); 
-   }
+    }
 }
 
 /**
@@ -196,9 +196,9 @@ TEST_F(vector_test_float, testElemWiseDifference)
 TEST_F(vector_test_float, testElemWiseDifferenceAuto) 
 {
 test_vector_diff = operator-(test_vector1_float, test_vector2_float);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i] - elements2[i], test_vector_diff.operator[](i));
-   }
+    for (int i = 0; i < dimension; i++) {
+       ASSERT_EQ(elements1[i] - elements2[i], test_vector_diff.operator[](i));
+    }
 }
 
 /**
@@ -206,10 +206,10 @@ test_vector_diff = operator-(test_vector1_float, test_vector2_float);
 */
 TEST_F(vector_test_float, testElementWiseAddition) 
 {
-   test_vector_sum = test_vector2_float.operator+=(test_vector1_float);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i] + elements2[i], test_vector_sum.operator[](i));
-   }
+    test_vector_sum = test_vector2_float.operator+=(test_vector1_float);
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(elements1[i] + elements2[i], test_vector_sum.operator[](i));
+     }
 }
 
 /**
@@ -217,10 +217,10 @@ TEST_F(vector_test_float, testElementWiseAddition)
 */
 TEST_F(vector_test_float, testElementWiseAdditionAuto) 
 {
-   test_vector_sum = operator+(test_vector1_float, test_vector2_float);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i] + elements2[i], test_vector_sum.operator[](i));
-   }
+    test_vector_sum = operator+(test_vector1_float, test_vector2_float);
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(elements1[i] + elements2[i], test_vector_sum.operator[](i));
+     }
 }
 
 /**
@@ -228,11 +228,10 @@ TEST_F(vector_test_float, testElementWiseAdditionAuto)
 */
 TEST_F(vector_test_float, testElemWiseMultiplication) 
 {
-      test_vector_mult = test_vector2_float.operator*=(test_vector1_float);
-
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i] * elements2[i], test_vector_mult.operator[](i));
-   }
+    test_vector_mult = test_vector2_float.operator*=(test_vector1_float);
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(elements1[i] * elements2[i], test_vector_mult.operator[](i));
+     }
 }
 
 /**
@@ -240,10 +239,10 @@ TEST_F(vector_test_float, testElemWiseMultiplication)
 */
 TEST_F(vector_test_float, testElemWiseMultiplicationAuto) 
 {
-   test_vector_mult = operator*(test_vector1_float, test_vector2_float);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i] * elements2[i], test_vector_mult.operator[](i));
-   }
+    test_vector_mult = operator*(test_vector1_float, test_vector2_float);
+    for (int i = 0; i < dimension; i++) {
+       ASSERT_EQ(elements1[i] * elements2[i], test_vector_mult.operator[](i));
+     }
 }
 
 /**
@@ -251,11 +250,10 @@ TEST_F(vector_test_float, testElemWiseMultiplicationAuto)
 */
 TEST_F(vector_test_float, testElemWiseDivision) 
 {
-      test_vector_div = test_vector2_float.operator/=(test_vector1_float);
-
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements2[i]/elements1[i], test_vector_div.operator[](i));
-   }  
+    test_vector_div = test_vector2_float.operator/=(test_vector1_float);
+    for (int i = 0; i < dimension; i++) {
+       ASSERT_EQ(elements2[i]/elements1[i], test_vector_div.operator[](i));
+     }  
 }
 
 /**
@@ -263,11 +261,10 @@ TEST_F(vector_test_float, testElemWiseDivision)
 */
 TEST_F(vector_test_float, testElemWiseDivisionAuto) 
 {
-   test_vector_div = operator/(test_vector2_float, test_vector1_float);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements2[i]/elements1[i], test_vector_div.operator[](i));
-   }
-   
+    test_vector_div = operator/(test_vector2_float, test_vector1_float);
+    for (int i = 0; i < dimension; i++) {
+       ASSERT_EQ(elements2[i]/elements1[i], test_vector_div.operator[](i));
+     } 
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -279,12 +276,12 @@ TEST_F(vector_test_float, testElemWiseDivisionAuto)
 */
 TEST_F(vector_test_float, testConstantAddition)
 {
-   float float_constant = RandomFloatTestingVector(0,1000);
-   test_vector_sum = test_vector1_float.operator+=(float_constant);
-   test_vector1_float.operator-=(float_constant);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(test_vector1_float.operator[](i) + float_constant, test_vector_sum.operator[](i));
-   }
+    float float_constant = RandomFloatTestingVector(0, 1000);
+    test_vector_sum = test_vector1_float.operator+=(float_constant);
+    test_vector1_float.operator-=(float_constant);
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(test_vector1_float.operator[](i) + float_constant, test_vector_sum.operator[](i));
+     }
 }
 
 /**
@@ -292,12 +289,14 @@ TEST_F(vector_test_float, testConstantAddition)
 */
 TEST_F(vector_test_float, testConstantDifference)
 {
-   float float_constant = RandomFloatTestingVector(0,1000);
-   test_vector_diff = test_vector1_float.operator-=(float_constant);
-   test_vector1_float.operator+=(float_constant);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(test_vector1_float.operator[](i) - float_constant, test_vector_diff.operator[](i));
-   }
+    float float_constant = RandomFloatTestingVector(0, 1000);
+    test_vector_diff = test_vector1_float.operator-=(float_constant);
+    test_vector1_float.operator+=(float_constant);
+    float elem;
+    for (int i = 0; i < dimension; i++) {
+        elem = test_vector_diff.operator[](i);
+        ASSERT_EQ(test_vector1_float.operator[](i) - float_constant, elem);
+    }
 }
 
 /**
@@ -305,12 +304,14 @@ TEST_F(vector_test_float, testConstantDifference)
 */
 TEST_F(vector_test_float, testScalarMultiplication)
 {
-   float float_constant = RandomFloatTestingVector(0,1000);
-   test_vector_mult = test_vector1_float.operator*=(float_constant);
-   test_vector1_float.operator/=(float_constant);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(test_vector1_float.operator[](i) * float_constant, test_vector_mult.operator[](i));
-   }
+    float float_constant = RandomFloatTestingVector(0, 1000);
+    test_vector_mult = test_vector1_float.operator*=(float_constant);
+    test_vector1_float.operator/=(float_constant);
+    float elem;
+    for (int i = 0; i < dimension; i++) {
+        elem = test_vector_mult.operator[](i);
+        ASSERT_EQ(test_vector1_float.operator[](i) * float_constant, elem);
+    }
 }
 
 /**
@@ -318,12 +319,12 @@ TEST_F(vector_test_float, testScalarMultiplication)
 */
 TEST_F(vector_test_float, testScalarDivision)
 {
-   float float_constant = RandomFloatTestingVector(0,1000);
-   test_vector_div = test_vector1_float.operator/=(float_constant);
-   test_vector1_float.operator*=(float_constant);
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(test_vector1_float.operator[](i) / float_constant, test_vector_div.operator[](i));
-   }
+    float float_constant = RandomFloatTestingVector(0, 1000);
+    test_vector_div = test_vector1_float.operator/=(float_constant);
+    test_vector1_float.operator*=(float_constant);
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(test_vector1_float.operator[](i) / float_constant, test_vector_div.operator[](i));
+     }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -336,10 +337,12 @@ TEST_F(vector_test_float, testScalarDivision)
  */
 TEST_F(vector_test_float, testElementSqrt) 
 {
-   test_vector_sqrt = test_vector2_float.sqrt();
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(static_cast<float>(std::sqrt(test_vector2_float[i])), test_vector_sqrt.operator[](i));
-   }
+    test_vector_sqrt = test_vector2_float.sqrt();
+    float elem;
+    for (int i = 0; i < dimension; i++) {
+       elem = test_vector_sqrt.operator[](i);
+        ASSERT_EQ(static_cast<float>(std::sqrt(test_vector2_float[i])), elem);
+    }
 }
 
 /**
@@ -347,13 +350,13 @@ TEST_F(vector_test_float, testElementSqrt)
 */ 
 TEST_F(vector_test_float, testDistanceBetweenVectors) 
 {
-   std::array<float, 100> vector_diff;
-   for (int i = 0; i < dimension; i++) {
-      vector_diff[i] = elements2[i] - elements1[i];
-   }
-   double distance = CalculateVectorMagnitude(vector_diff);
+    std::array<float, 100> vector_diff;
+    for (int i = 0; i < dimension; i++) {
+        vector_diff[i] = elements2[i] - elements1[i];
+     }
+    double distance = CalculateVectorMagnitude(vector_diff);
 
-   ASSERT_EQ(distance, test_vector2_float.operator-=(test_vector1_float).norm());
+    ASSERT_EQ(distance, test_vector2_float.operator-=(test_vector1_float).norm());
 }
 
 /**
@@ -361,13 +364,13 @@ TEST_F(vector_test_float, testDistanceBetweenVectors)
 */
 TEST_F(vector_test_float, testUnitVectors) 
 {  
-   unit_vector1 = test_vector1_float.toUnitVector();
-   unit_vector2 = test_vector2_float.toUnitVector();
+    unit_vector1 = test_vector1_float.toUnitVector();
+    unit_vector2 = test_vector2_float.toUnitVector();
 
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i]/CalculateVectorMagnitude(elements1), unit_vector1.operator[](i));
-      ASSERT_EQ(elements2[i]/CalculateVectorMagnitude(elements2), unit_vector2.operator[](i));
-   }
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(elements1[i]/CalculateVectorMagnitude(elements1), unit_vector1.operator[](i));
+        ASSERT_EQ(elements2[i]/CalculateVectorMagnitude(elements2), unit_vector2.operator[](i));
+     }
 }
 
 /**
@@ -375,14 +378,14 @@ TEST_F(vector_test_float, testUnitVectors)
 */ 
 TEST_F(vector_test_float, testVectorNegation)
 {
-   test_vector_diff = test_vector1_float.operator-();
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements1[i]*(-1), test_vector_diff.operator[](i));
-   }
-   test_vector_diff = test_vector2_float.operator-();
-   for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements2[i]*(-1), test_vector_diff.operator[](i));
-   }
+    test_vector_diff = test_vector1_float.operator-();
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(elements1[i]*(-1), test_vector_diff.operator[](i));
+     }
+    test_vector_diff = test_vector2_float.operator-();
+    for (int i = 0; i < dimension; i++) {
+        ASSERT_EQ(elements2[i]*(-1), test_vector_diff.operator[](i));
+     }
 }
 
 /**
@@ -390,18 +393,19 @@ TEST_F(vector_test_float, testVectorNegation)
 */
 TEST_F(vector_test_float, testVectorMagnitude)
 {
-   double magnitude_v1 = CalculateVectorMagnitude(elements1);
-   double magnitude_v2 = CalculateVectorMagnitude(elements2);
-   ASSERT_EQ(magnitude_v1, test_vector1_float.norm());
-   ASSERT_EQ(magnitude_v2, test_vector2_float.norm());
+    double magnitude_v1 = CalculateVectorMagnitude(elements1);
+    double magnitude_v2 = CalculateVectorMagnitude(elements2);
+    ASSERT_EQ(magnitude_v1, test_vector1_float.norm());
+    ASSERT_EQ(magnitude_v2, test_vector2_float.norm());
 }
 
 /**
  * @brief Tests if equality function is behaving as it should
  */ 
-TEST_F(vector_test_float, testVectorEquality) {
-   test_vector_mult = Vector<float,100>(test_vector1_float);
-   ASSERT_TRUE(test_vector_mult == test_vector1_float);
+TEST_F(vector_test_float, testVectorEquality) 
+{
+    test_vector_mult = Vector<float, 100>(test_vector1_float);
+    ASSERT_TRUE(test_vector_mult == test_vector1_float);
 }
 // -------------------------------------------------------------------------------------------------
 // Testing vector properties
@@ -412,19 +416,20 @@ TEST_F(vector_test_float, testVectorEquality) {
 */
 TEST_F(vector_test_float, testMagnitudeUnitVector) 
 {
-   unit_vector1 = test_vector1_float.toUnitVector();
-   unit_vector2 = test_vector2_float.toUnitVector();
-   ASSERT_EQ(1, round(unit_vector1.norm()));
-   ASSERT_EQ(1, round(unit_vector2.norm()));
+    unit_vector1 = test_vector1_float.toUnitVector();
+    unit_vector2 = test_vector2_float.toUnitVector();
+    ASSERT_EQ(1, round(unit_vector1.norm()));
+    ASSERT_EQ(1, round(unit_vector2.norm()));
 }
 
 /**
  * @brief Tests symmetry of vector equality 
  */ 
-TEST_F(vector_test_float, testVectorEqualitySymmetry) {
-   test_vector_mult = Vector<float,100>(test_vector1_float);
-   ASSERT_TRUE(test_vector_mult == test_vector1_float);
-   ASSERT_TRUE(test_vector1_float == test_vector_mult);
+TEST_F(vector_test_float, testVectorEqualitySymmetry) 
+{
+    test_vector_mult = Vector<float, 100>(test_vector1_float);
+    ASSERT_TRUE(test_vector_mult == test_vector1_float);
+    ASSERT_TRUE(test_vector1_float == test_vector_mult);
 }
 
 }}}  // hyped::utils::math

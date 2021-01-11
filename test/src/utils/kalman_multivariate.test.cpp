@@ -121,22 +121,22 @@ struct KalmanMathematics : public::testing::Test {
  protected:
   KalmanMultivariate kalmanMathWithoutControl = KalmanMultivariate(n, m, 0);
   KalmanMultivariate kalmanMathWithControl = KalmanMultivariate(n, m, k);
-  VectorXf x1_Data[100];
-  VectorXf z_Data[100];
-  VectorXf u_Data[100];
-  MatrixXf A_Data[100];
-  MatrixXf B_Data[100];
-  MatrixXf Q_Data[100];
-  MatrixXf H_Data[100];
-  MatrixXf R_Data[100];
-  MatrixXf P_Data[100];
+  VectorXf x1_Data[50];
+  VectorXf z_Data[50];
+  VectorXf u_Data[50];
+  MatrixXf A_Data[50];
+  MatrixXf B_Data[50];
+  MatrixXf Q_Data[50];
+  MatrixXf H_Data[50];
+  MatrixXf R_Data[50];
+  MatrixXf P_Data[50];
   MatrixXf I = MatrixXf::Identity(n, n);
   std::string expected_state_estimate_err = "State estimate isnt same as expected state estimate";
   std::string expected_covariance_err = "Covariance isnt the same as expected state covariance";
   void SetUp()
   {
-    // Populates the arrays defined above with 100 random values
-    for (int i = 0; i < 100; i++) {
+    // Populates the arrays defined above with 50 random values
+    for (int i = 0; i < 50; i++) {
       x1_Data[i] = VectorXf::Random(n);
       z_Data[i] = VectorXf::Random(m);
       u_Data[i] = VectorXf::Random(k);
@@ -160,7 +160,7 @@ struct KalmanMathematics : public::testing::Test {
  */
 TEST_F(KalmanMathematics, handlesFilterWithoutControl)
 {
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 50; i++) {
     MatrixXf A = A_Data[i];
     MatrixXf H = H_Data[i];
     MatrixXf R = R_Data[i];
@@ -196,7 +196,7 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithControl)
 {
-  for (int i = 0; i < 100; i ++) {
+  for (int i = 0; i < 50; i ++) {
     MatrixXf A = A_Data[i];
     MatrixXf B = B_Data[i];
     MatrixXf Q = Q_Data[i];

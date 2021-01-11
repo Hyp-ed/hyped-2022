@@ -39,6 +39,8 @@ binmain.o
 .ccls
 .ccls-cache
 
+# Navigation
+src/navigation/testing
 # libraries
 lib/Eigen
 lib/rapidjson

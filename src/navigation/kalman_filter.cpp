@@ -23,7 +23,7 @@ namespace navigation {
 
 constexpr float KalmanFilter::kInitialErrorVar;
 constexpr float KalmanFilter::kStateTransitionVar;
-constexpr float KalmanFilter::kTubeMeasurementVar;
+constexpr float KalmanFilter::kTrackMeasurementVar;
 constexpr float KalmanFilter::kElevatorMeasurementVar;
 constexpr float KalmanFilter::kStationaryMeasurementVar;
 
@@ -44,7 +44,7 @@ void KalmanFilter::setup()
   // check system navigation run for R setup
   System &sys = System::getSystem();
   MatrixXf R = MatrixXf::Zero(m_, m_);;
-  if (sys.tube_run || sys.outside_run) R = createTubeMeasurementCovarianceMatrix();
+  if (sys.official_run || sys.outside_run) R = createTrackMeasurementCovarianceMatrix();
   else if (sys.elevator_run) R = createElevatorMeasurementCovarianceMatrix();
   else if (sys.stationary_run) R = createStationaryMeasurementCovarianceMatrix();
 
@@ -138,9 +138,9 @@ const MatrixXf KalmanFilter::createStateTransitionCovarianceMatrix()
   return Q;
 }
 
-const MatrixXf KalmanFilter::createTubeMeasurementCovarianceMatrix()
+const MatrixXf KalmanFilter::createTrackMeasurementCovarianceMatrix()
 {
-    MatrixXf R = MatrixXf::Constant(m_, m_, kTubeMeasurementVar);
+    MatrixXf R = MatrixXf::Constant(m_, m_, kTrackMeasurementVar);
     return R;
 }
 const MatrixXf KalmanFilter::createElevatorMeasurementCovarianceMatrix()

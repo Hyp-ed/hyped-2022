@@ -88,10 +88,12 @@ class System {
   // Navigation IMU axis
   int8_t axis;
   // Navigation kind of run
-  bool tube_run;
+  bool official_run;
   bool elevator_run;
   bool stationary_run;
   bool outside_run;
+  // Write acc,vel,pos to file
+  bool enable_nav_write;
 
   // Telemetry
   bool telemetry_off;

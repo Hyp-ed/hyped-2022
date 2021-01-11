@@ -1,5 +1,5 @@
 /*
-* Author: Kornelija Sukyte
+* Author: Kornelija Sukyte, Atte Niemi
 * Organisation: HYPED
 * Date:
 * Description: Entrypoint class to the embrake module, started in it's own thread.
@@ -25,6 +25,7 @@
 #include "data/data.hpp"
 
 #include "embrakes/stepper.hpp"
+#include "embrakes/fake_stepper.hpp"
 
 namespace hyped {
 
@@ -59,7 +60,7 @@ class Main : public Thread
     data::Telemetry        tlm_data_;
     int                    command_pins_[4];
     int                    button_pins_[4];
-    Stepper*               brake_1;
+    StepperInterface*      brake_1;
     // Stepper*               brake_2;
     // Stepper*               brake_3;
     // Stepper*               brake_4;

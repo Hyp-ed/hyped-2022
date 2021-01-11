@@ -37,14 +37,15 @@ namespace navigation {
     Data& data = Data::getInstance();
     bool navigation_complete = false;
 
+    if (!sys_.official_run) nav_.Navigation::disableKeyenceUsage();
+    if (sys_.fake_keyence) nav_.Navigation::setKeyenceFake();
+    if (sys_.enable_nav_write) nav_.logWrite();
+
     // wait for calibration state for calibration
     while (sys_.running_ && !navigation_complete) {
       State current_state = data.getStateMachineData().current_state;
 
-    if (!sys_.tube_run) nav_.Navigation::disableKeyenceUsage();
-    if (sys_.fake_keyence) nav_.Navigation::setKeyenceFake();
-
-    switch (current_state) {
+      switch (current_state) {
         case State::kIdle :
         case State::kReady :
           break;

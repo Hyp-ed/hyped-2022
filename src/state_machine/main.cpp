@@ -224,12 +224,12 @@ bool Main::checkCriticalFailure()
 
 bool Main::checkMaxDistanceReached()
 {
-  if (nav_data_.distance +
+  if (nav_data_.displacement +
       nav_data_.braking_distance +
       20 >= data::Telemetry::run_length) {
     log_.INFO("STATE", "max distance reached");
     log_.INFO("STATE", "current distance, braking distance: %f %f"
-      , nav_data_.distance
+      , nav_data_.displacement
       , nav_data_.braking_distance);
     hypedMachine.handleEvent(kMaxDistanceReached);
     return true;
@@ -250,7 +250,7 @@ bool Main::checkOnExit()
 bool Main::checkFinish()
 {
   // Check if end of tube was reached (leniency of 20m)
-  if (nav_data_.distance + 20 >= data::Telemetry::run_length) {
+  if (nav_data_.displacement + 20 >= data::Telemetry::run_length) {
         log_.INFO("STATE", "ready for collection");
         hypedMachine.handleEvent(kFinish);
         return true;

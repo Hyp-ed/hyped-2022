@@ -37,18 +37,17 @@ Navigation::Navigation(Logger& log, unsigned int axis/*=0*/)
            curr_msmt_(0),
            imu_reliable_ {{true, true, true, true}},
            nOutlierImus_(0),
-           stripe_counter_(0, 0),
-           keyence_used_(true),
-           keyence_real_(true),
-           keyence_failure_counter_(0),
            acceleration_(0, 0.),
            velocity_(0, 0.),
-           distance_(0, 0.),
-           distance_uncertainty_(0.),
-           velocity_uncertainty_(0.),
+           displacement_(0, 0.),
+           displ_unc_(0.),
+           vel_unc_(0.),
            init_time_set_(false),
+           stripe_counter_(log_, data_, displ_unc_, vel_unc_, kStripeDistance),
+           keyence_used_(true),
+           keyence_real_(true),
            acceleration_integrator_(&velocity_),
-           velocity_integrator_(&distance_)
+           velocity_integrator_(&displacement_)
 {
   log_.INFO("NAV", "Navigation module started");
   for (unsigned int i = 0; i < Sensors::kNumImus; i++) {
@@ -65,27 +64,25 @@ ModuleStatus Navigation::getModuleStatus() const
   return status_;
 }
 
-// TODO(Neil/Lukas/Justus): do this more smartly?
 NavigationType Navigation::getAcceleration() const
 {
   return acceleration_.value;
 }
 
-// TODO(Neil/Lukas/Justus): do this more smartly?
 NavigationType Navigation::getVelocity() const
 {
   return velocity_.value;
 }
 
-// TODO(Neil/Lukas/Justus): do this more smartly?
-NavigationType Navigation::getDistance() const
+NavigationType Navigation::getDisplacement() const
 {
-  return distance_.value;
+  return displacement_.value;
 }
 
 NavigationType Navigation::getEmergencyBrakingDistance() const
 {
-  // TODO(Neil): Account for actuation delay and/or communication latency?
+  // TODO(Anyone): Account for actuation delay and/or communication latency?
+  // Also, how realistic is this? (e.g brake force wearing down)
   return getVelocity()*getVelocity() / (2*kEmergencyDeceleration);
 }
 
@@ -137,7 +134,15 @@ void Navigation::calibrateGravity()
     for (int i = 0; i < kCalibrationQueries; ++i) {
       sensor_readings_ = data_.getSensorsImuData();
       for (int j = 0; j < Sensors::kNumImus; ++j) {
-        online_array[j].update(sensor_readings_.value[j].acc);
+        NavigationVector imu_data = sensor_readings_.value[j].acc;
+        online_array[j].update(imu_data);
+        if (nav_write_) {
+          std::ofstream writefile;
+          writefile.open("src/navigation/testing/nav_data.csv", std::ios::app);
+          writefile << j           << kDelimiter << imu_data[0] << kDelimiter <<
+                       imu_data[1] << kDelimiter << imu_data[2] << std::endl;
+          writefile.close();
+        }
       }
       Thread::sleep(1);
     }
@@ -213,6 +218,7 @@ void Navigation::queryImus()
 {
   ImuAxisData acc_raw;  // All raw data, four values per axis
   NavigationArray acc_raw_moving;  // Raw values in moving axis
+
   OnlineStatistics<NavigationType> acc_avg_filter;
   sensor_readings_ = data_.getSensorsImuData();
   uint32_t t = sensor_readings_.timestamp;
@@ -293,102 +299,22 @@ void Navigation::checkVibration()
 
 void Navigation::updateUncertainty()
 {
-  /* Uncertainty from measuring is the timestamp between two measurements times velocity.
-   * Furthermore, the velocity has an uncertainty due to acceleration and timestamp. */
-  double delta_t = (distance_.timestamp - prev_timestamp_)/1000000.0;
+  double delta_t = (displacement_.timestamp - prev_timestamp_)/1000000.0;
   NavigationType abs_delta_acc = abs(getAcceleration() - prev_acc_);
-  // Adds uncertainty from the possible shift in both directions in the timestamp
-  velocity_uncertainty_ += abs_delta_acc*delta_t/2.;
-  // Adds uncertainty from the variance in acceleration from measurements
+  // Random walk uncertainty
+  vel_unc_ += abs_delta_acc*delta_t/2.;
+  // Processing uncertainty
   NavigationType acc_variance = 0.0;
   for (int i = 0; i < Sensors::kNumImus; i++) {
     acc_variance += filters_[i].KalmanFilter::getEstimateVariance();
   }
-  // Average variance
   acc_variance = acc_variance/Sensors::kNumImus;
-  // Standard deviation
   NavigationType acc_stdDev = sqrt(acc_variance);
-  // uncertainty is the std deviation integrated to give velocity
-  velocity_uncertainty_ += acc_stdDev*delta_t;
-  // Hence uncertainty in distance becomes updated with:
-  distance_uncertainty_ += velocity_uncertainty_*delta_t;
-  // Also, distance will be affected by taking the average of two velocities
-  distance_uncertainty_ += abs(getVelocity() - prev_vel_) * delta_t / 2.;
-}
-
-void Navigation::queryKeyence()
-{
-  // set the keyence readings with the data from the central data struct
-  keyence_readings_ = data_.getSensorsKeyenceData();
-  for (int i = 0; i < Sensors::kNumKeyence; i++) {
-    // Checks whether the stripe count has been updated and if it has not been
-    // double-counted with the time constraint (100000micros atm, aka 0.1s, subject to change).
-    if (prev_keyence_readings_[i].count.value != keyence_readings_[i].count.value &&
-         keyence_readings_[i].count.timestamp - stripe_counter_.timestamp > 1e5) {
-      stripe_counter_.value++;
-      stripe_counter_.timestamp = keyence_readings_[i].count.timestamp;
-      if (!keyence_real_) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
-
-      // Allow up to one missed stripe.
-      // There must be some uncertainty in distance around the missed 30.48m (kStripeDistance).
-      NavigationType allowed_uncertainty = distance_uncertainty_;
-      /* If the uncertainty is too small, it is set to a relatively small value so that we do
-       * not get an error just because the uncertainty is tiny. */
-      NavigationType minimum_uncertainty = kStripeDistance / 5.;
-      if (distance_uncertainty_ < minimum_uncertainty) allowed_uncertainty = minimum_uncertainty;
-      NavigationType distance_change = distance_.value - stripe_counter_.value*kStripeDistance;
-      /* There should only be an updated stripe count if the IMU determined distance is closer
-       * to the the next stripe than the current. It should not just lie within the uncertainty,
-       * otherwise we might count way more stripes than there are as soon as the uncertainty gets
-       * fairly large (>15m). */
-      if (distance_change > kStripeDistance - allowed_uncertainty &&
-          distance_change < kStripeDistance + allowed_uncertainty &&
-          distance_.value > stripe_counter_.value*kStripeDistance + 0.5*kStripeDistance) {
-        stripe_counter_.value++;
-        distance_change -= kStripeDistance;
-      }
-      /* Error handling: If distance from keyence still deviates more than the allowed
-      uncertainty, then the measurements are no longer believable. Important that this
-      is only checked in an update, otherwise we might throw an error in between stripes.
-      The first stripe is very uncertain, since it takes the longest, thus we ignore it.
-      Even if the first stripe is missed, error handling will catch it when the second is seen.*/
-      if ((distance_change < (-2) * allowed_uncertainty) ||
-          (distance_change > 2 * allowed_uncertainty))
-      {
-        keyence_failure_counter_++;
-        keyence_failure_counter_ += floor(abs(distance_change) / kStripeDistance);
-      }
-      // Lower the uncertainty in velocity (based on sinuisoidal distribution):
-      velocity_uncertainty_ -= abs(distance_change*1e6/
-                               (stripe_counter_.timestamp - init_timestamp_));
-      log_.DBG("NAV", "Stripe detected!");
-      log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_timestamp_);
-      log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
-
-      // Make sure velocity uncertainty is positive.
-      velocity_uncertainty_ = abs(velocity_uncertainty_);
-      // The uncertainty in distance is not changed from this because the impact is far too large
-      // Update velocity value
-      velocity_.value -= distance_change*1e6/(stripe_counter_.timestamp - init_timestamp_);
-      // Update distance value
-      distance_.value -= distance_change;
-      break;
-    }
-  }
-  // If more than one disagreement occurs then we enter the kCriticalFailure state
-  if (keyence_failure_counter_ > 1) {
-    status_ = ModuleStatus::kCriticalFailure;
-    log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
-  }
-  /* Similarly, if the current IMU distance is larger than four times the distance between
-   * two stripes, then we know that the two can no longer agree. That is because at least
-   * three stripes have been missed then, which throws kCriticalFailure. */
-  if (distance_.value - stripe_counter_.value*kStripeDistance > 4 * kStripeDistance) {
-    status_ = ModuleStatus::kCriticalFailure;
-    log_.ERR("NAV", "IMU distance at least 3 * kStripeDistance ahead, entering kCriticalFailure.");
-  }
-  // Update old keyence readings with current ones
-  prev_keyence_readings_ = keyence_readings_;
+  // uncertainty in velocity is the std deviation of acceleration integrated
+  vel_unc_ += acc_stdDev*delta_t;
+  displ_unc_ += vel_unc_*delta_t;
+  // Random walk uncertainty
+  displ_unc_ += abs(getVelocity() - prev_vel_) * delta_t / 2.;
 }
 
 void Navigation::disableKeyenceUsage()
@@ -409,6 +335,11 @@ bool Navigation::getHasInit()
 void Navigation::setHasInit()
 {
   init_time_set_ = true;
+}
+
+void Navigation::logWrite()
+{
+  nav_write_ = true;
 }
 
 void Navigation::tukeyFences(NavigationArray& data_array, float threshold)
@@ -510,7 +441,7 @@ void Navigation::updateData()
 {
   data::Navigation nav_data;
   nav_data.module_status              = getModuleStatus();
-  nav_data.distance                   = getDistance();
+  nav_data.displacement               = getDisplacement();
   nav_data.velocity                   = getVelocity();
   nav_data.acceleration               = getAcceleration();
   nav_data.emergency_braking_distance = getEmergencyBrakingDistance();
@@ -520,14 +451,14 @@ void Navigation::updateData()
 
   if (counter_ % 100 == 0) {  // kPrintFreq
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", //NOLINT
-               counter_, nav_data.acceleration, nav_data.velocity, nav_data.distance,
-               stripe_counter_.value*kStripeDistance);
+               counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
+               stripe_counter_.getStripeCount()*kStripeDistance);
     log_.DBG("NAV", "%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d",
-               counter_, velocity_uncertainty_, distance_uncertainty_, keyence_failure_counter_);
+               counter_, vel_unc_, displ_unc_, stripe_counter_.getFailureCount());
   }
   counter_++;
   // Update all prev measurements
-  prev_timestamp_ = distance_.timestamp;
+  prev_timestamp_ = displacement_.timestamp;
   prev_acc_ = getAcceleration();
   prev_vel_ = getVelocity();
 }
@@ -535,7 +466,11 @@ void Navigation::updateData()
 void Navigation::navigate()
 {
   queryImus();
-  if (keyence_used_) queryKeyence();
+  if (keyence_used_) {
+    stripe_counter_.queryKeyence(displacement_.value, velocity_.value, keyence_real_);
+    if (stripe_counter_.checkFailure(displacement_.value))
+      status_ = ModuleStatus::kCriticalFailure;
+  }
   if (counter_ > 1000) updateUncertainty();
   updateData();
 }
@@ -545,14 +480,12 @@ void Navigation::initTimestamps()
   // First iteration --> set timestamps
   acceleration_.timestamp = utils::Timer::getTimeMicros();
   velocity_    .timestamp = utils::Timer::getTimeMicros();
-  distance_    .timestamp = utils::Timer::getTimeMicros();
+  displacement_    .timestamp = utils::Timer::getTimeMicros();
   prev_acc_ = getAcceleration();
   prev_vel_ = getVelocity();
   init_timestamp_ = utils::Timer::getTimeMicros();
   log_.DBG3("NAV", "Initial timestamp:%d", init_timestamp_);
   prev_timestamp_ = utils::Timer::getTimeMicros();
-  // First iteration --> get initial keyence data
-  // (should be zero counters and corresponding timestamp)
-  prev_keyence_readings_ = data_.getSensorsKeyenceData();
+  stripe_counter_.set_init(init_timestamp_);
 }
 }}  // namespace hyped::navigation

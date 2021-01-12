@@ -210,6 +210,7 @@ struct DifferentiatorProperty : public ::testing::Test {
   DataPoint<float> linear_data[100];
   DataPoint<float> quadratic_data[100];
   DataPoint<float> function_data[100];
+  DataPoint<float> difference_function[100];
   DataPoint<float> data_point;
 
   void SetUp()
@@ -221,6 +222,8 @@ struct DifferentiatorProperty : public ::testing::Test {
       quadratic_data[i] = data_point;
       data_point  = DataPoint<float>(i*pow(10, 6), i*i+i);
       function_data[i] = data_point;
+      data_point = DataPoint<float>(i*pow(10, 6), i*i - i);
+      difference_function[i] = data_point;
     }
   }
 };
@@ -243,46 +246,16 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
 }
 
 /**
- * Struct used in Testing the difference of derivatives. Similar
- * to the struct used for finding the sum except it finds the
- * difference .
- * Populates arrays of DataPoints with sample values drawn from the function
- * outputs.
- */
-struct DifferentiatorDifference : public ::testing::Test {
- protected:
-  Differentiator<float> diff_linear;
-  Differentiator<float> diff_quadratic;
-  Differentiator<float> diff_function;
-  DataPoint<float> linear_data[100];
-  DataPoint<float> quadratic_data[100];
-  DataPoint<float> function_data[100];
-  DataPoint<float> data_point;
-
-  void SetUp()
-  {
-    for (int i = 0; i < 100; i++) {
-      data_point = DataPoint<float>(i*pow(10, 6), i);
-      linear_data[i] = data_point;
-      data_point  = DataPoint<float>(i*pow(10, 6), i*i);
-      quadratic_data[i] = data_point;
-      data_point  = DataPoint<float>(i*pow(10, 6), i*i-i);
-      function_data[i] = data_point;
-    }
-  }
-};
-
-/**
  * Test fixture used for checking the difference of derivatives.
  * The Test checks whether the derivative of the difference of two functions is equal
  * to the difference of their derivatives
  */
-TEST_F(DifferentiatorDifference, differentiatorDifferenceOfDerivatives)
+TEST_F(DifferentiatorProperty, differentiatorDifferenceOfDerivatives)
 {
   for (int i = 0; i < 100; i++) {
     float linear = diff_linear.update(linear_data[i]).value;
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
-    float function  = diff_function.update(function_data[i]).value;
+    float function  = diff_function.update(difference_function[i]).value;
 
     ASSERT_EQ(function, quadratic-linear)
       << "The derivative should be the same as the difference of the two derivatives";

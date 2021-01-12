@@ -59,7 +59,7 @@ class KalmanFilter
     // covariance matrix variances
     static constexpr float kInitialErrorVar = 0.5;
     static constexpr float kStateTransitionVar = 0.02;
-    static constexpr float kTubeMeasurementVar = 0.001;
+    static constexpr float kTrackMeasurementVar = 0.001;
     static constexpr float kElevatorMeasurementVar = 0.12;
     static constexpr float kStationaryMeasurementVar = 0.04;
 
@@ -76,7 +76,7 @@ class KalmanFilter
     const MatrixXf createStateTransitionCovarianceMatrix();
 
     // create measurement covariance matrices R
-    const MatrixXf createTubeMeasurementCovarianceMatrix();
+    const MatrixXf createTrackMeasurementCovarianceMatrix();
     const MatrixXf createElevatorMeasurementCovarianceMatrix();
     const MatrixXf createStationaryMeasurementCovarianceMatrix();
 };

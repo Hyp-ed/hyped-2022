@@ -21,7 +21,7 @@
  */
 
 #include "data/data.hpp"
-#include "navigation/main.hpp"
+#include "navigation/main_log.hpp"
 #include "sensors/imu_manager.hpp"
 #include "sensors/main.hpp"
 #include "sensors/fake_gpio_counter.hpp"
@@ -34,7 +34,7 @@ using hyped::data::State;
 using hyped::data::StateMachine;
 using hyped::data::ModuleStatus;
 using hyped::data::Sensors;
-using hyped::navigation::Main;
+using hyped::navigation::MainLog;
 using hyped::utils::concurrent::Thread;
 using hyped::utils::System;
 using hyped::utils::Logger;
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
   Logger* log_nav = new Logger(sys.verbose_nav, sys.debug_nav);
 
   // Keyence must be disabled
-  sys.tube_run = 0;
+  sys.official_run = false;
   if (sys.stationary_run) {
     log_nav->INFO("NAV", "STATIONARY RUN INITIALISED");
   } else {
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
   hyped::sensors::Main* sensors_main = new hyped::sensors::Main(1, *log_nav);
   sensors_main->start();
  
-  Main* main = new Main(2, *log_nav);
+  MainLog* main = new MainLog(2, *log_nav);
   main->start();
 
   log_nav->INFO("MAIN", "Set state to CALIBRATING");

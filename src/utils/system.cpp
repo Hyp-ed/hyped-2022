@@ -71,7 +71,7 @@ void printUsage()
     "    To set which IMU axis to be navigated after.\n"
     "    --axis\n"
     "    To set run kind for navigation tests.\n"
-    "    --tube_run, --elevator_run, --stationary_run, --outside_run\n"
+    "    --official_run, --elevator_run, --stationary_run, --outside_run\n"
     "    To disable telemetry module.\n"
     "    --telemetry_off\n"
     "");
@@ -111,7 +111,7 @@ System::System(int argc, char* argv[])
       imu_id(DEFAULT_NAV_ID),
       run_id(DEFAULT_NAV_ID),
       axis(0),
-      tube_run(true),
+      official_run(true),
       elevator_run(false),
       stationary_run(false),
       outside_run(false),
@@ -156,7 +156,7 @@ System::System(int argc, char* argv[])
       {"imu_id", no_argument, 0, 'p'},
       {"run_id", no_argument, 0, 'q'},
       {"axis", required_argument, 0, 'u'},
-      {"tube_run", no_argument, 0, 'r'},
+      {"official_run", no_argument, 0, 'r'},
       {"elevator_run", no_argument, 0, 's'},
       {"stationary_run", no_argument, 0, 't'},
       {"outside_run", no_argument, 0, 'w'},
@@ -271,7 +271,7 @@ System::System(int argc, char* argv[])
         if (optarg) fake_keyence_fail = atoi(optarg);
         else        fake_keyence_fail = 1;
         break;
-      case 'L':   // fake_temeperature_fail
+      case 'L':   // fake_temperature_fail
         if (optarg) fake_temperature_fail = atoi(optarg);
         else        fake_temperature_fail = 1;
         break;
@@ -295,36 +295,34 @@ System::System(int argc, char* argv[])
         if (optarg) axis = atoi(optarg);
         else        axis = 0;
         break;
-      case 'r':   // tube_run
-        if (optarg) tube_run = atoi(optarg);
-        else        tube_run = 1;
+      case 'r':   // official_run
+        if (optarg) official_run = atoi(optarg);
+        else        official_run = 1;
         break;
       case 's':   // elevator_run
         if (optarg) {
           elevator_run = atoi(optarg);
-          tube_run = 0;
         } else {
           elevator_run = 1;
-          tube_run = 0;
         }
+        official_run = 0;
         break;
       case 't':   // stationary_run
         if (optarg) {
           stationary_run = atoi(optarg);
-          tube_run = 0;
         } else {
           stationary_run = 1;
-          tube_run = 0;
         }
+        official_run = 0;
+        enable_nav_write = stationary_run;
         break;
       case 'w':   // outside_run
         if (optarg) {
           outside_run = atoi(optarg);
-          tube_run = 0;
         } else {
           outside_run = 1;
-          tube_run = 0;
         }
+        official_run = 0;
         break;
       case 'x':   // telemetry_off
         if (optarg) telemetry_off = atoi(optarg);

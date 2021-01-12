@@ -121,8 +121,6 @@ struct KalmanMathematics : public::testing::Test {
  protected:
   KalmanMultivariate kalmanMathWithoutControl = KalmanMultivariate(n, m, 0);
   KalmanMultivariate kalmanMathWithControl = KalmanMultivariate(n, m, k);
-
-  // The size of the array corresponds to the size of the data set
   static constexpr int NUM_TESTDATA = 50;
   VectorXf x1_Data[NUM_TESTDATA];
   VectorXf z_Data[NUM_TESTDATA];

@@ -123,15 +123,16 @@ struct KalmanMathematics : public::testing::Test {
   KalmanMultivariate kalmanMathWithControl = KalmanMultivariate(n, m, k);
 
   // The size of the array corresponds to the size of the data set
-  VectorXf x1_Data[50];
-  VectorXf z_Data[50];
-  VectorXf u_Data[50];
-  MatrixXf A_Data[50];
-  MatrixXf B_Data[50];
-  MatrixXf Q_Data[50];
-  MatrixXf H_Data[50];
-  MatrixXf R_Data[50];
-  MatrixXf P_Data[50];
+  static constexpr int NUM_TESTDATA = 50;
+  VectorXf x1_Data[NUM_TESTDATA];
+  VectorXf z_Data[NUM_TESTDATA];
+  VectorXf u_Data[NUM_TESTDATA];
+  MatrixXf A_Data[NUM_TESTDATA];
+  MatrixXf B_Data[NUM_TESTDATA];
+  MatrixXf Q_Data[NUM_TESTDATA];
+  MatrixXf H_Data[NUM_TESTDATA];
+  MatrixXf R_Data[NUM_TESTDATA];
+  MatrixXf P_Data[NUM_TESTDATA];
   MatrixXf I = MatrixXf::Identity(n, n);
   std::string expected_state_estimate_err = "State estimate isnt same as expected state estimate";
   std::string expected_covariance_err = "Covariance isnt the same as expected state covariance";
@@ -162,7 +163,7 @@ struct KalmanMathematics : public::testing::Test {
  */
 TEST_F(KalmanMathematics, handlesFilterWithoutControl)
 {
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < NUM_TESTDATA; i++) {
     MatrixXf A = A_Data[i];
     MatrixXf H = H_Data[i];
     MatrixXf R = R_Data[i];
@@ -198,7 +199,7 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithControl)
 {
-  for (int i = 0; i < 50; i ++) {
+  for (int i = 0; i < NUM_TESTDATA; i ++) {
     MatrixXf A = A_Data[i];
     MatrixXf B = B_Data[i];
     MatrixXf Q = Q_Data[i];

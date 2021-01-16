@@ -31,6 +31,23 @@ namespace math {
 // -------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Function which compares two floats; code taken from:
+ * https://www.tutorialspoint.com/floating-point-comparison-in-cplusplus
+ * @param elem1 float number to be compared
+ * @param elem2 float number to be compared 
+ * @param epsilon 
+ * @returns true if floats to be compared are equal
+ */
+bool compare_float(float elem1, float elem2, float epsilon = 0.01f) 
+{
+   if (fabs(elem1 - elem2) < epsilon) {
+       return true;   
+   } else {
+       return false;
+   }
+}
+
+/**
 * @brief generates a random float between two given floats. Code from: https://tinyurl.com/y2phu2q2
 * @param lower Lower bound for randomly generated values
 * @param upper Upper bound for randomly generated values
@@ -58,18 +75,6 @@ double CalculateVectorMagnitude(std::array<float, 100> vector_T)
      return std::sqrt(sum_of_squares);
 }
 
-/**
- * @brief compares two float numbers to 5 decimal places 
- * @param elem1 float number
- * @param elem2 float number 
- * @returns truth value of equality between the two numbers to 5 decimal places
- */
-bool CompareFloats5DP(float elem1, float elem2) 
-{
-    int elem1_int = static_cast<int>((elem1 + 0.0000005)*(pow(10, 5)));
-    int elem2_int = static_cast<int>((elem2 + 0.0000005)*(pow(10, 5)));
-    return elem1_int == elem2_int;
-}
 
 // -------------------------------------------------------------------------------------------------
 // Set Up
@@ -156,9 +161,10 @@ TEST_F(vector_test_float, testVectorConstantConstructor)
     ran_index = rand() % 100 + 1;
     int a = rand() % 1000 + 1;
     float elem = test_vector_constant.operator+=(a).operator-=(a).operator[](ran_index);
-    bool equal = CompareFloats5DP(constant, elem);
-    ASSERT_TRUE(equal);
-    ASSERT_EQ(constant*a, test_vector_constant.operator*=(a).operator[](ran_index));
+    ASSERT_TRUE(compare_float(constant,elem));
+    ran_index = rand() % 100 + 1;
+    float elem_eq = test_vector_constant.operator*=(a).operator[](ran_index);
+    ASSERT_TRUE(compare_float(constant*a, elem_eq));
 }
 
 
@@ -371,6 +377,7 @@ TEST_F(vector_test_float, testUnitVectors)
         ASSERT_EQ(elements1[i]/CalculateVectorMagnitude(elements1), unit_vector1.operator[](i));
         ASSERT_EQ(elements2[i]/CalculateVectorMagnitude(elements2), unit_vector2.operator[](i));
      }
+     ASSERT_EQ(round(test_vector1_float.toUnitVector().norm()), 1);
 }
 
 /**

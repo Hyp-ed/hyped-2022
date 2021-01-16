@@ -11,6 +11,6 @@ This is the official repository of HYPED. HYPED is a student society at the Univ
 Since we will have dozens of developers coding for the pod, it is very important that everyone adheres to the same code style. For that purpose we have created the following [style guide](https://hyp-ed.github.io/styleguide/).
 
 ## Building and Running Unit Tests
-To build and run the unit test suite use `make testrunner`. An executable will be generated at `test/testrunner`. 
+To build and run the unit test suite use `make test`.
 
 To include more tests, add them under `test/src` and add the file path to `test/Test.files`

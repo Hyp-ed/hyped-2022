@@ -1,0 +1,29 @@
+name: C/C++ CI
+
+on:
+   [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Compile and Test
+      run: make test lintall
+    - name: Install LCOV
+      run: | 
+        cd ..
+        git clone https://github.com/linux-test-project/lcov.git
+        cd lcov
+        sudo make install
+    - name: Get Coverage
+      run: make coverage
+    - uses: codecov/codecov-action@v1
+      with:
+        files: ./test/coverage/covdata/hyped.covdata # optional
+        name: Codecov-umbrella # optional
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)
+    

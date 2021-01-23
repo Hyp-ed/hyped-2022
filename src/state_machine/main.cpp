@@ -46,6 +46,10 @@ void Main::run()
       current_state_ = new_state;
       current_state_->enter(log_);
     }
+
+    // Yielding because running the loop twice without any other thread being active
+    // will result in identical behaviour and thus waste resources.
+    yield();
   }
 
   sm_data = data.getStateMachineData();

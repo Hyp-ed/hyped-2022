@@ -36,6 +36,7 @@ struct TransitionFunctionality : public ::testing::Test {
   const std::string telemetry_emergency_error    = "Should handle emergency in Telemetry.";
   const std::string sensors_emergency_error      = "Should handle emergency in Sensors.";
   const std::string motors_emergency_error       = "Should handle emergency in Motors.";
+  const std::string stop_command_error           = "Should handle stop command.";
   const std::string all_initialised_error        = "Should handle all modules being initialised.";
   const std::string brakes_not_initialised_error = "Should handle Brakes not being initialised.";
   const std::string nav_not_initialised_error = "Should handle Navigation not being initialised.";
@@ -68,13 +69,14 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = other;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = other;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, false) << no_emergency_error;
@@ -94,13 +96,14 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = ModuleStatus::kCriticalFailure;
-    nav_data.module_status       = other;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = other;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = ModuleStatus::kCriticalFailure;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << brake_emergency_error;
@@ -120,13 +123,14 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = ModuleStatus::kCriticalFailure;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = other;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = ModuleStatus::kCriticalFailure;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << nav_emergency_error;
@@ -146,13 +150,14 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = other;
-    batteries_data.module_status = ModuleStatus::kCriticalFailure;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = other;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = ModuleStatus::kCriticalFailure;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << batteries_emergency_error;
@@ -172,13 +177,14 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = other;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = ModuleStatus::kCriticalFailure;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = other;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = ModuleStatus::kCriticalFailure;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << telemetry_emergency_error;
@@ -198,13 +204,14 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = other;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = ModuleStatus::kCriticalFailure;
-    motors_data.module_status    = other;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = ModuleStatus::kCriticalFailure;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << sensors_emergency_error;
@@ -224,16 +231,44 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
   bool has_emergency;
   for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    other                        = static_cast<ModuleStatus>(i);
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = other;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = ModuleStatus::kCriticalFailure;
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = ModuleStatus::kCriticalFailure;
+    telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << motors_emergency_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesStopCommand)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool has_emergency;
+  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+    // Making sure checkEmergency is unaffected by status of other values.
+    other                                 = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status           = other;
+    nav_data.module_status                = other;
+    batteries_data.module_status          = other;
+    telemetry_data.module_status          = other;
+    sensors_data.module_status            = other;
+    motors_data.module_status             = other;
+    telemetry_data.emergency_stop_command = true;
+    has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                   sensors_data, motors_data);
+    ASSERT_EQ(has_emergency, true) << stop_command_error;
   }
 }
 

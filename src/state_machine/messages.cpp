@@ -26,10 +26,8 @@ namespace hyped {
 
 namespace state_machine {
 
-// Identifies the module sending the message as STM
 const char Messages::kStmLoggingIdentifier[] = "STM";
 
-// Message upon receiving the stop command
 const char Messages::kStopCommandLog[] = "STOP command received";
 
 const char Messages::kCriticalNavigationLog[] = "Critical failure in navigation";

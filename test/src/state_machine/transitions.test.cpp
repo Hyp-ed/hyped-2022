@@ -29,8 +29,8 @@ using namespace hyped::state_machine;
 struct TransitionFunctionality : public ::testing::Test {
   // TODO(miltfra): Disable printing log messages to stdout/stderr
   hyped::utils::Logger log;
-  const std::string brake_emergency_error    = "Should handle emergency in Embrakes.";
-  const std::string brake_no_emergency_error = "Should handle emergency in Embrakes.";
+  const std::string brake_emergency_error = "Should handle emergency in Embrakes.";
+  const std::string no_emergency_error    = "Should handle no emergency.";
 
  protected:
   void SetUp() {}
@@ -63,10 +63,5 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << brake_emergency_error;
-    // Checking non-emergency case
-    embrakes_data.module_status = other;
-    has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
-                                   sensors_data, motors_data);
-    ASSERT_EQ(has_emergency, false) << brake_no_emergency_error;
   }
 }

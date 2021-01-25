@@ -3,7 +3,7 @@
  * Organisation: HYPED
  * Date:
  * Description: The declared messages below are used in transitions while changing states.
- *    These declarations allow log messages to be seen and declared more effectively in the IDE. 
+ *    These declarations allow log messages to be seen and declared more effectively in the IDE.
  *    Refer to "state_machine/messages.cpp" to see the log messages.
  *
  *    Copyright 2020 HYPED
@@ -23,14 +23,15 @@
 #ifndef STATE_MACHINE_MESSAGES_HPP_
 #define STATE_MACHINE_MESSAGES_HPP_
 
+#include <string>
+
 #include "data/data.hpp"
 #include "state_machine/main.hpp"
-#include "state_machine/transitions.hpp"
 #include "state_machine/state.hpp"
+#include "state_machine/transitions.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 #include "utils/timer.hpp"
-#include <string>
 
 namespace hyped {
 
@@ -42,31 +43,50 @@ namespace state_machine {
 
 // Declaration of log messages
 
-constexpr char *kStmLoggingIdentifier;
+struct Messages {
+  // Identifies the module sending the message as STM
+  static const char kStmLoggingIdentifier[];
 
-constexpr char *kStopLog;
+  // Sent upon receiving the stop command
+  static const char kStopCommandLog[];
 
-constexpr char *kCriticalNavigationLog;
+  // Sent upon encountering a critical failure in navigation
+  static const char kCriticalNavigationLog[];
 
-constexpr char *kCriticalTelemetryLog;
+  // Sent upon encountering a critical failure in telemetry
+  static const char kCriticalTelemetryLog[];
 
-constexpr char *kCriticalMotorsLog;
+  // Sent upon encountering a critical failure in motors
+  static const char kCriticalMotorsLog[];
 
-constexpr char *kCriticalEmbrakesLog;
+  // Sent upon encountering a critical failure in embrakes
+  static const char kCriticalEmbrakesLog[];
 
-constexpr char *kCriticalBatteriesLog;
+  // Sent upon encountering a critical failure in batteries
+  static const char kCriticalBatteriesLog[];
 
-constexpr char *kCalibrateInitialisedLog;
+  // Sent upon determining that calibration command has been received
+  // and all modules are initialised
+  static const char kCalibrateInitialisedLog[];
 
-constexpr char *kModulesCalibratedLog;
+  // Sent upon determining that all modules are calibrated
+  static const char kModulesCalibratedLog[];
 
-constexpr char *kLaunchCommandLog;
+  // Sent upon receiving launch command
+  static const char kLaunchCommandLog[];
 
-constexpr char *kShutdownCommandLog;
+  // Sent upon receiving shutdown command
+  static const char kShutdownCommandLog[];
 
-constexpr char *kBrakingZoneLog;
+  // Sent upon entering braking zone
+  static const char kBrakingZoneLog[];
 
-constexpr char *kPodStoppedLog;
+  // Sent upon determining that the pod has stopped
+  static const char kPodStoppedLog[];
+
+  // Messages only exists to hold static members, no constructor is needed.
+  Messages() = delete;
+};
 
 }  // namespace state_machine
 

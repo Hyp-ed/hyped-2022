@@ -26,34 +26,34 @@ namespace hyped {
 
 namespace state_machine {
 
-// List of log messages
+// Identifies the module sending the message as STM
+const char Messages::kStmLoggingIdentifier[] = "STM";
 
-constexpr char *kStmLoggingIdentifier = "STM";
+// Message upon receiving the stop command
+const char Messages::kStopCommandLog[] = "STOP command received";
 
-constexpr char *kStopLog = "STOP command received";
+const char Messages::kCriticalNavigationLog[] = "Critical failure in navigation";
 
-constexpr char *kCriticalNavigationLog = "Critical failure in navigation";
+const char Messages::kCriticalTelemetryLog[] = "Critical failure in telemetry";
 
-constexpr char *kCriticalTelemetryLog = "Critical failure in telemetry";
+const char Messages::kCriticalMotorsLog[] = "Critical failure in motors";
 
-constexpr char *kCriticalMotorsLog = "Critical failure in motors";
+const char Messages::kCriticalEmbrakesLog[] = "Critical failure in embrakes";
 
-constexpr char *kCriticalEmbrakesLog = "Critical failure in embrakes";
+const char Messages::kCriticalBatteriesLog[] = "Critical failure in batteries";
 
-constexpr char *kCriticalBatteriesLog = "Critical failure in batteries";
+const char Messages::kCalibrateInitialisedLog[]
+  = "Calibrate command received and all modules initialised";
 
-constexpr char *kCalibrateInitialisedLog = "Calibrate command received and all modules initialised";
+const char Messages::kModulesCalibratedLog[] = "All modules calibrated";
 
-constexpr char *kModulesCalibratedLog = "All modules calibrated";
+const char Messages::kLaunchCommandLog[] = "Launch command received";
 
-constexpr char *kLaunchCommandLog = "Launch command received";
+const char Messages::kShutdownCommandLog[] = "Shutdown command received";
 
-constexpr char *kShutdownCommandLog = "Shutdown command received";
+const char Messages::kBrakingZoneLog[] = "Entered braking zone";
 
-constexpr char *kBrakingZoneLog = "Entered braking zone";
-
-constexpr char *kPodStoppedLog = "The pod has stopped";
-
+const char Messages::kPodStoppedLog[] = "The pod has stopped";
 
 }  // namespace state_machine
 

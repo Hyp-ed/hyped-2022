@@ -71,6 +71,7 @@ bool compare_float_one_decimal(float elem1, float elem2, float epsilon = 0.1f)
 */
 float RandomFloatTestingVector(float lower, float upper)
 {
+  std::srand(time(0));
   float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
   float diff = upper - lower;
   float r = random * diff;
@@ -147,6 +148,7 @@ struct vector_test_float : public ::testing::Test
 */
 TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 {
+    std::srand(time(0));
     ASSERT_EQ(0, test_vector_default.norm());
     int ran_index = rand() % 100;
     ASSERT_EQ(0, test_vector_default.operator[](ran_index));
@@ -169,6 +171,7 @@ TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 */
 TEST_F(vector_test_float, testVectorConstantConstructor)
 {
+    std::srand(time(0));
     test_vector_constant = Vector<float, 100>(constant);
     int ran_index = rand() % 100;
     ASSERT_EQ(constant, test_vector_constant.operator[](ran_index));

@@ -69,8 +69,6 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
                              Batteries batteries_data, Telemetry telemetry_data,
                              Sensors sensors_data, Motors motors_data)
 {
-  if (!telemetry_data.calibrate_command) return false;
-
   if (embrakes_data.module_status != ModuleStatus::kInit) return false;
   if (nav_data.module_status != ModuleStatus::kInit) return false;
   if (batteries_data.module_status != ModuleStatus::kInit) return false;
@@ -99,6 +97,13 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
+bool checkCalibrateCommand(Logger &log, Telemetry telemetry_data)
+{
+  if (!telemetry_data.calibrate_command) return false;
+
+  log.INFO("STM", "Launch command received");
+  return true;
+}
 bool checkLaunchCommand(Logger &log, Telemetry telemetry_data)
 {
   if (!telemetry_data.launch_command) return false;

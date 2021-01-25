@@ -75,6 +75,11 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
 //--------------------------------------------------------------------------------------
 
 /*
+ * @brief   Returns true iff the calibrate command has been received.
+ */
+bool checkCalibrateCommand(Logger &log, Telemetry telemetry_data);
+
+/*
  * @brief   Returns true iff the launch command has been received.
  */
 bool checkLaunchCommand(Logger &log, Telemetry telemetry_data);

@@ -124,6 +124,32 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
   }
 }
 
+TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool has_emergency;
+  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+    // Making sure checkEmergency is unaffected by status of other values.
+    other                        = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status  = other;
+    nav_data.module_status       = other;
+    batteries_data.module_status = ModuleStatus::kCriticalFailure;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = other;
+    has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                   sensors_data, motors_data);
+    ASSERT_EQ(has_emergency, true) << batteries_emergency_error;
+  }
+}
+
 TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
 {
   EmergencyBrakes embrakes_data;

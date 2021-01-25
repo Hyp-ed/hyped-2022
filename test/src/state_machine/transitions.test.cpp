@@ -29,13 +29,22 @@ using namespace hyped::state_machine;
 struct TransitionFunctionality : public ::testing::Test {
   // TODO(miltfra): Disable printing log messages to stdout/stderr
   hyped::utils::Logger log;
-  const std::string no_emergency_error        = "Should handle no emergency.";
-  const std::string brake_emergency_error     = "Should handle emergency in Embrakes.";
-  const std::string nav_emergency_error       = "Should handle emergency in Navigation.";
-  const std::string batteries_emergency_error = "Should handle emergency in Batteries.";
-  const std::string telemetry_emergency_error = "Should handle emergency in Telemetry.";
-  const std::string sensors_emergency_error   = "Should handle emergency in Sensors.";
-  const std::string motors_emergency_error    = "Should handle emergency in Motors.";
+  const std::string no_emergency_error           = "Should handle no emergency.";
+  const std::string brake_emergency_error        = "Should handle emergency in Embrakes.";
+  const std::string nav_emergency_error          = "Should handle emergency in Navigation.";
+  const std::string batteries_emergency_error    = "Should handle emergency in Batteries.";
+  const std::string telemetry_emergency_error    = "Should handle emergency in Telemetry.";
+  const std::string sensors_emergency_error      = "Should handle emergency in Sensors.";
+  const std::string motors_emergency_error       = "Should handle emergency in Motors.";
+  const std::string all_initialised_error        = "Should handle all modules being initialised.";
+  const std::string brakes_not_initialised_error = "Should handle Brakes not being initialised.";
+  const std::string nav_not_initialised_error = "Should handle Navigation not being initialised.";
+  const std::string batteries_not_initialised_error
+    = "Should handle Batteries not being initialised.";
+  const std::string telemetry_not_initialised_error
+    = "Should handle Telemetry not being initialised.";
+  const std::string sensors_not_initialised_error = "Should handle Sensors not being initialised.";
+  const std::string motors_not_initialised_error  = "Should handle Motors not being initialised.";
 
  protected:
   void SetUp() {}
@@ -225,5 +234,199 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << motors_emergency_error;
+  }
+}
+
+//--------------------------------------------------------------------------------------
+// Module Status
+//--------------------------------------------------------------------------------------
+
+TEST_F(TransitionFunctionality, handlesAllInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  bool all_initialised;
+
+  embrakes_data.module_status  = ModuleStatus::kInit;
+  nav_data.module_status       = ModuleStatus::kInit;
+  batteries_data.module_status = ModuleStatus::kInit;
+  telemetry_data.module_status = ModuleStatus::kInit;
+  sensors_data.module_status   = ModuleStatus::kInit;
+  motors_data.module_status    = ModuleStatus::kInit;
+  all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                            telemetry_data, sensors_data, motors_data);
+  ASSERT_EQ(all_initialised, true) << all_initialised_error;
+}
+
+TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_initialised;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kInit) { continue; }
+
+    embrakes_data.module_status  = other;
+    nav_data.module_status       = ModuleStatus::kInit;
+    batteries_data.module_status = ModuleStatus::kInit;
+    telemetry_data.module_status = ModuleStatus::kInit;
+    sensors_data.module_status   = ModuleStatus::kInit;
+    motors_data.module_status    = ModuleStatus::kInit;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, false) << brakes_not_initialised_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_initialised;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kInit) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kInit;
+    nav_data.module_status       = other;
+    batteries_data.module_status = ModuleStatus::kInit;
+    telemetry_data.module_status = ModuleStatus::kInit;
+    sensors_data.module_status   = ModuleStatus::kInit;
+    motors_data.module_status    = ModuleStatus::kInit;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, false) << nav_not_initialised_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_initialised;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kInit) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kInit;
+    nav_data.module_status       = ModuleStatus::kInit;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = ModuleStatus::kInit;
+    sensors_data.module_status   = ModuleStatus::kInit;
+    motors_data.module_status    = ModuleStatus::kInit;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, false) << batteries_not_initialised_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_initialised;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kInit) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kInit;
+    nav_data.module_status       = ModuleStatus::kInit;
+    batteries_data.module_status = ModuleStatus::kInit;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = ModuleStatus::kInit;
+    motors_data.module_status    = ModuleStatus::kInit;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, false) << telemetry_not_initialised_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_initialised;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kInit) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kInit;
+    nav_data.module_status       = ModuleStatus::kInit;
+    batteries_data.module_status = ModuleStatus::kInit;
+    telemetry_data.module_status = ModuleStatus::kInit;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = ModuleStatus::kInit;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, false) << sensors_not_initialised_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_initialised;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kInit) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kInit;
+    nav_data.module_status       = ModuleStatus::kInit;
+    batteries_data.module_status = ModuleStatus::kInit;
+    telemetry_data.module_status = ModuleStatus::kInit;
+    sensors_data.module_status   = ModuleStatus::kInit;
+    motors_data.module_status    = other;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, false) << motors_not_initialised_error;
   }
 }

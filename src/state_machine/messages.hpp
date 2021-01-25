@@ -4,8 +4,7 @@
  * Date:
  * Description: The declared messages below are used in transitions while changing states.
  *    These declarations allow log messages to be seen and declared more effectively in the IDE. 
- *    stm --> Writes "STM" automatically before the log message
- *    m_ --> Shows the log messages as autocomplete options while typing (m for message)
+ *    Refer to "state_machine/messages.cpp" to see the log messages.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,46 +40,33 @@ using utils::concurrent::Thread;
 
 namespace state_machine {
 
-class State; // Forward declaration
+// Declaration of log messages
 
-std::string stm_string;
-const char *stm;
+constexpr char *kStmLoggingIdentifier;
 
-std::string stop_command;
-const char *m_stop;
+constexpr char *kStopLog;
 
-std::string critical_failure_navigation;
-const char *m_critical_navigation;
+constexpr char *kCriticalNavigationLog;
 
-std::string critical_failure_telemetry;
-const char *m_critical_telemetry;
+constexpr char *kCriticalTelemetryLog;
 
-std::string critical_failure_motors;
-const char *m_critical_motors;
+constexpr char *kCriticalMotorsLog;
 
-std::string critical_failure_embrakes;
-const char *m_critical_embrakes;
+constexpr char *kCriticalEmbrakesLog;
 
-std::string critical_failure_batteries;
-const char *m_critical_batteries;
+constexpr char *kCriticalBatteriesLog;
 
-std::string calibrate_initialised;
-const char *m_calibrate_initialised;
+constexpr char *kCalibrateInitialisedLog;
 
-std::string modules_calibrated;
-const char *m_modules_calibrated;
+constexpr char *kModulesCalibratedLog;
 
-std::string launch_command;
-const char *m_launch_command;
+constexpr char *kLaunchCommandLog;
 
-std::string shutdown_command;
-const char *m_shutdown_command;
+constexpr char *kShutdownCommandLog;
 
-std::string braking_zone;
-const char *m_braking_zone;
+constexpr char *kBrakingZoneLog;
 
-std::string pod_stopped;
-const char *m_pod_stopped;
+constexpr char *kPodStoppedLog;
 
 }  // namespace state_machine
 

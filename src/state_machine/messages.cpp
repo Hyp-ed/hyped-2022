@@ -26,44 +26,33 @@ namespace hyped {
 
 namespace state_machine {
 
-std::string stm_string = "STM";
-const char *stm = stm_string.c_str();
+// List of log messages
 
-std::string stop_command = "STOP command received";
-const char *m_stop = stop_command.c_str();
+constexpr char *kStmLoggingIdentifier = "STM";
 
-std::string critical_failure_navigation = "Critical failure in navigation";
-const char *m_critical_navigation = critical_failure_navigation.c_str();
+constexpr char *kStopLog = "STOP command received";
 
-std::string critical_failure_telemetry = "Critical failure in telemetry";
-const char *m_critical_telemetry = critical_failure_telemetry.c_str();
+constexpr char *kCriticalNavigationLog = "Critical failure in navigation";
 
-std::string critical_failure_motors = "Critical failure in motors";
-const char *m_critical_motors = critical_failure_motors.c_str();
+constexpr char *kCriticalTelemetryLog = "Critical failure in telemetry";
 
-std::string critical_failure_embr = "Critical failure in embrakes";
-const char *m_critical_embrakes = critical_failure_embr.c_str();
+constexpr char *kCriticalMotorsLog = "Critical failure in motors";
 
-std::string critical_failure_batteries = "Critical failure in batteries";
-const char *m_critical_batteries = critical_failure_batteries.c_str();
+constexpr char *kCriticalEmbrakesLog = "Critical failure in embrakes";
 
-std::string calibrate_initialised = "Calibrate command received and all modules initialised";
-const char *m_calibrate_initialised = calibrate_initialised.c_str();
+constexpr char *kCriticalBatteriesLog = "Critical failure in batteries";
 
-std::string modules_calibrated = "All modules calibrated";
-const char *m_modules_calibrated = modules_calibrated.c_str();
+constexpr char *kCalibrateInitialisedLog = "Calibrate command received and all modules initialised";
 
-std::string launch_command = "Launch command received";
-const char *m_launch_command = launch_command.c_str();
+constexpr char *kModulesCalibratedLog = "All modules calibrated";
 
-std::string shutdown_command = "Shutdown command received";
-const char *m_shutdown_command = shutdown_command.c_str();
+constexpr char *kLaunchCommandLog = "Launch command received";
 
-std::string braking_zone = "Entered braking zone";
-const char *m_braking_zone = braking_zone.c_str();
+constexpr char *kShutdownCommandLog = "Shutdown command received";
 
-std::string pod_stopped = "The pod has stopped";
-const char *m_pod_stopped = pod_stopped.c_str();
+constexpr char *kBrakingZoneLog = "Entered braking zone";
+
+constexpr char *kPodStoppedLog = "The pod has stopped";
 
 
 }  // namespace state_machine

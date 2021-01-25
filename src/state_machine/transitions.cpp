@@ -55,7 +55,7 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
     log.ERR("STM", "Critical failure in batteries");
     return true;
   } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in batteries");
+    log.ERR("STM", "Critical failure in sensors");
     return true;
   }
   return false;

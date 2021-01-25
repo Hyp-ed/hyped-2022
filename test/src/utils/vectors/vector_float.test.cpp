@@ -40,11 +40,11 @@ namespace math {
  */
 bool compare_float(float elem1, float elem2, float epsilon = 0.1f)
 {
-   if (fabs(elem1 - elem2) < epsilon) {
+  if (fabs(elem1 - elem2) < epsilon) {
        return true;
-   } else {
+  } else {
        return false;
-   }
+  }
 }
 /**
  * @brief Function which compares two floats; code taken from:
@@ -56,11 +56,11 @@ bool compare_float(float elem1, float elem2, float epsilon = 0.1f)
  */
 bool compare_float_one_decimal(float elem1, float elem2, float epsilon = 0.1f)
 {
-   if (fabs(elem1 - elem2) < epsilon) {
-       return true;
-   } else {
-       return false;
-   }
+  if (fabs(elem1 - elem2) < epsilon) {
+      return true;
+  } else {
+      return false;
+  }
 }
 
 /**
@@ -148,12 +148,12 @@ struct vector_test_float : public ::testing::Test
 TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 {
     ASSERT_EQ(0, test_vector_default.norm());
-    int ran_index = rand() % 100 + 1;
+    int ran_index = rand() % 100;
     ASSERT_EQ(0, test_vector_default.operator[](ran_index));
 
     // Checking scalar operations
-    ran_index = rand() % 100 + 1;
-    int a = rand() % 1000 + 1;
+    ran_index = rand() % 100;
+    int a = rand() % 1000;
     ASSERT_EQ(0, test_vector_default.operator+=(a).operator-=(a).operator[](ran_index));
     ASSERT_EQ(0, test_vector_default.operator*=(a).operator[](ran_index));
 
@@ -170,15 +170,15 @@ TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 TEST_F(vector_test_float, testVectorConstantConstructor)
 {
     test_vector_constant = Vector<float, 100>(constant);
-    int ran_index = rand() % 100 + 1;
+    int ran_index = rand() % 100;
     ASSERT_EQ(constant, test_vector_constant.operator[](ran_index));
 
     // Checking scalar operations
-    ran_index = rand() % 100 + 1;
-    int a = rand() % 1000 + 1;
+    ran_index = rand() % 100;
+    int a = rand() % 1000;
     float elem = test_vector_constant.operator+=(a).operator-=(a).operator[](ran_index);
-    ASSERT_TRUE(compare_float_one_decimal(constant,elem));
-    ran_index = rand() % 100 + 1;
+    ASSERT_TRUE(compare_float_one_decimal(constant, elem));
+    ran_index = rand() % 100;
     float elem_eq = test_vector_constant.operator*=(a).operator[](ran_index);
     ASSERT_TRUE(compare_float_one_decimal(constant*a, elem_eq));
 }

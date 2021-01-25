@@ -34,14 +34,30 @@ namespace math {
  * @brief Function which compares two floats; code taken from:
  * https://www.tutorialspoint.com/floating-point-comparison-in-cplusplus
  * @param elem1 float number to be compared
- * @param elem2 float number to be compared 
- * @param epsilon 
+ * @param elem2 float number to be compared
+ * @param epsilon
  * @returns true if floats to be compared are equal
  */
-bool compare_float(float elem1, float elem2, float epsilon = 0.01f) 
+bool compare_float(float elem1, float elem2, float epsilon = 0.1f)
 {
    if (fabs(elem1 - elem2) < epsilon) {
-       return true;   
+       return true;
+   } else {
+       return false;
+   }
+}
+/**
+ * @brief Function which compares two floats; code taken from:
+ * https://www.tutorialspoint.com/floating-point-comparison-in-cplusplus
+ * @param elem1 float number to be compared
+ * @param elem2 float number to be compared
+ * @param epsilon
+ * @returns true if floats to be compared are equal
+ */
+bool compare_float_one_decimal(float elem1, float elem2, float epsilon = 0.1f)
+{
+   if (fabs(elem1 - elem2) < epsilon) {
+       return true;
    } else {
        return false;
    }
@@ -62,11 +78,11 @@ float RandomFloatTestingVector(float lower, float upper)
 }
 
 /**
- * @brief calculates the magnitude of a vector with elements corresponding with those from argument array 
+ * @brief calculates the magnitude of a vector with elements corresponding with those from argument array
  * @param vector_T array of 100 float values
  * @returns magnitude of vector with corresponding values to array
  */
-double CalculateVectorMagnitude(std::array<float, 100> vector_T) 
+double CalculateVectorMagnitude(std::array<float, 100> vector_T)
 {
     double sum_of_squares = 0;
     for (int i = 0; i < 100; i++) {
@@ -83,7 +99,7 @@ double CalculateVectorMagnitude(std::array<float, 100> vector_T)
 /**
 * @brief Struct used for test fixtures checking class functionality and properties for float values.
 */
-struct vector_test_float : public ::testing::Test 
+struct vector_test_float : public ::testing::Test
 {
    protected:
     Vector<float, 100> test_vector1_float;
@@ -104,7 +120,7 @@ struct vector_test_float : public ::testing::Test
     std::array<float, 100> elements1;
     std::array<float, 100> elements2;
 
-    void SetUp() 
+    void SetUp()
     {
        // Construct two vectors with random elements and their corresponding unit vectors
         for (int i = 0; i < dimension; i++) {
@@ -116,11 +132,11 @@ struct vector_test_float : public ::testing::Test
            elements2[i] = RandomFloatTestingVector(0, 1000);
         }
         test_vector2_float =  Vector<float, 100>(elements2);
-        unit_vector2 = test_vector1_float.toUnitVector();   
+        unit_vector2 = test_vector1_float.toUnitVector();
     }
 
   void TearDown() {}
-}; 
+};
 
 // -------------------------------------------------------------------------------------------------
 // Vector Constructor Testing
@@ -129,7 +145,7 @@ struct vector_test_float : public ::testing::Test
 /**
 * @brief Tests no-argument constructor and zero-vector properties for a vector with float values.
 */
-TEST_F(vector_test_float, testVectorNoArgumentConstructor) 
+TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 {
     ASSERT_EQ(0, test_vector_default.norm());
     int ran_index = rand() % 100 + 1;
@@ -148,10 +164,10 @@ TEST_F(vector_test_float, testVectorNoArgumentConstructor)
 }
 
 /**
-* @brief Tests constructor taking a constant as an argument - all vector elements should be 
+* @brief Tests constructor taking a constant as an argument - all vector elements should be
 * equal to said constant after constructor is called.
 */
-TEST_F(vector_test_float, testVectorConstantConstructor) 
+TEST_F(vector_test_float, testVectorConstantConstructor)
 {
     test_vector_constant = Vector<float, 100>(constant);
     int ran_index = rand() % 100 + 1;
@@ -161,18 +177,18 @@ TEST_F(vector_test_float, testVectorConstantConstructor)
     ran_index = rand() % 100 + 1;
     int a = rand() % 1000 + 1;
     float elem = test_vector_constant.operator+=(a).operator-=(a).operator[](ran_index);
-    ASSERT_TRUE(compare_float(constant,elem));
+    ASSERT_TRUE(compare_float_one_decimal(constant,elem));
     ran_index = rand() % 100 + 1;
     float elem_eq = test_vector_constant.operator*=(a).operator[](ran_index);
-    ASSERT_TRUE(compare_float(constant*a, elem_eq));
+    ASSERT_TRUE(compare_float_one_decimal(constant*a, elem_eq));
 }
 
 
 /**
 * @brief Tests constructor given an array
 */
-TEST_F(vector_test_float, testVectorConstructorArray) 
-{ // Checking if elmements in array at given position match vector elements 
+TEST_F(vector_test_float, testVectorConstructorArray)
+{ // Checking if elmements in array at given position match vector elements
   // at given position
   for (int i = 0; i < dimension; i++) {
      ASSERT_EQ(elements1[i], test_vector1_float.operator[](i));
@@ -187,19 +203,19 @@ TEST_F(vector_test_float, testVectorConstructorArray)
 /**
 * @brief Tests element-wise difference (operator-=(vector1, vector2))
 */
-TEST_F(vector_test_float, testElemWiseDifference) 
+TEST_F(vector_test_float, testElemWiseDifference)
 {
     test_vector_diff = test_vector2_float.operator-=(test_vector1_float);
-   
+
     for (int i = 0; i < dimension; i++) {
-      ASSERT_EQ(elements2[i] - elements1[i], test_vector_diff.operator[](i)); 
+      ASSERT_EQ(elements2[i] - elements1[i], test_vector_diff.operator[](i));
     }
 }
 
 /**
 * @brief Tests element-wise difference (operator-=(vector1, vector2) - auto)
 */
-TEST_F(vector_test_float, testElemWiseDifferenceAuto) 
+TEST_F(vector_test_float, testElemWiseDifferenceAuto)
 {
 test_vector_diff = operator-(test_vector1_float, test_vector2_float);
     for (int i = 0; i < dimension; i++) {
@@ -210,7 +226,7 @@ test_vector_diff = operator-(test_vector1_float, test_vector2_float);
 /**
 * @brief Tests element-wise addition (operator+=(vector1, vector2))
 */
-TEST_F(vector_test_float, testElementWiseAddition) 
+TEST_F(vector_test_float, testElementWiseAddition)
 {
     test_vector_sum = test_vector2_float.operator+=(test_vector1_float);
     for (int i = 0; i < dimension; i++) {
@@ -221,7 +237,7 @@ TEST_F(vector_test_float, testElementWiseAddition)
 /**
 * @brief Tests element-wise addition (operator+=(vector1, vector2) - auto)
 */
-TEST_F(vector_test_float, testElementWiseAdditionAuto) 
+TEST_F(vector_test_float, testElementWiseAdditionAuto)
 {
     test_vector_sum = operator+(test_vector1_float, test_vector2_float);
     for (int i = 0; i < dimension; i++) {
@@ -232,7 +248,7 @@ TEST_F(vector_test_float, testElementWiseAdditionAuto)
 /**
 * @brief Tests element-wise multiplication (operator*=(vector1, vector2))
 */
-TEST_F(vector_test_float, testElemWiseMultiplication) 
+TEST_F(vector_test_float, testElemWiseMultiplication)
 {
     test_vector_mult = test_vector2_float.operator*=(test_vector1_float);
     for (int i = 0; i < dimension; i++) {
@@ -243,7 +259,7 @@ TEST_F(vector_test_float, testElemWiseMultiplication)
 /**
 * @brief Tests element-wise multiplication (operator*=(vector1, vector2) - auto)
 */
-TEST_F(vector_test_float, testElemWiseMultiplicationAuto) 
+TEST_F(vector_test_float, testElemWiseMultiplicationAuto)
 {
     test_vector_mult = operator*(test_vector1_float, test_vector2_float);
     for (int i = 0; i < dimension; i++) {
@@ -254,23 +270,23 @@ TEST_F(vector_test_float, testElemWiseMultiplicationAuto)
 /**
 * @brief Tests element-wise division (operator/=(vector1, vector2))
 */
-TEST_F(vector_test_float, testElemWiseDivision) 
+TEST_F(vector_test_float, testElemWiseDivision)
 {
     test_vector_div = test_vector2_float.operator/=(test_vector1_float);
     for (int i = 0; i < dimension; i++) {
        ASSERT_EQ(elements2[i]/elements1[i], test_vector_div.operator[](i));
-     }  
+     }
 }
 
 /**
 * @brief Tests element-wise division (auto)
 */
-TEST_F(vector_test_float, testElemWiseDivisionAuto) 
+TEST_F(vector_test_float, testElemWiseDivisionAuto)
 {
     test_vector_div = operator/(test_vector2_float, test_vector1_float);
     for (int i = 0; i < dimension; i++) {
        ASSERT_EQ(elements2[i]/elements1[i], test_vector_div.operator[](i));
-     } 
+     }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -341,7 +357,7 @@ TEST_F(vector_test_float, testScalarDivision)
  * @brief Tests if Vector.sqrt() works as it should - takig the square root of each element
  * in a vector
  */
-TEST_F(vector_test_float, testElementSqrt) 
+TEST_F(vector_test_float, testElementSqrt)
 {
     test_vector_sqrt = test_vector2_float.sqrt();
     float elem;
@@ -353,8 +369,8 @@ TEST_F(vector_test_float, testElementSqrt)
 
 /**
 * @brief Tests calculation of distance between two vectors with float elements.
-*/ 
-TEST_F(vector_test_float, testDistanceBetweenVectors) 
+*/
+TEST_F(vector_test_float, testDistanceBetweenVectors)
 {
     std::array<float, 100> vector_diff;
     for (int i = 0; i < dimension; i++) {
@@ -368,8 +384,8 @@ TEST_F(vector_test_float, testDistanceBetweenVectors)
 /**
 * @brief Tests corectness of unit vector calculation
 */
-TEST_F(vector_test_float, testUnitVectors) 
-{  
+TEST_F(vector_test_float, testUnitVectors)
+{
     unit_vector1 = test_vector1_float.toUnitVector();
     unit_vector2 = test_vector2_float.toUnitVector();
 
@@ -382,7 +398,7 @@ TEST_F(vector_test_float, testUnitVectors)
 
 /**
 * @brief Tests function for returning vector with all elements negated
-*/ 
+*/
 TEST_F(vector_test_float, testVectorNegation)
 {
     test_vector_diff = test_vector1_float.operator-();
@@ -408,8 +424,8 @@ TEST_F(vector_test_float, testVectorMagnitude)
 
 /**
  * @brief Tests if equality function is behaving as it should
- */ 
-TEST_F(vector_test_float, testVectorEquality) 
+ */
+TEST_F(vector_test_float, testVectorEquality)
 {
     test_vector_mult = Vector<float, 100>(test_vector1_float);
     ASSERT_TRUE(test_vector_mult == test_vector1_float);
@@ -421,7 +437,7 @@ TEST_F(vector_test_float, testVectorEquality)
 /**
 * @brief Tests if unit vector property stating that magnitude = 1 holds
 */
-TEST_F(vector_test_float, testMagnitudeUnitVector) 
+TEST_F(vector_test_float, testMagnitudeUnitVector)
 {
     unit_vector1 = test_vector1_float.toUnitVector();
     unit_vector2 = test_vector2_float.toUnitVector();
@@ -430,9 +446,9 @@ TEST_F(vector_test_float, testMagnitudeUnitVector)
 }
 
 /**
- * @brief Tests symmetry of vector equality 
- */ 
-TEST_F(vector_test_float, testVectorEqualitySymmetry) 
+ * @brief Tests symmetry of vector equality
+ */
+TEST_F(vector_test_float, testVectorEqualitySymmetry)
 {
     test_vector_mult = Vector<float, 100>(test_vector1_float);
     ASSERT_TRUE(test_vector_mult == test_vector1_float);

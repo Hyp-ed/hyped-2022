@@ -46,6 +46,10 @@ struct TransitionFunctionality : public ::testing::Test {
     = "Should handle Telemetry not being initialised.";
   const std::string sensors_not_initialised_error = "Should handle Sensors not being initialised.";
   const std::string motors_not_initialised_error  = "Should handle Motors not being initialised.";
+  const std::string all_ready_error               = "Should handle all modules being ready.";
+  const std::string brakes_not_ready_error        = "Should handle Brakes not being ready.";
+  const std::string nav_not_ready_error           = "Should handle Navigation not being ready.";
+  const std::string motors_not_ready_error        = "Should handle Motors not being ready.";
 
  protected:
   void SetUp() {}
@@ -463,5 +467,80 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_initialised, false) << motors_not_initialised_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesAllReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Motors motors_data;
+
+  bool all_ready;
+
+  embrakes_data.module_status = ModuleStatus::kReady;
+  nav_data.module_status      = ModuleStatus::kReady;
+  motors_data.module_status   = ModuleStatus::kReady;
+  all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+  ASSERT_EQ(all_ready, true) << all_ready_error;
+}
+
+TEST_F(TransitionFunctionality, handlesBrakesNotReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_ready;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kReady) { continue; }
+
+    embrakes_data.module_status = other;
+    nav_data.module_status      = ModuleStatus::kReady;
+    motors_data.module_status   = ModuleStatus::kReady;
+    all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    ASSERT_EQ(all_ready, false) << brakes_not_ready_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesNavigationNotReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_ready;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kReady) { continue; }
+
+    embrakes_data.module_status = ModuleStatus::kReady;
+    nav_data.module_status      = other;
+    motors_data.module_status   = ModuleStatus::kReady;
+    all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    ASSERT_EQ(all_ready, false) << nav_not_ready_error;
+  }
+}
+
+TEST_F(TransitionFunctionality, handlesMotorsNotReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_ready;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kReady) { continue; }
+
+    embrakes_data.module_status = ModuleStatus::kReady;
+    nav_data.module_status      = ModuleStatus::kReady;
+    motors_data.module_status   = other;
+    all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    ASSERT_EQ(all_ready, false) << motors_not_ready_error;
   }
 }

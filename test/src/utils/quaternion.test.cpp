@@ -49,16 +49,7 @@ struct OperationsByConstant : public::testing::Test
 
 
     int kValue = rand()%1000;
-
-    void SetUp()
-    {
-        //quaternion_one = Quaternion<int>(createRandomArray());
-    }
-
 };
-
-
-
 
 /**
  * @brief Test to determine whether the Quaternion class supports
@@ -73,12 +64,6 @@ TEST_F(OperationsByConstant, handlesAdditionByConstant)
         ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue);
         ASSERT_EQ(quaternion_result_two[i], quaternion_one[i] + kValue);
     }
-
-}
-
-TEST_F(OperationsByConstant, handlesSubtractionByConstant)
-{
-
 }
 
 /**
@@ -94,9 +79,5 @@ TEST_F(OperationsByConstant, handlesSubtractionByConstant)
  * 7. Magnitude of quaternion
  * 8........
 */
-
-
-
-
 
 }}}

@@ -76,10 +76,10 @@ struct Messages {
   static const char kShutdownLog[];
 
   // Sent upon entering a specific state
-  static const char kEnteringStateLog[];
+  static const char kEnteringStateFormat[];
 
   // Sent upon exiting a specific state
-  static const char kExitingStateLog[];
+  static const char kExitingStateFormat[];
 
   // Messages only exists to hold static members, no constructor is needed.
   Messages() = delete;

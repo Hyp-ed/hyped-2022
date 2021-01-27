@@ -77,7 +77,7 @@ class Messages;
     /* @brief   Prints log message and sets appropriate public enum value.*/                       \
     void enter(Logger &log)                                                                        \
     {                                                                                              \
-      log.INFO(Messages::kStmLoggingIdentifier, Messages::kEnteringStateLog,                       \
+      log.INFO(Messages::kStmLoggingIdentifier, Messages::kEnteringStateFormat,                       \
                S::string_representation_);                                                         \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
@@ -85,7 +85,7 @@ class Messages;
     }                                                                                              \
     void exit(Logger &log)                                                                         \
     {                                                                                              \
-      log.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingStateLog,                        \
+      log.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingStateFormat,                        \
                S::string_representation_);                                                         \
     }                                                                                              \
                                                                                                    \

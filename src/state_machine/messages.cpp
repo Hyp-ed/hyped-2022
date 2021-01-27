@@ -55,9 +55,9 @@ const char Messages::kPodStoppedLog[] = "The pod has stopped";
 
 const char Messages::kShutdownLog[] = "Shutting down";
 
-const char Messages::kEnteringStateLog[] = "Entering %s state";
+const char Messages::kEnteringStateFormat[] = "Entering %s state";
 
-const char Messages::kExitingStateLog[] = "Exiting %s state";
+const char Messages::kExitingStateFormat[] = "Exiting %s state";
 
 }  // namespace state_machine
 

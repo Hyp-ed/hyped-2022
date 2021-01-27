@@ -59,6 +59,10 @@ const char Messages::kEnteringStateFormat[] = "Entering %s state";
 
 const char Messages::kExitingStateFormat[] = "Exiting %s state";
 
+const char Messages::kExitingProgramFormat[] = "Exiting. Current state: %s";
+
+const char Messages::kTransitionFromOffLog[] = "Tried to transition from Off state";
+
 }  // namespace state_machine
 
 }  // namespace hyped

@@ -28,7 +28,6 @@
 #include "data/data.hpp"
 #include "state_machine/state.hpp"
 #include "utils/concurrent/thread.hpp"
-#include "utils/config.hpp"
 #include "utils/system.hpp"
 
 namespace hyped {

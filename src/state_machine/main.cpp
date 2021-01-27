@@ -53,7 +53,8 @@ void Main::run()
   }
 
   sm_data = data.getStateMachineData();
-  log_.INFO("STM", "Exiting. Current state: %s", data::states[sm_data.current_state]);
+  log_.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingProgramFormat,
+            data::states[sm_data.current_state]);
 }
 
 }  // namespace state_machine

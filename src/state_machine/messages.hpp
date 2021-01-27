@@ -81,6 +81,12 @@ struct Messages {
   // Sent upon exiting a specific state
   static const char kExitingStateFormat[];
 
+  // Sent upon exiting main loop
+  static const char kExitingProgramFormat[];
+
+  // Sent upon trying to transition from Off state
+  static const char kTransitionFromOffLog[];
+
   // Messages only exists to hold static members, no constructor is needed.
   Messages() = delete;
 };

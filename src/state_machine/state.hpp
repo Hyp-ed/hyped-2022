@@ -25,6 +25,7 @@
 #include "data/data.hpp"
 #include "state_machine/main.hpp"
 #include "state_machine/transitions.hpp"
+#include "state_machine/messages.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 #include "utils/timer.hpp"
@@ -78,7 +79,8 @@ class State {
       sm_data.current_state      = S::enum_value_;                                                 \
       data_.setStateMachineData(sm_data);                                                          \
     }                                                                                              \
-    void exit(Logger &log) { log.INFO("STM", "Exiting %s state", S::string_representation_); }     \
+    void exit(Logger &log) { log.INFO(Messages::kStmLoggingIdentifier,                             \
+      Messages::kExitingStateLog, S::string_representation_); }                                    \
                                                                                                    \
    private:                                                                                        \
     static S instance_;                                                                            \
@@ -111,13 +113,13 @@ class Off : public State {
 
   void enter(Logger &log)
   {
-    log.INFO("STM", "Shutting down");
+    log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownLog);
     utils::System &sys = utils::System::getSystem();
     sys.running_       = false;
   }
 
   void exit(Logger &log)
-  {  // We nevere exit this state
+  {  // We never exit this state
   }
 
  private:

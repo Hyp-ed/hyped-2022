@@ -53,6 +53,10 @@ const char Messages::kBrakingZoneLog[] = "Entered braking zone";
 
 const char Messages::kPodStoppedLog[] = "The pod has stopped";
 
+const char Messages::kShutdownLog[] = "The pod has stopped";
+
+const char Messages::kExitingStateLog[] = "Exiting %s state";
+
 }  // namespace state_machine
 
 }  // namespace hyped

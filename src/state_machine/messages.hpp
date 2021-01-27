@@ -84,6 +84,12 @@ struct Messages {
   // Sent upon determining that the pod has stopped
   static const char kPodStoppedLog[];
 
+  // Sent upon shutting down system (entering Off state)
+  static const char kShutdownLog[];
+
+  // Sent upon exiting a specific state
+  static const char kExitingStateLog[];
+
   // Messages only exists to hold static members, no constructor is needed.
   Messages() = delete;
 };

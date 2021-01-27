@@ -25,19 +25,7 @@
 
 #include <string>
 
-#include "data/data.hpp"
-#include "state_machine/main.hpp"
-#include "state_machine/state.hpp"
-#include "state_machine/transitions.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
-
 namespace hyped {
-
-using data::ModuleStatus;
-using utils::Logger;
-using utils::concurrent::Thread;
 
 namespace state_machine {
 

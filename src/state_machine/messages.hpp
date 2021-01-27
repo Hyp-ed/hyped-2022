@@ -87,6 +87,9 @@ struct Messages {
   // Sent upon shutting down system (entering Off state)
   static const char kShutdownLog[];
 
+  // Sent upon entering a specific state
+  static const char kEnteringStateLog[];
+
   // Sent upon exiting a specific state
   static const char kExitingStateLog[];
 

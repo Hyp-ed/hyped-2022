@@ -32,7 +32,7 @@
 
 namespace hyped {
 
-using data::ModuleStatus;
+using data::ModuleStatus; 
 using utils::Logger;
 
 namespace state_machine {
@@ -74,7 +74,8 @@ class State {
     /* @brief   Prints log message and sets appropriate public enum value.*/                       \
     void enter(Logger &log)                                                                        \
     {                                                                                              \
-      log.INFO("STM", "Entering %s state", S::string_representation_);                             \
+      log.INFO(Messages::kStmLoggingIdentifier, Messages::kEnteringStateLog,                       \
+      S::string_representation_);                                                                  \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
       data_.setStateMachineData(sm_data);                                                          \

@@ -3,7 +3,8 @@
  * Authors: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description: Here we declare the general state and the layout of all the specific states. We do not specify actual behaviour.
+ * Description: Here we declare the general state and the layout of all the specific states. We do
+ * not specify actual behaviour.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,15 +25,15 @@
 
 #include "data/data.hpp"
 #include "state_machine/main.hpp"
-#include "state_machine/transitions.hpp"
 #include "state_machine/messages.hpp"
+#include "state_machine/transitions.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
 #include "utils/timer.hpp"
 
 namespace hyped {
 
-using data::ModuleStatus; 
+using data::ModuleStatus;
 using utils::Logger;
 
 namespace state_machine {
@@ -61,6 +62,8 @@ class State {
   void updateModuleData();
 };
 
+class Messages;
+
 /*
  * @brief   Generates a specific state S following the pattern of State.
  */
@@ -75,13 +78,16 @@ class State {
     void enter(Logger &log)                                                                        \
     {                                                                                              \
       log.INFO(Messages::kStmLoggingIdentifier, Messages::kEnteringStateLog,                       \
-      S::string_representation_);                                                                  \
+               S::string_representation_);                                                         \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
       data_.setStateMachineData(sm_data);                                                          \
     }                                                                                              \
-    void exit(Logger &log) { log.INFO(Messages::kStmLoggingIdentifier,                             \
-      Messages::kExitingStateLog, S::string_representation_); }                                    \
+    void exit(Logger &log)                                                                         \
+    {                                                                                              \
+      log.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingStateLog,                        \
+               S::string_representation_);                                                         \
+    }                                                                                              \
                                                                                                    \
    private:                                                                                        \
     static S instance_;                                                                            \

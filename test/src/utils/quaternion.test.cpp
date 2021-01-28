@@ -41,6 +41,7 @@ namespace math {
 struct OperationsByConstant : public::testing::Test
 {
     /* data */
+    const int kSizeOfQuaternion = 4;
     Quaternion<int> quaternion_one;
     Quaternion<int> quaternion_two;
 
@@ -63,13 +64,22 @@ struct OperationsByConstant : public::testing::Test
  * The test is performed with randomly instansiated quaternions and
  * random constant value
  */
-TEST_F(OperationsByConstant, handlesAdditionByConstant)
+TEST_F(OperationsByConstant, handlesAutoAdditionByConstant)
 {
     quaternion_result_one = quaternion_one + kValue;
     quaternion_result_two = kValue + quaternion_one;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < kSizeOfQuaternion; i++) {
         ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue);
         ASSERT_EQ(quaternion_result_two[i], quaternion_one[i] + kValue);
+    }
+}
+
+
+TEST_F(OperationsByConstant, handlesAutoSubtractionByConstant)
+{
+    quaternion_result_one = quaternion_one - kValue;
+    for (int i = 0; i < kSizeOfQuaternion; i++) {
+        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue);
     }
 }
 
@@ -87,4 +97,5 @@ TEST_F(OperationsByConstant, handlesAdditionByConstant)
  * 8........
 */
 
-}}}
+
+}}}  // hyped::utils::math

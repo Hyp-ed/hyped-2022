@@ -49,12 +49,19 @@ struct OperationsByConstant : public::testing::Test
 
 
     int kValue = rand()%1000;
+
+    void SetUp()
+    {
+        quaternion_one = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
+        quaternion_two = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
+    }
 };
 
 /**
  * @brief Test to determine whether the Quaternion class supports
  * addition with a scalar constant. 
- * The test is performed with  
+ * The test is performed with randomly instansiated quaternions and
+ * random constant value
  */
 TEST_F(OperationsByConstant, handlesAdditionByConstant)
 {

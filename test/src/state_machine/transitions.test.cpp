@@ -50,6 +50,9 @@ struct TransitionFunctionality : public ::testing::Test {
   const std::string brakes_not_ready_error        = "Should handle Brakes not being ready.";
   const std::string nav_not_ready_error           = "Should handle Navigation not being ready.";
   const std::string motors_not_ready_error        = "Should handle Motors not being ready.";
+  const std::string calibrate_command_error       = "Should handle calibrate command.";
+  const std::string launch_command_error          = "Should handle launch command.";
+  const std::string shutdown_command_error        = "Should handle shutdown command.";
 
  protected:
   void SetUp() {}
@@ -542,5 +545,27 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
     motors_data.module_status   = other;
     all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
     ASSERT_EQ(all_ready, false) << motors_not_ready_error;
+  }
+}
+
+//--------------------------------------------------------------------------------------
+// Telemetry Commands
+//--------------------------------------------------------------------------------------
+
+TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
+{
+  Telemetry telemetry_data;
+  static constexpr int num_commands = 3;
+  for (int i = 0; i < 1 << num_commands; i++) {  // 2^num_commands posssible setups
+    // extracting bits
+    telemetry_data.calibrate_command = static_cast<bool>(i & 1);
+    telemetry_data.launch_command    = static_cast<bool>((i >> 1) & 1);
+    telemetry_data.shutdown_command  = static_cast<bool>((i >> 2) & 1);
+    ASSERT_EQ(telemetry_data.calibrate_command, checkCalibrateCommand(log, telemetry_data))
+      << calibrate_command_error;
+    ASSERT_EQ(telemetry_data.launch_command, checkLaunchCommand(log, telemetry_data))
+      << launch_command_error;
+    ASSERT_EQ(telemetry_data.shutdown_command, checkShutdownCommand(log, telemetry_data))
+      << shutdown_command_error;
   }
 }

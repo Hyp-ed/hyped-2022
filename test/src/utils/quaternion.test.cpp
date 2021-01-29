@@ -38,7 +38,7 @@ namespace math {
  * Struct used for testing the functionality
  * of quaternion.hpp
  */
-struct OperationsByConstant : public::testing::Test
+struct QuaternionFunctionality : public::testing::Test
 {
     /* data */
     const int kSizeOfQuaternion = 4;
@@ -59,12 +59,25 @@ struct OperationsByConstant : public::testing::Test
 };
 
 /**
+ * @brief Test to determine the correct instantiation of the zero
+ * Quaternion class instance
+ */
+TEST_F(QuaternionFunctionality, handleConstructionOfZeroQuaternion)
+{
+    Quaternion<int> zeroQuaternion = Quaternion<int>(0);
+    ASSERT_EQ(0, zeroQuaternion.norm());
+    for (int i = 0; i < kSizeOfQuaternion; i++) {
+        ASSERT_EQ(0, zeroQuaternion[i]);
+    }
+}
+
+/**
  * @brief Test to determine whether the Quaternion class supports
- * addition with a scalar constant. 
- * The test is performed with randomly instansiated quaternions and
+ * addition with a scalar constant.
+ * The test is performed with randomly instantiated quaternions and
  * random constant value
  */
-TEST_F(OperationsByConstant, handlesAutoAdditionByConstant)
+TEST_F(QuaternionFunctionality, handlesAutoAdditionByConstant)
 {
     quaternion_result_one = quaternion_one + kValue;
     quaternion_result_two = kValue + quaternion_one;
@@ -74,8 +87,13 @@ TEST_F(OperationsByConstant, handlesAutoAdditionByConstant)
     }
 }
 
-
-TEST_F(OperationsByConstant, handlesAutoSubtractionByConstant)
+/**
+ * @brief Test to determin whether the Quaternion class supports
+ * subtraction with a scalar constant
+ * Testis is performed with randomly instantiated quaternions and
+ * random constant values
+ */
+TEST_F(QuaternionFunctionality, handlesAutoSubtractionByConstant)
 {
     quaternion_result_one = quaternion_one - kValue;
     for (int i = 0; i < kSizeOfQuaternion; i++) {
@@ -88,8 +106,6 @@ TEST_F(OperationsByConstant, handlesAutoSubtractionByConstant)
  * Functionality to test:
  * 0. Vector construction testing
  * 1. Vector to quaternion conversion
- * 2. Addition of every element by scalar val
- * 3. Subtraction of every element by scalar val
  * 4. Quaternion multiplication
  * 5. Scalar multiplication of quaternion
  * 6. Scalar divion of quaternion]

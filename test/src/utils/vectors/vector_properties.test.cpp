@@ -359,8 +359,8 @@ TEST_F(IdentityOperations, handlesAutoDivisionIdentities)
   }
 }
 /**
- * @brief Test used to check divide the identity vector (0,0,0) by any vector using /=
- * we the identity vector is unchanged.
+ * @brief Test used to check if the identity vector (0,0,0) divided by any vector using /=
+ * leaves the identity vector is unchanged.
  * It will also check that if we divide a vector by itself /=. The vector will be changed
  * to the identity vector (1,1,1).
  * Finally it checks that if we divide a vector by the identity vector (1,1,1) our original vector
@@ -385,6 +385,10 @@ TEST_F(IdentityOperations, handlesDivisionIdentities)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+/**
+ * @brief Test used to check if taking the square root of the identity vector (0,0,0) or (1,1,1) leaves the vector
+ * unchanged
+ */
 TEST_F(IdentityOperations, handlesSqrtIdentities)
 {
   vector = identity_vector.sqrt();
@@ -397,6 +401,10 @@ TEST_F(IdentityOperations, handlesSqrtIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
+/**
+ * @brief Test used to check if the identity vector (0,0,0) has a magnitude of zero and that the
+ * magnitude of (1,1,1) is equal to sqrt of three.
+ */
 TEST_F(IdentityOperations, handlesNormIdentities)
 {
   double norm = identity_vector.norm();

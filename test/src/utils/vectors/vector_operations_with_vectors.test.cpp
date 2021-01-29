@@ -196,6 +196,9 @@ TEST_F(OperationsTest, allowsDivision)
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i]/vector_two[i]));
   }
 }
+/**
+ * @brief Test used to check that the Square root operation is implemented and working.
+ */
 TEST_F(OperationsTest, allowsSqrt)
 {
   Vector<int, 3> result_one = vector_one.sqrt();
@@ -203,6 +206,9 @@ TEST_F(OperationsTest, allowsSqrt)
     ASSERT_EQ(static_cast<int>(std::sqrt(vector_one[i])), result_one[i]);
   }
 }
+/**
+ * @brief Test used to check that the norm operation is implemented and working correctly.
+ */
 TEST_F(OperationsTest, allowsNorm)
 {
   double norm = vector_one.norm();
@@ -213,6 +219,10 @@ TEST_F(OperationsTest, allowsNorm)
   result = std::sqrt(result);
   ASSERT_EQ(result, norm);
 }
+/**
+ * @brief Test used to check that the to unit vector operation is implemented and working correctly.
+ * Must take into account that we are working with integers not floats.
+ */
 TEST_F(OperationsTest, allowsToUnitVector)
 {
   Vector<int, 3> result_one = vector_one.toUnitVector();

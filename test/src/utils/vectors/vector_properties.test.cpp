@@ -50,7 +50,7 @@ struct Associativity : public::testing::Test
   }
 };
 /**
- * Test used to check if the operator (+=) is associative given three random 3D vectors.
+ * @brief Test used to check if the operator (+=) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
  */
 TEST_F(Associativity, isAdditionAssociative)
@@ -67,7 +67,7 @@ TEST_F(Associativity, isAdditionAssociative)
   }
 }
 /**
- * Test used to check if the operator (+) is associative given three random 3D vectors.
+ * @brief Test used to check if the operator (+) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
  */
 TEST_F(Associativity, isAutoAdditionAssociative)
@@ -79,7 +79,7 @@ TEST_F(Associativity, isAutoAdditionAssociative)
   }
 }
 /**
- * Test used to check if the operator (*=) is associative given three random 3D vectors.
+ * @brief Test used to check if the operator (*=) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
  */
 TEST_F(Associativity, isMultiplicationAssociative)
@@ -95,7 +95,7 @@ TEST_F(Associativity, isMultiplicationAssociative)
   }
 }
 /**
- * Test used to check if the operator (*) is associative given three random 3D vectors.
+ * @brief Test used to check if the operator (*) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
  */
 TEST_F(Associativity, isAutoMultiplicationAssociative)
@@ -129,7 +129,7 @@ struct Commutativity : public ::testing::Test
   }
 };
 /**
- * Test used to check if the operator (+=) is commutative given two random 3D vectors.
+ * @brief Test used to check if the operator (+=) is commutative given two random 3D vectors.
  * a + b = b + a.
  */
 TEST_F(Commutativity, isAdditionCommutative)
@@ -143,7 +143,7 @@ TEST_F(Commutativity, isAdditionCommutative)
   }
 }
 /**
- * Test used to check if the operator (+) is commutative given two random 3D vectors.
+ * @brief Test used to check if the operator (+) is commutative given two random 3D vectors.
  * a + b = b + a.
  */
 TEST_F(Commutativity, isAutoAdditionCommutative)
@@ -155,7 +155,7 @@ TEST_F(Commutativity, isAutoAdditionCommutative)
   }
 }
 /**
- * Test used to check if the operator (*=) is commutative given two random 3D vectors.
+ * @brief Test used to check if the operator (*=) is commutative given two random 3D vectors.
  * a * b = b * a.
  */
 TEST_F(Commutativity, isMultiplicationCommutative)
@@ -169,7 +169,7 @@ TEST_F(Commutativity, isMultiplicationCommutative)
   }
 }
 /**
- * Test used to check if the operator (*) is commutative given two random 3D vectors.
+ * @brief Test used to check if the operator (*) is commutative given two random 3D vectors.
  * a * b = b * a.
  */
 TEST_F(Commutativity, isAutoMultiplicationCommutative)
@@ -181,7 +181,7 @@ TEST_F(Commutativity, isAutoMultiplicationCommutative)
   }
 }
 /**
- * Test used to check if the operator (-=) is anticommutative given two random 3D vectors.
+ * @brief Test used to check if the operator (-=) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
  */
 TEST_F(Commutativity, isSubstractionNotCommutative)

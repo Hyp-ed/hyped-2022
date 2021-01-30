@@ -54,7 +54,7 @@ void Stepper::sendRetract()
 
 void Stepper::sendClamp()
 {
-  log_.INFO("Brakes", "Sending a retract message to brake %i", brake_id_);
+  log_.INFO("Brakes", "Sending a engage message to brake %i", brake_id_);
   command_pin_.set();
   is_clamped_ = true;
 }

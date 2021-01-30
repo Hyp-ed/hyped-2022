@@ -45,7 +45,10 @@ class Main : public Thread
     * @brief Initialises essential variables
     */
     Main(uint8_t id, Logger &log);
-    
+
+    /*
+     * @brief Cleans up previous allocations
+     */
     ~Main();
 
     /*
@@ -63,8 +66,8 @@ class Main : public Thread
     data::Telemetry        tlm_data_;
     int                    command_pins_[2];
     int                    button_pins_[2];
-    StepperInterface*      m_brake;
-    StepperInterface*      f_brake;
+    StepperInterface*      m_brake_;
+    StepperInterface*      f_brake_;
 };
 
 }}

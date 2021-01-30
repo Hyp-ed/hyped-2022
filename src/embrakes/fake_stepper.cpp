@@ -51,7 +51,7 @@ void FakeStepper::sendRetract()
 
 void FakeStepper::sendClamp()
 {
-  log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
+  log_.INFO("Fake Stepper", "Sending a engage message to brake %i", brake_id_);
   fake_button_ = false; // false = brakes are clamped
   is_clamped_ = true;
 }

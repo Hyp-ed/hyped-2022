@@ -88,8 +88,8 @@ class Config {
   } telemetry;
 
   struct Embrakes {
-    int command[4];
-    int button[4];
+    int command[2];
+    int button[2];
   } embrakes;
 
   struct Sensors {

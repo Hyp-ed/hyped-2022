@@ -58,12 +58,10 @@ class Main : public Thread
     data::StateMachine     sm_data_;
     data::EmergencyBrakes  em_brakes_;
     data::Telemetry        tlm_data_;
-    int                    command_pins_[4];
-    int                    button_pins_[4];
-    StepperInterface*      brake_1;
-    // Stepper*               brake_2;
-    // Stepper*               brake_3;
-    // Stepper*               brake_4;
+    int                    command_pins_[2];
+    int                    button_pins_[2];
+    StepperInterface*      m_brake;
+    StepperInterface*      f_brake;
 };
 
 }}

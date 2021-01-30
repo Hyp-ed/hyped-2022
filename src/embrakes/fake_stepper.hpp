@@ -43,7 +43,7 @@ class FakeStepper : public StepperInterface {
    * @param log, node id
    */
   FakeStepper(Logger& log, uint8_t id);
-  
+
   /**
    * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
    */
@@ -75,12 +75,12 @@ class FakeStepper : public StepperInterface {
   bool checkClamped() override;
 
  private:
-  bool fake_button_;
   utils::Logger& log_;
   data::Data& data_;
   data::EmergencyBrakes em_brakes_data_;
   uint8_t brake_id_;
   uint8_t is_clamped_;
+  bool fake_button_;
 };
 
 }  // namespace embrakes

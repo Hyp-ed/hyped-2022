@@ -56,21 +56,7 @@ void Main::run()
 
     switch (sm_data_.current_state) {
       case data::State::kIdle:
-        if (!tlm_data_.nominal_braking_command) {
-          if (m_brake_->checkClamped()) {
-            m_brake_->sendRetract();
-          }
-          if (f_brake_->checkClamped()) {
-            f_brake_->sendRetract();
-          }
-
-          Thread::sleep(em_brakes_.brake_command_wait_time);
-          m_brake_->checkHome();
-          f_brake_->checkHome();
-
-          m_brake_->checkAccFailure();
-          f_brake_->checkAccFailure();
-        } else {
+        if (tlm_data_.nominal_braking_command) {
           if (!m_brake_->checkClamped()) {
             m_brake_->sendClamp();
           }
@@ -83,6 +69,20 @@ void Main::run()
 
           m_brake_->checkBrakingFailure();
           f_brake_->checkBrakingFailure();
+        } else {
+           if (m_brake_->checkClamped()) {
+            m_brake_->sendRetract();
+          }
+          if (f_brake_->checkClamped()) {
+            f_brake_->sendRetract();
+          }
+
+          Thread::sleep(em_brakes_.brake_command_wait_time);
+          m_brake_->checkHome();
+          f_brake_->checkHome();
+
+          m_brake_->checkAccFailure();
+          f_brake_->checkAccFailure();
         }
         break;
       case data::State::kCalibrating:
@@ -137,19 +137,7 @@ void Main::run()
         f_brake_->checkBrakingFailure();
         break;
       case data::State::kFinished:
-        if (!tlm_data_.nominal_braking_command) {
-          if (m_brake_->checkClamped()) {
-            m_brake_->sendRetract();
-          }
-          if (f_brake_->checkClamped()) {
-            f_brake_->sendRetract();
-          }
-          Thread::sleep(em_brakes_.brake_command_wait_time);
-          m_brake_->checkHome();
-          f_brake_->checkHome();
-          m_brake_->checkAccFailure();
-          f_brake_->checkAccFailure();
-        } else {
+        if (tlm_data_.nominal_braking_command) {
           if (!m_brake_->checkClamped()) {
             m_brake_->sendClamp();
           }
@@ -161,6 +149,18 @@ void Main::run()
           f_brake_->checkHome();
           m_brake_->checkBrakingFailure();
           f_brake_->checkBrakingFailure();
+        } else {
+          if (m_brake_->checkClamped()) {
+            m_brake_->sendRetract();
+          }
+          if (f_brake_->checkClamped()) {
+            f_brake_->sendRetract();
+          }
+          Thread::sleep(em_brakes_.brake_command_wait_time);
+          m_brake_->checkHome();
+          f_brake_->checkHome();
+          m_brake_->checkAccFailure();
+          f_brake_->checkAccFailure();
         }
         break;
       default:

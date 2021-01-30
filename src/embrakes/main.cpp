@@ -170,5 +170,10 @@ void Main::run()
   log_.INFO("Brakes", "Thread shutting down");
 }
 
+Main::~Main() {
+  delete f_brake;
+  delete m_brake;
+}
+
 }  // namespace embrakes
 }  // namespace hyped

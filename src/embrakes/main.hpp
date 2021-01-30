@@ -45,11 +45,14 @@ class Main : public Thread
     * @brief Initialises essential variables
     */
     Main(uint8_t id, Logger &log);
+    
+    ~Main();
 
     /*
     * @brief Checks for State kCalibrating to start retracting process
     */
     void run() override;
+
 
   private:
     Logger&                log_;

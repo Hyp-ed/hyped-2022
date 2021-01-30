@@ -43,6 +43,11 @@ class FakeStepper : public StepperInterface {
    * @param log, node id
    */
   FakeStepper(Logger& log, uint8_t id);
+  
+  /**
+   * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
+   */
+  ~FakeStepper() {}
 
   /**
    * @brief {checks if brake's button is pressed, notes change in the data

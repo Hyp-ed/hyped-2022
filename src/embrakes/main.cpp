@@ -39,7 +39,6 @@ Main::Main(uint8_t id, Logger &log)
   } else {
     m_brake = new Stepper(command_pins_[0], button_pins_[0], log_, 1);
     f_brake = new Stepper(command_pins_[1], button_pins_[1], log_, 2);
-
   }
 }
 
@@ -50,7 +49,7 @@ void Main::run()
   System &sys = System::getSystem();
 
   while (sys.running_) {
-    // Get the current state of embrakes and state machine modules from data
+    // Get the current state of embrakes, state machine and telemetry modules from data
     em_brakes_ = data_.getEmergencyBrakesData();
     sm_data_ = data_.getStateMachineData();
     tlm_data_ = data_.getTelemetryData();
@@ -65,18 +64,20 @@ void Main::run()
             f_brake->sendRetract();
           }
 
-          Thread::sleep(1000);
+          Thread::sleep(em_brakes_.brake_command_wait_time);
           m_brake->checkHome();
           f_brake->checkHome();
 
-        } else if (tlm_data_.nominal_braking_command) {
+          m_brake->checkAccFailure();
+          f_brake->checkAccFailure();
+        } else {
           if (!m_brake->checkClamped()) {
             m_brake->sendClamp();
           }
           if (!f_brake->checkClamped()) {
             f_brake->sendClamp();
           }
-          Thread::sleep(1000);
+          Thread::sleep(em_brakes_.brake_command_wait_time);
           m_brake->checkHome();
           f_brake->checkHome();
 
@@ -97,7 +98,7 @@ void Main::run()
           data_.setEmergencyBrakesData(em_brakes_);
         }
 
-        Thread::sleep(1000);
+        Thread::sleep(em_brakes_.brake_command_wait_time);
         m_brake->checkHome();
         f_brake->checkHome();
         m_brake->checkAccFailure();
@@ -114,7 +115,7 @@ void Main::run()
         if (!f_brake->checkClamped()) {
           f_brake->sendClamp();
         }
-        Thread::sleep(1000);
+        Thread::sleep(em_brakes_.brake_command_wait_time);
         m_brake->checkHome();
         f_brake->checkHome();
 
@@ -128,7 +129,7 @@ void Main::run()
         if (!f_brake->checkClamped()) {
           f_brake->sendClamp();
         }
-        Thread::sleep(1000);
+        Thread::sleep(em_brakes_.brake_command_wait_time);
         m_brake->checkHome();
         f_brake->checkHome();
 
@@ -143,19 +144,19 @@ void Main::run()
           if (f_brake->checkClamped()) {
             f_brake->sendRetract();
           }
-          Thread::sleep(1000);
+          Thread::sleep(em_brakes_.brake_command_wait_time);
           m_brake->checkHome();
           f_brake->checkHome();
           m_brake->checkAccFailure();
-          m_brake->checkAccFailure();
-        } else if (tlm_data_.nominal_braking_command) {
+          f_brake->checkAccFailure();
+        } else {
           if (!m_brake->checkClamped()) {
             m_brake->sendClamp();
           }
           if (!f_brake->checkClamped()) {
             f_brake->sendClamp();
           }
-          Thread::sleep(1000);
+          Thread::sleep(em_brakes_.brake_command_wait_time);
           m_brake->checkHome();
           f_brake->checkHome();
           m_brake->checkBrakingFailure();

@@ -33,6 +33,9 @@ class StepperInterface {
   virtual void checkAccFailure() = 0;
   virtual void checkBrakingFailure() = 0;
   virtual bool checkClamped() = 0;
+
+  // Explicit virtual deconstructor needs to be declared *and* defined
+  virtual ~StepperInterface() {}
 };
 
 }  // namespace embrakes

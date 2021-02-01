@@ -129,7 +129,7 @@ TEST_F(QuaternionFunctionality, handlesAdditionByConstant)
 }
 
 /**
- * @brief Test to determin whether the Quaternion class supports
+ * @brief Test to determine whether the Quaternion class supports
  * subtraction with a scalar constant
  * Testis is performed with randomly instantiated quaternions and
  * random constant values
@@ -142,6 +142,11 @@ TEST_F(QuaternionFunctionality, handlesAutoSubtractionByConstant)
     }
 }
 
+/**
+ * @brief Test to determine whether the Quaterion class supports
+ * decrementation by a constant value (subtracting a constant
+ * from each component)
+ */
 TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
 {
   quaternion_result_one -= kValue;
@@ -157,7 +162,6 @@ TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
 /**
  * Cal's notes
  * Functionality to test:
- * 0. Vector construction testing
  * 1. Vector to quaternion conversion
  * 4. Quaternion multiplication
  * 5. Scalar multiplication of quaternion

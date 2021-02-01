@@ -78,10 +78,10 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfZeroQuaternion)
  */
 TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
 {
-  int component_array [kSizeOfQuaternion];
+  int component_array[kSizeOfQuaternion];
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     component_array[i] = rand()%1000;
-    while (component_array[i] = 0){
+    while (component_array[i] = 0) {
       component_array[i] = rand()%1000;
     }
   }
@@ -89,12 +89,10 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
     component_array[0],
     component_array[1],
     component_array[2],
-    component_array[3]
-  );
+    component_array[3]);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(nonZeroQuaternion[i], component_array[i]);
   }
-
 }
 
 /**
@@ -114,6 +112,23 @@ TEST_F(QuaternionFunctionality, handlesAutoAdditionByConstant)
 }
 
 /**
+ * @brief Test to determine whether the Quaternion class supports
+ * the incrementation operation on constant values in the normal way
+ * (adding a constant to each component of the Quaternion)
+ */
+TEST_F(QuaternionFunctionality, handlesAdditionByConstant)
+{
+  quaternion_result_one += kValue;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], kValue);
+  }
+  quaternion_result_one += quaternion_one;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue);
+  }
+}
+
+/**
  * @brief Test to determin whether the Quaternion class supports
  * subtraction with a scalar constant
  * Testis is performed with randomly instantiated quaternions and
@@ -125,6 +140,18 @@ TEST_F(QuaternionFunctionality, handlesAutoSubtractionByConstant)
     for (int i = 0; i < kSizeOfQuaternion; i++) {
         ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue);
     }
+}
+
+TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
+{
+  quaternion_result_one -= kValue;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], -kValue);
+  }
+  quaternion_result_one += quaternion_one;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue);
+  }
 }
 
 /**

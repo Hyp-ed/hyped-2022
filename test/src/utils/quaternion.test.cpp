@@ -48,6 +48,7 @@ struct QuaternionFunctionality : public::testing::Test
     Quaternion<int> quaternion_result_one;
     Quaternion<int> quaternion_result_two;
 
+    float arithmetic_result;
 
     int kValue = rand()%1000;
 
@@ -62,13 +63,38 @@ struct QuaternionFunctionality : public::testing::Test
  * @brief Test to determine the correct instantiation of the zero
  * Quaternion class instance
  */
-TEST_F(QuaternionFunctionality, handleConstructionOfZeroQuaternion)
+TEST_F(QuaternionFunctionality, handlesConstructionOfZeroQuaternion)
 {
     Quaternion<int> zeroQuaternion = Quaternion<int>(0);
     ASSERT_EQ(0, zeroQuaternion.norm());
     for (int i = 0; i < kSizeOfQuaternion; i++) {
         ASSERT_EQ(0, zeroQuaternion[i]);
     }
+}
+
+/**
+ * @brief Test to determine the correct instantiation of a non zero
+ * Quaternion class instance.
+ */
+TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
+{
+  int component_array [kSizeOfQuaternion];
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    component_array[i] = rand()%1000;
+    while (component_array[i] = 0){
+      component_array[i] = rand()%1000;
+    }
+  }
+  Quaternion<int> nonZeroQuaternion = Quaternion<int>(
+    component_array[0],
+    component_array[1],
+    component_array[2],
+    component_array[3]
+  );
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(nonZeroQuaternion[i], component_array[i]);
+  }
+
 }
 
 /**

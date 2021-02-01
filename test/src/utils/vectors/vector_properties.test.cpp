@@ -238,7 +238,7 @@ TEST_F(IdentityOperations, handlesAdditionIdentity)
  * @brief Test used to check if adding the identity vector (0,0,0) using + just returns the vector
  * unchanged.
  */
-TEST_F(IdentityOperations, hadlesAutoAdditonIdentity)
+TEST_F(IdentityOperations, handlesAutoAdditonIdentity)
 {
   Vector<int, 3> output = vector + identity_vector;
   for (int i = 0; i < dimension;i++) {

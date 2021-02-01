@@ -32,7 +32,7 @@ namespace math
  * Associativity.
  * This tests will check if Associativity holds in multiplication and addition.
  */
-struct Associativity : public::testing::Test
+struct VectorAssociativity : public::testing::Test
 {
   const int dimension = 3;
   Vector<int, 3> vector_one;
@@ -53,7 +53,7 @@ struct Associativity : public::testing::Test
  * @brief Test used to check if the operator (+=) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
  */
-TEST_F(Associativity, isAdditionAssociative)
+TEST_F(VectorAssociativity, isAdditionAssociative)
 {
   vector_result_one += vector_one;
   vector_result_one += vector_two;
@@ -70,7 +70,7 @@ TEST_F(Associativity, isAdditionAssociative)
  * @brief Test used to check if the operator (+) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
  */
-TEST_F(Associativity, isAutoAdditionAssociative)
+TEST_F(VectorAssociativity, isAutoAdditionAssociative)
 {
   vector_result_one = (vector_one+ vector_two) + vector_three;
   vector_result_two = vector_one + (vector_two+vector_three);
@@ -82,7 +82,7 @@ TEST_F(Associativity, isAutoAdditionAssociative)
  * @brief Test used to check if the operator (*=) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
  */
-TEST_F(Associativity, isMultiplicationAssociative)
+TEST_F(VectorAssociativity, isMultiplicationAssociative)
 {
   vector_result_one *= vector_one;
   vector_result_one *= vector_two;
@@ -98,7 +98,7 @@ TEST_F(Associativity, isMultiplicationAssociative)
  * @brief Test used to check if the operator (*) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
  */
-TEST_F(Associativity, isAutoMultiplicationAssociative)
+TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
 {
   vector_result_one = (vector_one * vector_two) * vector_three;
   vector_result_two = vector_one * (vector_two * vector_three);
@@ -113,7 +113,7 @@ TEST_F(Associativity, isAutoMultiplicationAssociative)
  * This tests will check if Commutativity holds in multiplication and addition.
  * Also checks that substraction is anticommutative.
  */
-struct Commutativity : public ::testing::Test
+struct VectorCommutativity : public ::testing::Test
 {
   const int dimension = 3;
   Vector<int, 3> vector_one;
@@ -132,7 +132,7 @@ struct Commutativity : public ::testing::Test
  * @brief Test used to check if the operator (+=) is commutative given two random 3D vectors.
  * a + b = b + a.
  */
-TEST_F(Commutativity, isAdditionCommutative)
+TEST_F(VectorCommutativity, isAdditionCommutative)
 {
   vector_result_one += vector_one;
   vector_result_one += vector_two;
@@ -146,7 +146,7 @@ TEST_F(Commutativity, isAdditionCommutative)
  * @brief Test used to check if the operator (+) is commutative given two random 3D vectors.
  * a + b = b + a.
  */
-TEST_F(Commutativity, isAutoAdditionCommutative)
+TEST_F(VectorCommutativity, isAutoAdditionCommutative)
 {
   vector_result_one = vector_two + vector_one;
   vector_result_two = vector_one + vector_two;
@@ -158,7 +158,7 @@ TEST_F(Commutativity, isAutoAdditionCommutative)
  * @brief Test used to check if the operator (*=) is commutative given two random 3D vectors.
  * a * b = b * a.
  */
-TEST_F(Commutativity, isMultiplicationCommutative)
+TEST_F(VectorCommutativity, isMultiplicationCommutative)
 {
   vector_result_one *= vector_two;
   vector_result_one *= vector_one;
@@ -172,7 +172,7 @@ TEST_F(Commutativity, isMultiplicationCommutative)
  * @brief Test used to check if the operator (*) is commutative given two random 3D vectors.
  * a * b = b * a.
  */
-TEST_F(Commutativity, isAutoMultiplicationCommutative)
+TEST_F(VectorCommutativity, isAutoMultiplicationCommutative)
 {
   vector_result_one = vector_two * vector_one;
   vector_result_two = vector_one * vector_two;
@@ -184,7 +184,7 @@ TEST_F(Commutativity, isAutoMultiplicationCommutative)
  * @brief Test used to check if the operator (-=) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
  */
-TEST_F(Commutativity, isSubstractionNotCommutative)
+TEST_F(VectorCommutativity, isSubstractionNotCommutative)
 {
   vector_result_one += vector_one;
   vector_result_one -= vector_two;
@@ -198,7 +198,7 @@ TEST_F(Commutativity, isSubstractionNotCommutative)
  * Test used to check if the operator (-) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
  */
-TEST_F(Commutativity, isAutoSubstractionNotCommutative)
+TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
 {
   vector_result_one = vector_two - vector_one;
   vector_result_two = vector_one - vector_two;
@@ -211,7 +211,7 @@ TEST_F(Commutativity, isAutoSubstractionNotCommutative)
  * some porperties with the identity vectors (0,0,0) or (1,1,1) hold for the operations defined for
  * vectors
  */
-struct IdentityOperations : public ::testing::Test
+struct VectorIdentityOperations : public ::testing::Test
 {
   std::array<int, 3> values = createRandomArray();
   const int dimension = 3;
@@ -227,7 +227,7 @@ struct IdentityOperations : public ::testing::Test
  * @brief Test used to check if adding the identity vector (0,0,0) using += just leaves the vector
  * unchanged.
  */
-TEST_F(IdentityOperations, handlesAdditionIdentity)
+TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
 {
   vector+=identity_vector;
   for (int i = 0;i < dimension;i++) {
@@ -238,7 +238,7 @@ TEST_F(IdentityOperations, handlesAdditionIdentity)
  * @brief Test used to check if adding the identity vector (0,0,0) using + just returns the vector
  * unchanged.
  */
-TEST_F(IdentityOperations, handlesAutoAdditonIdentity)
+TEST_F(VectorIdentityOperations, handlesAutoAdditonIdentity)
 {
   Vector<int, 3> output = vector + identity_vector;
   for (int i = 0; i < dimension;i++) {
@@ -251,7 +251,7 @@ TEST_F(IdentityOperations, handlesAutoAdditonIdentity)
  * It will also check that if we substract a vectgor to itself then the original vector is changed
  * to the identity vector (-=).
  */
-TEST_F(IdentityOperations, handlesSubstractionIdentities)
+TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
 {
   vector -= identity_vector;
   for (int i = 0;i < dimension;i++) {
@@ -267,7 +267,7 @@ TEST_F(IdentityOperations, handlesSubstractionIdentities)
  * just returns the vector unchanged.
  * It will also check that if we substract a vectgor to itself then we get back the identity vector.
  */
-TEST_F(IdentityOperations, handlesAutoSubstractionIdentities)
+TEST_F(VectorIdentityOperations, handlesAutoSubstractionIdentities)
 {
   Vector<int, 3> output = vector - identity_vector;
   for (int i = 0;i < dimension;i++) {
@@ -284,7 +284,7 @@ TEST_F(IdentityOperations, handlesAutoSubstractionIdentities)
  * It will also check that if we multiply a vector by the identity vector (1,1,1) then our original
  * vector is unchanged.
  */
-TEST_F(IdentityOperations, handlesMultiplicationIdentities)
+TEST_F(VectorIdentityOperations, handlesMultiplicationIdentities)
 {
   identity_vector = Vector<int, 3>(1);
   vector *= identity_vector;
@@ -303,7 +303,7 @@ TEST_F(IdentityOperations, handlesMultiplicationIdentities)
  * It will also check that if we multiply a vector by the identity vector (1,1,1) then we get our
  * original vector.
  */
-TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
+TEST_F(VectorIdentityOperations, handlesAutoMultiplicationIdentities)
 {
   identity_vector = Vector<int, 3>(1);
   Vector<int, 3> output = vector * identity_vector;
@@ -322,7 +322,7 @@ TEST_F(IdentityOperations, handlesAutoMultiplicationIdentities)
  * It will also check that if we change the sign of a vector and then add it to the original I will
  * end up with the identity vector (0,0,0).
  */
-TEST_F(IdentityOperations, handlesChangeOfSignIdentity)
+TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
 {
   identity_vector = -identity_vector;
   for (int i = 0; i < dimension; i++) {
@@ -341,7 +341,7 @@ TEST_F(IdentityOperations, handlesChangeOfSignIdentity)
  * Finally it checks that if we divide a vector by the identity vector (1,1,1) we get the original
  * vector as result.
  */
-TEST_F(IdentityOperations, handlesAutoDivisionIdentities)
+TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
 {
   vector = Vector<int, 3>(createRandomWithoutZeroesArray());
   Vector<int, 3> output =  identity_vector / vector;
@@ -366,7 +366,7 @@ TEST_F(IdentityOperations, handlesAutoDivisionIdentities)
  * Finally it checks that if we divide a vector by the identity vector (1,1,1) our original vector
  * is unchanged.
  */
-TEST_F(IdentityOperations, handlesDivisionIdentities)
+TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
 {
   vector = Vector<int, 3>(createRandomWithoutZeroesArray());
   identity_vector /= vector;
@@ -389,7 +389,7 @@ TEST_F(IdentityOperations, handlesDivisionIdentities)
  * @brief Test used to check if taking the square root of the identity vector (0,0,0) or (1,1,1) leaves the vector
  * unchanged
  */
-TEST_F(IdentityOperations, handlesSqrtIdentities)
+TEST_F(VectorIdentityOperations, handlesSqrtIdentities)
 {
   vector = identity_vector.sqrt();
   for (int i = 0; i < dimension; i++) {
@@ -405,7 +405,7 @@ TEST_F(IdentityOperations, handlesSqrtIdentities)
  * @brief Test used to check if the identity vector (0,0,0) has a magnitude of zero and that the
  * magnitude of (1,1,1) is equal to sqrt of three.
  */
-TEST_F(IdentityOperations, handlesNormIdentities)
+TEST_F(VectorIdentityOperations, handlesNormIdentities)
 {
   double norm = identity_vector.norm();
   ASSERT_EQ(norm, 0);

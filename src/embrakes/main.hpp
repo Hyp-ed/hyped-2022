@@ -47,9 +47,15 @@ class Main : public Thread
     Main(uint8_t id, Logger &log);
 
     /*
+     * @brief Cleans up previous allocations
+     */
+    ~Main();
+
+    /*
     * @brief Checks for State kCalibrating to start retracting process
     */
     void run() override;
+
 
   private:
     Logger&                log_;
@@ -58,12 +64,10 @@ class Main : public Thread
     data::StateMachine     sm_data_;
     data::EmergencyBrakes  em_brakes_;
     data::Telemetry        tlm_data_;
-    int                    command_pins_[4];
-    int                    button_pins_[4];
-    StepperInterface*      brake_1;
-    // Stepper*               brake_2;
-    // Stepper*               brake_3;
-    // Stepper*               brake_4;
+    uint8_t                command_pins_[2];  // GPIO pin numbers for sending commands to brakes
+    uint8_t                button_pins_[2];   // GPIO pin numbers for retrieving brake status
+    StepperInterface*      m_brake_;          // Stepper for electromagnetic brakes
+    StepperInterface*      f_brake_;          // Stepper for friction brakes
 };
 
 }}

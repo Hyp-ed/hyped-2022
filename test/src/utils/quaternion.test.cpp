@@ -29,6 +29,25 @@ namespace hyped {
 namespace utils {
 namespace math {
 
+// -------------------------------------------------------------------------------------------------
+// Helper Functions
+// -------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Helper function used to create an array of 4 random
+ * integers. Used when instantiating classes randomly. 4 is the 
+ * fixed size of the array generated as that is the fixed size of
+ * a quaternion instance.
+ */
+std::array<int, 4> createRandomArray()
+{
+  std::srand(time(0));
+  std::array<int, 4> output = std::array<int, 4>();
+  for (int i = 0;i < 4;i++) {
+    output[i] = rand()%1000;
+  }
+  return output;
+}
 
 // -------------------------------------------------------------------------------------------------
 // Functionality
@@ -47,6 +66,8 @@ struct QuaternionFunctionality : public::testing::Test
 
     Quaternion<int> quaternion_result_one;
     Quaternion<int> quaternion_result_two;
+
+    Vector<int, 4> test_vector;
 
     float arithmetic_result;
 
@@ -81,7 +102,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
   int component_array[kSizeOfQuaternion];
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     component_array[i] = rand()%1000;
-    while (component_array[i] = 0) {
+    while (component_array[i] == 0) {
       component_array[i] = rand()%1000;
     }
   }
@@ -93,6 +114,13 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(nonZeroQuaternion[i], component_array[i]);
   }
+}
+
+TEST_F(QuaternionFunctionality, handlesConstructionFromVector)
+{
+  std::array<int, 4> component_array = createRandomArray();
+  test_vector = Vector<int, 4>(component_array);
+  
 }
 
 /**
@@ -131,7 +159,7 @@ TEST_F(QuaternionFunctionality, handlesAdditionByConstant)
 /**
  * @brief Test to determine whether the Quaternion class supports
  * subtraction with a scalar constant
- * Testis is performed with randomly instantiated quaternions and
+ * Test is is performed with randomly instantiated quaternions and
  * random constant values
  */
 TEST_F(QuaternionFunctionality, handlesAutoSubtractionByConstant)

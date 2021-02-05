@@ -35,7 +35,7 @@ namespace math {
 
 /**
  * @brief Helper function used to create an array of 4 random
- * integers. Used when instantiating classes randomly. 4 is the 
+ * integers. Used when instantiating classes randomly. 4 is the
  * fixed size of the array generated as that is the fixed size of
  * a quaternion instance.
  */
@@ -116,12 +116,17 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
   }
 }
 
+/*  INCOMPLETE
 TEST_F(QuaternionFunctionality, handlesConstructionFromVector)
 {
   std::array<int, 4> component_array = createRandomArray();
   test_vector = Vector<int, 4>(component_array);
-  
+  quaternion_one = Quaternion<Vector<int, 4>>();
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(component_array[i], test_vector[i]);
+  }
 }
+*/
 
 /**
  * @brief Test to determine whether the Quaternion class supports
@@ -184,6 +189,30 @@ TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
   quaternion_result_one += quaternion_one;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue);
+  }
+}
+
+// THIS TEST IS NOT FUNCTIONAL YET
+TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
+{
+  quaternion_result_one = quaternion_one * kValue;
+  //quaternion_result_two = kValue * quaternion_one;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue);
+    //ASSERT_EQ(quaternion_result_two[i], kValue * quaternion_one[i]);
+  }
+}
+
+/**
+ * @brief Test to determin whether the Quaternion class supports
+ * division by a constant scalar
+ * Test uses random quaternion and scalar value
+ */
+TEST_F(QuaternionFunctionality, handleAutoDivisionByConstant)
+{
+  quaternion_result_one = quaternion_one / kValue;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue);
   }
 }
 

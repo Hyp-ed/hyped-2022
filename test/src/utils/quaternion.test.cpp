@@ -190,7 +190,20 @@ TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
 }
 
 /**
- * @brief Test to determin whether the Quaternion class supports
+ * @brief Test to determine whetehr the Quaternion class supports
+ * multiplication by a constant scalar using the (*=) operator.
+ * This test uses a random quaterion instance and constant.
+ */
+TEST_F(QuaternionFunctionality, handleMultiplicationByConstant)
+{
+  quaternion_result_one = quaternion_one;
+  quaternion_result_one *= kValue;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue);
+  }
+}
+/**
+ * @brief Test to determine whether the Quaternion class supports
  * division by a constant scalar
  * Test uses random quaternion and scalar value
  */

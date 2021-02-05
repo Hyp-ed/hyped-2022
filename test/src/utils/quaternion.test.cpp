@@ -205,11 +205,25 @@ TEST_F(QuaternionFunctionality, handleMultiplicationByConstant)
 /**
  * @brief Test to determine whether the Quaternion class supports
  * division by a constant scalar
- * Test uses random quaternion and scalar value
+ * Test uses random quaternion instance and scalar value
  */
 TEST_F(QuaternionFunctionality, handleAutoDivisionByConstant)
 {
   quaternion_result_one = quaternion_one / kValue;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue);
+  }
+}
+
+/**
+ * @brief Test to determine whether the Quaternion class supports
+ * divison by a constant scalar using the (/=) operator.
+ * Test uses random quaternion instance and constant.
+ */
+TEST_F(QuaternionFunctionality, handleDivisionByConstant)
+{
+  quaternion_result_one = quaternion_one;
+  quaternion_result_one /= kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue);
   }

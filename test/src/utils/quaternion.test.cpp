@@ -116,18 +116,6 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
   }
 }
 
-/*  INCOMPLETE
-TEST_F(QuaternionFunctionality, handlesConstructionFromVector)
-{
-  std::array<int, 4> component_array = createRandomArray();
-  test_vector = Vector<int, 4>(component_array);
-  quaternion_one = Quaternion<Vector<int, 4>>();
-  for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(component_array[i], test_vector[i]);
-  }
-}
-*/
-
 /**
  * @brief Test to determine whether the Quaternion class supports
  * addition with a scalar constant.
@@ -196,10 +184,8 @@ TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
 TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
 {
   quaternion_result_one = quaternion_one * kValue;
-  //quaternion_result_two = kValue * quaternion_one;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue);
-    //ASSERT_EQ(quaternion_result_two[i], kValue * quaternion_one[i]);
   }
 }
 

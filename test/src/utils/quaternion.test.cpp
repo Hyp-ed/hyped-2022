@@ -49,6 +49,15 @@ std::array<int, 4> createRandomArray()
   return output;
 }
 
+float calculateNorm(Quaternion<int> quat)
+{
+  int sumSquare;
+  for (int i = 0; i < 4; i++) {
+    sumSquare += pow(quat[i], 2);
+  }
+  return sqrt (sumSquare);
+}
+
 // -------------------------------------------------------------------------------------------------
 // Functionality
 // -------------------------------------------------------------------------------------------------
@@ -235,7 +244,6 @@ TEST_F(QuaternionFunctionality, handleDivisionByConstant)
  * 1. Vector to quaternion conversion
  * 4. Quaternion multiplication
  * 5. Scalar multiplication of quaternion
- * 6. Scalar divion of quaternion]
  * 7. Magnitude of quaternion
  * 8........
 */

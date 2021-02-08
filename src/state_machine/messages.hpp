@@ -66,6 +66,9 @@ struct Messages {
   // Sent upon receiving shutdown command
   static const char kShutdownCommandLog[];
 
+  // Sent upon reaching the maximum velocity
+  static const char kMaxVelocityLog[];
+
   // Sent upon entering braking zone
   static const char kBrakingZoneLog[];
 

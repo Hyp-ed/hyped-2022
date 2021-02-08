@@ -94,6 +94,11 @@ bool checkShutdownCommand(Logger &log, Telemetry telemetry_data);
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data);
 
 /*
+ * @brief   Returns true iff the pod has reached the maximum velocity.
+ */
+bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data);
+
+/*
  * @brief   Returns true iff the pod has reached zero velocity.
  */
 bool checkPodStopped(Logger &log, Navigation &nav_data);

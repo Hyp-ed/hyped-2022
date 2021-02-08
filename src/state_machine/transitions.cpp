@@ -120,17 +120,22 @@ bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
 
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
-  float remaining_distance = nav_data.run_length - nav_data.displacement;
-  float required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
+  data::NavigationType remaining_distance = nav_data.run_length - nav_data.displacement;
+  data::NavigationType required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
   if (remaining_distance > required_distance) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kBrakingZoneLog);
   return true;
 }
 
-/*
- * @brief    Returns true if the pod has stopped moving.
- */
+bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data)
+{
+  if (nav_data.velocity < nav_data.maximum_velocity) return false;
+
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kMaxVelocityLog);
+  return true;
+}
+
 bool checkPodStopped(Logger &log, Navigation &nav_data)
 {
   if (nav_data.velocity > 0) return false;

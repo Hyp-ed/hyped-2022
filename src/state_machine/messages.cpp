@@ -51,6 +51,8 @@ const char Messages::kShutdownCommandLog[] = "Shutdown command received";
 
 const char Messages::kBrakingZoneLog[] = "Entered braking zone";
 
+const char Messages::kMaxVelocityLog[] = "Reached maximum velocity";
+
 const char Messages::kPodStoppedLog[] = "The pod has stopped";
 
 const char Messages::kShutdownLog[] = "Shutting down";

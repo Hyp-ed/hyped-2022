@@ -129,6 +129,31 @@ State *Accelerating::checkTransition(Logger &log)
   bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
   if (in_braking_zone) { return NominalBraking::getInstance(); }
 
+  bool reached_max_velocity = checkReachedMaxVelocity(log, nav_data_);
+  if (reached_max_velocity) { return Cruising::getInstance(); }
+
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  Cruising
+//--------------------------------------------------------------------------------------
+
+Cruising Cruising::instance_;
+data::State Cruising::enum_value_       = data::kCruising;
+char Cruising::string_representation_[] = "Cruising";
+
+State *Cruising::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+  if (emergency) { return FailureBraking::getInstance(); }
+
+  bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
+  if (in_braking_zone) { return NominalBraking::getInstance(); }
+
   return nullptr;
 }
 

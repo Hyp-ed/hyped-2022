@@ -58,8 +58,9 @@ struct Module {
 typedef float NavigationType;
 typedef Vector<NavigationType, 3> NavigationVector;
 struct Navigation : public Module {
-  static constexpr float run_length = 1250;  // m
-  static constexpr float braking_buffer = 20; // m
+  static constexpr NavigationType run_length = 1250;  // m
+  static constexpr NavigationType braking_buffer = 20; // m
+  static constexpr NavigationType maximum_velocity = 18;
   NavigationType  displacement;  // m
   NavigationType  velocity;  // m/s
   NavigationType  acceleration;  // m/s^2
@@ -160,6 +161,7 @@ enum State {
   kCalibrating,
   kReady,
   kAccelerating,
+  kCruising,
   kNominalBraking,
   kEmergencyBraking,
   kRunComplete,

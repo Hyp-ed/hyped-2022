@@ -70,12 +70,12 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
 {
   if (!telemetry_data.calibrate_command) return false;
 
-  if (embrakes_data.module_status != ModuleStatus::kInit) return false;
-  if (nav_data.module_status != ModuleStatus::kInit) return false;
-  if (batteries_data.module_status != ModuleStatus::kInit) return false;
-  if (telemetry_data.module_status != ModuleStatus::kInit) return false;
-  if (sensors_data.module_status != ModuleStatus::kInit) return false;
-  if (motors_data.module_status != ModuleStatus::kInit) return false;
+  if (embrakes_data.module_status < ModuleStatus::kInit) return false;
+  if (nav_data.module_status < ModuleStatus::kInit) return false;
+  if (batteries_data.module_status < ModuleStatus::kInit) return false;
+  if (telemetry_data.module_status < ModuleStatus::kInit) return false;
+  if (sensors_data.module_status < ModuleStatus::kInit) return false;
+  if (motors_data.module_status < ModuleStatus::kInit) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateInitialisedLog);
   return true;

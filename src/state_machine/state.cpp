@@ -82,7 +82,8 @@ State *Calibrating::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool all_ready = checkModulesReady(log, embrakes_data_, nav_data_, motors_data_);
+  bool all_ready = checkModulesReady(log, embrakes_data_, nav_data_, batteries_data_,
+                                     telemetry_data_, sensors_data_, motors_data_);
   if (all_ready) { return Ready::getInstance(); }
 
   return nullptr;

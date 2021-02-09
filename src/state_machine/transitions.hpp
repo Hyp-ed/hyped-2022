@@ -65,9 +65,10 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
                              Sensors sensors_data, Motors motors_data);
 
 /*
- * @brief    Returns true iff all of Embrakes, Navigation and Motors are ready.
+ * @brief    Returns true iff all modulesare ready.
  */
 bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                       Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
                        Motors motors_data);
 
 //--------------------------------------------------------------------------------------

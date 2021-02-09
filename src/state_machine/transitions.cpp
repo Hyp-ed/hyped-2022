@@ -82,12 +82,14 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
 }
 
 bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
+                       Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
                        Motors motors_data)
 {
-  // We're only checking Navigation, Motors and Embrakes because only those modules are doing
-  // calibration.
   if (embrakes_data.module_status != ModuleStatus::kReady) return false;
   if (nav_data.module_status != ModuleStatus::kReady) return false;
+  if (batteries_data.module_status != ModuleStatus::kReady) return false;
+  if (telemetry_data.module_status != ModuleStatus::kReady) return false;
+  if (sensors_data.module_status != ModuleStatus::kReady) return false;
   if (motors_data.module_status != ModuleStatus::kReady) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kModulesCalibratedLog);

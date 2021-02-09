@@ -58,14 +58,14 @@ struct Module {
 typedef float NavigationType;
 typedef Vector<NavigationType, 3> NavigationVector;
 struct Navigation : public Module {
-  static constexpr NavigationType run_length = 1250;  // m
-  static constexpr NavigationType braking_buffer = 20; // m
-  static constexpr NavigationType maximum_velocity = 18;
-  NavigationType  displacement;  // m
-  NavigationType  velocity;  // m/s
-  NavigationType  acceleration;  // m/s^2
-  NavigationType  emergency_braking_distance;
-  NavigationType  braking_distance = 750;  // m
+  static constexpr NavigationType run_length       = 1250;  // m
+  static constexpr NavigationType braking_buffer   = 20;    // m
+  static constexpr NavigationType maximum_velocity = 18;    // m/s
+  NavigationType displacement;                              // m
+  NavigationType velocity;                                  // m/s
+  NavigationType acceleration;                              // m/s^2
+  NavigationType emergency_braking_distance;                // m
+  NavigationType braking_distance = 750;                    // m
 };
 
 // -------------------------------------------------------------------------------------------------

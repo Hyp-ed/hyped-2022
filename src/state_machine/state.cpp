@@ -180,8 +180,10 @@ char FailureBraking::string_representation_[] = "FailureBraking";
 State *FailureBraking::checkTransition(Logger &log)
 {
   // We only need to update navigation data.
-  nav_data_ = data_.getNavigationData();
-  if (checkPodStopped(log, nav_data_)) { return FailureStopped::getInstance(); }
+  nav_data_    = data_.getNavigationData();
+  
+  bool stopped = checkPodStopped(log, nav_data_);
+  if (stopped) { return FailureStopped::getInstance(); }
   return nullptr;
 }
 

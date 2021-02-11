@@ -9,7 +9,7 @@
  * Date: 13/11/2020
  * Description: Testing file for vector.hpp
  *
- *    Copyright 2018 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *    except in compliance with the License. You may obtain a copy of the License at
  *
@@ -27,7 +27,7 @@ namespace utils
 namespace math
 {
 /**
- * @brief Struct used to set up all the variables used in the tests one porperty present in some
+ * @brief Struct used to set up all the variables used in the tests one property present in some
  * of the operations defined for vectors
  * Associativity.
  * This tests will check if Associativity holds in multiplication and addition.
@@ -108,7 +108,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
 }
 /**
  * @brief Struct used to set up all the variables used in the tests for checking if
- * one porperty is resent in some of the operations defined for vectors
+ * one property is resent in some of the operations defined for vectors
  * Commutativity.
  * This tests will check if Commutativity holds in multiplication and addition.
  * Also checks that substraction is anticommutative.
@@ -238,7 +238,7 @@ TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
  * @brief Test used to check if adding the identity vector (0,0,0) using + just returns the vector
  * unchanged.
  */
-TEST_F(VectorIdentityOperations, handlesAutoAdditonIdentity)
+TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
 {
   Vector<int, 3> output = vector + identity_vector;
   for (int i = 0; i < dimension;i++) {
@@ -248,7 +248,7 @@ TEST_F(VectorIdentityOperations, handlesAutoAdditonIdentity)
 /**
  * @brief Test used to check if substracting the identity vector (0,0,0) using -=
  * just leaves the vector unchanged.
- * It will also check that if we substract a vectgor to itself then the original vector is changed
+ * It will also check that if we subtract a vector to itself then the original vector is changed
  * to the identity vector (-=).
  */
 TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
@@ -265,7 +265,7 @@ TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
 /**
  * @brief Test used to check if substracting the identity vector (0,0,0) using -
  * just returns the vector unchanged.
- * It will also check that if we substract a vectgor to itself then we get back the identity vector.
+ * It will also check that if we subtract a vector to itself then we get back the identity vector.
  */
 TEST_F(VectorIdentityOperations, handlesAutoSubstractionIdentities)
 {
@@ -386,8 +386,8 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
   }
 }
 /**
- * @brief Test used to check if taking the square root of the identity vector (0,0,0) or (1,1,1) leaves the vector
- * unchanged
+ * @brief Test used to check if taking the square root of the identity vector (0,0,0) or (1,1,1)
+ * leaves the vector unchanged
  */
 TEST_F(VectorIdentityOperations, handlesSqrtIdentities)
 {

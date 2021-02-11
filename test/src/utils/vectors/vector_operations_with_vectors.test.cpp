@@ -10,7 +10,7 @@
  * Date: 13/11/2020
  * Description: Testing file for vector.hpp
  *
- *    Copyright 2018 HYPED
+ *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *    except in compliance with the License. You may obtain a copy of the License at
  *
@@ -146,7 +146,7 @@ TEST_F(OperationsTest, allowsAutoSubstraction)
 }
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
- * multipliying a vector to another vector in place in a normal way (element by element),
+ * multiplying a vector to another vector in place in a normal way (element by element)
  * this tests the operator (*=).
  * The test will be performed using two random 3D vectors.
  */
@@ -159,7 +159,7 @@ TEST_F(OperationsTest, allowsMultiplication)
 }
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
- * multipliying a vector to another vector in place in a normal way (element by element),
+ * multiplying a vector to another vector in place in a normal way (element by element),
  * this tests the operator (*).
  * The test will be performed using two random 3D vectors.
  */

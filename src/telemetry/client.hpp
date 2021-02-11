@@ -22,7 +22,6 @@
 #define TELEMETRY_CLIENT_HPP_
 
 #include <string>
-#include "telemetry/signalhandler.hpp"
 #include "utils/logger.hpp"
 #include "utils/config.hpp"
 

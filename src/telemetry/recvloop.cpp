@@ -44,7 +44,7 @@ void RecvLoop::run()
 
   while (true) {
     try {
-      message = main_ref_.client_->receiveData();
+      message = main_ref_.client_.receiveData();
     }
     catch (std::exception& e) {
       log_.ERR("Telemetry", "%s", e.what());

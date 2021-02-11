@@ -108,9 +108,8 @@ std::string Client::receiveData()
   char header[8];
 
   // receive header
-  if (recv(sockfd_, header, 8, 0) == -1) {
-    log_.ERR("Telemetry", "Error receiving header");
-    throw std::runtime_error{"Error receiving header"};  // NOLINT
+  if (recv(sockfd_, header, 8, 0) <= 0) {
+    throw std::runtime_error{"Error receiving header"};
   }
 
   int payload_length = strtol(header, NULL, 0);
@@ -118,9 +117,8 @@ std::string Client::receiveData()
   memset(buffer, 0, sizeof(buffer));  // fill with 0's so null terminated by default
 
   // receive payload
-  if (recv(sockfd_, buffer, payload_length, 0) == -1) {
-    log_.ERR("Telemetry", "Error receiving payload");
-    throw std::runtime_error{"Error receiving payload"};  // NOLINT
+  if (recv(sockfd_, buffer, payload_length, 0) <= 0) {
+    throw std::runtime_error{"Error receiving payload"};
   }
 
   log_.DBG1("Telemetry", "Finished receiving from server");

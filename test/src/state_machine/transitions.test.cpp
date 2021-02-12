@@ -73,6 +73,8 @@ struct TransitionFunctionality : public ::testing::Test {
   const std::string braking_zone_false_positive_error = "Should handle enough braking space left.";
   const std::string braking_zone_false_negative_error
     = "Should handle not enough braking space left.";
+  const std::string pod_stopped_false_positive_error = "Should handle positive velocities.";
+  const std::string pod_stopped_false_negative_error = "Should handle nonpositive velocities.";
 
   // ---- Test size -----------
 
@@ -863,5 +865,57 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
           << braking_zone_false_negative_error;
       }
     }
+  }
+}
+
+/**
+ * Ensures that positive velocities result in checkPodStopped
+ * returning false.
+ *
+ * Time complexity: O(TEST_SIZE)
+ */
+TEST_F(TransitionFunctionality, handlesPositiveVelocity)
+{
+  Navigation nav_data;
+
+  constexpr int max_velocity = 100;  // 100 m/s is pretty fast...
+  constexpr NavigationType step_size
+    = static_cast<NavigationType>(max_velocity) / static_cast<NavigationType>(TEST_SIZE);
+
+  for (int i = 1; i <= TEST_SIZE; i++) {
+    nav_data.velocity = step_size * static_cast<NavigationType>(i);
+
+    nav_data.acceleration               = static_cast<NavigationType>(rand());
+    nav_data.displacement               = static_cast<NavigationType>(rand());
+    nav_data.braking_distance           = static_cast<NavigationType>(rand());
+    nav_data.emergency_braking_distance = static_cast<NavigationType>(rand());
+
+    ASSERT_EQ(false, checkPodStopped(log, nav_data)) << pod_stopped_false_positive_error;
+  }
+}
+
+/**
+ * Ensures that nonpositive velocities result in checkPodStopped
+ * returning true.
+ *
+ * Time complexity: O(TEST_SIZE)
+ */
+TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
+{
+  Navigation nav_data;
+
+  constexpr int max_velocity = 100;  // 100 m/s is pretty fast...
+  constexpr NavigationType step_size
+    = static_cast<NavigationType>(max_velocity) / static_cast<NavigationType>(TEST_SIZE);
+
+  for (int i = 0; i < TEST_SIZE; i++) {
+    nav_data.velocity = -1.0 * step_size * static_cast<NavigationType>(i);
+
+    nav_data.acceleration               = static_cast<NavigationType>(rand());
+    nav_data.displacement               = static_cast<NavigationType>(rand());
+    nav_data.braking_distance           = static_cast<NavigationType>(rand());
+    nav_data.emergency_braking_distance = static_cast<NavigationType>(rand());
+
+    ASSERT_EQ(true, checkPodStopped(log, nav_data)) << pod_stopped_false_negative_error;
   }
 }

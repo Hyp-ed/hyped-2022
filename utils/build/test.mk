@@ -49,7 +49,6 @@ test: $(T_TARGET)
 
 test-dev: $(T_TARGET)
 	$(Verb) ./$< --gtest_filter=*_dev
-
 test-all: $(T_TARGET)
 	$(Verb) ./$<
 

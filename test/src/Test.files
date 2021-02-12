@@ -11,3 +11,6 @@ T_SRCS := \
   utils/differentiator.test.cpp \
   utils/online_statistics.test.cpp \
   utils/rolling_statistics.test.cpp \
+  utils/vectors/vector_properties.test.cpp \
+  utils/vectors/vector_constructor.test.cpp \
+  utils/vectors/vector_float.test.cpp \

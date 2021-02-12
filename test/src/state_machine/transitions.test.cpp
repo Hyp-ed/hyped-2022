@@ -827,3 +827,41 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
     }
   }
 }
+
+/**
+ * Let b be the first braking distance within the precision of NavigationType that leads to
+ * checkEnteredBrakingZone returning true. Then this test aims to test values in the interval
+ * [b-0.5,b+0.5) to make sure that checkEnteredBrakingZone behaves correctly in this edge case.
+ *
+ * This is a rather expensive test and may not be required to run during debugging.
+ *
+ * Time complexity: O(TEST_SIZE^2)
+ */
+TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
+{
+  Navigation nav_data;
+  NavigationType critical_braking_distance;
+
+  constexpr int min_displacement     = 0;
+  constexpr int max_displacement     = nav_data.run_length - nav_data.braking_buffer - 1;
+  constexpr NavigationType step_size = 1.0 / static_cast<NavigationType>(TEST_SIZE);
+
+  for (int i = 0; i < TEST_SIZE; i++) {
+    nav_data.displacement
+      = static_cast<NavigationType>(randomInRange(min_displacement, max_displacement));
+    critical_braking_distance
+      = nav_data.run_length - nav_data.braking_buffer - nav_data.displacement;
+
+    for (int j = 0; j < TEST_SIZE; j++) {
+      nav_data.braking_distance
+        = critical_braking_distance - 0.5 + step_size * static_cast<NavigationType>(j);
+      if (j < TEST_SIZE / 2) {
+        ASSERT_EQ(false, checkEnteredBrakingZone(log, nav_data))
+          << braking_zone_false_positive_error;
+      } else {
+        ASSERT_EQ(true, checkEnteredBrakingZone(log, nav_data))
+          << braking_zone_false_negative_error;
+      }
+    }
+  }
+}

@@ -53,10 +53,9 @@ float calculateNorm(Quaternion<int> quat)
 {
   int sumSquare;
   for (int i = 0; i < 4; i++) {
-    sumSquare += quat[i] * quat[i];
+    sumSquare += pow(quat[i], 2);
   }
-  sumSquare = sqrt(sumSquare);
-  return sumSquare;
+  return sqrt(sumSquare);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -190,12 +189,18 @@ TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
   }
 }
 
-// THIS TEST IS NOT FUNCTIONAL YET
+/**
+ * @brief Test to determine whether the Quaternion class suppots
+ * auto mulitplication by a constant scalar.
+ * This test uses a random quaternion instance and constant.
+ */
 TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
 {
   quaternion_result_one = quaternion_one * kValue;
+  quaternion_result_two = kValue * quaternion_one;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue);
+    ASSERT_NE(quaternion_result_two[i], quaternion_one[i] * kValue);
   }
 }
 
@@ -270,7 +275,6 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
  * Cal's notes
  * Functionality to test:
  * 1. Vector to quaternion conversion
- * 4. Quaternion multiplication
  * 5. Scalar multiplication of quaternion
  * 7. Magnitude of quaternion
  * 8........

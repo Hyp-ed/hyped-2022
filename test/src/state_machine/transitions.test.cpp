@@ -29,9 +29,23 @@
 using namespace hyped::data;
 using namespace hyped::state_machine;
 
+/**
+ * Struct used for testing transition functions. Contains
+ *
+ * 1. Logger
+ * 2. Error messages
+ * 3. Constant test size
+ * 4. Utility functions
+ */
 struct TransitionFunctionality : public ::testing::Test {
   // TODO(miltfra): Disable printing log messages to stdout/stderr
+
+  // ---- Logger ---------------
+
   hyped::utils::Logger log;
+
+  // ---- Error messages -------
+
   const std::string no_emergency_error           = "Should handle no emergency.";
   const std::string brake_emergency_error        = "Should handle emergency in Embrakes.";
   const std::string nav_emergency_error          = "Should handle emergency in Navigation.";
@@ -60,7 +74,12 @@ struct TransitionFunctionality : public ::testing::Test {
   const std::string braking_zone_false_negative_error
     = "Should handle not enough braking space left.";
 
+  // ---- Test size -----------
+
   static constexpr int TEST_SIZE = 1000;
+
+  // ---- Utility function ----
+
   int randomInRange(int, int);
 
  protected:
@@ -77,6 +96,13 @@ int TransitionFunctionality::randomInRange(int min, int max)
 // Emergency
 //--------------------------------------------------------------------------------------
 
+/**
+ * Ensures that if no module reports an emergency and no
+ * emergency stop command has been received, checkEmergency
+ * does not return true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesNoEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -104,6 +130,12 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
   }
 }
 
+/*
+ * Ensures that if brakes is in kCriticalFailure,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesBrakeEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -131,6 +163,12 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
   }
 }
 
+/*
+ * Ensures that if navigation is in kCriticalFailure,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesNavEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -158,6 +196,12 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
   }
 }
 
+/*
+ * Ensures that if batteries is in kCriticalFailure,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -185,6 +229,12 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
   }
 }
 
+/*
+ * Ensures that if telemetry is in kCriticalFailure,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -212,6 +262,12 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
   }
 }
 
+/*
+ * Ensures that if sensors is in kCriticalFailure,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesSensorsEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -239,6 +295,12 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
   }
 }
 
+/*
+ * Ensures that if motors is in kCriticalFailure,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesMotorsEmergency)
 {
   EmergencyBrakes embrakes_data;
@@ -266,6 +328,12 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
   }
 }
 
+/*
+ * Ensures that if an emergency stop command has been received,
+ * checkEmergency always returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesStopCommand)
 {
   EmergencyBrakes embrakes_data;
@@ -297,6 +365,12 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
 // Module Status
 //--------------------------------------------------------------------------------------
 
+/**
+ * Makes sure that if all modules are in kInit,
+ * checkModulesInitialised returns true.
+ *
+ * Time complexity: O(1)
+ */
 TEST_F(TransitionFunctionality, handlesAllInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -319,6 +393,12 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
   ASSERT_EQ(all_initialised, true) << all_initialised_error;
 }
 
+/**
+ * Makes sure that if brakes is in any state that is not kInit,
+ * checkModulesInitialised never returns true.
+ *
+ * Time complexity: O(num_states) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -347,6 +427,12 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
   }
 }
 
+/**
+ * Makes sure that if navigation is in any state that is not kInit,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_states) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -375,6 +461,12 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
   }
 }
 
+/**
+ * Makes sure that if batteries is in any state that is not kInit,
+ * checkModulesInitialised never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -403,6 +495,12 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
   }
 }
 
+/**
+ * Makes sure that if telemetry is in any state that is not kInit,
+ * checkModulesInitialised never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -431,6 +529,12 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
   }
 }
 
+/**
+ * Makes sure that if sensors is in any state that is not kInit,
+ * checkModulesInitialised never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -459,6 +563,12 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
   }
 }
 
+/**
+ * Makes sure that if motors is in any state that is not kInit,
+ * checkModulesInitialised never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
 {
   EmergencyBrakes embrakes_data;
@@ -487,6 +597,12 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
   }
 }
 
+/**
+ * Makes sure that if all modules are in kReady,
+ * checkModulesReady returns true.
+ *
+ * Time complexity: O(1)
+ */
 TEST_F(TransitionFunctionality, handlesAllReady)
 {
   EmergencyBrakes embrakes_data;
@@ -502,6 +618,12 @@ TEST_F(TransitionFunctionality, handlesAllReady)
   ASSERT_EQ(all_ready, true) << all_ready_error;
 }
 
+/**
+ * Makes sure that if brakes is in any state that is not kReady,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesBrakesNotReady)
 {
   EmergencyBrakes embrakes_data;
@@ -522,6 +644,12 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
   }
 }
 
+/**
+ * Makes sure that if navigation is in any state that is not kReady,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesNavigationNotReady)
 {
   EmergencyBrakes embrakes_data;
@@ -542,6 +670,12 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
   }
 }
 
+/**
+ * Makes sure that if motors is in any state that is not kReady,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesMotorsNotReady)
 {
   EmergencyBrakes embrakes_data;
@@ -566,6 +700,12 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
+/**
+ * Cycles through all command setups and makes sure the transition checks behave
+ * as intended.
+ *
+ * Time complexity: O(2^num_commands) = O(1)
+ */
 TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
 {
   Telemetry telemetry_data;
@@ -588,6 +728,13 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 
+/**
+ * Tests random integer values in the interval where we expect checkEnteredBrakingZone
+ * to return true. We're only checking the rough behaviour as the details may not be
+ * relevant for debugging.
+ *
+ * Time complexity: O(TEST_SIZE)
+ */
 TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
 {
   Navigation nav_data;
@@ -613,6 +760,13 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
   }
 }
 
+/**
+ * Tests random integer values in the interval where we expect checkEnteredBrakingZone
+ * to return false. We're only checking the rough behaviour as the details may not be
+ * relevant for debugging.
+ *
+ * Time complexity: O(TEST_SIZE)
+ */
 TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
 {
   Navigation nav_data;
@@ -642,6 +796,8 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
  * [d-0.5,d+0.5) to make sure that checkEnteredBrakingZone behaves correctly in this edge case.
  *
  * This is a rather expensive test and may not be required to run during debugging.
+ *
+ * Time complexity: O(TEST_SIZE^2)
  */
 TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
 {

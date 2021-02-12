@@ -45,6 +45,11 @@ class FakeStepper : public StepperInterface {
   FakeStepper(Logger& log, uint8_t id);
 
   /**
+   * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
+   */
+  ~FakeStepper() {}
+
+  /**
    * @brief {checks if brake's button is pressed, notes change in the data
    * struct}
    */
@@ -70,12 +75,12 @@ class FakeStepper : public StepperInterface {
   bool checkClamped() override;
 
  private:
-  bool fake_button_;
   utils::Logger& log_;
   data::Data& data_;
   data::EmergencyBrakes em_brakes_data_;
   uint8_t brake_id_;
   uint8_t is_clamped_;
+  bool fake_button_;
 };
 
 }  // namespace embrakes

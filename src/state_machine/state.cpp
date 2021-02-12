@@ -165,7 +165,9 @@ State *Finished::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  if (checkShutdownCommand(log, telemetry_data_)) { return Off::getInstance(); }
+
+  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }
 
@@ -181,7 +183,9 @@ State *FailureBraking::checkTransition(Logger &log)
 {
   // We only need to update navigation data.
   nav_data_ = data_.getNavigationData();
-  if (checkPodStopped(log, nav_data_)) { return FailureStopped::getInstance(); }
+
+  bool stopped = checkPodStopped(log, nav_data_);
+  if (stopped) { return FailureStopped::getInstance(); }
   return nullptr;
 }
 
@@ -197,7 +201,9 @@ State *FailureStopped::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  if (checkShutdownCommand(log, telemetry_data_)) { return Off::getInstance(); }
+
+  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }
 

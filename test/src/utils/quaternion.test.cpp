@@ -53,9 +53,10 @@ float calculateNorm(Quaternion<int> quat)
 {
   int sumSquare;
   for (int i = 0; i < 4; i++) {
-    sumSquare += pow(quat[i], 2);
+    sumSquare += quat[i] * quat[i];
   }
-  return sqrt (sumSquare);
+  sumSquare = sqrt(sumSquare);
+  return sumSquare;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -199,7 +200,7 @@ TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
 }
 
 /**
- * @brief Test to determine whetehr the Quaternion class supports
+ * @brief Test to determine whether the Quaternion class supports
  * multiplication by a constant scalar using the (*=) operator.
  * This test uses a random quaterion instance and constant.
  */
@@ -226,7 +227,7 @@ TEST_F(QuaternionFunctionality, handleAutoDivisionByConstant)
 
 /**
  * @brief Test to determine whether the Quaternion class supports
- * divison by a constant scalar using the (/=) operator.
+ * division by a constant scalar using the (/=) operator.
  * Test uses random quaternion instance and constant.
  */
 TEST_F(QuaternionFunctionality, handleDivisionByConstant)
@@ -236,6 +237,33 @@ TEST_F(QuaternionFunctionality, handleDivisionByConstant)
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue);
   }
+}
+
+/**
+ * @brief Test to determine whether the Quaternion class supports the 
+ * multiplication of two quaternions.
+ * This test uses two randomly generated quaternions objects.
+ */
+TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
+{
+  quaternion_result_one = quaternion_one;
+  quaternion_result_one *= quaternion_two;
+  // Asserting correct multiplication for first element
+  ASSERT_EQ(quaternion_result_one[0], 
+            quaternion_two[0]*quaternion_one[0] - quaternion_two[1]*quaternion_one[1]
+            - quaternion_two[2]*quaternion_one[2] - quaternion_two[3]*quaternion_one[3]);
+  // Asserting correct multiplication for second element
+  ASSERT_EQ(quaternion_result_one[1],
+            quaternion_two[0]*quaternion_one[1] + quaternion_two[1]*quaternion_one[0]
+            - quaternion_two[2]*quaternion_one[3] + quaternion_two[3]*quaternion_one[2]);
+  // Asserting correct multiplication for third element
+  ASSERT_EQ(quaternion_result_one[2],
+            quaternion_two[0]*quaternion_one[2] + quaternion_two[1]*quaternion_one[3]
+            + quaternion_two[2]*quaternion_one[0] - quaternion_two[3]*quaternion_one[1]);
+  // Asserting correct multiplication for forth element
+  ASSERT_EQ(quaternion_result_one[3],
+            quaternion_two[0]*quaternion_one[3] - quaternion_two[1]*quaternion_one[2]
+            + quaternion_two[2]*quaternion_one[1] + quaternion_two[3]*quaternion_one[0]);
 }
 
 /**

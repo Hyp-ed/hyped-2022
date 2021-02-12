@@ -809,8 +809,8 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
   constexpr NavigationType step_size = 1.0 / static_cast<NavigationType>(TEST_SIZE);
 
   for (int i = 0; i < TEST_SIZE; i++) {
-    nav_data.braking_distance = static_cast<NavigationType>(
-      min_braking_distance + rand() % (max_braking_distance - min_braking_distance));
+    nav_data.braking_distance
+      = static_cast<NavigationType>(randomInRange(min_braking_distance, max_braking_distance));
     critical_displacement
       = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
 

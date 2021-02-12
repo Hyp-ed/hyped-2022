@@ -16,4 +16,4 @@ fi
 set -x
 
 # run tests
-make test "$OPTION"
+make test-all "$OPTION"

@@ -85,7 +85,7 @@ float gradientOfPoints(DataPoint<float> point_1, DataPoint<float> prev_point)
  * Test fixture used for determining whether initialisation works correctly.
  * The value should always return 0
 */
-TEST_F(DifferentiatorFunctionality, differentiatorInitialisedValue)
+TEST_F(DifferentiatorFunctionality, differentiatorInitialisedValue_dev)
 {
   ASSERT_EQ(diff_test.update(test_point).value, 0)
     << "Initalised value should be 0";
@@ -95,7 +95,7 @@ TEST_F(DifferentiatorFunctionality, differentiatorInitialisedValue)
  * Test fixture used for determining whether initialisation works correctly.
  * The timestamp should always be returned unchanged
 */
-TEST_F(DifferentiatorFunctionality, differentiatorInitialisedTimestamp)
+TEST_F(DifferentiatorFunctionality, differentiatorInitialisedTimestamp_dev)
 {
   ASSERT_EQ(diff_test.update(test_point).timestamp, test_point.timestamp)
     << "Timestamp of Data Point shouldnt change on update";
@@ -105,7 +105,7 @@ TEST_F(DifferentiatorFunctionality, differentiatorInitialisedTimestamp)
  * Test fixture used for checking the correctness of the gradient between two points.
  * The Value of update should return the same as the gradient between the two points.
  */
-TEST_F(DifferentiatorFunctionality, differentiatorGradient)
+TEST_F(DifferentiatorFunctionality, differentiatorGradient_dev)
 {
   diff_test.update(test_point);
   ASSERT_FLOAT_EQ(diff_test.update(second_point).value, gradientOfPoints(second_point, test_point))
@@ -116,7 +116,7 @@ TEST_F(DifferentiatorFunctionality, differentiatorGradient)
  * Test fixture used for ensuring timestamp remains unchanged.
  * Timestamp should always return unchanged whenever update is called.
  */
-TEST_F(DifferentiatorFunctionality, differentiatorTimestampReturn)
+TEST_F(DifferentiatorFunctionality, differentiatorTimestampReturn_dev)
 {
   diff_test.update(test_point);
   ASSERT_EQ(diff_test.update(second_point).timestamp, second_point.timestamp)
@@ -128,7 +128,7 @@ TEST_F(DifferentiatorFunctionality, differentiatorTimestampReturn)
  * Derivative should always return as 0 since the two points are the same
  * so the gradient between them is 0.
  */
-TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
+TEST_F(DifferentiatorFunctionality, derivativeOfSameValue_dev)
 {
   diff_test.update(test_point);
   diff_test.update(second_point);
@@ -169,7 +169,7 @@ struct SpecialCases : public ::testing::Test {
 /**
  * Test For the Linear Case, we expect a perfect fit. As the gradient of a line is always constant.
  */
-TEST_F(SpecialCases, differentiatorLinearCase)
+TEST_F(SpecialCases, differentiatorLinearCase_dev)
 {
   diff_linear.update(linear_data[0]);
   for (int i = 1; i < 100; i++) {
@@ -183,7 +183,7 @@ TEST_F(SpecialCases, differentiatorLinearCase)
  * Test For the Constant Case, we expect a perfect fit. As the gradient of this function should
  * always be 0.
  */
-TEST_F(SpecialCases, differentiatorConstantCase)
+TEST_F(SpecialCases, differentiatorConstantCase_dev)
 {
   diff_constant.update(function_constant[0]);
   for (int i = 1; i < 100; i++) {
@@ -233,7 +233,7 @@ struct DifferentiatorProperty : public ::testing::Test {
  * The derivative of the sum of two functions should always return equal to the sum
  * of the derivatives of the two functions.
  */
-TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
+TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives_dev)
 {
   for (int i = 0; i < 100; i++) {
     float linear = diff_linear.update(linear_data[i]).value;
@@ -250,7 +250,7 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
  * The Test checks whether the derivative of the difference of two functions is equal
  * to the difference of their derivatives
  */
-TEST_F(DifferentiatorProperty, differentiatorDifferenceOfDerivatives)
+TEST_F(DifferentiatorProperty, differentiatorDifferenceOfDerivatives_dev)
 {
   for (int i = 0; i < 100; i++) {
     float linear = diff_linear.update(linear_data[i]).value;
@@ -265,7 +265,7 @@ TEST_F(DifferentiatorProperty, differentiatorDifferenceOfDerivatives)
 /**
  * Test fixture for checking the Chain Rule property of derivatives.
  */
-TEST(DifferentiatorChainRule, differentiatorChainRule)
+TEST(DifferentiatorChainRule, differentiatorChainRule_dev)
 {
   Differentiator<float> diff_inner;
   Differentiator<float> diff_outer;

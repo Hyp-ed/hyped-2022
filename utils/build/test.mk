@@ -45,8 +45,10 @@ STATIC_ENABLE=
 
 .PHONY: test
 test: $(T_TARGET)
-	$(Verb) ./$< --gtest_filter=-*_noci
+	$(Verb) ./$< --gtest_filter=-*_dev
 
+test-dev: $(T_TARGET)
+	$(Verb) ./$< --gtest_filter=*_dev
 test-all: $(T_TARGET)
 	$(Verb) ./$<
 

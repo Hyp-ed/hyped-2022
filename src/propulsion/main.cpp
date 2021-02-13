@@ -85,6 +85,9 @@ void Main::run()
       case State::kAccelerating:
         state_processor_->accelerate();
         break;
+      case State::kCruising:
+        // TODO(Akshath29): Implement cruising behaviour
+        break;
       case State::kNominalBraking:
       case State::kEmergencyBraking:
         state_processor_->quickStopAll();

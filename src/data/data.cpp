@@ -24,6 +24,7 @@ using utils::concurrent::ScopedLock;
 
 namespace data {
 
+// TODO(miltfra): Fix string representations
 const char* states[num_states] = {
   "Idle",
   "Calibrating",

@@ -59,6 +59,9 @@ State *Idle::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
+  bool calibrate_command = checkCalibrateCommand(log, telemetry_data_);
+  if (!calibrate_command) { return nullptr; }
+
   bool all_initialised = checkModulesInitialised(log, embrakes_data_, nav_data_, batteries_data_,
                                                  telemetry_data_, sensors_data_, motors_data_);
   if (all_initialised) { return Calibrating::getInstance(); }

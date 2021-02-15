@@ -170,7 +170,8 @@ void Main::run()
   log_.INFO("Brakes", "Thread shutting down");
 }
 
-Main::~Main() {
+Main::~Main()
+{
   delete f_brake_;
   delete m_brake_;
 }

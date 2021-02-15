@@ -28,6 +28,10 @@ namespace state_machine {
 
 const char Messages::kStmLoggingIdentifier[] = "STM";
 
+//--------------------------------------------------------------------------------------
+// Emergency
+//--------------------------------------------------------------------------------------
+
 const char Messages::kStopCommandLog[] = "STOP command received";
 
 const char Messages::kCriticalNavigationLog[] = "Critical failure in navigation";
@@ -40,18 +44,37 @@ const char Messages::kCriticalEmbrakesLog[] = "Critical failure in embrakes";
 
 const char Messages::kCriticalBatteriesLog[] = "Critical failure in batteries";
 
+const char Messages::kCriticalSensorsLog[] = "Critical failure in sensors";
+
+//--------------------------------------------------------------------------------------
+// Module Status
+//--------------------------------------------------------------------------------------
+
 const char Messages::kCalibrateInitialisedLog[]
   = "Calibrate command received and all modules initialised";
 
 const char Messages::kModulesCalibratedLog[] = "All modules calibrated";
 
+//--------------------------------------------------------------------------------------
+// Telemetry Commands
+//--------------------------------------------------------------------------------------
+const char Messages::kCalibrateCommandLog[] = "Calibrate command received";
+
 const char Messages::kLaunchCommandLog[] = "Launch command received";
 
 const char Messages::kShutdownCommandLog[] = "Shutdown command received";
 
+//--------------------------------------------------------------------------------------
+// Navigation Data Events
+//--------------------------------------------------------------------------------------
+
 const char Messages::kBrakingZoneLog[] = "Entered braking zone";
 
 const char Messages::kPodStoppedLog[] = "The pod has stopped";
+
+//--------------------------------------------------------------------------------------
+// State Transitions
+//--------------------------------------------------------------------------------------
 
 const char Messages::kShutdownLog[] = "Shutting down";
 

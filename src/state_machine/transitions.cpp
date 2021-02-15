@@ -34,9 +34,9 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                    Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
-                    Motors motors_data)
+bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                    Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
+                    Motors &motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
     log.ERR(Messages::kStmLoggingIdentifier, Messages::kStopCommandLog);
@@ -57,7 +57,7 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
     log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalBatteriesLog);
     return true;
   } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in sensors");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalSensorsLog);
     return true;
   }
   return false;
@@ -67,9 +67,9 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                             Batteries batteries_data, Telemetry telemetry_data,
-                             Sensors sensors_data, Motors motors_data)
+bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                             Batteries &batteries_data, Telemetry &telemetry_data,
+                             Sensors &sensors_data, Motors &motors_data)
 {
   if (embrakes_data.module_status != ModuleStatus::kInit) return false;
   if (nav_data.module_status != ModuleStatus::kInit) return false;
@@ -82,8 +82,8 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
   return true;
 }
 
-bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                       Motors motors_data)
+bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                       Motors &motors_data)
 {
   // We're only checking Navigation, Motors and Embrakes because only those modules are doing
   // calibration.
@@ -99,14 +99,15 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
-bool checkCalibrateCommand(Logger &log, Telemetry telemetry_data)
+bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.calibrate_command) return false;
 
-  log.INFO("STM", "Launch command received");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateCommandLog);
   return true;
 }
-bool checkLaunchCommand(Logger &log, Telemetry telemetry_data)
+
+bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.launch_command) return false;
 
@@ -114,7 +115,7 @@ bool checkLaunchCommand(Logger &log, Telemetry telemetry_data)
   return true;
 }
 
-bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
+bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
 

@@ -48,9 +48,9 @@ class State;  // Forward declaration
 /*
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                    Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
-                    Motors motors_data);
+bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                    Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
+                    Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Module Status
@@ -60,15 +60,15 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
  * @brief   Returns true iff the command has been received and all modules are
  *          initialised.
  */
-bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                             Batteries batteries_data, Telemetry telemetry_data,
-                             Sensors sensors_data, Motors motors_data);
+bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                             Batteries &batteries_data, Telemetry &telemetry_data,
+                             Sensors &sensors_data, Motors &motors_data);
 
 /*
  * @brief    Returns true iff all of Embrakes, Navigation and Motors are ready.
  */
-bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                       Motors motors_data);
+bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                       Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands
@@ -77,17 +77,17 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
 /*
  * @brief   Returns true iff the calibrate command has been received.
  */
-bool checkCalibrateCommand(Logger &log, Telemetry telemetry_data);
+bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data);
 
 /*
  * @brief   Returns true iff the launch command has been received.
  */
-bool checkLaunchCommand(Logger &log, Telemetry telemetry_data);
+bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data);
 
 /*
  * @brief    Returns true iff the shutdown command has been received.
  */
-bool checkShutdownCommand(Logger &log, Telemetry telemetry_data);
+bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data);
 
 //--------------------------------------------------------------------------------------
 // Navigation Data Events

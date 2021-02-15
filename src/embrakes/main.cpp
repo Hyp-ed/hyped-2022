@@ -29,17 +29,16 @@ Main::Main(uint8_t id, Logger &log)
     sys_(utils::System::getSystem())
 {
   // parse GPIO pins from config.txt file
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 2; i++) {
     command_pins_[i] = sys_.config->embrakes.command[i];
     button_pins_[i] = sys_.config->embrakes.button[i];
   }
   if (sys_.fake_embrakes) {
-    brake_1 = new FakeStepper(log_, 1);
+    m_brake_ = new FakeStepper(log_, 1);
+    f_brake_ = new FakeStepper(log_, 2);
   } else {
-    brake_1 = new Stepper(command_pins_[0], button_pins_[0], log_, 1);
-    // Stepper brake_2(command_pins_[1], button_pins_[1], log_, 2);
-    // Stepper brake_3(command_pins_[2], button_pins_[2], log_, 3);
-    // Stepper brake_4(command_pins_[3], button_pins_[3], log_, 4);
+    m_brake_ = new Stepper(command_pins_[0], button_pins_[0], log_, 1);
+    f_brake_ = new Stepper(command_pins_[1], button_pins_[1], log_, 2);
   }
 }
 
@@ -50,65 +49,118 @@ void Main::run()
   System &sys = System::getSystem();
 
   while (sys.running_) {
-    // Get the current state of embrakes and state machine modules from data
+    // Get the current state of embrakes, state machine and telemetry modules from data
     em_brakes_ = data_.getEmergencyBrakesData();
     sm_data_ = data_.getStateMachineData();
     tlm_data_ = data_.getTelemetryData();
 
     switch (sm_data_.current_state) {
       case data::State::kIdle:
-        if (!tlm_data_.nominal_braking_command) {
-          if (brake_1->checkClamped()) {
-            log_.INFO("Brakes", "Sending retract command");
-            brake_1->sendRetract();
+        if (tlm_data_.nominal_braking_command) {
+          if (!m_brake_->checkClamped()) {
+            m_brake_->sendClamp();
           }
-          Thread::sleep(1000);
-          brake_1->checkHome();
-        } else if (tlm_data_.nominal_braking_command) {
-          if (!brake_1->checkClamped()) {
-            log_.INFO("Brakes", "Sending engage command");
-            brake_1->sendClamp();
+          if (!f_brake_->checkClamped()) {
+            f_brake_->sendClamp();
           }
-          Thread::sleep(1000);
-          brake_1->checkHome();
+          Thread::sleep(em_brakes_.brake_command_wait_time);
+          m_brake_->checkHome();
+          f_brake_->checkHome();
+
+          m_brake_->checkBrakingFailure();
+          f_brake_->checkBrakingFailure();
+        } else {
+           if (m_brake_->checkClamped()) {
+            m_brake_->sendRetract();
+          }
+          if (f_brake_->checkClamped()) {
+            f_brake_->sendRetract();
+          }
+
+          Thread::sleep(em_brakes_.brake_command_wait_time);
+          m_brake_->checkHome();
+          f_brake_->checkHome();
+
+          m_brake_->checkAccFailure();
+          f_brake_->checkAccFailure();
         }
         break;
       case data::State::kCalibrating:
-        if (brake_1->checkClamped()) {
-          brake_1->sendRetract();
+        if (m_brake_->checkClamped()) {
+          m_brake_->sendRetract();
         }
-        if (!brake_1->checkClamped()) {
+        if (f_brake_->checkClamped()) {
+          f_brake_->sendRetract();
+        }
+
+        if (!m_brake_->checkClamped() && !f_brake_->checkClamped()) {
           em_brakes_.module_status = ModuleStatus::kReady;
           data_.setEmergencyBrakesData(em_brakes_);
         }
-        Thread::sleep(1000);
-        brake_1->checkHome();
+
+        Thread::sleep(em_brakes_.brake_command_wait_time);
+        m_brake_->checkHome();
+        f_brake_->checkHome();
+        m_brake_->checkAccFailure();
+        f_brake_->checkAccFailure();
         break;
       case data::State::kAccelerating:
-        brake_1->checkAccFailure();
+        m_brake_->checkAccFailure();
+        f_brake_->checkAccFailure();
         break;
       case data::State::kNominalBraking:
-        if (!brake_1->checkClamped()) {
-          brake_1->sendClamp();
+        if (!m_brake_->checkClamped()) {
+          m_brake_->sendClamp();
         }
-        Thread::sleep(1000);
-        brake_1->checkHome();
+        if (!f_brake_->checkClamped()) {
+          f_brake_->sendClamp();
+        }
+        Thread::sleep(em_brakes_.brake_command_wait_time);
+        m_brake_->checkHome();
+        f_brake_->checkHome();
 
-        brake_1->checkBrakingFailure();
+        m_brake_->checkBrakingFailure();
+        f_brake_->checkBrakingFailure();
+        break;
+      case data::State::kEmergencyBraking:
+        if (!m_brake_->checkClamped()) {
+          m_brake_->sendClamp();
+        }
+        if (!f_brake_->checkClamped()) {
+          f_brake_->sendClamp();
+        }
+        Thread::sleep(em_brakes_.brake_command_wait_time);
+        m_brake_->checkHome();
+        f_brake_->checkHome();
+
+        m_brake_->checkBrakingFailure();
+        f_brake_->checkBrakingFailure();
         break;
       case data::State::kFinished:
         if (tlm_data_.nominal_braking_command) {
-          if (brake_1->checkClamped()) {
-            brake_1->sendRetract();
+          if (!m_brake_->checkClamped()) {
+            m_brake_->sendClamp();
           }
-          Thread::sleep(1000);
-          brake_1->checkHome();
-        } else if (!tlm_data_.nominal_braking_command) {
-          if (!brake_1->checkClamped()) {
-            brake_1->sendClamp();
+          if (!f_brake_->checkClamped()) {
+            f_brake_->sendClamp();
           }
-          Thread::sleep(500);
-          brake_1->checkHome();
+          Thread::sleep(em_brakes_.brake_command_wait_time);
+          m_brake_->checkHome();
+          f_brake_->checkHome();
+          m_brake_->checkBrakingFailure();
+          f_brake_->checkBrakingFailure();
+        } else {
+          if (m_brake_->checkClamped()) {
+            m_brake_->sendRetract();
+          }
+          if (f_brake_->checkClamped()) {
+            f_brake_->sendRetract();
+          }
+          Thread::sleep(em_brakes_.brake_command_wait_time);
+          m_brake_->checkHome();
+          f_brake_->checkHome();
+          m_brake_->checkAccFailure();
+          f_brake_->checkAccFailure();
         }
         break;
       default:
@@ -116,6 +168,11 @@ void Main::run()
     }
   }
   log_.INFO("Brakes", "Thread shutting down");
+}
+
+Main::~Main() {
+  delete f_brake_;
+  delete m_brake_;
 }
 
 }  // namespace embrakes

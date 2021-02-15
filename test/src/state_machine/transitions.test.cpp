@@ -747,15 +747,14 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
   constexpr int max_braking_distance
     = static_cast<int>(nav_data.run_length - nav_data.braking_buffer);
 
-  std::vector<NavigationType> displacements, braking_distances;
+  std::vector<nav_t> displacements, braking_distances;
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.braking_distance
-      = static_cast<NavigationType>(randomInRange(min_braking_distance, max_braking_distance));
+      = static_cast<nav_t>(randomInRange(min_braking_distance, max_braking_distance));
     max_displacement = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
-    nav_data.displacement
-      = static_cast<NavigationType>(randomInRange(min_displacement, max_displacement));
-    nav_data.velocity                   = static_cast<NavigationType>(rand());
-    nav_data.acceleration               = nav_data.velocity;
+    nav_data.displacement = static_cast<nav_t>(randomInRange(min_displacement, max_displacement));
+    nav_data.velocity     = static_cast<nav_t>(rand());
+    nav_data.acceleration = nav_data.velocity;
     nav_data.emergency_braking_distance = nav_data.velocity;
 
     ASSERT_EQ(false, checkEnteredBrakingZone(log, nav_data)) << braking_zone_false_positive_error;
@@ -780,20 +779,19 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
 
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.braking_distance
-      = static_cast<NavigationType>(randomInRange(min_braking_distance, max_braking_distance));
+      = static_cast<nav_t>(randomInRange(min_braking_distance, max_braking_distance));
     min_displacement = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
-    nav_data.displacement
-      = static_cast<NavigationType>(randomInRange(min_displacement, max_displacement));
-    nav_data.velocity                   = static_cast<NavigationType>(rand());
-    nav_data.acceleration               = static_cast<NavigationType>(rand());
-    nav_data.emergency_braking_distance = static_cast<NavigationType>(rand());
+    nav_data.displacement = static_cast<nav_t>(randomInRange(min_displacement, max_displacement));
+    nav_data.velocity     = static_cast<nav_t>(rand());
+    nav_data.acceleration = static_cast<nav_t>(rand());
+    nav_data.emergency_braking_distance = static_cast<nav_t>(rand());
 
     ASSERT_EQ(true, checkEnteredBrakingZone(log, nav_data)) << braking_zone_false_negative_error;
   }
 }
 
 /**
- * Let d be the first displacement within the precision of NavigationType that leads to
+ * Let d be the first displacement within the precision of nav_t that leads to
  * checkEnteredBrakingZone returning true. Then this test aims to test values in the interval
  * [d-0.5,d+0.5) to make sure that checkEnteredBrakingZone behaves correctly in this edge case.
  *
@@ -804,21 +802,20 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
 TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
 {
   Navigation nav_data;
-  NavigationType critical_displacement;
+  nav_t critical_displacement;
 
   constexpr int min_braking_distance = 0;
   constexpr int max_braking_distance = nav_data.run_length;
-  constexpr NavigationType step_size = 1.0 / static_cast<NavigationType>(TEST_SIZE);
+  constexpr nav_t step_size          = 1.0 / static_cast<nav_t>(TEST_SIZE);
 
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.braking_distance
-      = static_cast<NavigationType>(randomInRange(min_braking_distance, max_braking_distance));
+      = static_cast<nav_t>(randomInRange(min_braking_distance, max_braking_distance));
     critical_displacement
       = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
 
     for (int j = 0; j < TEST_SIZE; j++) {
-      nav_data.displacement
-        = critical_displacement - 0.5 + step_size * static_cast<NavigationType>(j);
+      nav_data.displacement = critical_displacement - 0.5 + step_size * static_cast<nav_t>(j);
       if (j < TEST_SIZE / 2) {
         ASSERT_EQ(false, checkEnteredBrakingZone(log, nav_data))
           << braking_zone_false_positive_error;
@@ -831,7 +828,7 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
 }
 
 /**
- * Let b be the first braking distance within the precision of NavigationType that leads to
+ * Let b be the first braking distance within the precision of nav_t that leads to
  * checkEnteredBrakingZone returning true. Then this test aims to test values in the interval
  * [b-0.5,b+0.5) to make sure that checkEnteredBrakingZone behaves correctly in this edge case.
  *
@@ -842,21 +839,20 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
 TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
 {
   Navigation nav_data;
-  NavigationType critical_braking_distance;
+  nav_t critical_braking_distance;
 
-  constexpr int min_displacement     = 0;
-  constexpr int max_displacement     = nav_data.run_length - nav_data.braking_buffer - 1;
-  constexpr NavigationType step_size = 1.0 / static_cast<NavigationType>(TEST_SIZE);
+  constexpr int min_displacement = 0;
+  constexpr int max_displacement = nav_data.run_length - nav_data.braking_buffer - 1;
+  constexpr nav_t step_size      = 1.0 / static_cast<nav_t>(TEST_SIZE);
 
   for (int i = 0; i < TEST_SIZE; i++) {
-    nav_data.displacement
-      = static_cast<NavigationType>(randomInRange(min_displacement, max_displacement));
+    nav_data.displacement = static_cast<nav_t>(randomInRange(min_displacement, max_displacement));
     critical_braking_distance
       = nav_data.run_length - nav_data.braking_buffer - nav_data.displacement;
 
     for (int j = 0; j < TEST_SIZE; j++) {
       nav_data.braking_distance
-        = critical_braking_distance - 0.5 + step_size * static_cast<NavigationType>(j);
+        = critical_braking_distance - 0.5 + step_size * static_cast<nav_t>(j);
       if (j < TEST_SIZE / 2) {
         ASSERT_EQ(false, checkEnteredBrakingZone(log, nav_data))
           << braking_zone_false_positive_error;
@@ -879,16 +875,15 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
   Navigation nav_data;
 
   constexpr int max_velocity = 100;  // 100 m/s is pretty fast...
-  constexpr NavigationType step_size
-    = static_cast<NavigationType>(max_velocity) / static_cast<NavigationType>(TEST_SIZE);
+  constexpr nav_t step_size  = static_cast<nav_t>(max_velocity) / static_cast<nav_t>(TEST_SIZE);
 
   for (int i = 1; i <= TEST_SIZE; i++) {
-    nav_data.velocity = step_size * static_cast<NavigationType>(i);
+    nav_data.velocity = step_size * static_cast<nav_t>(i);
 
-    nav_data.acceleration               = static_cast<NavigationType>(rand());
-    nav_data.displacement               = static_cast<NavigationType>(rand());
-    nav_data.braking_distance           = static_cast<NavigationType>(rand());
-    nav_data.emergency_braking_distance = static_cast<NavigationType>(rand());
+    nav_data.acceleration               = static_cast<nav_t>(rand());
+    nav_data.displacement               = static_cast<nav_t>(rand());
+    nav_data.braking_distance           = static_cast<nav_t>(rand());
+    nav_data.emergency_braking_distance = static_cast<nav_t>(rand());
 
     ASSERT_EQ(false, checkPodStopped(log, nav_data)) << pod_stopped_false_positive_error;
   }
@@ -905,16 +900,15 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
   Navigation nav_data;
 
   constexpr int max_velocity = 100;  // 100 m/s is pretty fast...
-  constexpr NavigationType step_size
-    = static_cast<NavigationType>(max_velocity) / static_cast<NavigationType>(TEST_SIZE);
+  constexpr nav_t step_size  = static_cast<nav_t>(max_velocity) / static_cast<nav_t>(TEST_SIZE);
 
   for (int i = 0; i < TEST_SIZE; i++) {
-    nav_data.velocity = -1.0 * step_size * static_cast<NavigationType>(i);
+    nav_data.velocity = -1.0 * step_size * static_cast<nav_t>(i);
 
-    nav_data.acceleration               = static_cast<NavigationType>(rand());
-    nav_data.displacement               = static_cast<NavigationType>(rand());
-    nav_data.braking_distance           = static_cast<NavigationType>(rand());
-    nav_data.emergency_braking_distance = static_cast<NavigationType>(rand());
+    nav_data.acceleration               = static_cast<nav_t>(rand());
+    nav_data.displacement               = static_cast<nav_t>(rand());
+    nav_data.braking_distance           = static_cast<nav_t>(rand());
+    nav_data.emergency_braking_distance = static_cast<nav_t>(rand());
 
     ASSERT_EQ(true, checkPodStopped(log, nav_data)) << pod_stopped_false_negative_error;
   }

@@ -15,6 +15,8 @@ fi
 # show what is actually run
 set -x
 
-make lintall
 # run tests
 make test-all "$OPTION"
+
+# Linter checks
+make lintall

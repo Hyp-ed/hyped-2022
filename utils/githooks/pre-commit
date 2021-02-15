@@ -19,7 +19,7 @@ set -x
 make "$OPTION"
 
 # compile and link, lint on test/src
-make test-lint $OPTION
+make test test-lint $OPTION
 
 # run static analyzer on src test/src
 # make static # off for now

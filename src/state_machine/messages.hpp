@@ -64,7 +64,7 @@ struct Messages {
   static const char kModulesCalibratedLog[];
 
   // Sent upon receiving calibrate command
-  static const char kCalibrateCommand[];
+  static const char kCalibrateCommandLog[];
 
   // Sent upon receiving launch command
   static const char kLaunchCommandLog[];

@@ -30,7 +30,7 @@ namespace hyped {
 
 using data::ImuData;
 using data::DataPoint;
-using data::NavigationType;
+using data::nav_t;
 using data::NavigationVector;
 
 namespace sensors {

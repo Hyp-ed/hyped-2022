@@ -22,8 +22,8 @@
 namespace hyped {
 namespace navigation {
 
-StripeHandler::StripeHandler(Logger& log, Data& data, const NavigationType& displ_unc,
-                             NavigationType& vel_unc, const NavigationType stripe_dist)
+StripeHandler::StripeHandler(Logger& log, Data& data, const nav_t& displ_unc,
+                             nav_t& vel_unc, const nav_t stripe_dist)
     : kStripeDist(stripe_dist),
       log_(log),
       data_(data),
@@ -59,7 +59,7 @@ uint8_t StripeHandler::getFailureCount()
   return n_missed_stripes_;
 }
 
-bool StripeHandler::checkFailure(NavigationType displ)
+bool StripeHandler::checkFailure(nav_t displ)
 {
   // Failure if more than one disagreement
   if (n_missed_stripes_ > 1) {
@@ -73,14 +73,14 @@ bool StripeHandler::checkFailure(NavigationType displ)
   return false;
 }
 
-void StripeHandler::updateNavData(NavigationType& displ, NavigationType& vel)
+void StripeHandler::updateNavData(nav_t& displ, nav_t& vel)
 {
-  NavigationType displ_offset = displ - stripe_counter_.value*kStripeDist;
+  nav_t displ_offset = displ - stripe_counter_.value*kStripeDist;
   vel -= displ_offset*1e6/(stripe_counter_.timestamp - init_time_);
   displ -= displ_offset;
 }
 
-void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, bool real)
+void StripeHandler::queryKeyence(nav_t& displ, nav_t& vel, bool real)
 {
   getReadings();
 
@@ -93,9 +93,9 @@ void StripeHandler::queryKeyence(NavigationType& displ, NavigationType& vel, boo
     stripe_counter_.timestamp = readings_[i].count.timestamp;
     if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
 
-    NavigationType minimum_uncertainty = kStripeDist / 5.;
-    NavigationType allowed_uncertainty = std::max(displ_unc_, minimum_uncertainty);
-    NavigationType displ_offset = displ - stripe_counter_.value*kStripeDist;
+    nav_t minimum_uncertainty = kStripeDist / 5.;
+    nav_t allowed_uncertainty = std::max(displ_unc_, minimum_uncertainty);
+    nav_t displ_offset = displ - stripe_counter_.value*kStripeDist;
 
     // Allow up to one missed stripe
     if (displ_offset > kStripeDist - allowed_uncertainty &&

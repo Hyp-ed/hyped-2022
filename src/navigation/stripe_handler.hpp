@@ -34,7 +34,7 @@ namespace hyped {
 using data::Data;
 using data::DataPoint;
 using data::ModuleStatus;
-using data::NavigationType;
+using data::nav_t;
 using data::NavigationVector;
 using data::Motors;
 using data::Sensors;
@@ -56,8 +56,8 @@ class StripeHandler {
    * @param vel_unc Reference to uncertainty in velocity, this is written to
    * @param stripe_dist Distance between two stripes
    */
-  explicit StripeHandler(Logger& log, Data& data, const NavigationType& displ_unc,
-                         NavigationType& vel_unc, const NavigationType stripe_dist);
+  explicit StripeHandler(Logger& log, Data& data, const nav_t& displ_unc,
+                         nav_t& vel_unc, const nav_t stripe_dist);
 
   /**
    * @brief Check if stripe has been detected and changes the displacement
@@ -67,7 +67,7 @@ class StripeHandler {
    * @param vel Current velocity
    * @param real Whether or not the sensors are real
    */
-  void queryKeyence(NavigationType& displ, NavigationType& vel, bool real);
+  void queryKeyence(nav_t& displ, nav_t& vel, bool real);
   /**
    * @brief Checks if submodule should enter kCriticalFailure
    *
@@ -75,7 +75,7 @@ class StripeHandler {
    *
    * @return bool to enter kCriticalFailure or not
    */
-  bool checkFailure(NavigationType displ);
+  bool checkFailure(nav_t displ);
   /**
    * @brief Sets the initial time and keyence data
    *        Occurs on the first iteration when nav-
@@ -99,7 +99,7 @@ class StripeHandler {
 
  private:
   // Distance between stripes
-  const NavigationType kStripeDist;
+  const nav_t kStripeDist;
 
   /**
    * @brief Update nav data
@@ -107,7 +107,7 @@ class StripeHandler {
    * @param displ Current displacement
    * @param vel Current velocity
    */
-  void updateNavData(NavigationType& displ, NavigationType& vel);
+  void updateNavData(nav_t& displ, nav_t& vel);
   /**
    * @brief update prev_readings
    */
@@ -131,9 +131,9 @@ class StripeHandler {
   uint8_t n_missed_stripes_;
 
   // displacement uncertainty, const because this is never written to
-  const NavigationType& displ_unc_;
+  const nav_t& displ_unc_;
   // velocity uncertainty
-  NavigationType& vel_unc_;
+  nav_t& vel_unc_;
   // initial timestamp
   uint32_t init_time_;
 };

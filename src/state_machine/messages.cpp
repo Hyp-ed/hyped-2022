@@ -40,10 +40,14 @@ const char Messages::kCriticalEmbrakesLog[] = "Critical failure in embrakes";
 
 const char Messages::kCriticalBatteriesLog[] = "Critical failure in batteries";
 
+const char Messages::kCriticalSensorsLog[] = "Critical failure in sensors";
+
 const char Messages::kCalibrateInitialisedLog[]
   = "Calibrate command received and all modules initialised";
 
 const char Messages::kModulesCalibratedLog[] = "All modules calibrated";
+
+const char Messages::kCalibrateCommandLog[] = "Calibrate command received";
 
 const char Messages::kLaunchCommandLog[] = "Launch command received";
 

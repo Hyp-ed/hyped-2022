@@ -53,12 +53,18 @@ struct Messages {
   // Sent upon encountering a critical failure in batteries
   static const char kCriticalBatteriesLog[];
 
+  // Sent upon encountering a critical failure in sensors
+  static const char kCriticalSensorsLog[];
+
   // Sent upon determining that calibration command has been received
   // and all modules are initialised
   static const char kCalibrateInitialisedLog[];
 
   // Sent upon determining that all modules are calibrated
   static const char kModulesCalibratedLog[];
+
+  // Sent upon receiving calibrate command
+  static const char kCalibrateCommand[];
 
   // Sent upon receiving launch command
   static const char kLaunchCommandLog[];

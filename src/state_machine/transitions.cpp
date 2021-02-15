@@ -57,8 +57,7 @@ bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav
     log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalBatteriesLog);
     return true;
   } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    //TODO(miltfra): Extract messages
-    log.ERR("STM", "Critical failure in sensors");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalSensorsLog);
     return true;
   }
   return false;
@@ -103,12 +102,11 @@ bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &
 bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.calibrate_command) return false;
-  
-  //TODO(miltfra): Extract messages
-  log.INFO("STM", "Launch command received");
+
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateCommandLog);
   return true;
 }
-  
+
 bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.launch_command) return false;

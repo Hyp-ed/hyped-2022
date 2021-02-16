@@ -68,17 +68,17 @@ void KalmanFilter::updateMeasurementCovarianceMatrix(double var)
   kalmanFilter_.updateR(R);
 }
 
-const NavigationType KalmanFilter::filter(NavigationType z)
+const nav_t KalmanFilter::filter(nav_t z)
 {
   VectorXf vz(m_);
   vz(0) = z;
   kalmanFilter_.filter(vz);
 
-  NavigationType estimate = getEstimate();
+  nav_t estimate = getEstimate();
   return estimate;
 }
 
-const NavigationType KalmanFilter::filter(NavigationType u, NavigationType z)
+const nav_t KalmanFilter::filter(nav_t u, nav_t z)
 {
   VectorXf vu(k_);
   vu(0) = u;
@@ -88,7 +88,7 @@ const NavigationType KalmanFilter::filter(NavigationType u, NavigationType z)
 
   kalmanFilter_.filter(vu, vz);
 
-  NavigationType estimate = getEstimate();
+  nav_t estimate = getEstimate();
   return estimate;
 }
 
@@ -155,17 +155,17 @@ const MatrixXf KalmanFilter::createStationaryMeasurementCovarianceMatrix()
   return R;
 }
 
-const NavigationType KalmanFilter::getEstimate()
+const nav_t KalmanFilter::getEstimate()
 {
   VectorXf x = kalmanFilter_.getStateEstimate();
-  NavigationType est = x(0);
+  nav_t est = x(0);
   return est;
 }
 
-const NavigationType KalmanFilter::getEstimateVariance()
+const nav_t KalmanFilter::getEstimateVariance()
 {
   MatrixXf P = kalmanFilter_.getStateCovariance();
-  NavigationType var = P(0, 0);
+  nav_t var = P(0, 0);
   return var;
 }
 

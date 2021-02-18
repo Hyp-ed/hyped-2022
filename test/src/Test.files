@@ -4,6 +4,7 @@
 
 T_SRCS := \
   state_machine/transitions.test.cpp \
+  state_machine/state.test.cpp \
   utils/config.test.cpp \
   utils/kalman_multivariate.test.cpp \
   utils/integrator.test.cpp \

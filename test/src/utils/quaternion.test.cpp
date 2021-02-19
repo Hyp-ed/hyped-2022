@@ -55,7 +55,7 @@ std::array<int, 4> createRandomArray()
  * @brief Function which compares two floats; code taken from:
  * https://www.tutorialspoint.com/floating-point-comparison-in-cplusplus
  * @param elem1 float number to be compared
- * @param elem2 float number to be compared
+ * @param elem2 float number to be comddddpared
  * @param epsilon
  * @returns true if floats to be compared are equal
  */
@@ -101,6 +101,7 @@ struct QuaternionFunctionality : public::testing::Test
     Quaternion<int> quaternion_result_two;
 
     Vector<int, 4> test_vector;
+    Vector<int, 3> test_vector_3d;
 
     float arithmetic_result;
 
@@ -112,6 +113,10 @@ struct QuaternionFunctionality : public::testing::Test
         quaternion_two = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
     }
 };
+
+// -------------------------------------------------------------------------------------------------
+// Tests
+// -------------------------------------------------------------------------------------------------
 
 /**
  * @brief Test to determine the correct instantiation of the zero
@@ -146,6 +151,40 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
     component_array[3]);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(nonZeroQuaternion[i], component_array[i]);
+  }
+}
+
+/**
+ * @brief Test to determine the correct construction of Quaternion
+ * instances by Vector instances. This test includes contruction by
+ * a 4D Vector, 3D Vector and constant, and 3D Vector.
+ */
+TEST_F(QuaternionFunctionality, handlesConstructionByVector)
+{
+  test_vector = Vector<int, 4>(createRandomArray());
+  Quaternion<int> quaternion_vector = Quaternion<int>(test_vector);
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(test_vector[i], quaternion_vector[i]);
+  }
+
+  std::array<int, 3> component_array;
+  for (int i = 0; i < 3; i++) {
+    component_array[i] = rand()%1000;
+    while (component_array[i] == 0) {
+      component_array[i] = rand()%1000;
+    }
+  }
+  test_vector_3d = Vector<int, 3>(component_array);
+  Quaternion<int> quaternion_vector_3d = Quaternion<int>(test_vector_3d);
+  ASSERT_EQ(0, quaternion_vector_3d[0]);
+  for (int i = 1; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_vector_3d[i], test_vector_3d[i-1]);
+  }
+
+  Quaternion<int> quaternion_vector_3d_const = Quaternion<int>(kValue, test_vector_3d);
+  ASSERT_EQ(kValue, quaternion_vector_3d_const[0]);
+  for (int i = 1; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_vector_3d_const[i], test_vector_3d[i-1]);
   }
 }
 

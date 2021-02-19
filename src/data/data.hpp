@@ -59,7 +59,7 @@ typedef float nav_t;
 typedef Vector<nav_t, 3> NavigationVector;
 struct Navigation : public Module {
   static constexpr float run_length = 1250;  // m
-  static constexpr float braking_buffer = 20; // m
+  static constexpr float braking_buffer = 20;  // m
   nav_t  displacement;  // m
   nav_t  velocity;  // m/s
   nav_t  acceleration;  // m/s^2
@@ -129,7 +129,7 @@ struct Batteries : public Module {
 struct EmergencyBrakes : public Module {
   static constexpr int brake_command_wait_time = 1000;    // milliseconds
   static constexpr int kNumEmbrakes            = 2;
-  bool brakes_retracted[kNumEmbrakes]          = {false}; // true if brakes retract
+  bool brakes_retracted[kNumEmbrakes]          = {false};  // true if brakes retract
 };
 
 // -------------------------------------------------------------------------------------------------

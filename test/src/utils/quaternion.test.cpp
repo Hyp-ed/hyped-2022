@@ -41,7 +41,7 @@ namespace math {
  * a quaternion instance.
  * @returns array of 4 integers
  */
-std::array<int, 4> createRandomArray()
+std::array<int, 4> createRandomArrayForQuaternion()
 {
   std::srand(time(0));
   std::array<int, 4> output = std::array<int, 4>();
@@ -59,7 +59,7 @@ std::array<int, 4> createRandomArray()
  * @param epsilon
  * @returns true if floats to be compared are equal
  */
-bool compare_float(float elem1, float elem2, float epsilon = 0.1f)
+bool compare_float_for_quaternion(float elem1, float elem2, float epsilon = 0.1f)
 {
   if (fabs(elem1 - elem2) < epsilon) {
        return true;
@@ -163,7 +163,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
 TEST_F(QuaternionFunctionality, handlesConstructionByVector)
 {
   // Testing construction by 4D Vector
-  test_vector = Vector<int, 4>(createRandomArray());
+  test_vector = Vector<int, 4>(createRandomArrayForQuaternion());
   Quaternion<int> quaternion_vector = Quaternion<int>(test_vector);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(test_vector[i], quaternion_vector[i]);
@@ -312,7 +312,7 @@ TEST_F(QuaternionFunctionality, handleDivisionByConstant)
 }
 
 /**
- * @brief Test to determine whether the Quaternion class supports the 
+ * @brief Test to determine whether the Quaternion class supports the
  * multiplication of two quaternions.
  * This test uses two randomly generated quaternions objects.
  */
@@ -321,7 +321,7 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
   quaternion_result_one = quaternion_one;
   quaternion_result_one *= quaternion_two;
   // Asserting correct multiplication for first element
-  ASSERT_EQ(quaternion_result_one[0], 
+  ASSERT_EQ(quaternion_result_one[0],
             quaternion_two[0]*quaternion_one[0] - quaternion_two[1]*quaternion_one[1]
             - quaternion_two[2]*quaternion_one[2] - quaternion_two[3]*quaternion_one[3]);
   // Asserting correct multiplication for second element
@@ -341,13 +341,13 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
 /**
  * @brief Test to determine whether the correct norm (magnitude) of the Quaternion
  * is calculated correctly. This test uses a compare float function to assert correctness
- * to one decimal place before asserting true. 
+ * to one decimal place before asserting true.
  * This test uses two randomly generated Quaternion instances.
  */
 TEST_F(QuaternionFunctionality, handleQuaternionNormCalculation)
 {
-  ASSERT_TRUE(compare_float(quaternion_one.norm(), calculateNorm(quaternion_one)));
-  ASSERT_TRUE(compare_float(quaternion_two.norm(), calculateNorm(quaternion_two)));
+  ASSERT_TRUE(compare_float_for_quaternion(quaternion_one.norm(), calculateNorm(quaternion_one)));
+  ASSERT_TRUE(compare_float_for_quaternion(quaternion_two.norm(), calculateNorm(quaternion_two)));
 }
 
 }}}  // hyped::utils::math

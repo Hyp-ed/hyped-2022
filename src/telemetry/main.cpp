@@ -22,7 +22,6 @@
 #include "telemetry/main.hpp"
 #include "telemetry/sendloop.hpp"
 #include "telemetry/recvloop.hpp"
-#include "telemetry/client_interface.hpp"
 
 namespace hyped {
 
@@ -33,9 +32,7 @@ namespace telemetry {
 Main::Main(uint8_t id, Logger& log)
   : Thread {id, log},
     data_ {data::Data::getInstance()},
-    client_ {
-      utils::System::getSystem().config->interfaceFactory.getClientInterfaceInstance()
-    }
+    client_ {log}
 {
   log_.DBG("Telemetry", "Telemetry Main thread object created");
 }
@@ -56,7 +53,7 @@ void Main::run()
 
 
   try {
-    client_->connect();
+    client_.connect();
   }
   catch (std::exception& e) {
     log_.ERR("Telemetry", e.what());

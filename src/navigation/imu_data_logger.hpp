@@ -30,7 +30,7 @@
 #include "data/data_point.hpp"
 
 namespace hyped {
-using data::NavigationType;
+using data::nav_t;
 using data::NavigationVector;
 using data::DataPoint;
 

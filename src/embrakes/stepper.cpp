@@ -54,14 +54,14 @@ void Stepper::sendRetract()
 
 void Stepper::sendClamp()
 {
-  log_.INFO("Brakes", "Sending a retract message to brake %i", brake_id_);
+  log_.INFO("Brakes", "Sending a engage message to brake %i", brake_id_);
   command_pin_.set();
   is_clamped_ = true;
 }
 
 void Stepper::checkAccFailure()
 {
-  if (!button_.read()) {
+  if (!button_.read()) {  // false = brakes are clamped
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
     em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(em_brakes_data_);
@@ -70,7 +70,7 @@ void Stepper::checkAccFailure()
 
 void Stepper::checkBrakingFailure()
 {
-  if (button_.read()) {
+  if (button_.read()) {  // true = brakes are retracted
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
     em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(em_brakes_data_);

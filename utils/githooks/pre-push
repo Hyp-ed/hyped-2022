@@ -17,3 +17,6 @@ set -x
 
 # run tests
 make test "$OPTION"
+
+# Linter checks
+make lintall

@@ -59,6 +59,9 @@ State *Idle::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
+  bool calibrate_command = checkCalibrateCommand(log, telemetry_data_);
+  if (!calibrate_command) { return nullptr; }
+
   bool all_initialised = checkModulesInitialised(log, embrakes_data_, nav_data_, batteries_data_,
                                                  telemetry_data_, sensors_data_, motors_data_);
   if (all_initialised) { return Calibrating::getInstance(); }
@@ -165,7 +168,9 @@ State *Finished::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  if (checkShutdownCommand(log, telemetry_data_)) { return Off::getInstance(); }
+
+  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }
 
@@ -181,7 +186,9 @@ State *FailureBraking::checkTransition(Logger &log)
 {
   // We only need to update navigation data.
   nav_data_ = data_.getNavigationData();
-  if (checkPodStopped(log, nav_data_)) { return FailureStopped::getInstance(); }
+
+  bool stopped = checkPodStopped(log, nav_data_);
+  if (stopped) { return FailureStopped::getInstance(); }
   return nullptr;
 }
 
@@ -197,7 +204,9 @@ State *FailureStopped::checkTransition(Logger &log)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
-  if (checkShutdownCommand(log, telemetry_data_)) { return Off::getInstance(); }
+
+  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }
 
@@ -209,7 +218,7 @@ Off Off::instance_;
 
 State *Off::checkTransition(Logger &log)
 {
-  log.ERR("STM", "Tried to transition from Off state");
+  log.ERR(Messages::kStmLoggingIdentifier, Messages::kTransitionFromOffLog);
   return nullptr;
 }
 

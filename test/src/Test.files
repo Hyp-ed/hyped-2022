@@ -3,11 +3,13 @@
 # add .cpp files using complete path the following format: "<file>.cpp \"
 
 T_SRCS := \
-  state_machine/dummy.test.cpp \
+  state_machine/transitions.test.cpp \
   utils/config.test.cpp \
   utils/kalman_multivariate.test.cpp \
   utils/integrator.test.cpp \
   utils/differentiator.test.cpp \
   utils/online_statistics.test.cpp \
   utils/rolling_statistics.test.cpp \
-  utils/quaternion.test.cpp \
+  utils/vectors/vector_properties.test.cpp \
+  utils/vectors/vector_constructor.test.cpp \
+  utils/vectors/vector_float.test.cpp \

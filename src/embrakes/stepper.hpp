@@ -44,6 +44,11 @@ class Stepper : public StepperInterface {
   Stepper(uint8_t enable_pin, uint8_t button_pin, Logger& log, uint8_t id);
 
   /**
+   * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
+   */
+  ~Stepper() {}
+
+  /**
    * @brief {checks if brake's button is pressed, notes change in the data struct}
    */
   void checkHome() override;

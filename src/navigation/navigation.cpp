@@ -64,29 +64,29 @@ ModuleStatus Navigation::getModuleStatus() const
   return status_;
 }
 
-NavigationType Navigation::getAcceleration() const
+nav_t Navigation::getAcceleration() const
 {
   return acceleration_.value;
 }
 
-NavigationType Navigation::getVelocity() const
+nav_t Navigation::getVelocity() const
 {
   return velocity_.value;
 }
 
-NavigationType Navigation::getDisplacement() const
+nav_t Navigation::getDisplacement() const
 {
   return displacement_.value;
 }
 
-NavigationType Navigation::getEmergencyBrakingDistance() const
+nav_t Navigation::getEmergencyBrakingDistance() const
 {
   // TODO(Anyone): Account for actuation delay and/or communication latency?
   // Also, how realistic is this? (e.g brake force wearing down)
   return getVelocity()*getVelocity() / (2*kEmergencyDeceleration);
 }
 
-NavigationType Navigation::getBrakingDistance() const
+nav_t Navigation::getBrakingDistance() const
 {
   Motors motor_data = data_.getMotorData();
   uint32_t rpm = 0;
@@ -96,17 +96,17 @@ NavigationType Navigation::getBrakingDistance() const
   uint32_t avg_rpm = rpm / data::Motors::kNumMotors;
   float rot_velocity = (avg_rpm / 60) * (2 * pi);
 
-  NavigationType actuation_force = spring_compression_ * spring_coefficient_;
-  NavigationType braking_force = (actuation_force * coeff_friction_) /
+  nav_t actuation_force = spring_compression_ * spring_coefficient_;
+  nav_t braking_force = (actuation_force * coeff_friction_) /
                                  (tan(embrake_angle_) - coeff_friction_);
-  NavigationType deceleration_total = kNumBrakes * braking_force / pod_mass_;
+  nav_t deceleration_total = kNumBrakes * braking_force / pod_mass_;
 
-  NavigationType pod_kinetic_energy = 0.5 * pod_mass_ * getVelocity() * getVelocity();
-  NavigationType rotational_kinetic_energy = data::Motors::kNumMotors * 0.5 * mom_inertia_wheel_ *
+  nav_t pod_kinetic_energy = 0.5 * pod_mass_ * getVelocity() * getVelocity();
+  nav_t rotational_kinetic_energy = data::Motors::kNumMotors * 0.5 * mom_inertia_wheel_ *
                                              rot_velocity * rot_velocity;
-  NavigationType total_kinetic_energy = pod_kinetic_energy + rotational_kinetic_energy;
+  nav_t total_kinetic_energy = pod_kinetic_energy + rotational_kinetic_energy;
 
-  NavigationType braking_distance = (total_kinetic_energy / pod_mass_) / deceleration_total;
+  nav_t braking_distance = (total_kinetic_energy / pod_mass_) / deceleration_total;
 
   return braking_distance;
 }
@@ -203,11 +203,11 @@ void Navigation::calibrateGravity()
   }
 }
 
-NavigationType Navigation::accNorm(NavigationVector& acc)
+nav_t Navigation::accNorm(NavigationVector& acc)
 {
-  NavigationType norm = 0.0;
+  nav_t norm = 0.0;
   for (unsigned int i = 0; i < 3; i ++) {
-      NavigationType a = acc[i];
+      nav_t a = acc[i];
       norm += a*a;
   }
   norm = sqrt(norm);
@@ -219,7 +219,7 @@ void Navigation::queryImus()
   ImuAxisData acc_raw;  // All raw data, four values per axis
   NavigationArray acc_raw_moving;  // Raw values in moving axis
 
-  OnlineStatistics<NavigationType> acc_avg_filter;
+  OnlineStatistics<nav_t> acc_avg_filter;
   sensor_readings_ = data_.getSensorsImuData();
   uint32_t t = sensor_readings_.timestamp;
   // process raw values
@@ -250,7 +250,7 @@ void Navigation::queryImus()
   // Kalman filter the readings which are reliable
   for (int i = 0; i < Sensors::kNumImus; ++i) {
     if (imu_reliable_[i]) {
-      NavigationType estimate = filters_[i].filter(acc_raw_moving[i]);
+      nav_t estimate = filters_[i].filter(acc_raw_moving[i]);
       acc_avg_filter.update(estimate);
     }
   }
@@ -272,7 +272,7 @@ void Navigation::queryImus()
 void Navigation::checkVibration()
 {
   // curr_msmt points at next measurement, ie the last one
-  array<OnlineStatistics<NavigationType>, 3> online_array_axis;
+  array<OnlineStatistics<nav_t>, 3> online_array_axis;
   for (int i = 0; i < kPreviousMeasurements; i++) {
     ImuAxisData raw_data = previous_measurements_[(curr_msmt_ + i) % kPreviousMeasurements];
     for (uint8_t axis = 0; axis < 3; axis++) {
@@ -300,16 +300,16 @@ void Navigation::checkVibration()
 void Navigation::updateUncertainty()
 {
   double delta_t = (displacement_.timestamp - prev_timestamp_)/1000000.0;
-  NavigationType abs_delta_acc = abs(getAcceleration() - prev_acc_);
+  nav_t abs_delta_acc = abs(getAcceleration() - prev_acc_);
   // Random walk uncertainty
   vel_unc_ += abs_delta_acc*delta_t/2.;
   // Processing uncertainty
-  NavigationType acc_variance = 0.0;
+  nav_t acc_variance = 0.0;
   for (int i = 0; i < Sensors::kNumImus; i++) {
     acc_variance += filters_[i].KalmanFilter::getEstimateVariance();
   }
   acc_variance = acc_variance/Sensors::kNumImus;
-  NavigationType acc_stdDev = sqrt(acc_variance);
+  nav_t acc_stdDev = sqrt(acc_variance);
   // uncertainty in velocity is the std deviation of acceleration integrated
   vel_unc_ += acc_stdDev*delta_t;
   displ_unc_ += vel_unc_*delta_t;

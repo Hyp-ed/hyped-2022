@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 
   imu.start();
 
-  while(true) {
+  while (true) {
     data_array_ = data.getSensorsImuData();
     for (int j = 0; j < 1; j++) {
       log.INFO("TEST-ImuManager", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2",
@@ -58,5 +58,5 @@ int main(int argc, char* argv[])
     Thread::sleep(100);
   }
 
- 	return 0;
+  return 0;
 }

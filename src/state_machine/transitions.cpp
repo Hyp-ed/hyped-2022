@@ -21,6 +21,8 @@
 
 #include "state_machine/transitions.hpp"
 
+#include "state_machine/messages.hpp"
+
 namespace hyped {
 
 namespace state_machine {
@@ -32,27 +34,30 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                    Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
-                    Motors motors_data)
+bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                    Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
+                    Motors &motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
-    log.ERR("STM", "STOP command received");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kStopCommandLog);
     return true;
   } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in navigation");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalNavigationLog);
     return true;
   } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in telemetry");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalTelemetryLog);
     return true;
   } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in motors");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalMotorsLog);
     return true;
   } else if (embrakes_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in embrakes");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalEmbrakesLog);
     return true;
   } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "Critical failure in batteries");
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalBatteriesLog);
+    return true;
+  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalSensorsLog);
     return true;
   }
   return false;
@@ -62,12 +67,10 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                             Batteries batteries_data, Telemetry telemetry_data,
-                             Sensors sensors_data, Motors motors_data)
+bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                             Batteries &batteries_data, Telemetry &telemetry_data,
+                             Sensors &sensors_data, Motors &motors_data)
 {
-  if (!telemetry_data.calibrate_command) return false;
-
   if (embrakes_data.module_status != ModuleStatus::kInit) return false;
   if (nav_data.module_status != ModuleStatus::kInit) return false;
   if (batteries_data.module_status != ModuleStatus::kInit) return false;
@@ -75,12 +78,12 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
   if (sensors_data.module_status != ModuleStatus::kInit) return false;
   if (motors_data.module_status != ModuleStatus::kInit) return false;
 
-  log.INFO("STM", "Calibrate command received and all modules initialised");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateInitialisedLog);
   return true;
 }
 
-bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                       Motors motors_data)
+bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                       Motors &motors_data)
 {
   // We're only checking Navigation, Motors and Embrakes because only those modules are doing
   // calibration.
@@ -88,7 +91,7 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
   if (nav_data.module_status != ModuleStatus::kReady) return false;
   if (motors_data.module_status != ModuleStatus::kReady) return false;
 
-  log.INFO("STM", "All modules calibrated");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kModulesCalibratedLog);
   return true;
 }
 
@@ -96,19 +99,27 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
-bool checkLaunchCommand(Logger &log, Telemetry telemetry_data)
+bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
 {
-  if (!telemetry_data.launch_command) return false;
+  if (!telemetry_data.calibrate_command) return false;
 
-  log.INFO("STM", "Launch command received");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateCommandLog);
   return true;
 }
 
-bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
+bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
+{
+  if (!telemetry_data.launch_command) return false;
+
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kLaunchCommandLog);
+  return true;
+}
+
+bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
 
-  log.INFO("STM", "Shutdown command received");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownCommandLog);
   return true;
 }
 
@@ -122,7 +133,7 @@ bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
   float required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
   if (remaining_distance > required_distance) return false;
 
-  log.INFO("STM", "Entered braking zone");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kBrakingZoneLog);
   return true;
 }
 
@@ -133,7 +144,7 @@ bool checkPodStopped(Logger &log, Navigation &nav_data)
 {
   if (nav_data.velocity > 0) return false;
 
-  log.INFO("STM", "The pod has stopped");
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kPodStoppedLog);
   return true;
 }
 

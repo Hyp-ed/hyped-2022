@@ -34,9 +34,7 @@ void Main::run()
   utils::System &sys = utils::System::getSystem();
   data::Data &data   = data::Data::getInstance();
 
-  data::StateMachine sm_data = data.getStateMachineData();
-  sm_data.current_state      = data::State::kReady;  // set current state in data structure
-  data.setStateMachineData(sm_data);
+  current_state_->enter(log_);
 
   State *new_state;
   while (sys.running_) {
@@ -52,8 +50,9 @@ void Main::run()
     yield();
   }
 
-  sm_data = data.getStateMachineData();
-  log_.INFO("STM", "Exiting. Current state: %s", data::states[sm_data.current_state]);
+  data::StateMachine sm_data = data.getStateMachineData();
+  log_.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingProgramFormat,
+            data::states[sm_data.current_state]);
 }
 
 }  // namespace state_machine

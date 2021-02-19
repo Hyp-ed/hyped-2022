@@ -174,7 +174,7 @@ void Config::parseEmbrakes(char* line)
   char* token = strtok(line, " ");
 
   if (strcmp(token, "Command") == 0) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 2; i++) {
       char* value = strtok(NULL, ",");
       if (value) {
         embrakes.command[i] = atoi(value);

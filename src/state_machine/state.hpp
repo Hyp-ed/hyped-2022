@@ -3,7 +3,8 @@
  * Authors: Kornelija Sukyte, Franz Miltz
  * Organisation: HYPED
  * Date:
- * Description: Here we declare the general state and the layout of all the specific states. We do not specify actual behaviour.
+ * Description: Here we declare the general state and the layout of all the specific states. We do
+ * not specify actual behaviour.
  *
  *    Copyright 2020 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +25,7 @@
 
 #include "data/data.hpp"
 #include "state_machine/main.hpp"
+#include "state_machine/messages.hpp"
 #include "state_machine/transitions.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
@@ -60,6 +62,8 @@ class State {
   void updateModuleData();
 };
 
+class Messages;
+
 /*
  * @brief   Generates a specific state S following the pattern of State.
  */
@@ -73,12 +77,17 @@ class State {
     /* @brief   Prints log message and sets appropriate public enum value.*/                       \
     void enter(Logger &log)                                                                        \
     {                                                                                              \
-      log.INFO("STM", "Entering %s state", S::string_representation_);                             \
+      log.INFO(Messages::kStmLoggingIdentifier, Messages::kEnteringStateFormat,                    \
+               S::string_representation_);                                                         \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
       data_.setStateMachineData(sm_data);                                                          \
     }                                                                                              \
-    void exit(Logger &log) { log.INFO("STM", "Exiting %s state", S::string_representation_); }     \
+    void exit(Logger &log)                                                                         \
+    {                                                                                              \
+      log.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingStateFormat,                     \
+               S::string_representation_);                                                         \
+    }                                                                                              \
                                                                                                    \
    private:                                                                                        \
     static S instance_;                                                                            \
@@ -101,6 +110,8 @@ MAKE_STATE(FailureBraking)  // Entered upon failure during the run
 MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
                             // FailureBraking
 
+#undef MAKE_STATE
+
 // We need to implement Off separately because it works a bit differently
 class Off : public State {
  public:
@@ -111,13 +122,13 @@ class Off : public State {
 
   void enter(Logger &log)
   {
-    log.INFO("STM", "Shutting down");
+    log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownLog);
     utils::System &sys = utils::System::getSystem();
     sys.running_       = false;
   }
 
   void exit(Logger &log)
-  {  // We nevere exit this state
+  {  // We never exit this state
   }
 
  private:

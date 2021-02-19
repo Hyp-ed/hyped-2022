@@ -26,19 +26,21 @@
 #include <string>
 #include "telemetry/client.hpp"
 #include "utils/system.hpp"
-#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace telemetry {
 
-Client::Client()
-  : log_(utils::System::getLogger()),
-    config_(utils::System::getSystem().config),
-    kPort(config_->telemetry.Port.c_str()),
-    kServerIP(config_->telemetry.IP.c_str())
-    {
-      log_.DBG("Telemetry", "Client object created");
-    }
+Client::Client(Logger& log)
+  : Client {log, *utils::System::getSystem().config}
+{}
+
+Client::Client(Logger& log, const utils::Config& config)
+  : log_ {log},
+    kPort {config.telemetry.Port.c_str()},
+    kServerIP {config.telemetry.IP.c_str()}
+{
+  log_.DBG("Telemetry", "Client object created");
+}
 
 bool Client::connect()
 {
@@ -53,9 +55,9 @@ bool Client::connect()
   hints.ai_socktype = SOCK_STREAM;
 
   // get possible addresses we can connect to
-  int return_val;
-  if ((return_val = getaddrinfo(kServerIP, kPort, &hints, &server_info)) != 0) {
-    log_.ERR("Telemetry", "%s", gai_strerror(return_val));
+  int error = getaddrinfo(kServerIP, kPort, &hints, &server_info);
+  if (error != 0) {
+    log_.ERR("Telemetry", "%s", gai_strerror(error));
     throw std::runtime_error{"Failed getting possible addresses"};
   }
 
@@ -108,9 +110,8 @@ std::string Client::receiveData()
   char header[8];
 
   // receive header
-  if (recv(sockfd_, header, 8, 0) == -1) {
-    log_.ERR("Telemetry", "Error receiving header");
-    throw std::runtime_error{"Error receiving header"};  // NOLINT
+  if (recv(sockfd_, header, 8, 0) <= 0) {
+    throw std::runtime_error{"Error receiving header"};
   }
 
   int payload_length = strtol(header, NULL, 0);
@@ -118,25 +119,13 @@ std::string Client::receiveData()
   memset(buffer, 0, sizeof(buffer));  // fill with 0's so null terminated by default
 
   // receive payload
-  if (recv(sockfd_, buffer, payload_length, 0) == -1) {
-    log_.ERR("Telemetry", "Error receiving payload");
-    throw std::runtime_error{"Error receiving payload"};  // NOLINT
+  if (recv(sockfd_, buffer, payload_length, 0) <= 0) {
+    throw std::runtime_error{"Error receiving payload"};
   }
 
   log_.DBG1("Telemetry", "Finished receiving from server");
 
   return std::string(buffer);
-}
-
-namespace {
-// this is how the config system will create the instance of Client
-ClientInterface* createClient()
-{
-  return new Client();
-}
-// register the implementation with the factory
-bool reg_impl = utils::InterfaceFactory<ClientInterface>
-                ::registerCreator("Client", createClient);
 }
 
 }  // namespace client

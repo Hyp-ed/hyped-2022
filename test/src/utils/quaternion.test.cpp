@@ -105,10 +105,11 @@ struct QuaternionFunctionality : public::testing::Test
 
     float arithmetic_result;
 
-    int kValue = rand()%1000;
+    int kValue;
 
     void SetUp()
     {
+        kValue = rand()%1000;
         quaternion_one = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
         quaternion_two = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
     }
@@ -161,6 +162,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
  */
 TEST_F(QuaternionFunctionality, handlesConstructionByVector)
 {
+  // Testing construction by 4D Vector
   test_vector = Vector<int, 4>(createRandomArray());
   Quaternion<int> quaternion_vector = Quaternion<int>(test_vector);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
@@ -174,6 +176,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionByVector)
       component_array[i] = rand()%1000;
     }
   }
+  // Testing  construction by 3D Vector
   test_vector_3d = Vector<int, 3>(component_array);
   Quaternion<int> quaternion_vector_3d = Quaternion<int>(test_vector_3d);
   ASSERT_EQ(0, quaternion_vector_3d[0]);
@@ -181,6 +184,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionByVector)
     ASSERT_EQ(quaternion_vector_3d[i], test_vector_3d[i-1]);
   }
 
+  // Testing construction by 3D Vector and constant
   Quaternion<int> quaternion_vector_3d_const = Quaternion<int>(kValue, test_vector_3d);
   ASSERT_EQ(kValue, quaternion_vector_3d_const[0]);
   for (int i = 1; i < kSizeOfQuaternion; i++) {
@@ -345,12 +349,5 @@ TEST_F(QuaternionFunctionality, handleQuaternionNormCalculation)
   ASSERT_TRUE(compare_float(quaternion_one.norm(), calculateNorm(quaternion_one)));
   ASSERT_TRUE(compare_float(quaternion_two.norm(), calculateNorm(quaternion_two)));
 }
-
-/**
- * Cal's notes
- * Functionality to test:
- * 1. Vector to quaternion conversion
-*/
-
 
 }}}  // hyped::utils::math

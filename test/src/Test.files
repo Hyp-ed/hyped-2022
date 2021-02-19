@@ -10,3 +10,4 @@ T_SRCS := \
   utils/differentiator.test.cpp \
   utils/online_statistics.test.cpp \
   utils/rolling_statistics.test.cpp \
+  utils/quaternion.test.cpp \

@@ -5,12 +5,15 @@ T_LFLAGS  := $(LFLAGS)
 T_INC_DIR := $(INC_DIR)
 T_TARGET  := $(TEST_DIR)/testrunner
 T_MAIN    := main.test.cpp
+T_MAIN_DIR := $(T_SRC_DIR)/$(T_MAIN)
 T_OBJ_DIR := $(OBJS_DIR)/$(TEST_DIR)
+T_SRC_DIR := $(TEST_DIR)/$(SRCS_DIR)
 
 # Defines T_SRCS
-include $(TEST_DIR)/$(SRCS_DIR)/Test.files
-T_SRCS      += $(T_MAIN)
-T_OBJS      := $(patsubst %.cpp,$(T_OBJ_DIR)/%.o,$(T_SRCS))
+T_SRCS     := $(shell find $(T_SRC_DIR) ! -name 'main.test.cpp' -name '*test.cpp')
+$(info $(T_SRCS))
+T_OBJS     := $(patsubst $(T_SRC_DIR)%.cpp, $(T_OBJ_DIR)%.o, $(T_SRCS))
+$(info $(T_OBJS))
 T_DEPFLAGS   = -MT $@ -MMD -MP -MF $(T_OBJ_DIR)/$*.d
 
 # Only add coverage flag if not also cross compiling
@@ -72,7 +75,7 @@ $(T_TARGET): $(DEPENDENCIES) $(OBJS) $(T_OBJS)
 	$(Echo) "Linking test executable $@"
 	$(Verb) $(LL) -o $@ $(OBJS) $(T_OBJS) $(T_LFLAGS) $(COVERAGE_FLAGS)
 
-$(T_OBJS): $(T_OBJ_DIR)/%.o: $(TEST_DIR)/$(SRCS_DIR)/%.cpp $(GTEST_TARGET)
+$(T_OBJS): $(T_OBJ_DIR)/%.o: $(T_SRC_DIR)/%.cpp $(GTEST_TARGET)
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
 	$(Verb) $(CC) $(T_DEPFLAGS) $(T_CFLAGS) $(COVERAGE_FLAGS) -o $@ -c $(T_INC_DIR) $<

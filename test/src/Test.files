@@ -13,3 +13,4 @@ T_SRCS := \
   utils/vectors/vector_properties.test.cpp \
   utils/vectors/vector_constructor.test.cpp \
   utils/vectors/vector_float.test.cpp \
+  utils/quaternion.test.cpp \

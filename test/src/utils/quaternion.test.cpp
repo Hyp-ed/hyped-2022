@@ -21,6 +21,7 @@
 #include "math.h"
 #include "gtest/gtest.h"
 #include "utils/math/quaternion.hpp"
+#include "utils/math/vector.hpp"
 #include "utils/system.hpp"
 #include "data/data_point.hpp"
 
@@ -38,6 +39,7 @@ namespace math {
  * integers. Used when instantiating classes randomly. 4 is the
  * fixed size of the array generated as that is the fixed size of
  * a quaternion instance.
+ * @returns array of 4 integers
  */
 std::array<int, 4> createRandomArray()
 {
@@ -49,9 +51,31 @@ std::array<int, 4> createRandomArray()
   return output;
 }
 
+/**
+ * @brief Function which compares two floats; code taken from:
+ * https://www.tutorialspoint.com/floating-point-comparison-in-cplusplus
+ * @param elem1 float number to be compared
+ * @param elem2 float number to be compared
+ * @param epsilon
+ * @returns true if floats to be compared are equal
+ */
+bool compare_float(float elem1, float elem2, float epsilon = 0.1f)
+{
+  if (fabs(elem1 - elem2) < epsilon) {
+       return true;
+  } else {
+       return false;
+  }
+}
+
+/**
+ * @brief Function which calculates the norm of a quaternion
+ * @param Quaternion instance
+ * @returns float containing the computed norm of the quaternion.
+ */
 float calculateNorm(Quaternion<int> quat)
 {
-  int sumSquare;
+  float sumSquare = 0;
   for (int i = 0; i < 4; i++) {
     sumSquare += pow(quat[i], 2);
   }
@@ -191,7 +215,7 @@ TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
 
 /**
  * @brief Test to determine whether the Quaternion class suppots
- * auto mulitplication by a constant scalar.
+ * auto multiplication by a constant scalar.
  * This test uses a random quaternion instance and constant.
  */
 TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
@@ -272,12 +296,21 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
 }
 
 /**
+ * @brief Test to determine whether the correct norm (magnitude) of the Quaternion
+ * is calculated correctly. This test uses a compare float function to assert correctness
+ * to one decimal place before asserting true. 
+ * This test uses two randomly generated Quaternion instances.
+ */
+TEST_F(QuaternionFunctionality, handleQuaternionNormCalculation)
+{
+  ASSERT_TRUE(compare_float(quaternion_one.norm(), calculateNorm(quaternion_one)));
+  ASSERT_TRUE(compare_float(quaternion_two.norm(), calculateNorm(quaternion_two)));
+}
+
+/**
  * Cal's notes
  * Functionality to test:
  * 1. Vector to quaternion conversion
- * 5. Scalar multiplication of quaternion
- * 7. Magnitude of quaternion
- * 8........
 */
 
 

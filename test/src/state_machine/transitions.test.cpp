@@ -16,8 +16,10 @@
  *    limitations under the License.
  */
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include <string>
 #include <vector>
@@ -45,8 +47,8 @@ struct TransitionFunctionality : public ::testing::Test {
 
   hyped::utils::Logger log;
   static constexpr size_t BUFFER_SIZE = 1024;
-  char stdout_buffer_[BUFFER_SIZE];
-  char stderr_buffer_[BUFFER_SIZE];
+  int stdout_f;
+  int tmp_stdout_f;
 
   // ---- Error messages -------
 
@@ -91,17 +93,17 @@ struct TransitionFunctionality : public ::testing::Test {
  protected:
   void SetUp()
   {
-    // Redirect output and overwrite output buffer
-    freopen("/dev/null", "a", stdout);
-    freopen("/dev/null", "a", stderr);
-    setbuf(stdout, stdout_buffer_);
-    setbuf(stderr, stderr_buffer_);
+    fflush(stdout);
+    stdout_f     = dup(1);
+    tmp_stdout_f = open("/dev/null", O_WRONLY);
+    dup2(tmp_stdout_f, 1);
+    close(tmp_stdout_f);
   }
   void TearDown()
   {
-    // Restore output files (UNIX only!)
-    freopen("/dev/tty", "a", stdout);
-    freopen("/dev/tty", "a", stderr);
+    fflush(stdout);
+    dup2(stdout_f, 1);
+    close(stdout_f);
   }
 };
 

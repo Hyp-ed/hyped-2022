@@ -82,6 +82,13 @@ float calculateNorm(Quaternion<int> quat)
   return sqrt(sumSquare);
 }
 
+/**
+ * @brief Helper function used to create an array of 3 random
+ * integers. Used when instantiating classes randomly. 3 is the
+ * fixed size of the array generated as that is the fixed size of
+ * a vector instance that is used in the tests.
+ * @returns array of 3 integers
+ */
 std::array<int, 3> createRandomArrayForVector()
 {
   std::srand(time(0));

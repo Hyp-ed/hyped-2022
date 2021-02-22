@@ -18,13 +18,13 @@
 
 
 #include <iostream>
+#include <string>
 #include "math.h"
 #include "gtest/gtest.h"
 #include "utils/math/quaternion.hpp"
 #include "utils/math/vector.hpp"
 #include "utils/system.hpp"
 #include "data/data_point.hpp"
-
 
 namespace hyped {
 namespace utils {
@@ -124,6 +124,22 @@ struct QuaternionFunctionality : public::testing::Test
 
     int kValue;
 
+    // Error messages
+    std::string zero_construction_error = "Construction of zero quaternion handled incorrectly";
+    std::string nzero_construction_error = "Construction of std quaternion handled incorrectly";
+    std::string vector_construction_error = "Construction of vector quaternion incorrect";
+    std::string autoaddition_error = "Autoaddition by constant incorrect";
+    std::string addition_error = "Addition by constant incorrect";
+    std::string autosubtraction_error = "Autosubtraction by constant incorrect";
+    std::string subtraction_error = "Subtraction by constant incorrect";
+    std::string autoproduct_error = "Automultiplication by constant incorrect";
+    std::string product_error = "Multiplication by constant incorrect";
+    std::string autodivision_error = "Autodivision by constant incorrect";
+    std::string division_error = "Division by constant incorrect";
+    std::string quaternion_mult_error = "Quaternion multiplication incorrect";
+    std::string norm_error = "Calculation of quaternion norm incorrect";
+
+
     void SetUp()
     {
         std::srand(time(0));
@@ -144,7 +160,7 @@ struct QuaternionFunctionality : public::testing::Test
 TEST_F(QuaternionFunctionality, handlesConstructionOfZeroQuaternion)
 {
     Quaternion<int> zeroQuaternion = Quaternion<int>(0);
-    ASSERT_EQ(0, zeroQuaternion.norm());
+    ASSERT_EQ(0, zeroQuaternion.norm()) << zero_construction_error;
     for (int i = 0; i < kSizeOfQuaternion; i++) {
         ASSERT_EQ(0, zeroQuaternion[i]);
     }
@@ -169,7 +185,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
     component_array[2],
     component_array[3]);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(nonZeroQuaternion[i], component_array[i]);
+    ASSERT_EQ(nonZeroQuaternion[i], component_array[i]) << nzero_construction_error;
   }
 }
 
@@ -184,22 +200,22 @@ TEST_F(QuaternionFunctionality, handlesConstructionByVector)
   test_vector = Vector<int, 4>(createRandomArrayForQuaternion());
   Quaternion<int> quaternion_vector = Quaternion<int>(test_vector);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(test_vector[i], quaternion_vector[i]);
+    ASSERT_EQ(test_vector[i], quaternion_vector[i]) << vector_construction_error;
   }
 
   // Testing  construction by 3D Vector
   test_vector_3d = Vector<int, 3>(createRandomArrayForVector());
   Quaternion<int> quaternion_vector_3d = Quaternion<int>(test_vector_3d);
-  ASSERT_EQ(0, quaternion_vector_3d[0]);
+  ASSERT_EQ(0, quaternion_vector_3d[0]) << vector_construction_error;
   for (int i = 1; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_vector_3d[i], test_vector_3d[i-1]);
+    ASSERT_EQ(quaternion_vector_3d[i], test_vector_3d[i-1]) << vector_construction_error;
   }
 
   // Testing construction by 3D Vector and constant
   Quaternion<int> quaternion_vector_3d_const = Quaternion<int>(kValue, test_vector_3d);
-  ASSERT_EQ(kValue, quaternion_vector_3d_const[0]);
+  ASSERT_EQ(kValue, quaternion_vector_3d_const[0]) << vector_construction_error;
   for (int i = 1; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_vector_3d_const[i], test_vector_3d[i-1]);
+    ASSERT_EQ(quaternion_vector_3d_const[i], test_vector_3d[i-1]) << vector_construction_error;
   }
 }
 
@@ -214,8 +230,8 @@ TEST_F(QuaternionFunctionality, handlesAutoAdditionByConstant)
     quaternion_result_one = quaternion_one + kValue;
     quaternion_result_two = kValue + quaternion_one;
     for (int i = 0; i < kSizeOfQuaternion; i++) {
-        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue);
-        ASSERT_EQ(quaternion_result_two[i], quaternion_one[i] + kValue);
+        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue) << autoaddition_error;
+        ASSERT_EQ(quaternion_result_two[i], quaternion_one[i] + kValue) << autoaddition_error;
     }
 }
 
@@ -228,11 +244,11 @@ TEST_F(QuaternionFunctionality, handlesAdditionByConstant)
 {
   quaternion_result_one += kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], kValue);
+    ASSERT_EQ(quaternion_result_one[i], kValue) << addition_error;
   }
   quaternion_result_one += quaternion_one;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue);
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue) << addition_error;
   }
 }
 
@@ -246,7 +262,7 @@ TEST_F(QuaternionFunctionality, handlesAutoSubtractionByConstant)
 {
     quaternion_result_one = quaternion_one - kValue;
     for (int i = 0; i < kSizeOfQuaternion; i++) {
-        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue);
+        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue) << autosubtraction_error;
     }
 }
 
@@ -259,11 +275,11 @@ TEST_F(QuaternionFunctionality, handlesSubtractionByConstant)
 {
   quaternion_result_one -= kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], -kValue);
+    ASSERT_EQ(quaternion_result_one[i], -kValue) << subtraction_error;
   }
   quaternion_result_one += quaternion_one;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue);
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue) << subtraction_error;
   }
 }
 
@@ -277,8 +293,8 @@ TEST_F(QuaternionFunctionality, handleAutoMultiplicationByConstant)
   quaternion_result_one = quaternion_one * kValue;
   quaternion_result_two = kValue * quaternion_one;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue);
-    ASSERT_NE(quaternion_result_two[i], quaternion_one[i] * kValue);
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue) << autoproduct_error;
+    ASSERT_NE(quaternion_result_two[i], quaternion_one[i] * kValue) << autoproduct_error;
   }
 }
 
@@ -292,7 +308,7 @@ TEST_F(QuaternionFunctionality, handleMultiplicationByConstant)
   quaternion_result_one = quaternion_one;
   quaternion_result_one *= kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue);
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] * kValue) << product_error;
   }
 }
 /**
@@ -304,7 +320,7 @@ TEST_F(QuaternionFunctionality, handleAutoDivisionByConstant)
 {
   quaternion_result_one = quaternion_one / kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue);
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue) << autodivision_error;
   }
 }
 
@@ -318,7 +334,7 @@ TEST_F(QuaternionFunctionality, handleDivisionByConstant)
   quaternion_result_one = quaternion_one;
   quaternion_result_one /= kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue);
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] / kValue) << division_error;
   }
 }
 
@@ -334,19 +350,23 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
   // Asserting correct multiplication for first element
   ASSERT_EQ(quaternion_result_one[0],
             quaternion_two[0]*quaternion_one[0] - quaternion_two[1]*quaternion_one[1]
-            - quaternion_two[2]*quaternion_one[2] - quaternion_two[3]*quaternion_one[3]);
+            - quaternion_two[2]*quaternion_one[2] - quaternion_two[3]*quaternion_one[3])
+            << quaternion_mult_error;
   // Asserting correct multiplication for second element
   ASSERT_EQ(quaternion_result_one[1],
             quaternion_two[0]*quaternion_one[1] + quaternion_two[1]*quaternion_one[0]
-            - quaternion_two[2]*quaternion_one[3] + quaternion_two[3]*quaternion_one[2]);
+            - quaternion_two[2]*quaternion_one[3] + quaternion_two[3]*quaternion_one[2])
+            << quaternion_mult_error;
   // Asserting correct multiplication for third element
   ASSERT_EQ(quaternion_result_one[2],
             quaternion_two[0]*quaternion_one[2] + quaternion_two[1]*quaternion_one[3]
-            + quaternion_two[2]*quaternion_one[0] - quaternion_two[3]*quaternion_one[1]);
+            + quaternion_two[2]*quaternion_one[0] - quaternion_two[3]*quaternion_one[1])
+            << quaternion_mult_error;
   // Asserting correct multiplication for forth element
   ASSERT_EQ(quaternion_result_one[3],
             quaternion_two[0]*quaternion_one[3] - quaternion_two[1]*quaternion_one[2]
-            + quaternion_two[2]*quaternion_one[1] + quaternion_two[3]*quaternion_one[0]);
+            + quaternion_two[2]*quaternion_one[1] + quaternion_two[3]*quaternion_one[0])
+            << quaternion_mult_error;
 }
 
 /**
@@ -357,8 +377,10 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
  */
 TEST_F(QuaternionFunctionality, handleQuaternionNormCalculation)
 {
-  ASSERT_TRUE(compare_float_for_quaternion(quaternion_one.norm(), calculateNorm(quaternion_one)));
-  ASSERT_TRUE(compare_float_for_quaternion(quaternion_two.norm(), calculateNorm(quaternion_two)));
+  ASSERT_TRUE(compare_float_for_quaternion(quaternion_one.norm(), calculateNorm(quaternion_one)))
+  << norm_error;
+  ASSERT_TRUE(compare_float_for_quaternion(quaternion_two.norm(), calculateNorm(quaternion_two)))
+  << norm_error;
 }
 
 }}}  // hyped::utils::math

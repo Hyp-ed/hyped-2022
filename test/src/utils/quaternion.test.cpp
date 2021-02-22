@@ -82,6 +82,16 @@ float calculateNorm(Quaternion<int> quat)
   return sqrt(sumSquare);
 }
 
+std::array<int, 3> createRandomArrayForVector()
+{
+  std::srand(time(0));
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+  }
+  return output;
+}
+
 // -------------------------------------------------------------------------------------------------
 // Functionality
 // -------------------------------------------------------------------------------------------------
@@ -109,6 +119,7 @@ struct QuaternionFunctionality : public::testing::Test
 
     void SetUp()
     {
+        std::srand(time(0));
         kValue = rand()%1000;
         quaternion_one = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
         quaternion_two = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
@@ -169,15 +180,8 @@ TEST_F(QuaternionFunctionality, handlesConstructionByVector)
     ASSERT_EQ(test_vector[i], quaternion_vector[i]);
   }
 
-  std::array<int, 3> component_array;
-  for (int i = 0; i < 3; i++) {
-    component_array[i] = rand()%1000;
-    while (component_array[i] == 0) {
-      component_array[i] = rand()%1000;
-    }
-  }
   // Testing  construction by 3D Vector
-  test_vector_3d = Vector<int, 3>(component_array);
+  test_vector_3d = Vector<int, 3>(createRandomArrayForVector());
   Quaternion<int> quaternion_vector_3d = Quaternion<int>(test_vector_3d);
   ASSERT_EQ(0, quaternion_vector_3d[0]);
   for (int i = 1; i < kSizeOfQuaternion; i++) {

@@ -72,19 +72,6 @@ struct Messages {
   static const char kModulesCalibratedLog[];
 
   //--------------------------------------------------------------------------------------
-  // Telemetry Commands
-  //--------------------------------------------------------------------------------------
-
-  // Sent upon receiving calibrate command
-  static const char kCalibrateCommandLog[];
-
-  // Sent upon receiving launch command
-  static const char kLaunchCommandLog[];
-
-  // Sent upon receiving shutdown command
-  static const char kShutdownCommandLog[];
-
-  //--------------------------------------------------------------------------------------
   // Navigation Data Events
   //--------------------------------------------------------------------------------------
 

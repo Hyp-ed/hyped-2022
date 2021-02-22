@@ -56,15 +56,6 @@ const char Messages::kCalibrateInitialisedLog[]
 const char Messages::kModulesCalibratedLog[] = "All modules calibrated";
 
 //--------------------------------------------------------------------------------------
-// Telemetry Commands
-//--------------------------------------------------------------------------------------
-const char Messages::kCalibrateCommandLog[] = "Calibrate command received";
-
-const char Messages::kLaunchCommandLog[] = "Launch command received";
-
-const char Messages::kShutdownCommandLog[] = "Shutdown command received";
-
-//--------------------------------------------------------------------------------------
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 

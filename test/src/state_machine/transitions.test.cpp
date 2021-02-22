@@ -16,6 +16,7 @@
  *    limitations under the License.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <string>
@@ -43,6 +44,9 @@ struct TransitionFunctionality : public ::testing::Test {
   // ---- Logger ---------------
 
   hyped::utils::Logger log;
+  static constexpr size_t BUFFER_SIZE = 1024;
+  char stdout_buffer_[BUFFER_SIZE];
+  char stderr_buffer_[BUFFER_SIZE];
 
   // ---- Error messages -------
 
@@ -85,8 +89,20 @@ struct TransitionFunctionality : public ::testing::Test {
   int randomInRange(int, int);
 
  protected:
-  void SetUp() {}
-  void TearDown() {}
+  void SetUp()
+  {
+    // Redirect output and overwrite output buffer
+    freopen("/dev/null", "a", stdout);
+    freopen("/dev/null", "a", stderr);
+    setbuf(stdout, stdout_buffer_);
+    setbuf(stderr, stderr_buffer_);
+  }
+  void TearDown()
+  {
+    // Restore output files (UNIX only!)
+    freopen("/dev/tty", "a", stdout);
+    freopen("/dev/tty", "a", stderr);
+  }
 };
 
 int TransitionFunctionality::randomInRange(int min, int max)

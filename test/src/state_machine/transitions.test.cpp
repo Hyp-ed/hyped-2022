@@ -46,7 +46,6 @@ struct TransitionFunctionality : public ::testing::Test {
   // ---- Logger ---------------
 
   hyped::utils::Logger log;
-  static constexpr size_t BUFFER_SIZE = 1024;
   int stdout_f;
   int tmp_stdout_f;
 
@@ -99,6 +98,7 @@ struct TransitionFunctionality : public ::testing::Test {
     dup2(tmp_stdout_f, 1);
     close(tmp_stdout_f);
   }
+
   void TearDown()
   {
     fflush(stdout);

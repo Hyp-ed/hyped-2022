@@ -10,10 +10,11 @@ T_OBJ_DIR := $(OBJS_DIR)/$(TEST_DIR)
 T_SRC_DIR := $(TEST_DIR)/$(SRCS_DIR)
 
 # Defines T_SRCS
-T_SRCS     := $(shell find $(T_SRC_DIR) ! -name 'main.test.cpp' -name '*test.cpp')
-$(info $(T_SRCS))
-T_OBJS     := $(patsubst $(T_SRC_DIR)%.cpp, $(T_OBJ_DIR)%.o, $(T_SRCS))
-$(info $(T_OBJS))
+#T_SRCS     := $(shell find $(T_SRC_DIR) -name '*test.cpp')
+#T_OBJS     := $(patsubst $(T_SRC_DIR)%.cpp, $(T_OBJ_DIR)%.o, $(T_SRCS))
+include $(TEST_DIR)/$(SRCS_DIR)/Test.files
+T_SRCS      += $(T_MAIN)
+T_OBJS      := $(patsubst %.cpp,$(T_OBJ_DIR)/%.o,$(T_SRCS))
 T_DEPFLAGS   = -MT $@ -MMD -MP -MF $(T_OBJ_DIR)/$*.d
 
 # Only add coverage flag if not also cross compiling

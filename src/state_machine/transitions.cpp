@@ -103,7 +103,6 @@ bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.calibrate_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateCommandLog);
   return true;
 }
 
@@ -111,7 +110,6 @@ bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.launch_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kLaunchCommandLog);
   return true;
 }
 
@@ -119,7 +117,6 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownCommandLog);
   return true;
 }
 

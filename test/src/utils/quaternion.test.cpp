@@ -99,9 +99,34 @@ std::array<int, 3> createRandomArrayForVector()
   return output;
 }
 
+const int kSizeOfQuaternion = 4;
+
 // -------------------------------------------------------------------------------------------------
 // Functionality
 // -------------------------------------------------------------------------------------------------
+
+/**
+ * Struct used for testing the construction
+ * of quaternion.hpp
+ */
+struct QuaternionConstruction : public::testing::Test
+{
+  /* data */
+    Vector<int, 4> test_vector;
+    Vector<int, 3> test_vector_3d;
+
+    int kValue;
+
+    std::string zero_construction_error = "Construction of zero quaternion handled incorrectly";
+    std::string nzero_construction_error = "Construction of std quaternion handled incorrectly";
+    std::string vector_construction_error = "Construction of vector quaternion incorrect";
+
+    void SetUp()
+    {
+        std::srand(time(0));
+        kValue = rand()%1000;
+    }
+};
 
 /**
  * Struct used for testing the functionality
@@ -110,24 +135,19 @@ std::array<int, 3> createRandomArrayForVector()
 struct QuaternionFunctionality : public::testing::Test
 {
     /* data */
-    const int kSizeOfQuaternion = 4;
     Quaternion<int> quaternion_one;
     Quaternion<int> quaternion_two;
 
     Quaternion<int> quaternion_result_one;
     Quaternion<int> quaternion_result_two;
 
-    Vector<int, 4> test_vector;
-    Vector<int, 3> test_vector_3d;
+
 
     float arithmetic_result;
 
     int kValue;
 
     // Error messages
-    std::string zero_construction_error = "Construction of zero quaternion handled incorrectly";
-    std::string nzero_construction_error = "Construction of std quaternion handled incorrectly";
-    std::string vector_construction_error = "Construction of vector quaternion incorrect";
     std::string autoaddition_error = "Autoaddition by constant incorrect";
     std::string addition_error = "Addition by constant incorrect";
     std::string autosubtraction_error = "Autosubtraction by constant incorrect";
@@ -157,7 +177,7 @@ struct QuaternionFunctionality : public::testing::Test
  * @brief Test to determine the correct instantiation of the zero
  * Quaternion class instance
  */
-TEST_F(QuaternionFunctionality, handlesConstructionOfZeroQuaternion)
+TEST_F(QuaternionConstruction, handlesConstructionOfZeroQuaternion)
 {
     Quaternion<int> zeroQuaternion = Quaternion<int>(0);
     ASSERT_EQ(0, zeroQuaternion.norm()) << zero_construction_error;
@@ -170,7 +190,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfZeroQuaternion)
  * @brief Test to determine the correct instantiation of a non zero
  * Quaternion class instance.
  */
-TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
+TEST_F(QuaternionConstruction, handlesConstructionOfNonZeroQuaternion)
 {
   int component_array[kSizeOfQuaternion];
   for (int i = 0; i < kSizeOfQuaternion; i++) {
@@ -194,7 +214,7 @@ TEST_F(QuaternionFunctionality, handlesConstructionOfNonZeroQuaternion)
  * instances by Vector instances. This test includes contruction by
  * a 4D Vector, 3D Vector and constant, and 3D Vector.
  */
-TEST_F(QuaternionFunctionality, handlesConstructionByVector)
+TEST_F(QuaternionConstruction, handlesConstructionByVector)
 {
   // Testing construction by 4D Vector
   test_vector = Vector<int, 4>(createRandomArrayForQuaternion());

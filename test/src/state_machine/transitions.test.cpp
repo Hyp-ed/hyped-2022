@@ -93,6 +93,8 @@ struct TransitionFunctionality : public ::testing::Test {
     fflush(stdout);
     stdout_f     = dup(1);
     tmp_stdout_f = open("/dev/null", O_WRONLY);
+    // Not on Unix, try Windows
+    if (tmp_stdout_f == -1) { tmp_stdout_f = open("nul", O_WRONLY); }
     dup2(tmp_stdout_f, 1);
     close(tmp_stdout_f);
   }

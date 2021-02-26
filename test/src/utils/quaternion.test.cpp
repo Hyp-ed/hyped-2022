@@ -262,11 +262,13 @@ TEST_F(QuaternionFunctionality, handlesAutoAdditionByConstant)
  */
 TEST_F(QuaternionFunctionality, handlesAdditionByConstant)
 {
-  quaternion_result_one += kValue;
+  Quaternion<int> quaternion_identity = Quaternion<int>(0);
+  quaternion_identity += kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_result_one[i], kValue) << addition_error;
+    ASSERT_EQ(quaternion_identity[i], kValue) << addition_error;
   }
-  quaternion_result_one += quaternion_one;
+  quaternion_result_one = quaternion_one;
+  quaternion_result_one += kValue;
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue) << addition_error;
   }

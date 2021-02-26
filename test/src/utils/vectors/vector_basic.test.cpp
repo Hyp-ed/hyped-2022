@@ -19,7 +19,6 @@
 #include <cstdlib>
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
-#include "vector_operations_with_vectors.test.cpp"
 
 
 
@@ -29,6 +28,17 @@ namespace utils
 {
 namespace math
 {
+
+std::array<int, 3> createRandomArrayForBasic()
+{
+  std::srand(time(0));
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+  }
+  return output;
+}
+
 /**
  * @brief Struct used to set up all the variables used in the tests for basic operationsof a vector
  * with constants.
@@ -46,9 +56,12 @@ struct OperationsByConstant : public::testing::Test
   int kValue = rand()%1000;
   void SetUp()
   {
-    vector_one = Vector<int, 3>(createRandomArray());
-    vector_two = Vector<int, 3>(createRandomArray());
-    vector_three = Vector<int, 3>(createRandomArray());
+    vector_one = Vector<int, 3>(createRandomArrayForBasic
+  ());
+    vector_two = Vector<int, 3>(createRandomArrayForBasic
+  ());
+    vector_three = Vector<int, 3>(createRandomArrayForBasic
+  ());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }

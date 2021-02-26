@@ -31,7 +31,7 @@ namespace math
  * @brief Helper method used to generate an array of three random integers.
  * each integer will be in the range -1000, 1000 (not inclusive)
  */
-std::array<int, 3> createRandomArray()
+std::array<int, 3> createRandomArrayForOperations()
 {
   std::srand(time(0));
   std::array<int, 3> output = std::array<int, 3>();
@@ -45,7 +45,7 @@ std::array<int, 3> createRandomArray()
  * Also none of those Integers will be zero.
  * each integer will be in the range -1000, 1000 (not inclusive)
  */
-std::array<int, 3> createRandomWithoutZeroesArray()
+std::array<int, 3> RandomNonZeroArrayForOperations()
 {
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
@@ -70,9 +70,9 @@ struct OperationsTest : public::testing::Test
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
   void SetUp()
-{
-    array_one = createRandomArray();
-    array_two = createRandomWithoutZeroesArray();
+  {
+    array_one = createRandomArrayForOperations();
+    array_two = RandomNonZeroArrayForOperations();
     vector_one = Vector<int, 3>(array_one);
     vector_two = Vector<int, 3>(array_two);
   }
@@ -242,7 +242,7 @@ struct EqualityOperation: public :: testing::Test
   Vector<int, 3> vector_two;
   void SetUp()
   {
-    values = createRandomArray();
+    values = createRandomArrayForOperations();
     vector_one = Vector<int, 3>(values);
     vector_two = Vector<int, 3>(values);
   }

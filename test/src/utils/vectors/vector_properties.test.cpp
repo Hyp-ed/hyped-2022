@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
-#include "vector_basic.test.cpp"
+
 /*
  * Author: Pablo Morandé
  * Organisation: HYPED
@@ -26,6 +26,29 @@ namespace utils
 {
 namespace math
 {
+
+std::array<int, 3> createRandomArrayForProperties()
+{
+  std::srand(time(0));
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+  }
+  return output;
+}
+
+std::array<int, 3> RandomNonZeroArrayForProperties()
+{
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+    while (output[i] == 0) {
+      output[i] = rand()%1000;
+    }
+  }
+  return output;
+}
+
 /**
  * @brief Struct used to set up all the variables used in the tests one property present in some
  * of the operations defined for vectors
@@ -41,10 +64,10 @@ struct VectorAssociativity : public::testing::Test
   Vector<int, 3> vector_result_one;
   Vector<int, 3> vector_result_two;
   void SetUp()
-{
-    vector_one = Vector<int, 3>(createRandomArray());
-    vector_two = Vector<int, 3>(createRandomArray());
-    vector_three = Vector<int, 3>(createRandomArray());
+  {
+    vector_one = Vector<int, 3>(createRandomArrayForProperties());
+    vector_two = Vector<int, 3>(createRandomArrayForProperties());
+    vector_three = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
@@ -122,8 +145,8 @@ struct VectorCommutativity : public ::testing::Test
   Vector<int, 3> vector_result_two;
   void SetUp()
   {
-    vector_one = Vector<int, 3>(createRandomArray());
-    vector_two = Vector<int, 3>(createRandomArray());
+    vector_one = Vector<int, 3>(createRandomArrayForProperties());
+    vector_two = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
@@ -213,7 +236,7 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
  */
 struct VectorIdentityOperations : public ::testing::Test
 {
-  std::array<int, 3> values = createRandomArray();
+  std::array<int, 3> values = createRandomArrayForProperties();
   const int dimension = 3;
   Vector<int, 3> identity_vector;
   Vector<int, 3> vector;
@@ -343,7 +366,7 @@ TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
  */
 TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
 {
-  vector = Vector<int, 3>(createRandomWithoutZeroesArray());
+  vector = Vector<int, 3>(RandomNonZeroArrayForProperties());
   Vector<int, 3> output =  identity_vector / vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], identity_vector[i]);
@@ -368,7 +391,7 @@ TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
  */
 TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
 {
-  vector = Vector<int, 3>(createRandomWithoutZeroesArray());
+  vector = Vector<int, 3>(RandomNonZeroArrayForProperties());
   identity_vector /= vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(0, identity_vector[i]);
@@ -378,7 +401,7 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
-  std::array<int, 3>values = createRandomWithoutZeroesArray();
+  std::array<int, 3>values = RandomNonZeroArrayForProperties();
   vector = Vector<int, 3>(values);
   vector /=  identity_vector;
   for (int i = 0; i < dimension; i++) {

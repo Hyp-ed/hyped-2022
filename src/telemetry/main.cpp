@@ -69,7 +69,7 @@ void Main::run()
   }
 
 
-  telem_data_struct.module_status = ModuleStatus::kInit;
+  telem_data_struct.module_status = ModuleStatus::kReady;
   data_.setTelemetryData(telem_data_struct);
 
   SendLoop sendloop_thread {log_, data_, this};

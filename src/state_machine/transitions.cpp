@@ -71,24 +71,26 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Naviga
                              Batteries &batteries_data, Telemetry &telemetry_data,
                              Sensors &sensors_data, Motors &motors_data)
 {
-  if (embrakes_data.module_status != ModuleStatus::kInit) return false;
-  if (nav_data.module_status != ModuleStatus::kInit) return false;
-  if (batteries_data.module_status != ModuleStatus::kInit) return false;
-  if (telemetry_data.module_status != ModuleStatus::kInit) return false;
-  if (sensors_data.module_status != ModuleStatus::kInit) return false;
-  if (motors_data.module_status != ModuleStatus::kInit) return false;
+  if (embrakes_data.module_status < ModuleStatus::kInit) return false;
+  if (nav_data.module_status < ModuleStatus::kInit) return false;
+  if (batteries_data.module_status < ModuleStatus::kInit) return false;
+  if (telemetry_data.module_status < ModuleStatus::kInit) return false;
+  if (sensors_data.module_status < ModuleStatus::kInit) return false;
+  if (motors_data.module_status < ModuleStatus::kInit) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateInitialisedLog);
   return true;
 }
 
 bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                       Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                        Motors &motors_data)
 {
-  // We're only checking Navigation, Motors and Embrakes because only those modules are doing
-  // calibration.
   if (embrakes_data.module_status != ModuleStatus::kReady) return false;
   if (nav_data.module_status != ModuleStatus::kReady) return false;
+  if (batteries_data.module_status != ModuleStatus::kReady) return false;
+  if (telemetry_data.module_status != ModuleStatus::kReady) return false;
+  if (sensors_data.module_status != ModuleStatus::kReady) return false;
   if (motors_data.module_status != ModuleStatus::kReady) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kModulesCalibratedLog);
@@ -126,17 +128,22 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
-  float remaining_distance = nav_data.run_length - nav_data.displacement;
-  float required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
+  data::nav_t remaining_distance = nav_data.run_length - nav_data.displacement;
+  data::nav_t required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
   if (remaining_distance > required_distance) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kBrakingZoneLog);
   return true;
 }
 
-/*
- * @brief    Returns true if the pod has stopped moving.
- */
+bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data)
+{
+  if (nav_data.velocity < nav_data.maximum_velocity) return false;
+
+  log.INFO(Messages::kStmLoggingIdentifier, Messages::kMaxVelocityLog);
+  return true;
+}
+
 bool checkPodStopped(Logger &log, Navigation &nav_data)
 {
   if (nav_data.velocity > 0) return false;

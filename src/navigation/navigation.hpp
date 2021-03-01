@@ -39,7 +39,7 @@ using data::Data;
 using data::DataPoint;
 using data::ImuData;
 using data::ModuleStatus;
-using data::NavigationType;
+using data::nav_t;
 using data::NavigationVector;
 using data::Motors;
 using data::Sensors;
@@ -57,9 +57,9 @@ namespace navigation {
       typedef array<ImuData, Sensors::kNumImus>                   ImuDataArray;
       typedef DataPoint<ImuDataArray>                             ImuDataPointArray;
       typedef array<NavigationVector, Sensors::kNumImus>          NavigationVectorArray;
-      typedef array<array<NavigationType, Sensors::kNumImus>, 3>  ImuAxisData;
-      typedef array<NavigationType, Sensors::kNumImus>            NavigationArray;
-      typedef array<NavigationType, Sensors::kNumImus-1>          NavigationArrayOneFaulty;
+      typedef array<array<nav_t, Sensors::kNumImus>, 3>  ImuAxisData;
+      typedef array<nav_t, Sensors::kNumImus>            NavigationArray;
+      typedef array<nav_t, Sensors::kNumImus-1>          NavigationArrayOneFaulty;
       typedef array<KalmanFilter, Sensors::kNumImus>              FilterArray;
 
       /**
@@ -78,34 +78,34 @@ namespace navigation {
       /**
        * @brief Get the measured acceleration [m/s^2]
        *
-       * @return NavigationType Returns the forward component of acceleration vector (negative when
+       * @return nav_t Returns the forward component of acceleration vector (negative when
        *                        decelerating) [m/s^2]
        */
-      NavigationType getAcceleration() const;
+      nav_t getAcceleration() const;
       /**
        * @brief Get the measured velocity [m/s]
        *
-       * @return NavigationType Returns the forward component of velocity vector [m/s]
+       * @return nav_t Returns the forward component of velocity vector [m/s]
        */
-      NavigationType getVelocity() const;
+      nav_t getVelocity() const;
       /**
        * @brief Get the measured displacement [m]
        *
-       * @return NavigationType Returns the forward component of displacement vector [m]
+       * @return nav_t Returns the forward component of displacement vector [m]
        */
-      NavigationType getDisplacement() const;
+      nav_t getDisplacement() const;
       /**
        * @brief Get the emergency braking distance [m]
        *
-       * @return NavigationType emergency braking distance [m]
+       * @return nav_t emergency braking distance [m]
        */
-      NavigationType getEmergencyBrakingDistance() const;
+      nav_t getEmergencyBrakingDistance() const;
       /**
        * @brief Get the braking distance [m]
        *
-       * @return NavigationType braking distance [m]
+       * @return nav_t braking distance [m]
        */
-      NavigationType getBrakingDistance() const;
+      nav_t getBrakingDistance() const;
       /**
        * @brief Get the determined gravity calibration [m/s^2]
        *
@@ -169,11 +169,11 @@ namespace navigation {
       static constexpr char kDelimiter = '\t';
 
       static constexpr int kPrintFreq = 1;
-      static constexpr NavigationType kEmergencyDeceleration = 24;
+      static constexpr nav_t kEmergencyDeceleration = 24;
       static constexpr float kTukeyThreshold = 1;  // 0.75
       static constexpr float kTukeyIQRBound = 3;
 
-      static constexpr NavigationType kStripeDistance = 30.48;
+      static constexpr nav_t kStripeDistance = 30.48;
 
       static constexpr uint32_t pod_mass_           = 250;  // kg
       static constexpr float    mom_inertia_wheel_  = 0.04;  // kgm²
@@ -199,7 +199,7 @@ namespace navigation {
       // acceptable variances for calibration measurements: {x, y, z}
       array<float, 3> calibration_limits_;
       // Calibration variances in each dimension, necessary for vibration checking
-      array<NavigationType, 3> calibration_variance_;
+      array<nav_t, 3> calibration_variance_;
 
       // Array of previous measurements
       array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
@@ -223,9 +223,9 @@ namespace navigation {
 
       // To store estimated values
       ImuDataPointArray sensor_readings_;
-      DataPoint<NavigationType> acceleration_;
-      DataPoint<NavigationType> velocity_;
-      DataPoint<NavigationType> displacement_;
+      DataPoint<nav_t> acceleration_;
+      DataPoint<nav_t> velocity_;
+      DataPoint<nav_t> displacement_;
       NavigationVectorArray gravity_calibration_;
 
       // Initial timestamp (for comparisons)
@@ -233,13 +233,13 @@ namespace navigation {
       // Previous timestamp
       uint32_t prev_timestamp_;
       // Uncertainty in distance
-      NavigationType displ_unc_;
+      nav_t displ_unc_;
       // Uncertainty in velocity
-      NavigationType vel_unc_;
+      nav_t vel_unc_;
       // Previous acceleration measurement, necessary for uncertainty determination
-      NavigationType prev_acc_;
+      nav_t prev_acc_;
       // Previous velocity measurement
-      NavigationType prev_vel_;
+      nav_t prev_vel_;
       // Have initial timestamps been set?
       bool init_time_set_;
 
@@ -250,13 +250,13 @@ namespace navigation {
       bool keyence_real_;
 
       // To convert acceleration -> velocity -> distance
-      Integrator<NavigationType> acceleration_integrator_;  // acceleration to velocity
-      Integrator<NavigationType> velocity_integrator_;      // velocity to distance
+      Integrator<nav_t> acceleration_integrator_;  // acceleration to velocity
+      Integrator<nav_t> velocity_integrator_;      // velocity to distance
 
       /**
        * @brief Compute norm of acceleration measurement
        */
-      NavigationType accNorm(NavigationVector& acc);
+      nav_t accNorm(NavigationVector& acc);
       /**
        * @brief Query sensors to determine acceleration, velocity and distance
        */

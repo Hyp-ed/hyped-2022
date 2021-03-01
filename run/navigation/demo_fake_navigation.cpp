@@ -65,7 +65,6 @@ int main(int argc, char* argv[])
   // Initialise sensors
   hyped::sensors::Main* sensors_main = new hyped::sensors::Main(1, *log_nav);
   sensors_main->start();
- 
   Main* main = new Main(2, *log_nav);
   main->start();
 
@@ -75,8 +74,7 @@ int main(int argc, char* argv[])
   data.setStateMachineData(state_machine);
 
   ModuleStatus nav_state = data.getNavigationData().module_status;
-  while (nav_state != ModuleStatus::kReady) 
-  {
+  while (nav_state != ModuleStatus::kReady) {
     nav_state = data.getNavigationData().module_status;
     Thread::sleep(100);
   }

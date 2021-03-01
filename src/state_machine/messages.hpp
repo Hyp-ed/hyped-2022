@@ -35,6 +35,10 @@ struct Messages {
   // Identifies the module sending the message as STM
   static const char kStmLoggingIdentifier[];
 
+  //--------------------------------------------------------------------------------------
+  // Emergency
+  //--------------------------------------------------------------------------------------
+
   // Sent upon receiving the stop command
   static const char kStopCommandLog[];
 
@@ -53,6 +57,13 @@ struct Messages {
   // Sent upon encountering a critical failure in batteries
   static const char kCriticalBatteriesLog[];
 
+  // Sent upon encountering a critical failure in sensors
+  static const char kCriticalSensorsLog[];
+
+  //--------------------------------------------------------------------------------------
+  // Module Status
+  //--------------------------------------------------------------------------------------
+
   // Sent upon determining that calibration command has been received
   // and all modules are initialised
   static const char kCalibrateInitialisedLog[];
@@ -60,11 +71,9 @@ struct Messages {
   // Sent upon determining that all modules are calibrated
   static const char kModulesCalibratedLog[];
 
-  // Sent upon receiving launch command
-  static const char kLaunchCommandLog[];
-
-  // Sent upon receiving shutdown command
-  static const char kShutdownCommandLog[];
+  //--------------------------------------------------------------------------------------
+  // Navigation Data Events
+  //--------------------------------------------------------------------------------------
 
   // Sent upon reaching the maximum velocity
   static const char kMaxVelocityLog[];
@@ -74,6 +83,10 @@ struct Messages {
 
   // Sent upon determining that the pod has stopped
   static const char kPodStoppedLog[];
+
+  //--------------------------------------------------------------------------------------
+  // State Transitions
+  //--------------------------------------------------------------------------------------
 
   // Sent upon shutting down system (entering Off state)
   static const char kShutdownLog[];

@@ -111,6 +111,8 @@ MAKE_STATE(FailureBraking)  // Entered upon failure during the run
 MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
                             // FailureBraking
 
+#undef MAKE_STATE
+
 // We need to implement Off separately because it works a bit differently
 class Off : public State {
  public:

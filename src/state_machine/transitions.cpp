@@ -34,9 +34,9 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                    Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
-                    Motors motors_data)
+bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                    Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
+                    Motors &motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
     log.ERR(Messages::kStmLoggingIdentifier, Messages::kStopCommandLog);
@@ -56,6 +56,9 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
   } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
     log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalBatteriesLog);
     return true;
+  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
+    log.ERR(Messages::kStmLoggingIdentifier, Messages::kCriticalSensorsLog);
+    return true;
   }
   return false;
 }
@@ -64,12 +67,10 @@ bool checkEmergency(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_d
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                             Batteries batteries_data, Telemetry telemetry_data,
-                             Sensors sensors_data, Motors motors_data)
+bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                             Batteries &batteries_data, Telemetry &telemetry_data,
+                             Sensors &sensors_data, Motors &motors_data)
 {
-  if (!telemetry_data.calibrate_command) return false;
-
   if (embrakes_data.module_status < ModuleStatus::kInit) return false;
   if (nav_data.module_status < ModuleStatus::kInit) return false;
   if (batteries_data.module_status < ModuleStatus::kInit) return false;
@@ -81,9 +82,9 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes embrakes_data, Navigat
   return true;
 }
 
-bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation nav_data,
-                       Batteries batteries_data, Telemetry telemetry_data, Sensors sensors_data,
-                       Motors motors_data)
+bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                       Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
+                       Motors &motors_data)
 {
   if (embrakes_data.module_status != ModuleStatus::kReady) return false;
   if (nav_data.module_status != ModuleStatus::kReady) return false;
@@ -100,19 +101,24 @@ bool checkModulesReady(Logger &log, EmergencyBrakes embrakes_data, Navigation na
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
-bool checkLaunchCommand(Logger &log, Telemetry telemetry_data)
+bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
 {
-  if (!telemetry_data.launch_command) return false;
+  if (!telemetry_data.calibrate_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kLaunchCommandLog);
   return true;
 }
 
-bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
+bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
+{
+  if (!telemetry_data.launch_command) return false;
+
+  return true;
+}
+
+bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownCommandLog);
   return true;
 }
 
@@ -122,8 +128,8 @@ bool checkShutdownCommand(Logger &log, Telemetry telemetry_data)
 
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
-  data::NavigationType remaining_distance = nav_data.run_length - nav_data.displacement;
-  data::NavigationType required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
+  data::nav_t remaining_distance = nav_data.run_length - nav_data.displacement;
+  data::nav_t required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
   if (remaining_distance > required_distance) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kBrakingZoneLog);

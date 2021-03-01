@@ -29,7 +29,7 @@ FakeStepper::FakeStepper(Logger& log, uint8_t id)
       em_brakes_data_(data_.getEmergencyBrakesData()),
       brake_id_(id),
       is_clamped_(true),
-      fake_button_(true) {}
+      fake_button_(false) {}
 
 void FakeStepper::checkHome()
 {
@@ -45,20 +45,20 @@ void FakeStepper::checkHome()
 void FakeStepper::sendRetract()
 {
   log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
-  fake_button_ = true;
+  fake_button_ = true;  // false = brakes are retracted
   is_clamped_ = false;
 }
 
 void FakeStepper::sendClamp()
 {
-  log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
-  fake_button_ = false;
+  log_.INFO("Fake Stepper", "Sending a engage message to brake %i", brake_id_);
+  fake_button_ = false;  // false = brakes are clamped
   is_clamped_ = true;
 }
 
 void FakeStepper::checkAccFailure()
 {
-  if (!fake_button_) {
+  if (!fake_button_) {  // false = brakes are clamped
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
     em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(em_brakes_data_);
@@ -68,7 +68,7 @@ void FakeStepper::checkAccFailure()
 
 void FakeStepper::checkBrakingFailure()
 {
-  if (fake_button_) {
+  if (fake_button_) {  // true = brakes are retracted
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
     em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(em_brakes_data_);

@@ -67,14 +67,9 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Naviga
 /*
  * @brief    Returns true iff all modules are ready.
  */
-<<<<<<< HEAD
-bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
-                       Motors &motors_data);
-=======
 bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
                        Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                        Motors &motors_data);
->>>>>>> stm-cruising
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands

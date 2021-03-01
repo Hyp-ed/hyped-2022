@@ -177,18 +177,16 @@ const char* Writer::convertStateMachineState(data::State state)
       return "IDLE";
     case data::State::kCalibrating:
       return "CALIBRATING";
-    case data::State::kRunComplete:
-      return "RUN_COMPLETE";
     case data::State::kFinished:
       return "FINISHED";
     case data::State::kReady:
       return "READY";
     case data::State::kAccelerating:
       return "ACCELERATING";
+    case data::State::kCruising:
+      return "CRUISING";
     case data::State::kNominalBraking:
       return "NOMINAL_BRAKING";
-    case data::State::kExiting:
-      return "EXITING";
     default:
       return "";
     }

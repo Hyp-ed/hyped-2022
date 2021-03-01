@@ -66,6 +66,9 @@ struct TransitionFunctionality : public ::testing::Test {
   const std::string all_ready_error               = "Should handle all modules being ready.";
   const std::string brakes_not_ready_error        = "Should handle Brakes not being ready.";
   const std::string nav_not_ready_error           = "Should handle Navigation not being ready.";
+  const std::string batteries_not_ready_error     = "Should handle Batteries not being ready.";
+  const std::string telemetry_not_ready_error     = "Should handle Telemetry not being ready.";
+  const std::string sensors_not_ready_error       = "Should handle Sensors not being ready.";
   const std::string motors_not_ready_error        = "Should handle Motors not being ready.";
   const std::string calibrate_command_error       = "Should handle calibrate command.";
   const std::string launch_command_error          = "Should handle launch command.";
@@ -609,14 +612,21 @@ TEST_F(TransitionFunctionality, handlesAllReady)
 {
   EmergencyBrakes embrakes_data;
   Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
   Motors motors_data;
 
   bool all_ready;
 
-  embrakes_data.module_status = ModuleStatus::kReady;
-  nav_data.module_status      = ModuleStatus::kReady;
-  motors_data.module_status   = ModuleStatus::kReady;
-  all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+  embrakes_data.module_status  = ModuleStatus::kReady;
+  nav_data.module_status       = ModuleStatus::kReady;
+  batteries_data.module_status = ModuleStatus::kReady;
+  telemetry_data.module_status = ModuleStatus::kReady;
+  sensors_data.module_status   = ModuleStatus::kReady;
+  motors_data.module_status    = ModuleStatus::kReady;
+  all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                sensors_data, motors_data);
   ASSERT_EQ(all_ready, true) << all_ready_error;
 }
 
@@ -630,6 +640,9 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
 {
   EmergencyBrakes embrakes_data;
   Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
   Motors motors_data;
 
   ModuleStatus other;
@@ -638,10 +651,14 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
     other = static_cast<ModuleStatus>(i);
     if (other == ModuleStatus::kReady) { continue; }
 
-    embrakes_data.module_status = other;
-    nav_data.module_status      = ModuleStatus::kReady;
-    motors_data.module_status   = ModuleStatus::kReady;
-    all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    embrakes_data.module_status  = other;
+    nav_data.module_status       = ModuleStatus::kReady;
+    batteries_data.module_status = ModuleStatus::kReady;
+    telemetry_data.module_status = ModuleStatus::kReady;
+    sensors_data.module_status   = ModuleStatus::kReady;
+    motors_data.module_status    = ModuleStatus::kReady;
+    all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                  sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << brakes_not_ready_error;
   }
 }
@@ -656,6 +673,9 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
 {
   EmergencyBrakes embrakes_data;
   Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
   Motors motors_data;
 
   ModuleStatus other;
@@ -664,11 +684,113 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
     other = static_cast<ModuleStatus>(i);
     if (other == ModuleStatus::kReady) { continue; }
 
-    embrakes_data.module_status = ModuleStatus::kReady;
-    nav_data.module_status      = other;
-    motors_data.module_status   = ModuleStatus::kReady;
-    all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    embrakes_data.module_status  = ModuleStatus::kReady;
+    nav_data.module_status       = other;
+    batteries_data.module_status = ModuleStatus::kReady;
+    telemetry_data.module_status = ModuleStatus::kReady;
+    sensors_data.module_status   = ModuleStatus::kReady;
+    motors_data.module_status    = ModuleStatus::kReady;
+    all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                  sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << nav_not_ready_error;
+  }
+}
+
+/**
+ * Makes sure that if navigation is in any state that is not kReady,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
+TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_ready;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kReady) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kReady;
+    nav_data.module_status       = ModuleStatus::kReady;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = ModuleStatus::kReady;
+    sensors_data.module_status   = ModuleStatus::kReady;
+    motors_data.module_status    = ModuleStatus::kReady;
+    all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                  sensors_data, motors_data);
+    ASSERT_EQ(all_ready, false) << batteries_not_ready_error;
+  }
+}
+/**
+ * Makes sure that if navigation is in any state that is not kReady,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
+TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_ready;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kReady) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kReady;
+    nav_data.module_status       = ModuleStatus::kReady;
+    batteries_data.module_status = ModuleStatus::kReady;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = ModuleStatus::kReady;
+    motors_data.module_status    = ModuleStatus::kReady;
+    all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                  sensors_data, motors_data);
+    ASSERT_EQ(all_ready, false) << telemetry_not_ready_error;
+  }
+}
+
+/**
+ * Makes sure that if navigation is in any state that is not kReady,
+ * checkModulesReady never returns true.
+ *
+ * Time complexity: O(num_module_statuses) = O(1)
+ */
+TEST_F(TransitionFunctionality, handlesSensorsNotReady)
+{
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  ModuleStatus other;
+  bool all_ready;
+  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+    other = static_cast<ModuleStatus>(i);
+    if (other == ModuleStatus::kReady) { continue; }
+
+    embrakes_data.module_status  = ModuleStatus::kReady;
+    nav_data.module_status       = ModuleStatus::kReady;
+    batteries_data.module_status = ModuleStatus::kReady;
+    telemetry_data.module_status = ModuleStatus::kReady;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = ModuleStatus::kReady;
+    all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                  sensors_data, motors_data);
+    ASSERT_EQ(all_ready, false) << sensors_not_ready_error;
   }
 }
 
@@ -682,6 +804,9 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
 {
   EmergencyBrakes embrakes_data;
   Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
   Motors motors_data;
 
   ModuleStatus other;
@@ -690,10 +815,14 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
     other = static_cast<ModuleStatus>(i);
     if (other == ModuleStatus::kReady) { continue; }
 
-    embrakes_data.module_status = ModuleStatus::kReady;
-    nav_data.module_status      = ModuleStatus::kReady;
-    motors_data.module_status   = other;
-    all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    embrakes_data.module_status  = ModuleStatus::kReady;
+    nav_data.module_status       = ModuleStatus::kReady;
+    batteries_data.module_status = ModuleStatus::kReady;
+    telemetry_data.module_status = ModuleStatus::kReady;
+    sensors_data.module_status   = ModuleStatus::kReady;
+    motors_data.module_status    = other;
+    all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data,
+                                  sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << motors_not_ready_error;
   }
 }

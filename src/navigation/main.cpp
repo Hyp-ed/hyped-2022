@@ -63,9 +63,8 @@ namespace navigation {
            }
 
         case State::kNominalBraking :
+        case State::kCruising :
         case State::kEmergencyBraking :
-        case State::kExiting :
-        case State::kRunComplete :
           nav_.navigate();
           break;
 

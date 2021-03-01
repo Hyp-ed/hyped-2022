@@ -38,13 +38,30 @@ using namespace hyped::state_machine;
  * 4. Utility functions
  */
 struct TransitionFunctionality : public ::testing::Test {
+  // ---- Module Status intervals -----------------------
+
+  // Value of the first module status
+  static constexpr int kFirst = static_cast<int>(ModuleStatus::kCriticalFailure);
+
+  // Value of the first module status that does not indicate an emergency
+  static constexpr int kNoEmergencyFirst = static_cast<int>(ModuleStatus::kStart);
+
+  // Value of the first module status that indicates initialisation
+  static constexpr int kInitFirst = static_cast<int>(ModuleStatus::kInit);
+
+  // Value of the first module status that indicates readiness
+  static constexpr int kReadyFirst = static_cast<int>(ModuleStatus::kReady);
+
+  // Value of the last module status
+  static constexpr int kLast = static_cast<int>(ModuleStatus::kReady);
+
   // TODO(miltfra): Disable printing log messages to stdout/stderr
 
-  // ---- Logger ---------------
+  // ---- Logger ----------------------------------------
 
   hyped::utils::Logger log;
 
-  // ---- Error messages -------
+  // ---- Error messages --------------------------------
 
   const std::string no_emergency_error           = "Should handle no emergency.";
   const std::string brake_emergency_error        = "Should handle emergency in Embrakes.";
@@ -119,7 +136,7 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -152,7 +169,7 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = ModuleStatus::kCriticalFailure;
@@ -185,7 +202,7 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -218,7 +235,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -251,7 +268,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -284,7 +301,7 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -317,7 +334,7 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -350,7 +367,7 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
 
   ModuleStatus other;
   bool has_emergency;
-  for (int i = 0; static_cast<ModuleStatus>(i) != ModuleStatus::kCriticalFailure; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
     other                                 = static_cast<ModuleStatus>(i);
     embrakes_data.module_status           = other;
@@ -386,16 +403,19 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
   Motors motors_data;
 
   bool all_initialised;
-
-  embrakes_data.module_status  = ModuleStatus::kInit;
-  nav_data.module_status       = ModuleStatus::kInit;
-  batteries_data.module_status = ModuleStatus::kInit;
-  telemetry_data.module_status = ModuleStatus::kInit;
-  sensors_data.module_status   = ModuleStatus::kInit;
-  motors_data.module_status    = ModuleStatus::kInit;
-  all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                            telemetry_data, sensors_data, motors_data);
-  ASSERT_EQ(all_initialised, true) << all_initialised_error;
+  ModuleStatus goal;
+  for (int i = kInitFirst; i <= kLast; i++) {
+    goal                         = static_cast<ModuleStatus>(i);
+    embrakes_data.module_status  = goal;
+    nav_data.module_status       = goal;
+    batteries_data.module_status = goal;
+    telemetry_data.module_status = goal;
+    sensors_data.module_status   = goal;
+    motors_data.module_status    = goal;
+    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                              telemetry_data, sensors_data, motors_data);
+    ASSERT_EQ(all_initialised, true) << all_initialised_error;
+  }
 }
 
 /**
@@ -413,22 +433,23 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
   Sensors sensors_data;
   Motors motors_data;
 
-  ModuleStatus other;
+  ModuleStatus goal, other;
   bool all_initialised;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
-    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+  for (int i = kFirst; i < kInitFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kInit) { continue; }
 
-    embrakes_data.module_status  = other;
-    nav_data.module_status       = ModuleStatus::kInit;
-    batteries_data.module_status = ModuleStatus::kInit;
-    telemetry_data.module_status = ModuleStatus::kInit;
-    sensors_data.module_status   = ModuleStatus::kInit;
-    motors_data.module_status    = ModuleStatus::kInit;
-    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                              telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(all_initialised, false) << brakes_not_initialised_error;
+    for (int j = kInitFirst; j <= kLast; j++) {
+      goal                         = static_cast<ModuleStatus>(j);
+      embrakes_data.module_status  = other;
+      nav_data.module_status       = goal;
+      batteries_data.module_status = goal;
+      telemetry_data.module_status = goal;
+      sensors_data.module_status   = goal;
+      motors_data.module_status    = goal;
+      all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                telemetry_data, sensors_data, motors_data);
+      ASSERT_EQ(all_initialised, false) << brakes_not_initialised_error;
+    }
   }
 }
 
@@ -447,22 +468,23 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
   Sensors sensors_data;
   Motors motors_data;
 
-  ModuleStatus other;
+  ModuleStatus goal, other;
   bool all_initialised;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
-    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+  for (int i = kFirst; i < kInitFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kInit) { continue; }
 
-    embrakes_data.module_status  = ModuleStatus::kInit;
-    nav_data.module_status       = other;
-    batteries_data.module_status = ModuleStatus::kInit;
-    telemetry_data.module_status = ModuleStatus::kInit;
-    sensors_data.module_status   = ModuleStatus::kInit;
-    motors_data.module_status    = ModuleStatus::kInit;
-    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                              telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(all_initialised, false) << nav_not_initialised_error;
+    for (int j = kInitFirst; j <= kLast; j++) {
+      goal                         = static_cast<ModuleStatus>(j);
+      embrakes_data.module_status  = goal;
+      nav_data.module_status       = other;
+      batteries_data.module_status = goal;
+      telemetry_data.module_status = goal;
+      sensors_data.module_status   = goal;
+      motors_data.module_status    = goal;
+      all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                telemetry_data, sensors_data, motors_data);
+      ASSERT_EQ(all_initialised, false) << nav_not_initialised_error;
+    }
   }
 }
 
@@ -481,22 +503,24 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
   Sensors sensors_data;
   Motors motors_data;
 
-  ModuleStatus other;
+  ModuleStatus goal, other;
   bool all_initialised;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
-    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+  for (int i = kFirst; i < kInitFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kInit) { continue; }
 
-    embrakes_data.module_status  = ModuleStatus::kInit;
-    nav_data.module_status       = ModuleStatus::kInit;
-    batteries_data.module_status = other;
-    telemetry_data.module_status = ModuleStatus::kInit;
-    sensors_data.module_status   = ModuleStatus::kInit;
-    motors_data.module_status    = ModuleStatus::kInit;
-    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                              telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(all_initialised, false) << batteries_not_initialised_error;
+    for (int j = kInitFirst; j <= kLast; j++) {
+      goal = static_cast<ModuleStatus>(j);
+
+      embrakes_data.module_status  = goal;
+      nav_data.module_status       = goal;
+      batteries_data.module_status = other;
+      telemetry_data.module_status = goal;
+      sensors_data.module_status   = goal;
+      motors_data.module_status    = goal;
+      all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                telemetry_data, sensors_data, motors_data);
+      ASSERT_EQ(all_initialised, false) << batteries_not_initialised_error;
+    }
   }
 }
 
@@ -515,22 +539,24 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
   Sensors sensors_data;
   Motors motors_data;
 
-  ModuleStatus other;
+  ModuleStatus goal, other;
   bool all_initialised;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
-    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+  for (int i = kFirst; i < kInitFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kInit) { continue; }
 
-    embrakes_data.module_status  = ModuleStatus::kInit;
-    nav_data.module_status       = ModuleStatus::kInit;
-    batteries_data.module_status = ModuleStatus::kInit;
-    telemetry_data.module_status = other;
-    sensors_data.module_status   = ModuleStatus::kInit;
-    motors_data.module_status    = ModuleStatus::kInit;
-    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                              telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(all_initialised, false) << telemetry_not_initialised_error;
+    for (int j = kInitFirst; j <= kLast; j++) {
+      goal = static_cast<ModuleStatus>(j);
+
+      embrakes_data.module_status  = goal;
+      nav_data.module_status       = goal;
+      batteries_data.module_status = goal;
+      telemetry_data.module_status = other;
+      sensors_data.module_status   = goal;
+      motors_data.module_status    = goal;
+      all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                telemetry_data, sensors_data, motors_data);
+      ASSERT_EQ(all_initialised, false) << telemetry_not_initialised_error;
+    }
   }
 }
 
@@ -549,22 +575,24 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
   Sensors sensors_data;
   Motors motors_data;
 
-  ModuleStatus other;
+  ModuleStatus goal, other;
   bool all_initialised;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
-    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+  for (int i = kFirst; i < kInitFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kInit) { continue; }
 
-    embrakes_data.module_status  = ModuleStatus::kInit;
-    nav_data.module_status       = ModuleStatus::kInit;
-    batteries_data.module_status = ModuleStatus::kInit;
-    telemetry_data.module_status = ModuleStatus::kInit;
-    sensors_data.module_status   = other;
-    motors_data.module_status    = ModuleStatus::kInit;
-    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                              telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(all_initialised, false) << sensors_not_initialised_error;
+    for (int j = kInitFirst; j <= kLast; j++) {
+      goal = static_cast<ModuleStatus>(j);
+
+      embrakes_data.module_status  = goal;
+      nav_data.module_status       = goal;
+      batteries_data.module_status = goal;
+      telemetry_data.module_status = goal;
+      sensors_data.module_status   = other;
+      motors_data.module_status    = goal;
+      all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                telemetry_data, sensors_data, motors_data);
+      ASSERT_EQ(all_initialised, false) << sensors_not_initialised_error;
+    }
   }
 }
 
@@ -583,22 +611,24 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
   Sensors sensors_data;
   Motors motors_data;
 
-  ModuleStatus other;
+  ModuleStatus goal, other;
   bool all_initialised;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
-    // Making sure checkModulesInitialised is unaffected by actual non-init state.
+  for (int i = kFirst; i < kInitFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kInit) { continue; }
 
-    embrakes_data.module_status  = ModuleStatus::kInit;
-    nav_data.module_status       = ModuleStatus::kInit;
-    batteries_data.module_status = ModuleStatus::kInit;
-    telemetry_data.module_status = ModuleStatus::kInit;
-    sensors_data.module_status   = ModuleStatus::kInit;
-    motors_data.module_status    = other;
-    all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                              telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(all_initialised, false) << motors_not_initialised_error;
+    for (int j = kInitFirst; j <= kLast; j++) {
+      goal = static_cast<ModuleStatus>(j);
+
+      embrakes_data.module_status  = goal;
+      nav_data.module_status       = goal;
+      batteries_data.module_status = goal;
+      telemetry_data.module_status = goal;
+      sensors_data.module_status   = goal;
+      motors_data.module_status    = other;
+      all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                telemetry_data, sensors_data, motors_data);
+      ASSERT_EQ(all_initialised, false) << motors_not_initialised_error;
+    }
   }
 }
 
@@ -647,9 +677,8 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
 
   ModuleStatus other;
   bool all_ready;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+  for (int i = kFirst; i < kReadyFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kReady) { continue; }
 
     embrakes_data.module_status  = other;
     nav_data.module_status       = ModuleStatus::kReady;
@@ -680,9 +709,8 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
 
   ModuleStatus other;
   bool all_ready;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+  for (int i = kFirst; i < kReadyFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kReady) { continue; }
 
     embrakes_data.module_status  = ModuleStatus::kReady;
     nav_data.module_status       = other;
@@ -713,9 +741,8 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
 
   ModuleStatus other;
   bool all_ready;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+  for (int i = kFirst; i < kReadyFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kReady) { continue; }
 
     embrakes_data.module_status  = ModuleStatus::kReady;
     nav_data.module_status       = ModuleStatus::kReady;
@@ -745,9 +772,8 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
 
   ModuleStatus other;
   bool all_ready;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+  for (int i = kFirst; i < kReadyFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kReady) { continue; }
 
     embrakes_data.module_status  = ModuleStatus::kReady;
     nav_data.module_status       = ModuleStatus::kReady;
@@ -778,9 +804,8 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
 
   ModuleStatus other;
   bool all_ready;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+  for (int i = kFirst; i < kReadyFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kReady) { continue; }
 
     embrakes_data.module_status  = ModuleStatus::kReady;
     nav_data.module_status       = ModuleStatus::kReady;
@@ -811,9 +836,8 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
 
   ModuleStatus other;
   bool all_ready;
-  for (int i = 0; i != static_cast<int>(ModuleStatus::kCriticalFailure) + 1; i++) {
+  for (int i = kFirst; i < kReadyFirst; i++) {
     other = static_cast<ModuleStatus>(i);
-    if (other == ModuleStatus::kReady) { continue; }
 
     embrakes_data.module_status  = ModuleStatus::kReady;
     nav_data.module_status       = ModuleStatus::kReady;

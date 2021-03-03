@@ -45,13 +45,19 @@ STATIC_ENABLE=
 
 .PHONY: test
 test: $(T_TARGET)
-	$(Verb) ./$< --gtest_filter=-*_noci
-
-test-all: $(T_TARGET)
 	$(Verb) ./$<
 
+.PHONY: test-essential
+test-essential: $(T_TARGET)
+	$(Verb) ./$< --gtest_filter=-*_prod
+
+.PHONY: test-filter
 test-filter: $(T_TARGET)
 	$(Verb) ./$< --gtest_filter=$(GTEST_FILTERS)
+
+.PHONY: test-production
+test-production: $(T_TARGET)
+	$(Verb) ./$< --gtest_filter=*_prod
 
 coverage: test
 	$(Verb) ./test/utils/get_code_cov.sh

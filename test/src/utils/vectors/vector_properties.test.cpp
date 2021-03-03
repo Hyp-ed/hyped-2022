@@ -27,6 +27,10 @@ namespace utils
 namespace math
 {
 
+  /**
+ * @brief Helper method used to generate an array of three random integers.
+ * each integer will be in the range -1000, 1000 (not inclusive)
+ */
 std::array<int, 3> createRandomArrayForProperties()
 {
   std::srand(time(0));
@@ -37,6 +41,11 @@ std::array<int, 3> createRandomArrayForProperties()
   return output;
 }
 
+/**
+ * @brief Helper method used to generate an array of three random integers.
+ * Also none of those Integers will be zero.
+ * each integer will be in the range -1000, 1000 (not inclusive)
+ */
 std::array<int, 3> RandomNonZeroArrayForProperties()
 {
   std::array<int, 3> output = std::array<int, 3>();

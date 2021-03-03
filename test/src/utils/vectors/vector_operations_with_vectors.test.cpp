@@ -27,6 +27,7 @@ namespace utils
 {
 namespace math
 {
+
   /**
  * @brief Helper method used to generate an array of three random integers.
  * each integer will be in the range -1000, 1000 (not inclusive)
@@ -40,6 +41,7 @@ std::array<int, 3> createRandomArrayForOperations()
   }
   return output;
 }
+
 /**
  * @brief Helper method used to generate an array of three random integers.
  * Also none of those Integers will be zero.

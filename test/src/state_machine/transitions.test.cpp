@@ -16,6 +16,7 @@
  *    limitations under the License.
  */
 
+#include <fcntl.h>
 #include <stdlib.h>
 
 #include <string>
@@ -43,6 +44,8 @@ struct TransitionFunctionality : public ::testing::Test {
   // ---- Logger ---------------
 
   hyped::utils::Logger log;
+  int stdout_f;
+  int tmp_stdout_f;
 
   // ---- Error messages -------
 
@@ -85,8 +88,21 @@ struct TransitionFunctionality : public ::testing::Test {
   int randomInRange(int, int);
 
  protected:
-  void SetUp() {}
-  void TearDown() {}
+  void SetUp()
+  {
+    fflush(stdout);
+    stdout_f     = dup(1);
+    tmp_stdout_f = open("/dev/null", O_WRONLY);
+    dup2(tmp_stdout_f, 1);
+    close(tmp_stdout_f);
+  }
+
+  void TearDown()
+  {
+    fflush(stdout);
+    dup2(stdout_f, 1);
+    close(stdout_f);
+  }
 };
 
 int TransitionFunctionality::randomInRange(int min, int max)

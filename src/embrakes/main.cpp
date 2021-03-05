@@ -105,6 +105,7 @@ void Main::run()
         f_brake_->checkAccFailure();
         break;
       case data::State::kAccelerating:
+      case data::State::kCruising:
         m_brake_->checkAccFailure();
         f_brake_->checkAccFailure();
         break;

@@ -79,40 +79,45 @@ void GpioManager::run()
     data::State state = data_.getStateMachineData().current_state;
 
     // kStart and kInit default clear from constructor
-    switch (battery_status) {
-      case data::ModuleStatus::kCriticalFailure:
-        if (battery_status != previous_battery_status_) {
+    if (battery_status != previous_battery_status_) {
+      switch (battery_status) {
+        case data::ModuleStatus::kCriticalFailure:
           clearHP();
           log_.ERR("GPIO-MANAGER", "Battery Failure! HP SSR cleared");
-        }
-      case data::ModuleStatus::kReady:
-        if (battery_status != previous_battery_status_) {
+        case data::ModuleStatus::kReady:
           setHP();
           log_.ERR("GPIO-MANAGER", "Module Status kReady! HP SSR set");
-        }
+        default: // default case to indicate non-action explicitly
+          break;
+      }
     }
 
-    switch (state) {
-      case data::State::kEmergencyBraking:
-        if (state != previous_state_) {
+    if (state != previous_state_) {
+      switch (state) {
+        case data::State::kIdle:
+        case data::State::kAccelerating:
+        case data::State::kCruising:
+        case data::State::kNominalBraking:
+          break;
+        case data::State::kEmergencyBraking:
+        case data::State::kFailureStopped:
           clearHP();
           log_.ERR("GPIO-MANAGER", "Emergency State! HP SSR cleared");
-        }
-      case data::State::kFailureStopped:
-        if (state != previous_state_) {
-          clearHP();
-          log_.ERR("GPIO-MANAGER", "Emergency State! HP SSR cleared");
-        }
-      case data::State::kFinished:
-        if (state != previous_state_) {
+        case data::State::kFinished:
           clearHP();
           log_.INFO("GPIO-MANAGER", "kFinished reached...HP off");
-        }
-      case data::State::kReady:
-        if (state != previous_state_) {
+        case data::State::kReady:
           setHP();
           log_.INFO("GPIO-MANAGER", "kReady...HP SSR set and HP on");
-        }
+        default:      // undefied behaviour, e.g. kInvalid
+          clearHP();  // shutting down HP asap
+          log_.ERR("GPIO-MANAGER", "Unknown State! HP SSR cleared, shutting down!");
+          
+          // signalling failure to get out of undefied behaviour
+          data::Batteries batteries_data = data_.getBatteriesData();
+          batteries_data.module_status = data::ModuleStatus::kCriticalFailure;
+          data_.setBatteriesData(batteries_data);
+      }
     }
     previous_battery_status_ = battery_status;
     previous_state_ = state;

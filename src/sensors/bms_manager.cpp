@@ -97,6 +97,8 @@ bool BmsManager::checkIMD()
 void BmsManager::run()
 {
   while (sys_.running_) {
+    batteries_ = data_.getBatteriesData();
+
     // keep updating data_ based on values read from sensors
     for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
       bms_[i]->getData(&batteries_.low_power_batteries[i]);
@@ -109,7 +111,6 @@ void BmsManager::run()
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
-    /*  THIS HAS TO WORK LATER pls
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
       // check health of batteries
       if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
@@ -121,7 +122,6 @@ void BmsManager::run()
         previous_status_ = batteries_.module_status;
       }
     }
-    */
 
     // publish the new data
     data_.setBatteriesData(batteries_);

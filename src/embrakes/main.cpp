@@ -44,6 +44,11 @@ Main::Main(uint8_t id, Logger &log)
 
 void Main::run()
 {
+  // Setting module status for STM transition
+  em_brakes_ = data_.getEmergencyBrakesData();
+  em_brakes_.module_status = ModuleStatus::kInit;
+  data_.setEmergencyBrakesData(em_brakes_);
+
   log_.INFO("Brakes", "Thread started");
 
   System &sys = System::getSystem();

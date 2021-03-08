@@ -76,7 +76,7 @@ BmsManager::BmsManager(Logger& log)
 
   // kInit for SM transition
   batteries_ = data_.getBatteriesData();
-  batteries_.module_status = data::ModuleStatus::kInit;
+  batteries_.module_status = data::ModuleStatus::kReady;
   data_.setBatteriesData(batteries_);
   Thread::yield();
   start_time_ = utils::Timer::getTimeMicros();

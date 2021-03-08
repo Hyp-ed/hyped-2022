@@ -166,9 +166,7 @@ enum State {
   kCruising,
   kNominalBraking,
   kEmergencyBraking,
-  kRunComplete,
   kFailureStopped,
-  kExiting,
   kFinished,
   kInvalid,
   num_states

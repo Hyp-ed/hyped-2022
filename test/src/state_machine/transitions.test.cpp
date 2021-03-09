@@ -761,13 +761,14 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
   constexpr int min_displacement     = 0;
   constexpr int min_braking_distance = 0;
   constexpr int max_braking_distance
-    = static_cast<int>(nav_data.run_length - nav_data.braking_buffer);
+    = static_cast<int>(Navigation::kRunLength - Navigation::kBrakingBuffer);
 
   std::vector<nav_t> displacements, braking_distances;
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.braking_distance
       = static_cast<nav_t>(randomInRange(min_braking_distance, max_braking_distance));
-    max_displacement = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
+    max_displacement
+      = Navigation::kRunLength - Navigation::kBrakingBuffer - nav_data.braking_distance;
     nav_data.displacement = static_cast<nav_t>(randomInRange(min_displacement, max_displacement));
     nav_data.velocity     = static_cast<nav_t>(rand());
     nav_data.acceleration = nav_data.velocity;
@@ -789,14 +790,15 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
   Navigation nav_data;
   int min_displacement;
 
-  constexpr int max_displacement     = nav_data.run_length * 2;
+  constexpr int max_displacement     = Navigation::kRunLength * 2;
   constexpr int min_braking_distance = 0;
-  constexpr int max_braking_distance = nav_data.run_length;
+  constexpr int max_braking_distance = Navigation::kRunLength;
 
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.braking_distance
       = static_cast<nav_t>(randomInRange(min_braking_distance, max_braking_distance));
-    min_displacement = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
+    min_displacement
+      = Navigation::kRunLength - Navigation::kBrakingBuffer - nav_data.braking_distance;
     nav_data.displacement = static_cast<nav_t>(randomInRange(min_displacement, max_displacement));
     nav_data.velocity     = static_cast<nav_t>(rand());
     nav_data.acceleration = static_cast<nav_t>(rand());
@@ -821,14 +823,14 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
   nav_t critical_displacement;
 
   constexpr int min_braking_distance = 0;
-  constexpr int max_braking_distance = nav_data.run_length;
+  constexpr int max_braking_distance = Navigation::kRunLength;
   constexpr nav_t step_size          = 1.0 / static_cast<nav_t>(TEST_SIZE);
 
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.braking_distance
       = static_cast<nav_t>(randomInRange(min_braking_distance, max_braking_distance));
     critical_displacement
-      = nav_data.run_length - nav_data.braking_buffer - nav_data.braking_distance;
+      = Navigation::kRunLength - Navigation::kBrakingBuffer - nav_data.braking_distance;
 
     for (int j = 0; j < TEST_SIZE; j++) {
       nav_data.displacement = critical_displacement - 0.5 + step_size * static_cast<nav_t>(j);
@@ -858,13 +860,13 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
   nav_t critical_braking_distance;
 
   constexpr int min_displacement = 0;
-  constexpr int max_displacement = nav_data.run_length - nav_data.braking_buffer - 1;
+  constexpr int max_displacement = Navigation::kRunLength - Navigation::kBrakingBuffer - 1;
   constexpr nav_t step_size      = 1.0 / static_cast<nav_t>(TEST_SIZE);
 
   for (int i = 0; i < TEST_SIZE; i++) {
     nav_data.displacement = static_cast<nav_t>(randomInRange(min_displacement, max_displacement));
     critical_braking_distance
-      = nav_data.run_length - nav_data.braking_buffer - nav_data.displacement;
+      = Navigation::kRunLength - Navigation::kBrakingBuffer - nav_data.displacement;
 
     for (int j = 0; j < TEST_SIZE; j++) {
       nav_data.braking_distance

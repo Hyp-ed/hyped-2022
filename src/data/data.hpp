@@ -58,13 +58,13 @@ struct Module {
 typedef float nav_t;
 typedef Vector<nav_t, 3> NavigationVector;
 struct Navigation : public Module {
-  static constexpr float run_length = 1250;  // m
-  static constexpr float braking_buffer = 20;  // m
-  nav_t  displacement;  // m
-  nav_t  velocity;  // m/s
-  nav_t  acceleration;  // m/s^2
-  nav_t  emergency_braking_distance;
-  nav_t  braking_distance = 750;  // m
+  static constexpr nav_t kRunLength     = 1250.0;  // m
+  static constexpr nav_t kBrakingBuffer = 20.0;    // m
+  nav_t  displacement;                             // m
+  nav_t  velocity;                                 // m/s
+  nav_t  acceleration;                             // m/s^2
+  nav_t  emergency_braking_distance;               // m
+  nav_t  braking_distance = 750;                   // m
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ struct Batteries : public Module {
 };
 
 struct EmergencyBrakes : public Module {
-  static constexpr int brake_command_wait_time = 1000;    // milliseconds
+  static constexpr int kBrakeCommandWaitTime   = 1000;    // milliseconds
   static constexpr int kNumEmbrakes            = 2;
   bool brakes_retracted[kNumEmbrakes]          = {false};  // true if brakes retract
 };

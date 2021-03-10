@@ -4,7 +4,6 @@ T_CFLAGS  := $(CFLAGS)
 T_LFLAGS  := $(LFLAGS)
 T_INC_DIR := $(INC_DIR)
 T_TARGET  := $(TEST_DIR)/testrunner
-T_MAIN    := main.test.cpp
 T_OBJ_DIR := $(OBJS_DIR)/$(TEST_DIR)
 T_SRC_DIR := $(TEST_DIR)/$(SRCS_DIR)
 

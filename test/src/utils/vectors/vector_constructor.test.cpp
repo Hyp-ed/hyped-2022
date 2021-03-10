@@ -104,16 +104,16 @@ TEST(ConstructorTest, handlesListConstructor)
 TEST(ConstructorTest, handlesDifferentTypeVector)
 {
   const int dimension = 3;
+
   std::array<float, dimension> array_one =std::array<float, dimension>();
   array_one.fill(10.1);
   Vector<float, dimension> vector_one = Vector<float, dimension>(array_one);
   std::array<int, dimension> array_two =std::array<int, dimension>();
   array_two.fill(static_cast<int>(10.1));
   Vector<int, dimension> vector_two = Vector<int, dimension>(vector_one);
+
   for (int i = 0;i < dimension;i++) {
     ASSERT_EQ(array_two[i], vector_two[i]);
   }
 }
-}
-}
-}
+}}}  // hyped::utils::math

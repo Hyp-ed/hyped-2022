@@ -33,7 +33,6 @@ namespace math
  */
 std::array<int, 3> createRandomArrayForProperties()
 {
-  std::srand(time(0));
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
     output[i] = rand()%1000;
@@ -74,6 +73,7 @@ struct VectorAssociativity : public::testing::Test
   Vector<int, 3> vector_result_two;
   void SetUp()
   {
+    std::srand(time(0));
     vector_one = Vector<int, 3>(createRandomArrayForProperties());
     vector_two = Vector<int, 3>(createRandomArrayForProperties());
     vector_three = Vector<int, 3>(createRandomArrayForProperties());
@@ -154,6 +154,7 @@ struct VectorCommutativity : public ::testing::Test
   Vector<int, 3> vector_result_two;
   void SetUp()
   {
+    std::srand(time(0));
     vector_one = Vector<int, 3>(createRandomArrayForProperties());
     vector_two = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
@@ -245,16 +246,19 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
  */
 struct VectorIdentityOperations : public ::testing::Test
 {
-  std::array<int, 3> values = createRandomArrayForProperties();
+  std::array<int, 3> values;
   const int dimension = 3;
   Vector<int, 3> identity_vector;
   Vector<int, 3> vector;
   void SetUp()
   {
+    std::srand(time(0));
+    values = createRandomArrayForProperties();
     identity_vector = Vector<int, 3>();
     vector = Vector<int, 3>(values);
   }
 };
+
 /**
  * @brief Test used to check if adding the identity vector (0,0,0) using += just leaves the vector
  * unchanged.
@@ -445,6 +449,4 @@ TEST_F(VectorIdentityOperations, handlesNormIdentities)
   norm = identity_vector.norm();
   ASSERT_EQ(norm, std::sqrt(3));
 }
-}
-}
-}
+}}}  // hyped::utils::math

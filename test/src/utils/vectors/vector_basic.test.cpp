@@ -35,7 +35,6 @@ namespace math
  */
 std::array<int, 3> createRandomArrayForBasic()
 {
-  std::srand(time(0));
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
     output[i] = rand()%1000;
@@ -60,12 +59,10 @@ struct OperationsByConstant : public::testing::Test
   int kValue = rand()%1000;
   void SetUp()
   {
-    vector_one = Vector<int, 3>(createRandomArrayForBasic
-  ());
-    vector_two = Vector<int, 3>(createRandomArrayForBasic
-  ());
-    vector_three = Vector<int, 3>(createRandomArrayForBasic
-  ());
+    std::srand(time(0));
+    vector_one = Vector<int, 3>(createRandomArrayForBasic());
+    vector_two = Vector<int, 3>(createRandomArrayForBasic());
+    vector_three = Vector<int, 3>(createRandomArrayForBasic());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
@@ -135,6 +132,7 @@ TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in normal way (multiplying the constant with each element),
@@ -154,6 +152,7 @@ TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
     ASSERT_EQ(vector_result_two[i], vector_one[i] * kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in place (updating the initial vector)
@@ -174,6 +173,7 @@ TEST_F(OperationsByConstant, handlesMultiplicationWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in normal way (dividing each element by the constant),
@@ -196,6 +196,7 @@ TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in place (updating the initial vector)
@@ -220,6 +221,4 @@ TEST_F(OperationsByConstant, handlesDivisionWithConstant)
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
   }
 }
-}
-}
-}
+}}}  // hyped::utils::math

@@ -71,7 +71,6 @@ bool compare_float_one_decimal(float elem1, float elem2, float epsilon = 0.1f)
 */
 float RandomFloatTestingVector(float lower, float upper)
 {
-  std::srand(time(0));
   float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
   float diff = upper - lower;
   float r = random * diff;
@@ -123,17 +122,18 @@ struct VectorFloatTests : public ::testing::Test
 
     void SetUp()
     {
-       // Construct two vectors with random elements and their corresponding unit vectors
-        for (int i = 0; i < dimension; i++) {
-           elements1[i] = RandomFloatTestingVector(0, 1000);
-        }
-        test_vector1_float =  Vector<float, 100>(elements1);
+      std::srand(time(0));
+      // Construct two vectors with random elements and their corresponding unit vectors
+      for (int i = 0; i < dimension; i++) {
+         elements1[i] = RandomFloatTestingVector(0, 1000);
+      }
+      test_vector1_float =  Vector<float, 100>(elements1);
 
-        for (int i = 0; i < dimension; i++) {
-           elements2[i] = RandomFloatTestingVector(0, 1000);
-        }
-        test_vector2_float =  Vector<float, 100>(elements2);
-        unit_vector2 = test_vector1_float.toUnitVector();
+      for (int i = 0; i < dimension; i++) {
+         elements2[i] = RandomFloatTestingVector(0, 1000);
+      }
+      test_vector2_float =  Vector<float, 100>(elements2);
+      unit_vector2 = test_vector1_float.toUnitVector();
     }
 
   void TearDown() {}
@@ -148,7 +148,6 @@ struct VectorFloatTests : public ::testing::Test
 */
 TEST_F(VectorFloatTests, handlesNoArgumentConstructor)
 {
-    std::srand(time(0));
     ASSERT_EQ(0, test_vector_default.norm());
     int ran_index = rand() % 100;
     ASSERT_EQ(0, test_vector_default.operator[](ran_index));
@@ -171,7 +170,6 @@ TEST_F(VectorFloatTests, handlesNoArgumentConstructor)
 */
 TEST_F(VectorFloatTests, handlesConstantConstructor)
 {
-    std::srand(time(0));
     test_vector_constant = Vector<float, 100>(constant);
     int ran_index = rand() % 100;
     ASSERT_EQ(constant, test_vector_constant.operator[](ran_index));

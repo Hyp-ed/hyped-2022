@@ -67,6 +67,7 @@ struct OperationsByConstant : public::testing::Test
     vector_result_two = Vector<int, 3>();
   }
 };
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows adding in
  * a vector with a constant in normal way (adding the constant to each element),
@@ -82,6 +83,7 @@ TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
     ASSERT_EQ(vector_result_two[i], vector_one[i] + kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows adding
  * a vector with a constant in place (updating the initial vector) in a normal way
@@ -99,6 +101,7 @@ TEST_F(OperationsByConstant, handlesAdditionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * substracting a constant to a vector in normal way (substracting the constant to each element),
@@ -114,6 +117,7 @@ TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
     ASSERT_EQ(vector_result_two[i], -vector_one[i] + kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * substracting a constant to a vector in place (updating the initial vector)

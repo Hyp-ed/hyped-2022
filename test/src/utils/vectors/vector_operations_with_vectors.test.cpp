@@ -270,7 +270,6 @@ struct EqualityOperation: public :: testing::Test
  * It checks that a vetor minus the identity is equal to the original vector.
  * It also checks that if we substract the vector to itself the the result is equal to the identity.
  */
-
 TEST_F(EqualityOperation, handlesEqualityIdentity)
 {
   Vector<int, 3> identiy = Vector<int, 3>();

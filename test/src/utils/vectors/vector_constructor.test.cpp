@@ -25,6 +25,7 @@ namespace utils
 {
 namespace math
 {
+
 /**
  * @brief Test used to verify that the current implementation of the class vector handles the zero
  * argument constructor in an appropiate way.
@@ -38,6 +39,7 @@ TEST(ConstructorTest, handlesZeroArgumentConstructor)
     ASSERT_EQ(0, example[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
  * constructor of the form Vector<T,dimension>(T const), this should initialized all the values of
@@ -50,6 +52,7 @@ TEST(ConstructorTest, handlesConstantConstructor)
   Vector<int, dimension> example = Vector<int, dimension>(element);
   ASSERT_EQ(element*std::pow(dimension, 0.5), example.norm());
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
  * constructor of the form Vector<T,dimension>(std::array<T,dimension> array),
@@ -65,6 +68,7 @@ TEST(ConstructorTest, handlesArrayContructor)
     ASSERT_EQ(array[i], vector[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
  * constructor of the form Vector<T,dimension>(std::array<T,dimension> array). In this case the
@@ -81,6 +85,7 @@ TEST(ConstructorTest, handlesArrayContructorEmptyListTest)
     ASSERT_EQ(0, vector[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
  * constructor of the form Vector<T,dimension>(std::array<T> list),
@@ -95,6 +100,7 @@ TEST(ConstructorTest, handlesListConstructor)
     ASSERT_EQ(*(list.begin()+i), vector[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
  * constructor of the form Vector<T,dimension>(Vector<I,dimension> vector),

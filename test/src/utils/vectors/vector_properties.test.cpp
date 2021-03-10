@@ -81,6 +81,7 @@ struct VectorAssociativity : public::testing::Test
     vector_result_two = Vector<int, 3>();
   }
 };
+
 /**
  * @brief Test used to check if the operator (+=) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
@@ -98,6 +99,7 @@ TEST_F(VectorAssociativity, isAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (+) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
@@ -110,6 +112,7 @@ TEST_F(VectorAssociativity, isAutoAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*=) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
@@ -126,6 +129,7 @@ TEST_F(VectorAssociativity, isMultiplicationAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
@@ -138,6 +142,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Struct used to set up all the variables used in the tests for checking if
  * one property is resent in some of the operations defined for vectors
@@ -161,6 +166,7 @@ struct VectorCommutativity : public ::testing::Test
     vector_result_two = Vector<int, 3>();
   }
 };
+
 /**
  * @brief Test used to check if the operator (+=) is commutative given two random 3D vectors.
  * a + b = b + a.
@@ -175,6 +181,7 @@ TEST_F(VectorCommutativity, isAdditionCommutative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (+) is commutative given two random 3D vectors.
  * a + b = b + a.
@@ -187,6 +194,7 @@ TEST_F(VectorCommutativity, isAutoAdditionCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*=) is commutative given two random 3D vectors.
  * a * b = b * a.
@@ -201,6 +209,7 @@ TEST_F(VectorCommutativity, isMultiplicationCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*) is commutative given two random 3D vectors.
  * a * b = b * a.
@@ -213,6 +222,7 @@ TEST_F(VectorCommutativity, isAutoMultiplicationCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (-=) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
@@ -227,6 +237,7 @@ TEST_F(VectorCommutativity, isSubstractionNotCommutative)
     ASSERT_EQ(vector_result_two[i], -vector_result_one[i]);
   }
 }
+
 /**
  * Test used to check if the operator (-) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
@@ -239,6 +250,7 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
   ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
+
 /**
  * @brief Struct used to set up all the variables used in the tests for checking if
  * some porperties with the identity vectors (0,0,0) or (1,1,1) hold for the operations defined for
@@ -270,6 +282,7 @@ TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+
 /**
  * @brief Test used to check if adding the identity vector (0,0,0) using + just returns the vector
  * unchanged.
@@ -281,6 +294,7 @@ TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
     ASSERT_EQ(vector[i], output[i]);
   }
 }
+
 /**
  * @brief Test used to check if substracting the identity vector (0,0,0) using -=
  * just leaves the vector unchanged.
@@ -298,6 +312,7 @@ TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
+
 /**
  * @brief Test used to check if substracting the identity vector (0,0,0) using -
  * just returns the vector unchanged.
@@ -314,6 +329,7 @@ TEST_F(VectorIdentityOperations, handlesAutoSubstractionIdentities)
     ASSERT_EQ(output[i], identity_vector[i]);
   }
 }
+
 /**
  * @brief Test used to check if multiplying the vector with the identity vector (0,0,0) using *=
  * just it changes the vector to the the identity vector.
@@ -333,6 +349,7 @@ TEST_F(VectorIdentityOperations, handlesMultiplicationIdentities)
     ASSERT_EQ(vector[i], 0);
   }
 }
+
 /**
  * @brief Test used to check if multiplying the vector with the identity vector (0,0,0) using *
  * just returns identity vector.
@@ -352,6 +369,7 @@ TEST_F(VectorIdentityOperations, handlesAutoMultiplicationIdentities)
     ASSERT_EQ(output[i], 0);
   }
 }
+
 /**
  * @brief Test used to check if changing the sign of the identity vector (0,0,0) using -
  * just leave the vector unchanged identity vector.
@@ -369,6 +387,7 @@ TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
     ASSERT_EQ(identity_vector[i], vector_two[i] + vector[i]);
   }
 }
+
 /**
  * @brief Test used to check divide the identity vector (0,0,0) by any vector using /
  * we get the identity back.
@@ -394,6 +413,7 @@ TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
     ASSERT_EQ(vector[i], output[i]);
   }
 }
+
 /**
  * @brief Test used to check if the identity vector (0,0,0) divided by any vector using /=
  * leaves the identity vector is unchanged.
@@ -421,6 +441,7 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+
 /**
  * @brief Test used to check if taking the square root of the identity vector (0,0,0) or (1,1,1)
  * leaves the vector unchanged
@@ -437,6 +458,7 @@ TEST_F(VectorIdentityOperations, handlesSqrtIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
+
 /**
  * @brief Test used to check if the identity vector (0,0,0) has a magnitude of zero and that the
  * magnitude of (1,1,1) is equal to sqrt of three.

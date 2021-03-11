@@ -33,8 +33,8 @@ const char* states[num_states] = {
   "NominalBraking",
   "EmergencyBraking",
   "FailureStopped",
-  "Exiting",
   "Finished",
+  "Invalid",
 };
 
 Data& Data::getInstance()

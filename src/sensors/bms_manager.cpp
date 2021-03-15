@@ -32,9 +32,9 @@ namespace hyped {
 namespace sensors {
 
 BmsManager::BmsManager(Logger& log)
-    : Thread(log),
-      sys_(utils::System::getSystem()),
-      data_(Data::getInstance())
+  : Thread(log),
+    sys_(utils::System::getSystem()),
+    data_(Data::getInstance())
 {
   check_time_ = sys_.config->sensors.checktime;
   if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
@@ -111,8 +111,13 @@ void BmsManager::run()
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
+    //Check if BMS should is ready at this point.
+    //waiting time for BMS boot up is a fixed time.
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
-      // check health of batteries
+      //if previous state is kCalibrating, turn it to ready
+      if (batteries_.module_status == data::ModuleStatus::kInit){
+        batteries_.module_status = data::ModuleStatus::kReady;
+      }
       if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
         if (!(batteriesInRange() && checkIMD())) {
           if (batteries_.module_status != previous_status_)
@@ -121,6 +126,8 @@ void BmsManager::run()
         }
         previous_status_ = batteries_.module_status;
       }
+    } else{
+      batteries_.module_status = data::ModuleStatus::kInit;
     }
 
     // publish the new data
@@ -142,13 +149,13 @@ bool BmsManager::batteriesInRange()
     }
 
     if (battery.current < 0 || battery.current > 500) {       // current in 0A to 50A
-       if (batteries_.module_status != previous_status_)
+      if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d current out of range: %d", i, battery.current);
       return false;
     }
 
     if (battery.average_temperature < 10 || battery.average_temperature > 60) {  // temperature in 10C to 60C NOLINT[whitespace/line_length]
-       if (batteries_.module_status != previous_status_)
+      if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d temperature out of range: %d", i, battery.average_temperature); // NOLINT[whitespace/line_length]
       return false;
     }

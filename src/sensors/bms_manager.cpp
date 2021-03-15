@@ -20,27 +20,26 @@
  *    limitations under the License.
  */
 
-
 #include "sensors/bms_manager.hpp"
 
 #include "sensors/bms.hpp"
-#include "utils/timer.hpp"
 #include "sensors/fake_batteries.hpp"
 #include "utils/config.hpp"
+#include "utils/timer.hpp"
 
 namespace hyped {
 namespace sensors {
 
-BmsManager::BmsManager(Logger& log)
-  : Thread(log),
-    sys_(utils::System::getSystem()),
-    data_(Data::getInstance())
+BmsManager::BmsManager(Logger &log)
+    : Thread(log),
+      sys_(utils::System::getSystem()),
+      data_(Data::getInstance())
 {
   check_time_ = sys_.config->sensors.checktime;
   if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
     // create BMS LP
     for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
-      BMS* bms = new BMS(i, log_);
+      BMS *bms = new BMS(i, log_);
       bms->start();
       bms_[i] = bms;
     }
@@ -75,7 +74,7 @@ BmsManager::BmsManager(Logger& log)
   }
 
   // kInit for SM transition
-  batteries_ = data_.getBatteriesData();
+  batteries_               = data_.getBatteriesData();
   batteries_.module_status = data::ModuleStatus::kInit;
   data_.setBatteriesData(batteries_);
   Thread::yield();
@@ -102,8 +101,7 @@ void BmsManager::run()
     // keep updating data_ based on values read from sensors
     for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
       bms_[i]->getData(&batteries_.low_power_batteries[i]);
-      if (!bms_[i]->isOnline())
-        batteries_.low_power_batteries[i].voltage = 0;
+      if (!bms_[i]->isOnline()) batteries_.low_power_batteries[i].voltage = 0;
     }
     for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
       bms_[i + data::Batteries::kNumLPBatteries]->getData(&batteries_.high_power_batteries[i]);
@@ -111,11 +109,11 @@ void BmsManager::run()
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
-    //Check if BMS should is ready at this point.
-    //waiting time for BMS boot up is a fixed time.
+    // Check if BMS should is ready at this point.
+    // waiting time for BMS boot up is a fixed time.
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
-      //if previous state is kCalibrating, turn it to ready
-      if (batteries_.module_status == data::ModuleStatus::kInit){
+      // if previous state is kInit, turn it to ready
+      if (batteries_.module_status == data::ModuleStatus::kInit) {
         batteries_.module_status = data::ModuleStatus::kReady;
       }
       if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
@@ -126,7 +124,7 @@ void BmsManager::run()
         }
         previous_status_ = batteries_.module_status;
       }
-    } else{
+    } else {
       batteries_.module_status = data::ModuleStatus::kInit;
     }
 
@@ -141,22 +139,25 @@ bool BmsManager::batteriesInRange()
 {
   // check LP
   for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
-    auto& battery = batteries_.low_power_batteries[i];      // reference batteries individually
-    if (battery.voltage < 175 || battery.voltage > 294) {   // voltage in 17.5V to 29.4V
+    auto &battery = batteries_.low_power_batteries[i];     // reference batteries individually
+    if (battery.voltage < 175 || battery.voltage > 294) {  // voltage in 17.5V to 29.4V
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d voltage out of range: %d", i, battery.voltage);
       return false;
     }
 
-    if (battery.current < 0 || battery.current > 500) {       // current in 0A to 50A
+    if (battery.current < 0 || battery.current > 500) {  // current in 0A to 50A
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d current out of range: %d", i, battery.current);
       return false;
     }
 
-    if (battery.average_temperature < 10 || battery.average_temperature > 60) {  // temperature in 10C to 60C NOLINT[whitespace/line_length]
+    if (battery.average_temperature < 10
+        || battery.average_temperature
+             > 60) {  // temperature in 10C to 60C NOLINT[whitespace/line_length]
       if (batteries_.module_status != previous_status_)
-        log_.ERR("BMS-MANAGER", "BMS LP %d temperature out of range: %d", i, battery.average_temperature); // NOLINT[whitespace/line_length]
+        log_.ERR("BMS-MANAGER", "BMS LP %d temperature out of range: %d", i,
+                 battery.average_temperature);  // NOLINT[whitespace/line_length]
       return false;
     }
 
@@ -169,8 +170,8 @@ bool BmsManager::batteriesInRange()
 
   // check HP
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    auto& battery = batteries_.high_power_batteries[i];     // reference batteries individually
-    if (battery.voltage < 1000 || battery.voltage > 1296) {   // voltage in 100V to 129.6V
+    auto &battery = batteries_.high_power_batteries[i];      // reference batteries individually
+    if (battery.voltage < 1000 || battery.voltage > 1296) {  // voltage in 100V to 129.6V
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d voltage out of range: %d", i, battery.voltage);
       return false;
@@ -182,21 +183,26 @@ bool BmsManager::batteriesInRange()
       return false;
     }
 
-    if (battery.average_temperature < 10 || battery.average_temperature > 65) {  // temperature in 10C to 65C NOLINT[whitespace/line_length]
+    if (battery.average_temperature < 10
+        || battery.average_temperature
+             > 65) {  // temperature in 10C to 65C NOLINT[whitespace/line_length]
       if (batteries_.module_status != previous_status_)
-        log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i, battery.average_temperature); // NOLINT[whitespace/line_length]
+        log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i,
+                 battery.average_temperature);  // NOLINT[whitespace/line_length]
       return false;
     }
 
     if (battery.low_temperature < 10) {
       if (batteries_.module_status != previous_status_)
-        log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i, battery.low_temperature); // NOLINT[whitespace/line_length]
+        log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i,
+                 battery.low_temperature);  // NOLINT[whitespace/line_length]
       return false;
     }
 
     if (battery.high_temperature > 65) {
       if (batteries_.module_status != previous_status_)
-        log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i, battery.high_temperature); // NOLINT[whitespace/line_length]
+        log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i,
+                 battery.high_temperature);  // NOLINT[whitespace/line_length]
       return false;
     }
 
@@ -209,4 +215,5 @@ bool BmsManager::batteriesInRange()
   return true;
 }
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped

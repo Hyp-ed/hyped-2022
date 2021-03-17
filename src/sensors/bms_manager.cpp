@@ -85,7 +85,7 @@ BmsManager::BmsManager(Logger &log)
 bool BmsManager::checkIMD()
 {
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    if (batteries_.high_power_batteries[i].imd_fault == false) {
+    if (batteries_.high_power_batteries[i].imd_fault == true) {
       log_.ERR("BMS-MANAGER", "IMD Fault %d: clearing imd_out_, throwing kCriticalFailure", i);
       return false;
     }

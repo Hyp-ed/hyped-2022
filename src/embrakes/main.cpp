@@ -68,7 +68,7 @@ void Main::run()
           if (!f_brake_->checkClamped()) {
             f_brake_->sendClamp();
           }
-          Thread::sleep(em_brakes_.brake_command_wait_time);
+          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
 
@@ -82,7 +82,7 @@ void Main::run()
             f_brake_->sendRetract();
           }
 
-          Thread::sleep(em_brakes_.brake_command_wait_time);
+          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
 
@@ -103,7 +103,7 @@ void Main::run()
           data_.setEmergencyBrakesData(em_brakes_);
         }
 
-        Thread::sleep(em_brakes_.brake_command_wait_time);
+        Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
         m_brake_->checkHome();
         f_brake_->checkHome();
         m_brake_->checkAccFailure();
@@ -122,7 +122,7 @@ void Main::run()
         if (!f_brake_->checkClamped()) {
           f_brake_->sendClamp();
         }
-        Thread::sleep(em_brakes_.brake_command_wait_time);
+        Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
         m_brake_->checkHome();
         f_brake_->checkHome();
 
@@ -137,7 +137,7 @@ void Main::run()
           if (!f_brake_->checkClamped()) {
             f_brake_->sendClamp();
           }
-          Thread::sleep(em_brakes_.brake_command_wait_time);
+          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
           m_brake_->checkBrakingFailure();
@@ -149,7 +149,7 @@ void Main::run()
           if (f_brake_->checkClamped()) {
             f_brake_->sendRetract();
           }
-          Thread::sleep(em_brakes_.brake_command_wait_time);
+          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
           m_brake_->checkAccFailure();

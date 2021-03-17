@@ -128,8 +128,8 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
-  data::nav_t remaining_distance = nav_data.run_length - nav_data.displacement;
-  data::nav_t required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
+  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
+  data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
   if (remaining_distance > required_distance) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kBrakingZoneLog);
@@ -138,7 +138,7 @@ bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 
 bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data)
 {
-  if (nav_data.velocity < nav_data.maximum_velocity) return false;
+  if (nav_data.velocity < Navigation::kMaximumVelocity) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kMaxVelocityLog);
   return true;

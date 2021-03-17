@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
-#include "vector_basic.test.cpp"
+
 /*
  * Author: Pablo Morandé
  * Organisation: HYPED
@@ -26,6 +26,37 @@ namespace utils
 {
 namespace math
 {
+
+  /**
+ * @brief Helper method used to generate an array of three random integers.
+ * each integer will be in the range -1000, 1000 (not inclusive)
+ */
+std::array<int, 3> createRandomArrayForProperties()
+{
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+  }
+  return output;
+}
+
+/**
+ * @brief Helper method used to generate an array of three random integers.
+ * Also none of those Integers will be zero.
+ * each integer will be in the range -1000, 1000 (not inclusive)
+ */
+std::array<int, 3> RandomNonZeroArrayForProperties()
+{
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+    while (output[i] == 0) {
+      output[i] = rand()%1000;
+    }
+  }
+  return output;
+}
+
 /**
  * @brief Struct used to set up all the variables used in the tests one property present in some
  * of the operations defined for vectors
@@ -41,14 +72,16 @@ struct VectorAssociativity : public::testing::Test
   Vector<int, 3> vector_result_one;
   Vector<int, 3> vector_result_two;
   void SetUp()
-{
-    vector_one = Vector<int, 3>(createRandomArray());
-    vector_two = Vector<int, 3>(createRandomArray());
-    vector_three = Vector<int, 3>(createRandomArray());
+  {
+    std::srand(time(0));
+    vector_one = Vector<int, 3>(createRandomArrayForProperties());
+    vector_two = Vector<int, 3>(createRandomArrayForProperties());
+    vector_three = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
 };
+
 /**
  * @brief Test used to check if the operator (+=) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
@@ -66,6 +99,7 @@ TEST_F(VectorAssociativity, isAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (+) is associative given three random 3D vectors.
  * (a + b) + c = a + (b + c).
@@ -78,6 +112,7 @@ TEST_F(VectorAssociativity, isAutoAdditionAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*=) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
@@ -94,6 +129,7 @@ TEST_F(VectorAssociativity, isMultiplicationAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*) is associative given three random 3D vectors.
  * (a * b) * c = a * (b * c).
@@ -106,6 +142,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Struct used to set up all the variables used in the tests for checking if
  * one property is resent in some of the operations defined for vectors
@@ -122,12 +159,14 @@ struct VectorCommutativity : public ::testing::Test
   Vector<int, 3> vector_result_two;
   void SetUp()
   {
-    vector_one = Vector<int, 3>(createRandomArray());
-    vector_two = Vector<int, 3>(createRandomArray());
+    std::srand(time(0));
+    vector_one = Vector<int, 3>(createRandomArrayForProperties());
+    vector_two = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
 };
+
 /**
  * @brief Test used to check if the operator (+=) is commutative given two random 3D vectors.
  * a + b = b + a.
@@ -142,6 +181,7 @@ TEST_F(VectorCommutativity, isAdditionCommutative)
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (+) is commutative given two random 3D vectors.
  * a + b = b + a.
@@ -154,6 +194,7 @@ TEST_F(VectorCommutativity, isAutoAdditionCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*=) is commutative given two random 3D vectors.
  * a * b = b * a.
@@ -168,6 +209,7 @@ TEST_F(VectorCommutativity, isMultiplicationCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (*) is commutative given two random 3D vectors.
  * a * b = b * a.
@@ -180,6 +222,7 @@ TEST_F(VectorCommutativity, isAutoMultiplicationCommutative)
   ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
+
 /**
  * @brief Test used to check if the operator (-=) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
@@ -194,6 +237,7 @@ TEST_F(VectorCommutativity, isSubstractionNotCommutative)
     ASSERT_EQ(vector_result_two[i], -vector_result_one[i]);
   }
 }
+
 /**
  * Test used to check if the operator (-) is anticommutative given two random 3D vectors.
  * a - b = -(b - a).
@@ -206,6 +250,7 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
   ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
+
 /**
  * @brief Struct used to set up all the variables used in the tests for checking if
  * some porperties with the identity vectors (0,0,0) or (1,1,1) hold for the operations defined for
@@ -213,16 +258,19 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
  */
 struct VectorIdentityOperations : public ::testing::Test
 {
-  std::array<int, 3> values = createRandomArray();
+  std::array<int, 3> values;
   const int dimension = 3;
   Vector<int, 3> identity_vector;
   Vector<int, 3> vector;
   void SetUp()
   {
+    std::srand(time(0));
+    values = createRandomArrayForProperties();
     identity_vector = Vector<int, 3>();
     vector = Vector<int, 3>(values);
   }
 };
+
 /**
  * @brief Test used to check if adding the identity vector (0,0,0) using += just leaves the vector
  * unchanged.
@@ -234,6 +282,7 @@ TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+
 /**
  * @brief Test used to check if adding the identity vector (0,0,0) using + just returns the vector
  * unchanged.
@@ -245,6 +294,7 @@ TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
     ASSERT_EQ(vector[i], output[i]);
   }
 }
+
 /**
  * @brief Test used to check if substracting the identity vector (0,0,0) using -=
  * just leaves the vector unchanged.
@@ -262,6 +312,7 @@ TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
+
 /**
  * @brief Test used to check if substracting the identity vector (0,0,0) using -
  * just returns the vector unchanged.
@@ -278,6 +329,7 @@ TEST_F(VectorIdentityOperations, handlesAutoSubstractionIdentities)
     ASSERT_EQ(output[i], identity_vector[i]);
   }
 }
+
 /**
  * @brief Test used to check if multiplying the vector with the identity vector (0,0,0) using *=
  * just it changes the vector to the the identity vector.
@@ -297,6 +349,7 @@ TEST_F(VectorIdentityOperations, handlesMultiplicationIdentities)
     ASSERT_EQ(vector[i], 0);
   }
 }
+
 /**
  * @brief Test used to check if multiplying the vector with the identity vector (0,0,0) using *
  * just returns identity vector.
@@ -316,6 +369,7 @@ TEST_F(VectorIdentityOperations, handlesAutoMultiplicationIdentities)
     ASSERT_EQ(output[i], 0);
   }
 }
+
 /**
  * @brief Test used to check if changing the sign of the identity vector (0,0,0) using -
  * just leave the vector unchanged identity vector.
@@ -333,6 +387,7 @@ TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
     ASSERT_EQ(identity_vector[i], vector_two[i] + vector[i]);
   }
 }
+
 /**
  * @brief Test used to check divide the identity vector (0,0,0) by any vector using /
  * we get the identity back.
@@ -343,7 +398,7 @@ TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
  */
 TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
 {
-  vector = Vector<int, 3>(createRandomWithoutZeroesArray());
+  vector = Vector<int, 3>(RandomNonZeroArrayForProperties());
   Vector<int, 3> output =  identity_vector / vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], identity_vector[i]);
@@ -358,6 +413,7 @@ TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
     ASSERT_EQ(vector[i], output[i]);
   }
 }
+
 /**
  * @brief Test used to check if the identity vector (0,0,0) divided by any vector using /=
  * leaves the identity vector is unchanged.
@@ -368,7 +424,7 @@ TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
  */
 TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
 {
-  vector = Vector<int, 3>(createRandomWithoutZeroesArray());
+  vector = Vector<int, 3>(RandomNonZeroArrayForProperties());
   identity_vector /= vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(0, identity_vector[i]);
@@ -378,13 +434,14 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
-  std::array<int, 3>values = createRandomWithoutZeroesArray();
+  std::array<int, 3>values = RandomNonZeroArrayForProperties();
   vector = Vector<int, 3>(values);
   vector /=  identity_vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], values[i]);
   }
 }
+
 /**
  * @brief Test used to check if taking the square root of the identity vector (0,0,0) or (1,1,1)
  * leaves the vector unchanged
@@ -401,6 +458,7 @@ TEST_F(VectorIdentityOperations, handlesSqrtIdentities)
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
+
 /**
  * @brief Test used to check if the identity vector (0,0,0) has a magnitude of zero and that the
  * magnitude of (1,1,1) is equal to sqrt of three.
@@ -413,6 +471,4 @@ TEST_F(VectorIdentityOperations, handlesNormIdentities)
   norm = identity_vector.norm();
   ASSERT_EQ(norm, std::sqrt(3));
 }
-}
-}
-}
+}}}  // hyped::utils::math

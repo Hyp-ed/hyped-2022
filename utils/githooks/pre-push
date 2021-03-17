@@ -16,7 +16,7 @@ fi
 set -x
 
 # run tests
-make test "$OPTION"
+make test-essential "$OPTION"
 
 # Linter checks
 make lintall

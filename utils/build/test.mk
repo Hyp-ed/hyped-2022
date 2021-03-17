@@ -4,13 +4,12 @@ T_CFLAGS  := $(CFLAGS)
 T_LFLAGS  := $(LFLAGS)
 T_INC_DIR := $(INC_DIR)
 T_TARGET  := $(TEST_DIR)/testrunner
-T_MAIN    := main.test.cpp
 T_OBJ_DIR := $(OBJS_DIR)/$(TEST_DIR)
+T_SRC_DIR := $(TEST_DIR)/$(SRCS_DIR)
 
 # Defines T_SRCS
-include $(TEST_DIR)/$(SRCS_DIR)/Test.files
-T_SRCS      += $(T_MAIN)
-T_OBJS      := $(patsubst %.cpp,$(T_OBJ_DIR)/%.o,$(T_SRCS))
+T_SRCS     := $(shell find $(T_SRC_DIR) -name '*test.cpp')
+T_OBJS      := $(patsubst $(T_SRC_DIR)%.cpp,$(T_OBJ_DIR)%.o,$(T_SRCS))
 T_DEPFLAGS   = -MT $@ -MMD -MP -MF $(T_OBJ_DIR)/$*.d
 
 # Only add coverage flag if not also cross compiling
@@ -45,13 +44,19 @@ STATIC_ENABLE=
 
 .PHONY: test
 test: $(T_TARGET)
-	$(Verb) ./$< --gtest_filter=-*_noci
-
-test-all: $(T_TARGET)
 	$(Verb) ./$<
 
+.PHONY: test-essential
+test-essential: $(T_TARGET)
+	$(Verb) ./$< --gtest_filter=-*_prod
+
+.PHONY: test-filter
 test-filter: $(T_TARGET)
 	$(Verb) ./$< --gtest_filter=$(GTEST_FILTERS)
+
+.PHONY: test-production
+test-production: $(T_TARGET)
+	$(Verb) ./$< --gtest_filter=*_prod
 
 coverage: test
 	$(Verb) ./test/utils/get_code_cov.sh
@@ -72,7 +77,7 @@ $(T_TARGET): $(DEPENDENCIES) $(OBJS) $(T_OBJS)
 	$(Echo) "Linking test executable $@"
 	$(Verb) $(LL) -o $@ $(OBJS) $(T_OBJS) $(T_LFLAGS) $(COVERAGE_FLAGS)
 
-$(T_OBJS): $(T_OBJ_DIR)/%.o: $(TEST_DIR)/$(SRCS_DIR)/%.cpp $(GTEST_TARGET)
+$(T_OBJS): $(T_OBJ_DIR)/%.o: $(T_SRC_DIR)/%.cpp $(GTEST_TARGET)
 	$(Echo) "Compiling $<"
 	$(Verb) mkdir -p $(dir $@)
 	$(Verb) $(CC) $(T_DEPFLAGS) $(T_CFLAGS) $(COVERAGE_FLAGS) -o $@ -c $(T_INC_DIR) $<

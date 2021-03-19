@@ -109,7 +109,7 @@ void BmsManager::run()
         batteries_.high_power_batteries[i].voltage = 0;
     }
 
-    // Check if BMS should is ready at this point.
+    // Check if BMS is ready at this point.
     // waiting time for BMS boot up is a fixed time.
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
       // if previous state is kInit, turn it to ready

@@ -42,10 +42,10 @@ namespace data {
 // Global Module States
 // -------------------------------------------------------------------------------------------------
 enum class ModuleStatus {
-  kCriticalFailure,  // SM transitions to EmergencyBraking/FailureStopped
+  kCriticalFailure,  // STM transitions to EmergencyBraking/FailureStopped
   kStart,            // Initial module state
-  kInit,             // SM transistions to Calibrating if all modules have Init status.
-  kReady,            // SM transistions to Ready if Motors and Navigation have the Ready status.
+  kInit,             // STM transistions to Calibrating if all modules have Init or Ready status.
+  kReady,            // STM transistions to Ready if all modules have Ready status.
 };
 
 struct Module {

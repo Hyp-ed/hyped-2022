@@ -43,7 +43,7 @@ namespace navigation {
 
     // Setting module status for STM transition
     data::Navigation nav_data = data.getNavigationData();
-    nav_data.module_status = ModuleStatus::kReady;
+    nav_data.module_status = ModuleStatus::kInit;
     data.setNavigationData(nav_data);
 
     // wait for calibration state for calibration

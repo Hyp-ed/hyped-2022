@@ -95,6 +95,7 @@ bool BmsManager::checkIMD()
 
 void BmsManager::run()
 {
+  // TODO(miltfra): Refactor this into stages
   while (sys_.running_) {
     batteries_ = data_.getBatteriesData();
 
@@ -114,6 +115,7 @@ void BmsManager::run()
     if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
       // if previous state is kInit, turn it to ready
       if (batteries_.module_status == data::ModuleStatus::kInit) {
+        log_.DBG1("BMS-MANAGER", "Batteries are ready");
         batteries_.module_status = data::ModuleStatus::kReady;
       }
       if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
@@ -124,8 +126,6 @@ void BmsManager::run()
         }
         previous_status_ = batteries_.module_status;
       }
-    } else {
-      batteries_.module_status = data::ModuleStatus::kInit;
     }
 
     // publish the new data

@@ -34,11 +34,10 @@ struct WriterConvertStateMachineState : public ::testing::Test {
   const std::string calibrating_state_error = "Should convert Calibrating state.";
   const std::string ready_state_error = "Should convert Ready state.";
   const std::string accelerating_state_error = "Should convert Accelerating state.";
+  const std::string cruising_state_error = "Should convert Cruising state.";
   const std::string nominal_braking_state_error = "Should convert Nominal Braking state.";
   const std::string emergency_braking_state_error = "Should convert Emergency Braking state.";
-  const std::string run_complete_state_error = "Should convert Run Complete state.";
   const std::string failure_stopped_state_error = "Should convert Failure Stopped state.";
-  const std::string exiting_state_error = "Should convert exiting state.";
   const std::string finished_state_error = "Should convert Finished state.";
   const std::string invalid_state_error = "Should convert Invalid state.";
 
@@ -71,6 +70,12 @@ TEST_F(WriterConvertStateMachineState, convertsAcceleratingState)
   ASSERT_EQ(convertedState, "ACCELERATING") << accelerating_state_error;
 }
 
+TEST_F(WriterConvertStateMachineState, convertsCruisingState)
+{
+  std::string convertedState = Writer::convertStateMachineState(State::kCruising);
+  ASSERT_EQ(convertedState, "CRUISING") << cruising_state_error;
+}
+
 TEST_F(WriterConvertStateMachineState, convertsNominalBrakingState)
 {
   std::string convertedState = Writer::convertStateMachineState(State::kNominalBraking);
@@ -83,22 +88,10 @@ TEST_F(WriterConvertStateMachineState, convertsEmergencyBrakingState)
   ASSERT_EQ(convertedState, "EMERGENCY_BRAKING") << emergency_braking_state_error;
 }
 
-TEST_F(WriterConvertStateMachineState, convertsRunCompleteState)
-{
-  std::string convertedState = Writer::convertStateMachineState(State::kRunComplete);
-  ASSERT_EQ(convertedState, "RUN_COMPLETE") << run_complete_state_error;
-}
-
 TEST_F(WriterConvertStateMachineState, convertsFailureStoppedState)
 {
   std::string convertedState = Writer::convertStateMachineState(State::kFailureStopped);
   ASSERT_EQ(convertedState, "FAILURE_STOPPED") << failure_stopped_state_error;
-}
-
-TEST_F(WriterConvertStateMachineState, convertsExitingState)
-{
-  std::string convertedState = Writer::convertStateMachineState(State::kExiting);
-  ASSERT_EQ(convertedState, "EXITING") << exiting_state_error;
 }
 
 TEST_F(WriterConvertStateMachineState, convertsFinishedState)

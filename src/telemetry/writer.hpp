@@ -73,6 +73,10 @@ class Writer {
     return sb_.GetString();
   }
 
+  // converts Enum to String values with required formatting for GUI
+  static const char* convertStateMachineState(data::State state);
+  static const char* convertModuleStatus(data::ModuleStatus module_status);
+
  private:
   // calls RapidJSON functions to add a value of specific type to JSON
   void add(const char* name, int min, int max, const char* unit, int value);
@@ -85,10 +89,6 @@ class Writer {
   // starts and ends lists, which allow to structure the data
   void startList(const char* name);
   void endList();
-
-  // converts Enum to String values with required formatting for GUI
-  const char* convertStateMachineState(data::State state);
-  const char* convertModuleStatus(data::ModuleStatus module_status);
 
   rapidjson::StringBuffer sb_;
   rapidjson::Writer<rapidjson::StringBuffer> rjwriter_;

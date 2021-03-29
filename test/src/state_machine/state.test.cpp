@@ -31,6 +31,44 @@
 using namespace hyped::data;
 using namespace hyped::state_machine;
 
+struct StateTest : public ::testing::Test {
+  // ---- Logger ---------------
+
+  hyped::utils::Logger log;
+
+  // ---- Test size -----------
+
+  static constexpr int TEST_SIZE = 1000;
+
+ protected:
+  void SetUp() {}
+  void TearDown() {}
+};
+
+//---------------------------------------------------------------------------
+// Test structures
+//---------------------------------------------------------------------------
+
+struct IdleTest : public StateTest { };
+
+struct CalibratingTest : public StateTest { };
+
+struct ReadyTest : public StateTest { };
+
+struct AcceleratingTest : public StateTest { };
+
+struct NominalBrakingTest : public StateTest { };
+
+struct FinishedTest : public StateTest { };
+
+struct FailureBrakingTest : public StateTest { };
+
+struct FailureStoppedTest : public StateTest { };
+
+//---------------------------------------------------------------------------
+// Randomiser
+//---------------------------------------------------------------------------
+
 class Randomiser {
  public:
   Randomiser()
@@ -39,7 +77,7 @@ class Randomiser {
     static std::uniform_real_distribution<nav_t> distribution(0.0, 1.0);
   }
 
-  nav_t randomDecimal()
+  static nav_t randomDecimal()
   {
     static std::default_random_engine generator;
     static std::uniform_real_distribution<nav_t> distribution(0.0, 1.0);
@@ -50,14 +88,14 @@ class Randomiser {
   // Global Module States
   //---------------------------------------------------------------------------
 
-  void randomiseModuleStatus(ModuleStatus &module_status)
+  static void randomiseModuleStatus(ModuleStatus &module_status)
   {
     // Randomises the module status.
     constexpr int num_statuses = 4;
     module_status = static_cast<ModuleStatus>(rand() % num_statuses);
   }
 
-  void randomiseNavigation(Navigation &nav_data)
+  static void randomiseNavigation(Navigation &nav_data)
   {
     // Generates a displacement length between 750 and 1749.
     nav_data.displacement = static_cast<nav_t>((rand() % 1000 + 750) + randomDecimal());
@@ -81,7 +119,7 @@ class Randomiser {
   // Raw Sensor data
   //---------------------------------------------------------------------------
 
-  void randomiseImuData(ImuData &imu_data)
+  static void randomiseImuData(ImuData &imu_data)
   {
     for (int i = 0; i < 3; i++) {
       imu_data.acc[i] = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
@@ -91,26 +129,26 @@ class Randomiser {
     }
   }
 
-  void randomiseEncoderData(EncoderData &encoder_data)
+  static void randomiseEncoderData(EncoderData &encoder_data)
   {
     // Generates a disp value between 750 and 1749 in accord to the randomised displacement value.
     encoder_data.disp = static_cast<nav_t>((rand() % 1000 + 750) + randomDecimal());
   }
 
-  void randomiseStripeCounter(StripeCounter &stripe_counter)
+  static void randomiseStripeCounter(StripeCounter &stripe_counter)
   {
     // Generates a count timestamp and value between 0 and 10.
     stripe_counter.count.timestamp = static_cast<uint32_t>(rand() % 11);
     stripe_counter.count.value = static_cast<uint32_t>(rand() % 11);
   }
 
-  void randomiseTemperatureData(TemperatureData &temp_data)
+  static void randomiseTemperatureData(TemperatureData &temp_data)
   {
     // Generates a temperature value between 0 and 99 C.
     temp_data.temp = static_cast<int>(rand() % 100);
   }
 
-  void randomiseBatteryData(BatteryData &battery_data)
+  static void randomiseBatteryData(BatteryData &battery_data)
   {
     // Generates a voltage data between 0 and 499.
     battery_data.voltage = static_cast<uint16_t>(rand() % 500);
@@ -146,7 +184,7 @@ class Randomiser {
     battery_data.imd_fault = static_cast<bool>(rand() < (RAND_MAX / 2));
   }
 
-  void randomiseEmbrakes(EmergencyBrakes &embrakes_data)
+  static void randomiseEmbrakes(EmergencyBrakes &embrakes_data)
   {
     for (int i = 0; i < embrakes_data.kNumEmbrakes; i++) {
       embrakes_data.brakes_retracted[i] = static_cast<bool>(rand() < (RAND_MAX / 2));
@@ -157,7 +195,7 @@ class Randomiser {
   // Motor data
   //---------------------------------------------------------------------------
 
-  void randomiseMotors(Motors &motors_data)
+  static void randomiseMotors(Motors &motors_data)
   {
     // Generates a RPM data between 0 and 199 for all 4 motors.
     for (int i = 0; i < motors_data.kNumMotors; i++) {
@@ -169,7 +207,7 @@ class Randomiser {
   // Telemetry data
   //---------------------------------------------------------------------------
 
-  void randomiseTelemetry(Telemetry &telemetry_data)
+  static void randomiseTelemetry(Telemetry &telemetry_data)
   {
     // Generates a random bool value for all telemetry commands.
     telemetry_data.calibrate_command = static_cast<bool>(rand() < (RAND_MAX / 2));
@@ -184,8 +222,395 @@ class Randomiser {
   // State Machine States
   //---------------------------------------------------------------------------
 
-  void randomiseStateMachine(StateMachine &stm_data)
+  static void randomiseStateMachine(StateMachine &stm_data)
   {
-    // Not completed yet
+    stm_data.critical_failure = static_cast<bool>(rand() < (RAND_MAX / 2));
+  }
+
+  static void generateAllPermutations(ModuleStatus &module_status, EmergencyBrakes &embrakes_data,
+                            Navigation &nav_data, Batteries &batteries_data,
+                            Telemetry &telemetry_data, Sensors &sensors_data, Motors &motors_data)
+  {
+    constexpr int num_statuses = 4;
+    constexpr int num_modules = 6;
+    for (int i = 0; i <= pow(static_cast<double>(num_statuses),
+      static_cast<double>(num_modules)); i++)
+      {
+      embrakes_data.module_status = static_cast<ModuleStatus>(i % num_modules);
+      i /= num_statuses;
+      nav_data.module_status = static_cast<ModuleStatus>(i % num_modules);
+      i /= num_statuses;
+      batteries_data.module_status = static_cast<ModuleStatus>(i % num_modules);
+      i /= num_statuses;
+      telemetry_data.module_status = static_cast<ModuleStatus>(i % num_modules);
+      i /= num_statuses;
+      sensors_data.module_status = static_cast<ModuleStatus>(i % num_modules);
+      i /= num_statuses;
+      motors_data.module_status = static_cast<ModuleStatus>(i % num_modules);
+      i /= num_statuses;
+    }
   }
 };
+
+
+//---------------------------------------------------------------------------
+//--------------------------------- TESTS -----------------------------------
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+// Idle Tests
+//---------------------------------------------------------------------------
+
+TEST_F(IdleTest, handlesEmergency)
+{
+  Idle *state = Idle::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                      telemetry_data, sensors_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (has_emergency) {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  } else {
+    ASSERT_NE(new_state, FailureStopped::getInstance());
+  }
+}
+
+TEST_F(IdleTest, handlesCalibrateCommand)
+{
+  Idle *state = Idle::getInstance();
+
+  ModuleStatus module_status;
+  Telemetry telemetry_data;
+
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool calibrate_command = checkCalibrateCommand(log, telemetry_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (!calibrate_command) {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  } else {
+    ASSERT_NE(new_state, FailureStopped::getInstance());
+  }
+}
+
+TEST_F(IdleTest, handlesAllInitialised)
+{
+  Idle *state = Idle::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
+                                                 telemetry_data, sensors_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (all_initialised) {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  } else {
+    ASSERT_NE(new_state, FailureStopped::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Calibrating Tests
+//---------------------------------------------------------------------------
+
+TEST_F(CalibratingTest, handlesEmergency)
+{
+  Calibrating *state = Calibrating::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                      telemetry_data, sensors_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (has_emergency) {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  } else {
+    ASSERT_NE(new_state, FailureStopped::getInstance());
+  }
+}
+
+TEST_F(CalibratingTest, handlesAllReady)
+{
+  Calibrating *state = Calibrating::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool all_ready = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (all_ready) {
+    ASSERT_EQ(new_state, Ready::getInstance());
+  } else {
+    ASSERT_NE(new_state, Ready::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Ready Tests
+//---------------------------------------------------------------------------
+
+TEST_F(ReadyTest, handlesEmergency)
+{
+  Ready *state = Ready::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                      telemetry_data, sensors_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (has_emergency) {
+    ASSERT_NE(new_state, FailureStopped::getInstance());
+  } else {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  }
+}
+
+TEST_F(ReadyTest, handlesLaunchCommand)
+{
+  Ready *state = Ready::getInstance();
+
+  ModuleStatus module_status;
+  Telemetry telemetry_data;
+
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool received_launch_command = checkLaunchCommand(log, telemetry_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (!received_launch_command) {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  } else {
+    ASSERT_NE(new_state, FailureStopped::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Accelerating Tests
+//---------------------------------------------------------------------------
+
+TEST_F(AcceleratingTest, handlesEmergency)
+{
+  Accelerating *state = Accelerating::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                      telemetry_data, sensors_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (has_emergency) {
+    ASSERT_NE(new_state, FailureBraking::getInstance());
+  } else {
+    ASSERT_EQ(new_state, FailureBraking::getInstance());
+  }
+}
+
+TEST_F(AcceleratingTest, handlesInBrakingZone)
+{
+  Accelerating *state = Accelerating::getInstance();
+
+  Navigation nav_data;
+
+  Randomiser::randomiseNavigation(nav_data);
+
+  bool in_braking_zone = checkEnteredBrakingZone(log, nav_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (!in_braking_zone) {
+    ASSERT_EQ(new_state, NominalBraking::getInstance());
+  } else {
+    ASSERT_NE(new_state, NominalBraking::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Nominal Braking Tests
+//---------------------------------------------------------------------------
+
+TEST_F(NominalBrakingTest, handlesEmergency)
+{
+  NominalBraking *state = NominalBraking::getInstance();
+
+  ModuleStatus module_status;
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  Randomiser::randomiseEmbrakes(embrakes_data);
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseTelemetry(telemetry_data);
+  Randomiser::randomiseMotors(motors_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                      telemetry_data, sensors_data, motors_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (has_emergency) {
+    ASSERT_EQ(new_state, FailureBraking::getInstance());
+  } else {
+    ASSERT_NE(new_state, FailureBraking::getInstance());
+  }
+}
+
+TEST_F(NominalBrakingTest, handlesStopped)
+{
+  NominalBraking *state = NominalBraking::getInstance();
+
+  ModuleStatus module_status;
+  Navigation nav_data;
+
+  Randomiser::randomiseNavigation(nav_data);
+  Randomiser::randomiseModuleStatus(module_status);
+
+  bool stopped = checkPodStopped(log, nav_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (stopped) {
+    ASSERT_EQ(new_state, Finished::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Finished Tests
+//---------------------------------------------------------------------------
+
+TEST_F(FinishedTest, handlesShutdownCommand)
+{
+  Finished *state = Finished::getInstance();
+
+  Telemetry telemetry_data;
+
+  Randomiser::randomiseTelemetry(telemetry_data);
+
+  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (received_shutdown_command) {
+    ASSERT_EQ(new_state, Off::getInstance());
+  } else {
+    ASSERT_NE(new_state, Off::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Failure Braking Tests
+//---------------------------------------------------------------------------
+
+TEST_F(FailureBrakingTest, handlesStopped)
+{
+  FailureBraking *state = FailureBraking::getInstance();
+
+  Navigation nav_data;
+
+  Randomiser::randomiseNavigation(nav_data);
+
+  bool stopped = checkPodStopped(log, nav_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (stopped) {
+    ASSERT_EQ(new_state, FailureStopped::getInstance());
+  }
+}
+
+//---------------------------------------------------------------------------
+// Failure Stopped Tests
+//---------------------------------------------------------------------------
+
+TEST_F(FailureStoppedTest, handlesShutdownCommand)
+{
+  FailureStopped *state = FailureStopped::getInstance();
+
+  Telemetry telemetry_data;
+
+  Randomiser::randomiseTelemetry(telemetry_data);
+
+  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data);
+  hyped::state_machine::State *new_state = state->checkTransition(log);
+
+  if (!received_shutdown_command) {
+    ASSERT_EQ(new_state, Off::getInstance());
+  } else {
+    ASSERT_NE(new_state, Off::getInstance());
+  }
+}

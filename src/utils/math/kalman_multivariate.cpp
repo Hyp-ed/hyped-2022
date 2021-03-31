@@ -65,7 +65,7 @@ namespace hyped {
 
             void KalmanMultivariate::setMeasurementModel(MatrixXf& H, MatrixXf& R)
             {
-                if (R.cols() != m_ || R.rows() != m_ || H.rows() != m_ || H.cols()! = n_) {
+                if (R.cols() != m_ || R.rows() != m_ || H.rows() != m_ || H.cols() != n_) {
                     throw  std::invalid_argument("Wrong dimension of the Matrices");
               }
               else

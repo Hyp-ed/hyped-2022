@@ -152,7 +152,7 @@ struct KalmanMathematics : public::testing::Test {
 
   void TearDown() {}
 };
-TEST_F(KalmanMathematics,handlesSeveralFiltersWithControl)
+TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
 { 
     MatrixXf A = A_Data[0];
     MatrixXf B = B_Data[0];
@@ -165,8 +165,8 @@ TEST_F(KalmanMathematics,handlesSeveralFiltersWithControl)
     kalmanMathWithControl.setInitial(x1_Data[0], P_Data[0]);
     VectorXf x = kalmanMathWithControl.getStateEstimate();
     MatrixXf p = kalmanMathWithControl.getStateCovariance();
-  for(int i =0; i<50; i++){
-     kalmanMathWithControl.filter(u, z);
+  for (int i = 0; i < 50; i++) {
+    kalmanMathWithControl.filter(u, z);
     // Mimicks filter(VectorXf& u, VectorXf& z)
     x = A * x + B * u;
     p = (A * p * A.transpose()) + Q;
@@ -180,7 +180,7 @@ TEST_F(KalmanMathematics,handlesSeveralFiltersWithControl)
       << expected_covariance_err;
   }
 }
-TEST_F(KalmanMathematics,handlesSeveralFiltersWithoutControl)
+TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
 { 
     MatrixXf A = A_Data[0];
     MatrixXf B = B_Data[0];
@@ -193,11 +193,8 @@ TEST_F(KalmanMathematics,handlesSeveralFiltersWithoutControl)
     kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
     VectorXf x = kalmanMathWithoutControl.getStateEstimate();
     MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
-  for(int i =0; i<50; i++){
-    std::cout<<i<<"\n";
+  for (int i =0; i < 50; i++) {
     kalmanMathWithoutControl.filter(u, z);
-    std::cout<<i<<"\n";
-     
     // Mimicks filter(VectorXf& u, VectorXf& z)
     x = A * x + B * u;
     p = (A * p * A.transpose()) + Q;

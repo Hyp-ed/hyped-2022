@@ -39,7 +39,7 @@ namespace hyped {
 
             void KalmanMultivariate::setDynamicsModel(MatrixXf& A, MatrixXf& Q)
             {
-                if (A.cols()!= n_ || A.rows()!= n_ || Q.cols()!=n_ ||  Q.rows()!=n_ ) {
+                if (A.cols() != n_ || A.rows() != n_ || Q.cols() != n_ ||  Q.rows() != n_ ) {
                   throw  std::invalid_argument("Wrong dimension of the Matrices");
               }
               else{
@@ -51,8 +51,8 @@ namespace hyped {
 
             void KalmanMultivariate::setDynamicsModel(MatrixXf& A, MatrixXf& B, MatrixXf& Q)
             {
-                if (A.cols()!= n_ || A.rows()!= n_ || Q.cols()!=n_ ||  Q.rows()!=n_ || 
-                    B.rows()!=n_ || B.cols()!=k_) {
+                if (A.cols() != n_ || A.rows() != n_ || Q.cols()!= n_ ||  Q.rows()!= n_ || 
+                    B.rows() != n_ || B.cols()!= k_) {
                         throw  std::invalid_argument("Wrong dimension of the Matrices");
                     }
                 else
@@ -65,7 +65,7 @@ namespace hyped {
 
             void KalmanMultivariate::setMeasurementModel(MatrixXf& H, MatrixXf& R)
             {
-                if (R.cols()!= m_ || R.rows()!=m_||H.rows()!=m_ || H.cols()!=n_) {
+                if (R.cols() != m_ || R.rows() != m_ || H.rows() != m_ || H.cols()! = n_) {
                     throw  std::invalid_argument("Wrong dimension of the Matrices");
               }
               else
@@ -93,7 +93,7 @@ namespace hyped {
             void KalmanMultivariate::updateA(MatrixXf& A)
             {
 
-                if (A.cols()!= n_ || A.rows()!=n_) {
+                if (A.cols() != n_ || A.rows() != n_) {
                   throw  std::invalid_argument("Wrong dimension of the Matrices");
                 }
                 else
@@ -105,7 +105,7 @@ namespace hyped {
 
             void KalmanMultivariate::updateR(MatrixXf& R)
             {
-                if (R.cols()!= m_ || R.rows()!=m_) {
+                if (R.cols() != m_ || R.rows() != m_) {
                   throw  std::invalid_argument("Wrong dimension of the Matrices");
                 }
                 else{
@@ -115,7 +115,7 @@ namespace hyped {
 
             void KalmanMultivariate::setInitial(VectorXf& x0, MatrixXf& P0)
             {
-               if(x0.rows()!=n_ || P0.rows()!=n_ || P0.cols()!=n_) {
+               if(x0.rows() != n_ || P0.rows() != n_ || P0.cols() != n_) {
                 throw std::invalid_argument("Dimension of Matrices not correct");
                 }
                 else

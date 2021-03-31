@@ -153,7 +153,7 @@ struct KalmanMathematics : public::testing::Test {
   void TearDown() {}
 };
 TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
-{ 
+{
     MatrixXf A = A_Data[0];
     MatrixXf B = B_Data[0];
     MatrixXf Q = Q_Data[0];
@@ -181,7 +181,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
   }
 }
 TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
-{ 
+{
     MatrixXf A = A_Data[0];
     MatrixXf B = B_Data[0];
     MatrixXf Q = Q_Data[0];
@@ -280,5 +280,49 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
       << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p)
       << expected_covariance_err;
+  }
+}
+struct KalmanIdentity : public ::testing::Test {
+ protected:
+  unsigned int n = 2;
+  unsigned int m = 3;
+  unsigned int k = 1;
+
+  KalmanMultivariate kalman = KalmanMultivariate(n, m, k);
+  VectorXf x0 = VectorXf::Random(n);
+  VectorXf x1 = VectorXf::Random(n);
+  VectorXf z = VectorXf::Zero(m);
+  VectorXf u = VectorXf::Random(k);
+
+
+  MatrixXf P0 = MatrixXf::Random(n, n);
+  MatrixXf A = MatrixXf::Identity(n, n);
+  MatrixXf B = MatrixXf::Zero(n, k);
+  MatrixXf Q = MatrixXf::Zero(n, n);
+  MatrixXf H = MatrixXf::Zero(m, n);
+  MatrixXf R = MatrixXf::Identity(m, m);
+  MatrixXf P = MatrixXf::Random(n, n);
+  std::string zero_state_estimate_err = "Should handle zero vector as state estimate";
+  std::string arb_state_estimate_err = "Should handle any arbitrary vector as state estimate";
+  std::string zero_covariance_err = "Should handle zero state covariance";
+  std::string arb_covariance_err = "Should handle any arbitrary state covariance";
+
+  void SetUp()
+  {
+    // Assigns the matrices and vectors to the properties within the kalman object.
+    if (P.determinant() == 0) {
+       P = MatrixXf::Random(n, n);
+    }
+    kalman.setModels(A, B, Q, H, R);
+    kalman.setInitial(x0, P);
+  }
+  void TearDown() {}
+};
+TEST_F(KalmanIdentity, handlesIdentity)
+{
+  for (int i = 0; i < 50; i++) {
+    kalman.filter(u, z);
+    ASSERT_EQ(kalman.getStateEstimate(), x0);
+    ASSERT_EQ(kalman.getStateCovariance(), P);
   }
 }

@@ -103,7 +103,39 @@ TEST_F(KalmanFunctionality, handlesArbitraryStateCovariance)
 {
   ASSERT_EQ(kalman.getStateCovariance(), P) << arb_covariance_err;
 }
-
+TEST_F(KalmanFunctionality, handlesUpdateInA)
+{
+  KalmanMultivariate kalman_two = KalmanMultivariate(n, m, 0);
+  VectorXf x1 = VectorXf::Random(n);
+  while (x1 == VectorXf::Zero(n)) {
+    x1 = VectorXf::Random(n, n);
+  }
+  A = MatrixXf::Random(n, n);
+  while (A == MatrixXf::Zero(n, n) || A == MatrixXf::Identity(n, n)) {
+    A = MatrixXf::Random(n, n);
+  }
+  B = MatrixXf::Zero(n, k);
+  Q = MatrixXf::Zero(n, n);
+  H = MatrixXf::Zero(m, n);
+  R = MatrixXf::Identity(m, m);
+  kalman.setModels(A, Q, H, R);
+  kalman_two.setModels(A, Q, H, R);
+  A = MatrixXf::Zero(n, n);
+  kalman_two.updateA(A);
+  kalman.setInitial(x1, P);
+  kalman_two.setInitial(x1, P);
+  z = VectorXf::Zero(m);
+  kalman_two.filter(z);
+  kalman.filter(z);
+  ASSERT_EQ(kalman_two.getStateEstimate(), VectorXf::Zero(n));
+  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
+  A = MatrixXf::Identity(n, n);
+  kalman_two.updateA(A);
+  kalman_two.setInitial(x1, P);
+  kalman_two.filter(z);
+  ASSERT_EQ(kalman_two.getStateEstimate(), x1);
+  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
+}
 // -------------------------------------------------------------------------------------------------
 // Mathematical Properties
 // -------------------------------------------------------------------------------------------------

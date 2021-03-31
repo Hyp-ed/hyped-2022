@@ -152,6 +152,65 @@ struct KalmanMathematics : public::testing::Test {
 
   void TearDown() {}
 };
+TEST_F(KalmanMathematics,handlesSeveralFiltersWithControl)
+{ 
+    MatrixXf A = A_Data[0];
+    MatrixXf B = B_Data[0];
+    MatrixXf Q = Q_Data[0];
+    MatrixXf H = H_Data[0];
+    MatrixXf R = R_Data[0];
+    VectorXf z = z_Data[0];
+    VectorXf u = u_Data[0];
+    kalmanMathWithControl.setModels(A, B, Q, H, R);
+    kalmanMathWithControl.setInitial(x1_Data[0], P_Data[0]);
+    VectorXf x = kalmanMathWithControl.getStateEstimate();
+    MatrixXf p = kalmanMathWithControl.getStateCovariance();
+  for(int i =0; i<50; i++){
+     kalmanMathWithControl.filter(u, z);
+    // Mimicks filter(VectorXf& u, VectorXf& z)
+    x = A * x + B * u;
+    p = (A * p * A.transpose()) + Q;
+      // Mimicks correct()
+    MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
+    x = x + K * (z - H * x);
+    p = (I - K * H) * p;
+    ASSERT_EQ(kalmanMathWithControl.getStateEstimate(), x)
+      << expected_state_estimate_err;
+    ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p)
+      << expected_covariance_err;
+  }
+}
+TEST_F(KalmanMathematics,handlesSeveralFiltersWithoutControl)
+{ 
+    MatrixXf A = A_Data[0];
+    MatrixXf B = B_Data[0];
+    MatrixXf Q = Q_Data[0];
+    MatrixXf H = H_Data[0];
+    MatrixXf R = R_Data[0];
+    VectorXf z = z_Data[0];
+    VectorXf u = u_Data[0];
+    kalmanMathWithoutControl.setModels(A, B, Q, H, R);
+    kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
+    VectorXf x = kalmanMathWithoutControl.getStateEstimate();
+    MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
+  for(int i =0; i<50; i++){
+    std::cout<<i<<"\n";
+    kalmanMathWithoutControl.filter(u, z);
+    std::cout<<i<<"\n";
+     
+    // Mimicks filter(VectorXf& u, VectorXf& z)
+    x = A * x + B * u;
+    p = (A * p * A.transpose()) + Q;
+      // Mimicks correct()
+    MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
+    x = x + K * (z - H * x);
+    p = (I - K * H) * p;
+    ASSERT_EQ(kalmanMathWithoutControl.getStateEstimate(), x)
+      << expected_state_estimate_err;
+    ASSERT_EQ(kalmanMathWithoutControl.getStateCovariance(), p)
+      << expected_covariance_err;
+  }
+}
 
 /**
  * Test fixture for testing whether the filter (without control) updates the X Vector and P Matrix

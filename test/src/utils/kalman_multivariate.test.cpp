@@ -247,14 +247,14 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
     MatrixXf R = R_Data[0];
     VectorXf z = z_Data[0];
     VectorXf u = u_Data[0];
-    kalmanMathWithoutControl.setModels(A, B, Q, H, R);
+    kalmanMathWithoutControl.setModels(A, Q, H, R);
     kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
     VectorXf x = kalmanMathWithoutControl.getStateEstimate();
     MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
   for (int i =0; i < 50; i++) {
-    kalmanMathWithoutControl.filter(u, z);
+    kalmanMathWithoutControl.filter(z);
     // Mimicks filter(VectorXf& u, VectorXf& z)
-    x = A * x + B * u;
+    x = A * x;
     p = (A * p * A.transpose()) + Q;
       // Mimicks correct()
     MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();

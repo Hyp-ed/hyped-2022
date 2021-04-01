@@ -136,6 +136,32 @@ TEST_F(KalmanFunctionality, handlesUpdateInA)
   ASSERT_EQ(kalman_two.getStateEstimate(), x1);
   ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
 }
+TEST_F(KalmanFunctionality, handlesUpdateInR)
+{
+  KalmanMultivariate kalman_two = KalmanMultivariate(n, m, 0);
+  VectorXf x1 = VectorXf::Random(n);
+  while (x1 == VectorXf::Zero(n)) {
+    x1 = VectorXf::Random(n, n);
+  }
+  A = MatrixXf::Identity(n, n);
+  B = MatrixXf::Zero(n, k);
+  Q = MatrixXf::Zero(n, n);
+  H = MatrixXf::Random(m, n);
+  R = MatrixXf::Identity(m, m);
+  kalman.setModels(A, Q, H, R);
+  kalman_two.setModels(A, Q, H, R);
+  R = MatrixXf::Random(m, m);
+  while (R == MatrixXf::Zero(m, m) || R == MatrixXf::Identity(m, m) || R.determinant() == 0) {
+    R = MatrixXf::Random(m, m);
+  }
+  kalman_two.updateR(R);
+  kalman.setInitial(x1, P);
+  kalman_two.setInitial(x1, P);
+  z = VectorXf::Random(m);
+  kalman_two.filter(z);
+  kalman.filter(z);
+  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
+}
 // -------------------------------------------------------------------------------------------------
 // Mathematical Properties
 // -------------------------------------------------------------------------------------------------

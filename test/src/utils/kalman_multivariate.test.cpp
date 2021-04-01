@@ -103,6 +103,11 @@ TEST_F(KalmanFunctionality, handlesArbitraryStateCovariance)
 {
   ASSERT_EQ(kalman.getStateCovariance(), P) << arb_covariance_err;
 }
+
+/**
+ * Test fixture used for determining whether Kalman handles an update on the State transition matrix
+ * It will be updated twice, first to the Zero Matrix and then to to Identity Matrix
+ */
 TEST_F(KalmanFunctionality, handlesUpdateInA)
 {
   KalmanMultivariate kalman_two = KalmanMultivariate(n, m, 0);
@@ -136,6 +141,11 @@ TEST_F(KalmanFunctionality, handlesUpdateInA)
   ASSERT_EQ(kalman_two.getStateEstimate(), x1);
   ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
 }
+
+/**
+ * Test fixture used for determining whether Kalman handles an update on the Noise covariance matrix
+ * It will be updated once to a random matrix and it starts being the identity.
+ */
 TEST_F(KalmanFunctionality, handlesUpdateInR)
 {
   KalmanMultivariate kalman_two = KalmanMultivariate(n, m, 0);

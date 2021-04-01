@@ -384,3 +384,65 @@ TEST_F(KalmanIdentity, handlesIdentity)
     ASSERT_EQ(kalman.getStateCovariance(), P);
   }
 }
+
+struct KalmanExceptions : public ::testing::Test {
+ public:
+  unsigned int n = 2;
+  unsigned int m = 3;
+  unsigned int k = 1;
+  unsigned int c = 10;
+
+  KalmanMultivariate kalman = KalmanMultivariate(n, m, 0);
+  VectorXf x0 = VectorXf::Zero(c);
+  VectorXf x1 = VectorXf::Random(n);
+  VectorXf z = VectorXf::Random(n);
+  MatrixXf P0 = MatrixXf::Zero(n, n);
+  MatrixXf A = MatrixXf::Random(n, n);
+  MatrixXf B = MatrixXf::Random(n, k);
+  MatrixXf Q = MatrixXf::Random(n, n);
+  MatrixXf H = MatrixXf::Random(m, n);
+  MatrixXf R = MatrixXf::Random(m, m);
+  MatrixXf P = MatrixXf::Random(n, n);
+  std::string zero_state_estimate_err = "Should handle zero vector as state estimate";
+  std::string arb_state_estimate_err = "Should handle any arbitrary vector as state estimate";
+  std::string zero_covariance_err = "Should handle zero state covariance";
+  std::string arb_covariance_err = "Should handle any arbitrary state covariance";
+
+  void SetUp()
+  {}
+  void TearDown() {}
+};
+TEST_F(KalmanExceptions, handlesDimensionalityIssues)
+{
+  EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument);
+  P0=  MatrixXf::Zero(k, m);
+  VectorXf x0 = VectorXf::Zero(n);
+  EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument);
+  MatrixXf A = MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.updateA(A), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  A = MatrixXf::Random(n, n);
+  Q = MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  Q = MatrixXf::Random(n, n);
+  H = MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  H = MatrixXf::Random(n, n);
+  R =MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  A = MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  A = MatrixXf::Random(n, n);
+  Q = MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  Q = MatrixXf::Random(n, n);
+  H = MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  H = MatrixXf::Random(n, n);
+  R =MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.updateR(R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  R = MatrixXf::Random(m, m);
+  B =MatrixXf::Random(k, m);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+}

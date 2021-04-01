@@ -238,6 +238,13 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
       << expected_covariance_err;
   }
 }
+/**
+ * Test fixture for testing whether the filter (without control) updates the X Vector and P Matrix
+ * accordingly in several filter operations.
+ * Maths has been replicated throughout since to track the values updating and final
+ * assert at the end checks that the values are as expected.
+ * Checks that both the X vector and P Matrix are updated appropriately
+ */
 TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
 {
     MatrixXf A = A_Data[0];

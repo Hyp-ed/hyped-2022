@@ -220,6 +220,12 @@ struct KalmanMathematics : public::testing::Test {
 
   void TearDown() {}
 };
+/**
+ * Test fixture for testing whether the filter (with control) updates the X Vector and P Matrix
+ * accordingly. Maths has been replicated throughout since to track the values updating and final
+ * assert at the end checks that the values are as expected.
+ * Checks that both the X vector and P Matrix are updated appropriately
+ */
 TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
 {
     MatrixXf A = A_Data[0];
@@ -356,6 +362,10 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
       << expected_covariance_err;
   }
 }
+/**
+ * Struct used for testing the properties of the kalman filter under identity operations, those that
+ * do not modify neither the state vector nor the vocariance matrix on each filter().
+ */
 struct KalmanIdentity : public ::testing::Test {
  protected:
   unsigned int n = 2;
@@ -392,6 +402,15 @@ struct KalmanIdentity : public ::testing::Test {
   }
   void TearDown() {}
 };
+
+/**
+ * Test fixture for testing whether the filter updates the X Vector and P Matrix
+ * accordingly, in this case the matrices have been created in a way that the state
+ * vector and the covariance should be mantained constant through all the filter() runs.
+ * Maths has been replicated throughout since to track the values updating and final
+ * assert at the end checks that the values are as expected.
+ * Checks that both the X vector and P Matrix are updated appropriately
+ */
 TEST_F(KalmanIdentity, handlesIdentity)
 {
   for (int i = 0; i < 50; i++) {
@@ -401,6 +420,9 @@ TEST_F(KalmanIdentity, handlesIdentity)
   }
 }
 
+/**
+ * Struct used for testing the excpetions thrown by the class KalmanMultivariate
+ */
 struct KalmanExceptions : public ::testing::Test {
  public:
   unsigned int n = 2;
@@ -428,6 +450,12 @@ struct KalmanExceptions : public ::testing::Test {
   {}
   void TearDown() {}
 };
+
+/**
+ * Test fixture for testing whether Kalman can andle the case of matrices having wrong dimensions,
+ * This test will change the dimensions of the different matrices and it will chek that the
+ * programme throws and appropriate exception.
+ */
 TEST_F(KalmanExceptions, handlesDimensionalityIssues)
 {
   EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument);

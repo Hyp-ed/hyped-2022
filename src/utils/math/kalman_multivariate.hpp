@@ -35,16 +35,7 @@ namespace hyped {
              */
             class KalmanMultivariate {
              public:
-              /**
-
-               * @brief    Construct a new Kalman object with respective dimensions (without control)
-               *
-               * @param[in] n                       state dimensionality
-               * @param[in] m                       measurement dimensionality
-               */
-              KalmanMultivariate(unsigned int n, unsigned int m);
-
-              /**
+               /**
                * @brief    Construct a new Kalman object with respective dimensions (with control)
                *
                * @param[in] n                       state dimensionality

@@ -103,7 +103,6 @@ bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.calibrate_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kCalibrateCommandLog);
   return true;
 }
 
@@ -111,7 +110,6 @@ bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.launch_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kLaunchCommandLog);
   return true;
 }
 
@@ -119,7 +117,6 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
 
-  log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownCommandLog);
   return true;
 }
 
@@ -129,8 +126,8 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
 {
-  float remaining_distance = nav_data.run_length - nav_data.displacement;
-  float required_distance  = nav_data.braking_distance + nav_data.braking_buffer;
+  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
+  data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
   if (remaining_distance > required_distance) return false;
 
   log.INFO(Messages::kStmLoggingIdentifier, Messages::kBrakingZoneLog);

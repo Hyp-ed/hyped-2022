@@ -27,25 +27,26 @@ namespace utils
 {
 namespace math
 {
+
   /**
  * @brief Helper method used to generate an array of three random integers.
  * each integer will be in the range -1000, 1000 (not inclusive)
  */
-std::array<int, 3> createRandomArray()
+std::array<int, 3> createRandomArrayForOperations()
 {
-  std::srand(time(0));
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
     output[i] = rand()%1000;
   }
   return output;
 }
+
 /**
  * @brief Helper method used to generate an array of three random integers.
  * Also none of those Integers will be zero.
  * each integer will be in the range -1000, 1000 (not inclusive)
  */
-std::array<int, 3> createRandomWithoutZeroesArray()
+std::array<int, 3> RandomNonZeroArrayForOperations()
 {
   std::array<int, 3> output = std::array<int, 3>();
   for (int i = 0;i < 3;i++) {
@@ -56,6 +57,7 @@ std::array<int, 3> createRandomWithoutZeroesArray()
   }
   return output;
 }
+
 /**
  * @brief Struct used to set up all the variables (vectors) used in the tests for basic operations
  * of vector with other vectors.
@@ -70,13 +72,15 @@ struct OperationsTest : public::testing::Test
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
   void SetUp()
-{
-    array_one = createRandomArray();
-    array_two = createRandomWithoutZeroesArray();
+  {
+    std::srand(time(0));
+    array_one = createRandomArrayForOperations();
+    array_two = RandomNonZeroArrayForOperations();
     vector_one = Vector<int, 3>(array_one);
     vector_two = Vector<int, 3>(array_two);
   }
 };
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows accessing
  * and modifying the elements of a vector in a normal way using [] operator.
@@ -93,12 +97,14 @@ TEST_F(OperationsTest, allowsAccessAndModification)
   ASSERT_NE(vector_one[0], 10);
   ASSERT_EQ(vector_one[0], 11);
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows adding  a
  * vector to another vector in place in a normal way (element by element),
  * this tests the operator (+=).
  * The test will be performed using two random 3D vectors.
  */
+
 TEST_F(OperationsTest, allowsAddition)
 {
   vector_one+=vector_two;
@@ -106,6 +112,7 @@ TEST_F(OperationsTest, allowsAddition)
     ASSERT_EQ(vector_one[i], vector_two[i]+array_one[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows adding in
  * a normal way (element by element), this tests the operator (+).
@@ -118,6 +125,7 @@ TEST_F(OperationsTest, allowsAutoAddition)
     ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * substracting a vector to another vector in place in a normal way (element by element),
@@ -131,6 +139,7 @@ TEST_F(OperationsTest, allowsSubstraction)
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * substracting a vector to another vector in place in a normal way (element by element),
@@ -144,6 +153,7 @@ TEST_F(OperationsTest, allowsAutoSubstraction)
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a vector to another vector in place in a normal way (element by element)
@@ -157,6 +167,7 @@ TEST_F(OperationsTest, allowsMultiplication)
     ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a vector to another vector in place in a normal way (element by element),
@@ -170,6 +181,7 @@ TEST_F(OperationsTest, allowsAutoMultiplication)
     ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * dividing a vector to another vector in a normal way (element by element),
@@ -183,6 +195,7 @@ TEST_F(OperationsTest, allowsAutoDivision)
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * dividing a vector to another vector in place in a normal way (element by element),
@@ -196,6 +209,7 @@ TEST_F(OperationsTest, allowsDivision)
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i]/vector_two[i]));
   }
 }
+
 /**
  * @brief Test used to check that the Square root operation is implemented and working.
  */
@@ -206,6 +220,7 @@ TEST_F(OperationsTest, allowsSqrt)
     ASSERT_EQ(static_cast<int>(std::sqrt(vector_one[i])), result_one[i]);
   }
 }
+
 /**
  * @brief Test used to check that the norm operation is implemented and working correctly.
  */
@@ -219,6 +234,7 @@ TEST_F(OperationsTest, allowsNorm)
   result = std::sqrt(result);
   ASSERT_EQ(result, norm);
 }
+
 /**
  * @brief Test used to check that the to unit vector operation is implemented and working correctly.
  * Must take into account that we are working with integers not floats.
@@ -231,6 +247,7 @@ TEST_F(OperationsTest, allowsToUnitVector)
     ASSERT_EQ(result_one[i], static_cast<int>(vector_one[i]/norm));
   }
 }
+
 /**
  * @brief Struct used to set up all the variables used in the test the equality operation of vectors
  */
@@ -242,11 +259,12 @@ struct EqualityOperation: public :: testing::Test
   Vector<int, 3> vector_two;
   void SetUp()
   {
-    values = createRandomArray();
+    values = createRandomArrayForOperations();
     vector_one = Vector<int, 3>(values);
     vector_two = Vector<int, 3>(values);
   }
 };
+
 /**
  * @brief Test used to some equality properties with the identiy vector (0,0,0)
  * It checks that a vetor minus the identity is equal to the original vector.
@@ -260,6 +278,7 @@ TEST_F(EqualityOperation, handlesEqualityIdentity)
   vector_two = vector_one - vector_one;
   ASSERT_TRUE(vector_two == identiy);
 }
+
 /**
  * @brief Test used to check if the Equality is implemented in a correct way.
  */
@@ -270,6 +289,7 @@ TEST_F(EqualityOperation, handlesEquality)
   }
   ASSERT_TRUE(vector_one == vector_two);
 }
+
 /**
  * @brief Test used to check if the Equality is symmetric.
  */
@@ -278,6 +298,4 @@ TEST_F(EqualityOperation, handlesSymmetry)
   ASSERT_TRUE(vector_one == vector_two);
   ASSERT_TRUE(vector_two == vector_one);
 }
-}
-}
-}
+}}}  // hyped::utils::math

@@ -1,8 +1,7 @@
 /*
- * Author: Franz Miltz
+ * Author: Efe Ozbatur, Franz Miltz
  * Organisation: HYPED
- * Date:
- * Description:
+ * Date: 06.04.2021
  *
  *    Copyright 2019 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -65,21 +64,29 @@ struct StateTest : public ::testing::Test {
 // Test structures
 //---------------------------------------------------------------------------
 
-struct IdleTest : public StateTest { };
+struct IdleTest : public StateTest {
+};
 
-struct CalibratingTest : public StateTest { };
+struct CalibratingTest : public StateTest {
+};
 
-struct ReadyTest : public StateTest { };
+struct ReadyTest : public StateTest {
+};
 
-struct AcceleratingTest : public StateTest { };
+struct AcceleratingTest : public StateTest {
+};
 
-struct NominalBrakingTest : public StateTest { };
+struct NominalBrakingTest : public StateTest {
+};
 
-struct FinishedTest : public StateTest { };
+struct FinishedTest : public StateTest {
+};
 
-struct FailureBrakingTest : public StateTest { };
+struct FailureBrakingTest : public StateTest {
+};
 
-struct FailureStoppedTest : public StateTest { };
+struct FailureStoppedTest : public StateTest {
+};
 
 //---------------------------------------------------------------------------
 // Randomiser
@@ -108,7 +115,7 @@ class Randomiser {
   {
     // Randomises the module status.
     constexpr int num_statuses = 4;
-    module_status = static_cast<ModuleStatus>(rand() % num_statuses);
+    module_status              = static_cast<ModuleStatus>(rand() % num_statuses);
   }
 
   static void randomiseNavigation(Navigation &nav_data)
@@ -123,8 +130,8 @@ class Randomiser {
     nav_data.acceleration = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
 
     // Generates an emergency braking distance length between 600 and 899.
-    nav_data.emergency_braking_distance =
-      static_cast<nav_t>((rand() % 300 + 600) + randomDecimal());
+    nav_data.emergency_braking_distance
+      = static_cast<nav_t>((rand() % 300 + 600) + randomDecimal());
 
     // Generates a braking distance length between 600 and 899.
     // Initially declared braking distance = 750
@@ -155,7 +162,7 @@ class Randomiser {
   {
     // Generates a count timestamp and value between 0 and 10.
     stripe_counter.count.timestamp = static_cast<uint32_t>(rand() % 11);
-    stripe_counter.count.value = static_cast<uint32_t>(rand() % 11);
+    stripe_counter.count.value     = static_cast<uint32_t>(rand() % 11);
   }
 
   static void randomiseTemperatureData(TemperatureData &temp_data)
@@ -226,11 +233,11 @@ class Randomiser {
   static void randomiseTelemetry(Telemetry &telemetry_data)
   {
     // Generates a random bool value for all telemetry commands.
-    telemetry_data.calibrate_command = static_cast<bool>(rand() > (RAND_MAX / 2));
-    telemetry_data.launch_command = static_cast<bool>(rand() > (RAND_MAX / 2));
-    telemetry_data.shutdown_command = static_cast<bool>(rand() > (RAND_MAX / 2));
-    telemetry_data.service_propulsion_go = static_cast<bool>(rand() > (RAND_MAX / 2));
-    telemetry_data.emergency_stop_command = static_cast<bool>(rand() > (RAND_MAX / 2));
+    telemetry_data.calibrate_command       = static_cast<bool>(rand() > (RAND_MAX / 2));
+    telemetry_data.launch_command          = static_cast<bool>(rand() > (RAND_MAX / 2));
+    telemetry_data.shutdown_command        = static_cast<bool>(rand() > (RAND_MAX / 2));
+    telemetry_data.service_propulsion_go   = static_cast<bool>(rand() > (RAND_MAX / 2));
+    telemetry_data.emergency_stop_command  = static_cast<bool>(rand() > (RAND_MAX / 2));
     telemetry_data.nominal_braking_command = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
 
@@ -244,14 +251,14 @@ class Randomiser {
   }
 
   static void generateAllPermutations(ModuleStatus &module_status, EmergencyBrakes &embrakes_data,
-                            Navigation &nav_data, Batteries &batteries_data,
-                            Telemetry &telemetry_data, Sensors &sensors_data, Motors &motors_data)
+                                      Navigation &nav_data, Batteries &batteries_data,
+                                      Telemetry &telemetry_data, Sensors &sensors_data,
+                                      Motors &motors_data)
   {
     constexpr int num_statuses = 4;
-    constexpr int num_modules = 6;
-    for (int i = 0; i <= pow(static_cast<double>(num_statuses),
-      static_cast<double>(num_modules)); i++)
-      {
+    constexpr int num_modules  = 6;
+    for (int i = 0; i <= pow(static_cast<double>(num_statuses), static_cast<double>(num_modules));
+         i++) {
       embrakes_data.module_status = static_cast<ModuleStatus>(i % num_modules);
       i /= num_statuses;
       nav_data.module_status = static_cast<ModuleStatus>(i % num_modules);
@@ -268,7 +275,6 @@ class Randomiser {
   }
 };
 
-
 //---------------------------------------------------------------------------
 //--------------------------------- TESTS -----------------------------------
 //---------------------------------------------------------------------------
@@ -279,7 +285,7 @@ class Randomiser {
 
 TEST_F(IdleTest, handlesEmergency)
 {
-  Data &data = Data::getInstance();
+  Data &data  = Data::getInstance();
   Idle *state = Idle::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -301,7 +307,7 @@ TEST_F(IdleTest, handlesEmergency)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
@@ -314,7 +320,7 @@ TEST_F(IdleTest, handlesEmergency)
 
 TEST_F(IdleTest, handlesCalibrateCommand)
 {
-  Data &data = Data::getInstance();
+  Data &data  = Data::getInstance();
   Idle *state = Idle::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -336,22 +342,20 @@ TEST_F(IdleTest, handlesCalibrateCommand)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
 
     if (!has_emergency) {
-      bool calibrate_command = checkCalibrateCommand(log, telemetry_data);
+      bool calibrate_command                 = checkCalibrateCommand(log, telemetry_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
-      if (!calibrate_command) {
-        ASSERT_EQ(new_state, nullptr);
-      }
+      if (!calibrate_command) { ASSERT_EQ(new_state, nullptr); }
     }
   }
 }
 
 TEST_F(IdleTest, handlesAllInitialised)
 {
-  Data &data = Data::getInstance();
+  Data &data  = Data::getInstance();
   Idle *state = Idle::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -373,13 +377,13 @@ TEST_F(IdleTest, handlesAllInitialised)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
 
     bool calibrate_command = checkCalibrateCommand(log, telemetry_data);
 
     if (!has_emergency && !calibrate_command) {
       bool all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                                 telemetry_data, sensors_data, motors_data);
+                                                     telemetry_data, sensors_data, motors_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (all_initialised) {
@@ -397,7 +401,7 @@ TEST_F(IdleTest, handlesAllInitialised)
 
 TEST_F(CalibratingTest, handlesEmergency)
 {
-  Data &data = Data::getInstance();
+  Data &data         = Data::getInstance();
   Calibrating *state = Calibrating::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -419,7 +423,7 @@ TEST_F(CalibratingTest, handlesEmergency)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
@@ -432,7 +436,7 @@ TEST_F(CalibratingTest, handlesEmergency)
 
 TEST_F(CalibratingTest, handlesAllReady)
 {
-  Data &data = Data::getInstance();
+  Data &data         = Data::getInstance();
   Calibrating *state = Calibrating::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -454,7 +458,7 @@ TEST_F(CalibratingTest, handlesAllReady)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
 
     if (!has_emergency) {
       bool all_ready = checkModulesReady(log, embrakes_data, nav_data, motors_data);
@@ -475,7 +479,7 @@ TEST_F(CalibratingTest, handlesAllReady)
 
 TEST_F(ReadyTest, handlesEmergency)
 {
-  Data &data = Data::getInstance();
+  Data &data   = Data::getInstance();
   Ready *state = Ready::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -497,7 +501,7 @@ TEST_F(ReadyTest, handlesEmergency)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
@@ -510,7 +514,7 @@ TEST_F(ReadyTest, handlesEmergency)
 
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
-  Data &data = Data::getInstance();
+  Data &data   = Data::getInstance();
   Ready *state = Ready::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -532,10 +536,10 @@ TEST_F(ReadyTest, handlesLaunchCommand)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
 
     if (!has_emergency) {
-      bool received_launch_command = checkLaunchCommand(log, telemetry_data);
+      bool received_launch_command           = checkLaunchCommand(log, telemetry_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (received_launch_command) {
@@ -553,7 +557,7 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 
 TEST_F(AcceleratingTest, handlesEmergency)
 {
-  Data &data = Data::getInstance();
+  Data &data          = Data::getInstance();
   Accelerating *state = Accelerating::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -575,7 +579,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
@@ -588,7 +592,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
 
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
-  Data &data = Data::getInstance();
+  Data &data          = Data::getInstance();
   Accelerating *state = Accelerating::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -610,10 +614,10 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
 
     if (!has_emergency) {
-      bool in_braking_zone = checkEnteredBrakingZone(log, nav_data);
+      bool in_braking_zone                   = checkEnteredBrakingZone(log, nav_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (in_braking_zone) {
@@ -631,7 +635,7 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
 
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
-  Data &data = Data::getInstance();
+  Data &data            = Data::getInstance();
   NominalBraking *state = NominalBraking::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -653,7 +657,7 @@ TEST_F(NominalBrakingTest, handlesEmergency)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
@@ -666,7 +670,7 @@ TEST_F(NominalBrakingTest, handlesEmergency)
 
 TEST_F(NominalBrakingTest, handlesStopped)
 {
-  Data &data = Data::getInstance();
+  Data &data            = Data::getInstance();
   NominalBraking *state = NominalBraking::getInstance();
 
   EmergencyBrakes embrakes_data;
@@ -688,15 +692,13 @@ TEST_F(NominalBrakingTest, handlesStopped)
     data.setMotorData(motors_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                      telemetry_data, sensors_data, motors_data);
+                                        telemetry_data, sensors_data, motors_data);
 
     if (!has_emergency) {
-      bool stopped = checkPodStopped(log, nav_data);
+      bool stopped                           = checkPodStopped(log, nav_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
-      if (stopped) {
-        ASSERT_EQ(new_state, Finished::getInstance());
-      }
+      if (stopped) { ASSERT_EQ(new_state, Finished::getInstance()); }
     }
   }
 }
@@ -707,7 +709,7 @@ TEST_F(NominalBrakingTest, handlesStopped)
 
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
-  Data &data = Data::getInstance();
+  Data &data      = Data::getInstance();
   Finished *state = Finished::getInstance();
 
   Telemetry telemetry_data;
@@ -717,7 +719,7 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 
     data.setTelemetryData(telemetry_data);
 
-    bool received_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (received_shutdown_command) {
@@ -734,7 +736,7 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 
 TEST_F(FailureBrakingTest, handlesStopped)
 {
-  Data &data = Data::getInstance();
+  Data &data            = Data::getInstance();
   FailureBraking *state = FailureBraking::getInstance();
 
   Navigation nav_data;
@@ -744,12 +746,10 @@ TEST_F(FailureBrakingTest, handlesStopped)
 
     data.setNavigationData(nav_data);
 
-    bool stopped = checkPodStopped(log, nav_data);
+    bool stopped                           = checkPodStopped(log, nav_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
-    if (stopped) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance());
-    }
+    if (stopped) { ASSERT_EQ(new_state, FailureStopped::getInstance()); }
   }
 }
 
@@ -759,7 +759,7 @@ TEST_F(FailureBrakingTest, handlesStopped)
 
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {
-  Data &data = Data::getInstance();
+  Data &data            = Data::getInstance();
   FailureStopped *state = FailureStopped::getInstance();
 
   Telemetry telemetry_data;
@@ -769,7 +769,7 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
 
     data.setTelemetryData(telemetry_data);
 
-    bool received_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (received_shutdown_command) {

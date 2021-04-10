@@ -388,7 +388,7 @@ struct KalmanIdentity : public ::testing::Test {
   MatrixXf R = MatrixXf::Identity(m, m);
   MatrixXf P = MatrixXf::Random(n, n);
   std::string identity_error =
-   "The filter() should not have any effect on the covariance and state given these conditions";
+    "The filter() should not have any effect on the covariance and state given these conditions";
 
   void SetUp()
   {

@@ -414,10 +414,10 @@ TEST_F(KalmanIdentity, handlesIdentity)
 {
   for (int i = 0; i < NUM_TESTDATA; i++) {
     kalman.filter(u, z);
-    ASSERT_EQ(kalman.getStateEstimate(), x0);
-      << identity_error
-    ASSERT_EQ(kalman.getStateCovariance(), P);
-      << identity_error
+    ASSERT_EQ(kalman.getStateEstimate(), x0)
+      << identity_error;
+    ASSERT_EQ(kalman.getStateCovariance(), P)
+      << identity_error;
   }
 }
 

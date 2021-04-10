@@ -273,7 +273,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
     kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
     VectorXf x = kalmanMathWithoutControl.getStateEstimate();
     MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
-  for (int i =0; i < 50; i++) {
+  for (int i =0; i < NUM_TESTDATA; i++) {
     kalmanMathWithoutControl.filter(z);
     // Mimicks filter(VectorXf& u, VectorXf& z)
     x = A * x;
@@ -373,6 +373,7 @@ struct KalmanIdentity : public ::testing::Test {
   unsigned int k = 1;
 
   KalmanMultivariate kalman = KalmanMultivariate(n, m, k);
+  static constexpr int NUM_TESTDATA = 50;
   VectorXf x0 = VectorXf::Random(n);
   VectorXf x1 = VectorXf::Random(n);
   VectorXf z = VectorXf::Zero(m);
@@ -413,7 +414,7 @@ struct KalmanIdentity : public ::testing::Test {
  */
 TEST_F(KalmanIdentity, handlesIdentity)
 {
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < NUM_TESTDATA; i++) {
     kalman.filter(u, z);
     ASSERT_EQ(kalman.getStateEstimate(), x0);
     ASSERT_EQ(kalman.getStateCovariance(), P);

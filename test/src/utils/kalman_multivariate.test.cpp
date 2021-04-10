@@ -442,6 +442,8 @@ struct KalmanExceptions : public ::testing::Test {
   MatrixXf H = MatrixXf::Random(m, n);
   MatrixXf R = MatrixXf::Random(m, m);
   MatrixXf P = MatrixXf::Random(n, n);
+  std::string exception_err =
+    "The matrices used have the wrong dimensions, an invalid_argument excpetion is expected";
 
   void SetUp()
   {}
@@ -455,35 +457,47 @@ struct KalmanExceptions : public ::testing::Test {
  */
 TEST_F(KalmanExceptions, handlesDimensionalityIssues)
 {
-  EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument);
+  EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument)
+    <<exception_err;
   P0=  MatrixXf::Zero(k, m);
   VectorXf x0 = VectorXf::Zero(n);
-  EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument);
+  EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument)
+    <<exception_err;
   MatrixXf A = MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.updateA(A), std::invalid_argument);
-  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.updateA(A), std::invalid_argument)
+    <<exception_err;
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument)
+    <<exception_err;
   A = MatrixXf::Random(n, n);
   Q = MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument)
+    <<exception_err;
   Q = MatrixXf::Random(n, n);
   H = MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument)
+    <<exception_err;
   H = MatrixXf::Random(n, n);
   R =MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument)
+    <<exception_err;
   A = MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument)
+    <<exception_err;
   A = MatrixXf::Random(n, n);
   Q = MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument)
+    <<exception_err;
   Q = MatrixXf::Random(n, n);
   H = MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument)
+    <<exception_err;
   H = MatrixXf::Random(n, n);
   R =MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.updateR(R), std::invalid_argument);
-  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument)
+    <<exception_err;
   R = MatrixXf::Random(m, m);
   B =MatrixXf::Random(k, m);
-  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument);
+  EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument)
+    <<exception_err;
 }

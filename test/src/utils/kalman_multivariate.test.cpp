@@ -387,10 +387,8 @@ struct KalmanIdentity : public ::testing::Test {
   MatrixXf H = MatrixXf::Zero(m, n);
   MatrixXf R = MatrixXf::Identity(m, m);
   MatrixXf P = MatrixXf::Random(n, n);
-  std::string zero_state_estimate_err = "Should handle zero vector as state estimate";
-  std::string arb_state_estimate_err = "Should handle any arbitrary vector as state estimate";
-  std::string zero_covariance_err = "Should handle zero state covariance";
-  std::string arb_covariance_err = "Should handle any arbitrary state covariance";
+  std::string identity_error =
+   "The filter() should not have any effect on the covariance and state given these conditions";
 
   void SetUp()
   {

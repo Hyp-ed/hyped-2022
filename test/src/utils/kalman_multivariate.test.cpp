@@ -56,6 +56,7 @@ struct KalmanFunctionality : public ::testing::Test {
   std::string arb_state_estimate_err = "Should handle any arbitrary vector as state estimate";
   std::string zero_covariance_err = "Should handle zero state covariance";
   std::string arb_covariance_err = "Should handle any arbitrary state covariance";
+  std::string update_err = "Should allow updating the matrix";
 
   void SetUp()
   {
@@ -132,14 +133,18 @@ TEST_F(KalmanFunctionality, handlesUpdateInA)
   z = VectorXf::Zero(m);
   kalman_two.filter(z);
   kalman.filter(z);
-  ASSERT_EQ(kalman_two.getStateEstimate(), VectorXf::Zero(n));
-  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
+  ASSERT_EQ(kalman_two.getStateEstimate(), VectorXf::Zero(n))
+    <<update_err;
+  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate())
+    <<update_err;
   A = MatrixXf::Identity(n, n);
   kalman_two.updateA(A);
   kalman_two.setInitial(x1, P);
   kalman_two.filter(z);
-  ASSERT_EQ(kalman_two.getStateEstimate(), x1);
-  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
+  ASSERT_EQ(kalman_two.getStateEstimate(), x1)
+    <<update_err;
+  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate())
+    <<update_err;
 }
 
 /**
@@ -170,7 +175,8 @@ TEST_F(KalmanFunctionality, handlesUpdateInR)
   z = VectorXf::Random(m);
   kalman_two.filter(z);
   kalman.filter(z);
-  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate());
+  ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate())
+    <<update_err;
 }
 // -------------------------------------------------------------------------------------------------
 // Mathematical Properties

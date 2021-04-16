@@ -489,6 +489,8 @@ struct ReadyTest : public StateTest {
 /**
  * Ensures that if any module reports an emergency,
  * the state changes to FailureStopped.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(ReadyTest, handlesEmergency)
 {
@@ -511,6 +513,8 @@ TEST_F(ReadyTest, handlesEmergency)
  * Ensures that if no module reports an emergency and if
  * the launch command is received while in the ready state,
  * the state changes to the accelerating state.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
@@ -550,6 +554,8 @@ struct AcceleratingTest : public StateTest {
 /**
  * Ensures that if any module reports an emergency,
  * the state changes to FailureBraking.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(AcceleratingTest, handlesEmergency)
 {
@@ -572,6 +578,8 @@ TEST_F(AcceleratingTest, handlesEmergency)
  * Ensures that if no emergency is reported from any module and
  * if the pod is in the braking zone, the state changes to the
  * nominal braking state.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
@@ -611,6 +619,8 @@ struct NominalBrakingTest : public StateTest {
 /**
  * Ensures that if any module reports an emergency,
  * the state changes to FailureBraking.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
@@ -632,6 +642,8 @@ TEST_F(NominalBrakingTest, handlesEmergency)
 /**
  * Ensures that if no emergency is reported from any module and
  * if the pod is stopped, the state changes to the finished state.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(NominalBrakingTest, handlesStopped)
 {
@@ -668,6 +680,8 @@ struct FinishedTest : public StateTest {
 /**
  * Ensures that if the shutdown command is received while in the
  * finished state, the state changes to the off state.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
@@ -699,6 +713,8 @@ struct FailureBrakingTest : public StateTest {
 /**
  * Ensures that if the pod is stopped while in the failure
  * braking state, the state changes to FailureStopped.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(FailureBrakingTest, handlesStopped)
 {
@@ -730,6 +746,8 @@ struct FailureStoppedTest : public StateTest {
 /**
  * Ensures that if the shutdown command is received while in the
  * failure stopped state, the state changes to the off state.
+ *
+ * Time complexity: O(TEST_SIZE)
  */
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {

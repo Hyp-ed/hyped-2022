@@ -35,12 +35,24 @@ using namespace hyped::state_machine;
 /**
  * Struct used for testing state behaviour. Contains
  *
+ * 1. Variables
  * 1. Logger
  * 2. Error messages
  * 3. Constant test size
  */
 
 struct StateTest : public ::testing::Test {
+  // ---- Variables ------------
+
+  Data &data = Data::getInstance();
+
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
   // ---- Logger ---------------
 
   hyped::utils::Logger log;
@@ -51,19 +63,6 @@ struct StateTest : public ::testing::Test {
 
   const std::string not_enter_emergency_error    = "Does not enter emergency when required.";
   const std::string enter_emergency_error        = "Enters emergency when not required.";
-  const std::string calibrate_command_error      = "Should handle calibrate command.";
-  const std::string not_enter_calibrating_error  = "Does not enter Calibrating when required.";
-  const std::string enter_calibrating_error      = "Enters Calibrating when not required.";
-  const std::string not_enter_ready_error        = "Does not enter Ready when required.";
-  const std::string enter_ready_error            = "Enters Ready when not required.";
-  const std::string not_enter_accelerating_error = "Does not enter Accelerating when required.";
-  const std::string enter_accelerating_error     = "Enters Accelerating when not required.";
-  const std::string not_enter_braking_error
-    = "Does not enter Nominal Braking when required.";
-  const std::string enter_braking_error
-    = "Enters Nominal Braking when not required.";
-  const std::string not_enter_finished_error     = "Does not enter Finished when required.";
-  const std::string enter_finished_error         = "Enters Finished when not required.";
   const std::string not_enter_off_error          = "Does not enter Off when required.";
   const std::string enter_off_error              = "Enters Off when not required.";
   const std::string not_enter_failure_stopped_error
@@ -158,8 +157,7 @@ class Randomiser {
       imu_data.acc[i] = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
     }
     for (int i = 0; i < 3; i++) {
-      imu_data.fifo.push_back
-        (static_cast<NavigationVector>((rand() % 100 + 75) + randomDecimal()));
+      imu_data.fifo.push_back(static_cast<NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
   }
 
@@ -329,16 +327,16 @@ class Randomiser {
 // Idle Tests
 //---------------------------------------------------------------------------
 
+/**
+ * Struct used for testing idle state behaviour.
+ */
+
 struct IdleTest : public StateTest {
-  Data &data = Data::getInstance();
   Idle *state = Idle::getInstance();
 
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
+  const std::string calibrate_command_error      = "Should handle calibrate command.";
+  const std::string not_enter_calibrating_error  = "Does not enter Calibrating when required.";
+  const std::string enter_calibrating_error      = "Enters Calibrating when not required.";
 };
 
 /**
@@ -458,16 +456,15 @@ TEST_F(IdleTest, handlesAllInitialised)
 // Calibrating Tests
 //---------------------------------------------------------------------------
 
+/**
+ * Struct used for testing calibrating state behaviour.
+ */
+
 struct CalibratingTest : public StateTest {
-  Data &data = Data::getInstance();
   Calibrating *state = Calibrating::getInstance();
 
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
+  const std::string not_enter_ready_error        = "Does not enter Ready when required.";
+  const std::string enter_ready_error            = "Enters Ready when not required.";
 };
 
 /**
@@ -547,16 +544,15 @@ TEST_F(CalibratingTest, handlesAllReady)
 // Ready Tests
 //---------------------------------------------------------------------------
 
+/**
+ * Struct used for testing ready state behaviour.
+ */
+
 struct ReadyTest : public StateTest {
-  Data &data = Data::getInstance();
   Ready *state = Ready::getInstance();
 
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
+  const std::string not_enter_accelerating_error = "Does not enter Accelerating when required.";
+  const std::string enter_accelerating_error     = "Enters Accelerating when not required.";
 };
 
 /**
@@ -636,16 +632,17 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 // Accelerating Tests
 //---------------------------------------------------------------------------
 
+/**
+ * Struct used for testing accelerating state behaviour.
+ */
+
 struct AcceleratingTest : public StateTest {
-  Data &data = Data::getInstance();
   Accelerating *state = Accelerating::getInstance();
 
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
+  const std::string not_enter_braking_error
+    = "Does not enter Nominal Braking when required.";
+  const std::string enter_braking_error
+    = "Enters Nominal Braking when not required.";
 };
 
 /**
@@ -725,16 +722,15 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
 // Nominal Braking Tests
 //---------------------------------------------------------------------------
 
+/**
+ * Struct used for testing nominal braking state behaviour.
+ */
+
 struct NominalBrakingTest : public StateTest {
-  Data &data = Data::getInstance();
   NominalBraking *state = NominalBraking::getInstance();
 
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
+  const std::string not_enter_finished_error     = "Does not enter Finished when required.";
+  const std::string enter_finished_error         = "Enters Finished when not required.";
 };
 
 /**
@@ -813,11 +809,12 @@ TEST_F(NominalBrakingTest, handlesStopped)
 // Finished Tests
 //---------------------------------------------------------------------------
 
-struct FinishedTest : public StateTest {
-  Data &data = Data::getInstance();
-  Finished *state = Finished::getInstance();
+/**
+ * Struct used for testing finished state behaviour.
+ */
 
-  Telemetry telemetry_data;
+struct FinishedTest : public StateTest {
+  Finished *state = Finished::getInstance();
 };
 
 /**
@@ -847,11 +844,12 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 // Failure Braking Tests
 //---------------------------------------------------------------------------
 
-struct FailureBrakingTest : public StateTest {
-  Data &data = Data::getInstance();
-  FailureBraking *state = FailureBraking::getInstance();
+/**
+ * Struct used for testing failure braking state behaviour.
+ */
 
-  Navigation nav_data;
+struct FailureBrakingTest : public StateTest {
+  FailureBraking *state = FailureBraking::getInstance();
 };
 
 /**
@@ -881,11 +879,12 @@ TEST_F(FailureBrakingTest, handlesStopped)
 // Failure Stopped Tests
 //---------------------------------------------------------------------------
 
-struct FailureStoppedTest : public StateTest {
-  Data &data = Data::getInstance();
-  FailureStopped *state = FailureStopped::getInstance();
+/**
+ * Struct used for testing failure stopped state behaviour.
+ */
 
-  Telemetry telemetry_data;
+struct FailureStoppedTest : public StateTest {
+  FailureStopped *state = FailureStopped::getInstance();
 };
 
 /**

@@ -96,11 +96,9 @@ struct StateTest : public ::testing::Test {
 //---------------------------------------------------------------------------
 
 /**
- * The randomiser class is used to randomise the data that is used
- * by various modules to check different conditions and to test state
- * behaviour in different scenarios.
+ * Randomises entries in data that are used by various modules to check 
+ * different conditions and to test state behaviour in different scenarios.
  */
-
 class Randomiser {
  public:
   Randomiser()
@@ -328,9 +326,8 @@ class Randomiser {
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing idle state behaviour.
+ * Testing Idle behaviour with respect to data
  */
-
 struct IdleTest : public StateTest {
   Idle *state = Idle::getInstance();
 
@@ -341,9 +338,8 @@ struct IdleTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to the failure stopped state.
+ * the state changes to FailureStopped.
  */
-
 TEST_F(IdleTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -378,7 +374,6 @@ TEST_F(IdleTest, handlesEmergency)
  * the calibrate command is not received, a null pointer
  * is returned.
  */
-
 TEST_F(IdleTest, handlesCalibrateCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -415,7 +410,6 @@ TEST_F(IdleTest, handlesCalibrateCommand)
  * the calibrate command is not received and if every module
  * is initialised, the state changes to the calibrating state.
  */
-
 TEST_F(IdleTest, handlesAllInitialised)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -457,7 +451,7 @@ TEST_F(IdleTest, handlesAllInitialised)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing calibrating state behaviour.
+ * Testing Calibrating behaviour with respect to data
  */
 
 struct CalibratingTest : public StateTest {
@@ -469,9 +463,8 @@ struct CalibratingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to the failure stopped state.
+ * the state changes to FailureStopped.
  */
-
 TEST_F(CalibratingTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -506,7 +499,6 @@ TEST_F(CalibratingTest, handlesEmergency)
  * all modules are ready after calibration, the state
  * changes to the ready state.
  */
-
 TEST_F(CalibratingTest, handlesAllReady)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -545,9 +537,8 @@ TEST_F(CalibratingTest, handlesAllReady)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing ready state behaviour.
+ * Testing Ready behaviour with respect to data
  */
-
 struct ReadyTest : public StateTest {
   Ready *state = Ready::getInstance();
 
@@ -557,9 +548,8 @@ struct ReadyTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to the failure stopped state.
+ * the state changes to FailureStopped.
  */
-
 TEST_F(ReadyTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -594,7 +584,6 @@ TEST_F(ReadyTest, handlesEmergency)
  * the launch command is received while in the ready state,
  * the state changes to the accelerating state.
  */
-
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -633,9 +622,8 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing accelerating state behaviour.
+ * Testing Accelerating behaviour with respect to data
  */
-
 struct AcceleratingTest : public StateTest {
   Accelerating *state = Accelerating::getInstance();
 
@@ -647,9 +635,8 @@ struct AcceleratingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to the failure braking state.
+ * the state changes to FailureBraking.
  */
-
 TEST_F(AcceleratingTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -684,7 +671,6 @@ TEST_F(AcceleratingTest, handlesEmergency)
  * if the pod is in the braking zone, the state changes to the
  * nominal braking state.
  */
-
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -723,9 +709,8 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing nominal braking state behaviour.
+ * Testing NominalBraking behaviour with respect to data
  */
-
 struct NominalBrakingTest : public StateTest {
   NominalBraking *state = NominalBraking::getInstance();
 
@@ -735,9 +720,8 @@ struct NominalBrakingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to the failure braking state.
+ * the state changes to FailureBraking.
  */
-
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -771,7 +755,6 @@ TEST_F(NominalBrakingTest, handlesEmergency)
  * Ensures that if no emergency is reported from any module and
  * if the pod is stopped, the state changes to the finished state.
  */
-
 TEST_F(NominalBrakingTest, handlesStopped)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -810,9 +793,8 @@ TEST_F(NominalBrakingTest, handlesStopped)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing finished state behaviour.
+ * Testing Finished behaviour with respect to data
  */
-
 struct FinishedTest : public StateTest {
   Finished *state = Finished::getInstance();
 };
@@ -821,7 +803,6 @@ struct FinishedTest : public StateTest {
  * Ensures that if the shutdown command is received while in the
  * finished state, the state changes to the off state.
  */
-
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -845,18 +826,16 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing failure braking state behaviour.
+ * Testing failure Braking behaviour with respect to data
  */
-
 struct FailureBrakingTest : public StateTest {
   FailureBraking *state = FailureBraking::getInstance();
 };
 
 /**
  * Ensures that if the pod is stopped while in the failure
- * braking state, the state changes to the failure stopped state.
+ * braking state, the state changes to FailureStopped.
  */
-
 TEST_F(FailureBrakingTest, handlesStopped)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -880,9 +859,8 @@ TEST_F(FailureBrakingTest, handlesStopped)
 //---------------------------------------------------------------------------
 
 /**
- * Struct used for testing failure stopped state behaviour.
+ * Testing FailureStopped behaviour with respect to data
  */
-
 struct FailureStoppedTest : public StateTest {
   FailureStopped *state = FailureStopped::getInstance();
 };
@@ -891,7 +869,6 @@ struct FailureStoppedTest : public StateTest {
  * Ensures that if the shutdown command is received while in the
  * failure stopped state, the state changes to the off state.
  */
-
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {

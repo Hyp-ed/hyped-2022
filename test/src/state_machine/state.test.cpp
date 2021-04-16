@@ -1,10 +1,10 @@
 /*
- * Author: Franz Miltz
+ * Author: Franz Miltz, Efe Ozbatur
  * Organisation: HYPED
  * Date:
  * Description:
  *
- *    Copyright 2019 HYPED
+ *    Copyright 2021 HYPED
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *    except in compliance with the License. You may obtain a copy of the License at
  *
@@ -32,12 +32,43 @@
 using namespace hyped::data;
 using namespace hyped::state_machine;
 
+/**
+ * Struct used for testing state behaviour. Contains
+ *
+ * 1. Logger
+ * 2. Error messages
+ * 3. Constant test size
+ */
+
 struct StateTest : public ::testing::Test {
   // ---- Logger ---------------
 
   hyped::utils::Logger log;
   int stdout_f;
   int tmp_stdout_f;
+
+  // ---- Error messages -------
+
+  const std::string not_enter_emergency_error    = "Does not enter emergency when required.";
+  const std::string enter_emergency_error        = "Enters emergency when not required.";
+  const std::string calibrate_command_error      = "Should handle calibrate command.";
+  const std::string not_enter_calibrating_error  = "Does not enter Calibrating when required.";
+  const std::string enter_calibrating_error      = "Enters Calibrating when not required.";
+  const std::string not_enter_ready_error        = "Does not enter Ready when required.";
+  const std::string enter_ready_error            = "Enters Ready when not required.";
+  const std::string not_enter_accelerating_error = "Does not enter Accelerating when required.";
+  const std::string enter_accelerating_error     = "Enters Accelerating when not required.";
+  const std::string not_enter_braking_error
+    = "Does not enter Nominal Braking when required.";
+  const std::string enter_braking_error
+    = "Enters Nominal Braking when not required.";
+  const std::string not_enter_finished_error     = "Does not enter Finished when required.";
+  const std::string enter_finished_error         = "Enters Finished when not required.";
+  const std::string not_enter_off_error          = "Does not enter Off when required.";
+  const std::string enter_off_error              = "Enters Off when not required.";
+  const std::string not_enter_failure_stopped_error
+    = "Does not enter Failure Stopped when required.";
+  const std::string enter_failure_stopped_error  = "Enters Failure Stopped when not required.";
 
   // ---- Test size -----------
 
@@ -62,28 +93,14 @@ struct StateTest : public ::testing::Test {
 };
 
 //---------------------------------------------------------------------------
-// Test structures
-//---------------------------------------------------------------------------
-
-struct IdleTest : public StateTest { };
-
-struct CalibratingTest : public StateTest { };
-
-struct ReadyTest : public StateTest { };
-
-struct AcceleratingTest : public StateTest { };
-
-struct NominalBrakingTest : public StateTest { };
-
-struct FinishedTest : public StateTest { };
-
-struct FailureBrakingTest : public StateTest { };
-
-struct FailureStoppedTest : public StateTest { };
-
-//---------------------------------------------------------------------------
 // Randomiser
 //---------------------------------------------------------------------------
+
+/**
+ * The randomiser class is used to randomise the data that is used
+ * by various modules to check different conditions and to test state
+ * behaviour in different scenarios.
+ */
 
 class Randomiser {
  public:
@@ -141,7 +158,8 @@ class Randomiser {
       imu_data.acc[i] = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
     }
     for (int i = 0; i < 3; i++) {
-      imu_data.fifo.at(i) = static_cast<NavigationVector>((rand() % 100 + 75) + randomDecimal());
+      imu_data.fifo.push_back
+        (static_cast<NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
   }
 
@@ -163,6 +181,25 @@ class Randomiser {
     // Generates a temperature value between 0 and 99 C.
     temp_data.temp = static_cast<int>(rand() % 100);
   }
+
+  static void randomiseSensorsData(Sensors &sensors_data)
+  {
+    sensors_data.imu.timestamp = static_cast<uint32_t>(rand() % 11);
+    for (auto &sensors_data : sensors_data.imu.value) {
+      randomiseImuData(sensors_data);
+    }
+    sensors_data.encoder.timestamp = static_cast<uint32_t>(rand() % 11);
+    for (auto &sensors_data : sensors_data.encoder.value) {
+      randomiseEncoderData(sensors_data);
+    }
+    for (auto &sensors_data : sensors_data.keyence_stripe_counter) {
+      randomiseStripeCounter(sensors_data);
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  // Battery data
+  //---------------------------------------------------------------------------
 
   static void randomiseBatteryData(BatteryData &battery_data)
   {
@@ -199,6 +236,20 @@ class Randomiser {
     // Generates a random bool value for IMD fault.
     battery_data.imd_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
+
+  static void randomiseBatteriesData(Batteries &batteries_data)
+  {
+    for (auto &battery_data : batteries_data.high_power_batteries) {
+      randomiseBatteryData(battery_data);
+    }
+    for (auto &battery_data : batteries_data.low_power_batteries) {
+      randomiseBatteryData(battery_data);
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  // Emergency Brakes data
+  //---------------------------------------------------------------------------
 
   static void randomiseEmbrakes(EmergencyBrakes &embrakes_data)
   {
@@ -273,12 +324,12 @@ class Randomiser {
 //--------------------------------- TESTS -----------------------------------
 //---------------------------------------------------------------------------
 
+
 //---------------------------------------------------------------------------
 // Idle Tests
 //---------------------------------------------------------------------------
 
-TEST_F(IdleTest, handlesEmergency)
-{
+struct IdleTest : public StateTest {
   Data &data = Data::getInstance();
   Idle *state = Idle::getInstance();
 
@@ -288,52 +339,64 @@ TEST_F(IdleTest, handlesEmergency)
   Telemetry telemetry_data;
   Sensors sensors_data;
   Motors motors_data;
+};
 
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to the failure stopped state.
+ */
+
+TEST_F(IdleTest, handlesEmergency)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance());
+      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance());
+      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
     }
   }
 }
 
+/**
+ * Ensures that if no module reports an emergency and if
+ * the calibrate command is not received, a null pointer
+ * is returned.
+ */
+
 TEST_F(IdleTest, handlesCalibrateCommand)
 {
-  Data &data = Data::getInstance();
-  Idle *state = Idle::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
@@ -343,34 +406,34 @@ TEST_F(IdleTest, handlesCalibrateCommand)
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (!calibrate_command) {
-        ASSERT_EQ(new_state, nullptr);
+        ASSERT_EQ(new_state, nullptr) << calibrate_command_error;
       }
     }
   }
 }
 
+/**
+ * Ensures that if no module reports an emergency and if
+ * the calibrate command is not received and if every module
+ * is initialised, the state changes to the calibrating state.
+ */
+
 TEST_F(IdleTest, handlesAllInitialised)
 {
-  Data &data = Data::getInstance();
-  Idle *state = Idle::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
@@ -383,9 +446,9 @@ TEST_F(IdleTest, handlesAllInitialised)
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (all_initialised) {
-        ASSERT_EQ(new_state, FailureStopped::getInstance());
+        ASSERT_EQ(new_state, Calibrating::getInstance()) << not_enter_calibrating_error;
       } else {
-        ASSERT_NE(new_state, FailureStopped::getInstance());
+        ASSERT_NE(new_state, Calibrating::getInstance()) << enter_calibrating_error;
       }
     }
   }
@@ -395,8 +458,7 @@ TEST_F(IdleTest, handlesAllInitialised)
 // Calibrating Tests
 //---------------------------------------------------------------------------
 
-TEST_F(CalibratingTest, handlesEmergency)
-{
+struct CalibratingTest : public StateTest {
   Data &data = Data::getInstance();
   Calibrating *state = Calibrating::getInstance();
 
@@ -406,52 +468,64 @@ TEST_F(CalibratingTest, handlesEmergency)
   Telemetry telemetry_data;
   Sensors sensors_data;
   Motors motors_data;
+};
 
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to the failure stopped state.
+ */
+
+TEST_F(CalibratingTest, handlesEmergency)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance());
+      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance());
+      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
     }
   }
 }
 
+/**
+ * Ensures that if no module reports an emergency and if
+ * all modules are ready after calibration, the state
+ * changes to the ready state.
+ */
+
 TEST_F(CalibratingTest, handlesAllReady)
 {
-  Data &data = Data::getInstance();
-  Calibrating *state = Calibrating::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
@@ -461,9 +535,9 @@ TEST_F(CalibratingTest, handlesAllReady)
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (all_ready) {
-        ASSERT_EQ(new_state, Ready::getInstance());
+        ASSERT_EQ(new_state, Ready::getInstance()) << not_enter_ready_error;
       } else {
-        ASSERT_NE(new_state, Ready::getInstance());
+        ASSERT_NE(new_state, Ready::getInstance()) << enter_ready_error;
       }
     }
   }
@@ -473,8 +547,7 @@ TEST_F(CalibratingTest, handlesAllReady)
 // Ready Tests
 //---------------------------------------------------------------------------
 
-TEST_F(ReadyTest, handlesEmergency)
-{
+struct ReadyTest : public StateTest {
   Data &data = Data::getInstance();
   Ready *state = Ready::getInstance();
 
@@ -484,52 +557,64 @@ TEST_F(ReadyTest, handlesEmergency)
   Telemetry telemetry_data;
   Sensors sensors_data;
   Motors motors_data;
+};
 
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to the failure stopped state.
+ */
+
+TEST_F(ReadyTest, handlesEmergency)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance());
+      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance());
+      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
     }
   }
 }
 
+/**
+ * Ensures that if no module reports an emergency and if
+ * the launch command is received while in the ready state,
+ * the state changes to the accelerating state.
+ */
+
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
-  Data &data = Data::getInstance();
-  Ready *state = Ready::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
@@ -539,9 +624,9 @@ TEST_F(ReadyTest, handlesLaunchCommand)
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (received_launch_command) {
-        ASSERT_EQ(new_state, Accelerating::getInstance());
+        ASSERT_EQ(new_state, Accelerating::getInstance()) << not_enter_accelerating_error;
       } else {
-        ASSERT_NE(new_state, Accelerating::getInstance());
+        ASSERT_NE(new_state, Accelerating::getInstance()) << enter_accelerating_error;
       }
     }
   }
@@ -551,8 +636,7 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 // Accelerating Tests
 //---------------------------------------------------------------------------
 
-TEST_F(AcceleratingTest, handlesEmergency)
-{
+struct AcceleratingTest : public StateTest {
   Data &data = Data::getInstance();
   Accelerating *state = Accelerating::getInstance();
 
@@ -562,52 +646,64 @@ TEST_F(AcceleratingTest, handlesEmergency)
   Telemetry telemetry_data;
   Sensors sensors_data;
   Motors motors_data;
+};
 
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to the failure braking state.
+ */
+
+TEST_F(AcceleratingTest, handlesEmergency)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance());
+      ASSERT_EQ(new_state, FailureBraking::getInstance()) << not_enter_emergency_error;
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance());
+      ASSERT_NE(new_state, FailureBraking::getInstance()) << enter_emergency_error;
     }
   }
 }
 
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if the pod is in the braking zone, the state changes to the
+ * nominal braking state.
+ */
+
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
-  Data &data = Data::getInstance();
-  Accelerating *state = Accelerating::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
@@ -617,9 +713,9 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (in_braking_zone) {
-        ASSERT_EQ(new_state, NominalBraking::getInstance());
+        ASSERT_EQ(new_state, NominalBraking::getInstance()) << not_enter_braking_error;
       } else {
-        ASSERT_NE(new_state, NominalBraking::getInstance());
+        ASSERT_NE(new_state, NominalBraking::getInstance()) << enter_braking_error;
       }
     }
   }
@@ -629,8 +725,7 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
 // Nominal Braking Tests
 //---------------------------------------------------------------------------
 
-TEST_F(NominalBrakingTest, handlesEmergency)
-{
+struct NominalBrakingTest : public StateTest {
   Data &data = Data::getInstance();
   NominalBraking *state = NominalBraking::getInstance();
 
@@ -640,52 +735,63 @@ TEST_F(NominalBrakingTest, handlesEmergency)
   Telemetry telemetry_data;
   Sensors sensors_data;
   Motors motors_data;
+};
 
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to the failure braking state.
+ */
+
+TEST_F(NominalBrakingTest, handlesEmergency)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance());
+      ASSERT_EQ(new_state, FailureBraking::getInstance()) << not_enter_emergency_error;
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance());
+      ASSERT_NE(new_state, FailureBraking::getInstance()) << enter_emergency_error;
     }
   }
 }
 
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if the pod is stopped, the state changes to the finished state.
+ */
+
 TEST_F(NominalBrakingTest, handlesStopped)
 {
-  Data &data = Data::getInstance();
-  NominalBraking *state = NominalBraking::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseEmbrakes(embrakes_data);
     Randomiser::randomiseNavigation(nav_data);
     Randomiser::randomiseTelemetry(telemetry_data);
     Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
 
     data.setEmergencyBrakesData(embrakes_data);
     data.setNavigationData(nav_data);
     data.setTelemetryData(telemetry_data);
     data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                       telemetry_data, sensors_data, motors_data);
@@ -695,7 +801,9 @@ TEST_F(NominalBrakingTest, handlesStopped)
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (stopped) {
-        ASSERT_EQ(new_state, Finished::getInstance());
+        ASSERT_EQ(new_state, Finished::getInstance()) << not_enter_finished_error;
+      } else {
+        ASSERT_NE(new_state, Finished::getInstance()) << enter_finished_error;
       }
     }
   }
@@ -705,13 +813,20 @@ TEST_F(NominalBrakingTest, handlesStopped)
 // Finished Tests
 //---------------------------------------------------------------------------
 
-TEST_F(FinishedTest, handlesShutdownCommand)
-{
+struct FinishedTest : public StateTest {
   Data &data = Data::getInstance();
   Finished *state = Finished::getInstance();
 
   Telemetry telemetry_data;
+};
 
+/**
+ * Ensures that if the shutdown command is received while in the
+ * finished state, the state changes to the off state.
+ */
+
+TEST_F(FinishedTest, handlesShutdownCommand)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseTelemetry(telemetry_data);
 
@@ -721,9 +836,9 @@ TEST_F(FinishedTest, handlesShutdownCommand)
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (received_shutdown_command) {
-      ASSERT_EQ(new_state, Off::getInstance());
+      ASSERT_EQ(new_state, Off::getInstance()) << not_enter_off_error;
     } else {
-      ASSERT_NE(new_state, Off::getInstance());
+      ASSERT_NE(new_state, Off::getInstance()) << enter_off_error;
     }
   }
 }
@@ -732,13 +847,20 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 // Failure Braking Tests
 //---------------------------------------------------------------------------
 
-TEST_F(FailureBrakingTest, handlesStopped)
-{
+struct FailureBrakingTest : public StateTest {
   Data &data = Data::getInstance();
   FailureBraking *state = FailureBraking::getInstance();
 
   Navigation nav_data;
+};
 
+/**
+ * Ensures that if the pod is stopped while in the failure
+ * braking state, the state changes to the failure stopped state.
+ */
+
+TEST_F(FailureBrakingTest, handlesStopped)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseNavigation(nav_data);
 
@@ -748,7 +870,9 @@ TEST_F(FailureBrakingTest, handlesStopped)
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (stopped) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance());
+      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_failure_stopped_error;
+    } else {
+      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_failure_stopped_error;
     }
   }
 }
@@ -757,13 +881,20 @@ TEST_F(FailureBrakingTest, handlesStopped)
 // Failure Stopped Tests
 //---------------------------------------------------------------------------
 
-TEST_F(FailureStoppedTest, handlesShutdownCommand)
-{
+struct FailureStoppedTest : public StateTest {
   Data &data = Data::getInstance();
   FailureStopped *state = FailureStopped::getInstance();
 
   Telemetry telemetry_data;
+};
 
+/**
+ * Ensures that if the shutdown command is received while in the
+ * failure stopped state, the state changes to the off state.
+ */
+
+TEST_F(FailureStoppedTest, handlesShutdownCommand)
+{
   for (int i = 0; i < TEST_SIZE; i++) {
     Randomiser::randomiseTelemetry(telemetry_data);
 
@@ -773,9 +904,9 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
     if (received_shutdown_command) {
-      ASSERT_EQ(new_state, Off::getInstance());
+      ASSERT_EQ(new_state, Off::getInstance()) << not_enter_off_error;
     } else {
-      ASSERT_NE(new_state, Off::getInstance());
+      ASSERT_NE(new_state, Off::getInstance()) << enter_off_error;
     }
   }
 }

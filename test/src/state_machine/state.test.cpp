@@ -101,22 +101,12 @@ struct StateTest : public ::testing::Test {
  */
 class Randomiser {
  public:
-  Randomiser()
-  {
-    static std::default_random_engine generator;
-    static std::uniform_real_distribution<nav_t> distribution(0.0, 1.0);
-  }
-
   static nav_t randomDecimal()
   {
     static std::default_random_engine generator;
     static std::uniform_real_distribution<nav_t> distribution(0.0, 1.0);
     return distribution(generator);
   }
-
-  //---------------------------------------------------------------------------
-  // Global Module States
-  //---------------------------------------------------------------------------
 
   static void randomiseModuleStatus(ModuleStatus &module_status)
   {
@@ -125,8 +115,14 @@ class Randomiser {
     module_status              = static_cast<ModuleStatus>(rand() % num_statuses);
   }
 
+  //---------------------------------------------------------------------------
+  // Navigation data
+  //---------------------------------------------------------------------------
+
   static void randomiseNavigation(Navigation &nav_data)
   {
+    randomiseModuleStatus(nav_data.module_status);
+
     // Generates a displacement length between 750 and 1749.
     nav_data.displacement = static_cast<nav_t>((rand() % 1000 + 750) + randomDecimal());
 
@@ -180,6 +176,8 @@ class Randomiser {
 
   static void randomiseSensorsData(Sensors &sensors_data)
   {
+    randomiseModuleStatus(sensors_data.module_status);
+
     sensors_data.imu.timestamp = static_cast<uint32_t>(rand() % 11);
     for (auto &sensors_data : sensors_data.imu.value) {
       randomiseImuData(sensors_data);
@@ -235,6 +233,8 @@ class Randomiser {
 
   static void randomiseBatteriesData(Batteries &batteries_data)
   {
+    randomiseModuleStatus(batteries_data.module_status);
+
     for (auto &battery_data : batteries_data.high_power_batteries) {
       randomiseBatteryData(battery_data);
     }
@@ -249,6 +249,8 @@ class Randomiser {
 
   static void randomiseEmbrakes(EmergencyBrakes &embrakes_data)
   {
+    randomiseModuleStatus(embrakes_data.module_status);
+
     for (int i = 0; i < embrakes_data.kNumEmbrakes; i++) {
       embrakes_data.brakes_retracted[i] = static_cast<bool>(rand() > (RAND_MAX / 2));
     }
@@ -260,6 +262,8 @@ class Randomiser {
 
   static void randomiseMotors(Motors &motors_data)
   {
+    randomiseModuleStatus(motors_data.module_status);
+
     // Generates a RPM data between 0 and 199 for all 4 motors.
     for (int i = 0; i < motors_data.kNumMotors; i++) {
       motors_data.rpms[i] = static_cast<uint32_t>(rand() % 200);
@@ -272,6 +276,8 @@ class Randomiser {
 
   static void randomiseTelemetry(Telemetry &telemetry_data)
   {
+    randomiseModuleStatus(telemetry_data.module_status);
+
     // Generates a random bool value for all telemetry commands.
     telemetry_data.calibrate_command       = static_cast<bool>(rand() > (RAND_MAX / 2));
     telemetry_data.launch_command          = static_cast<bool>(rand() > (RAND_MAX / 2));
@@ -288,30 +294,6 @@ class Randomiser {
   static void randomiseStateMachine(StateMachine &stm_data)
   {
     stm_data.critical_failure = static_cast<bool>(rand() > (RAND_MAX / 2));
-  }
-
-  static void generateAllPermutations(ModuleStatus &module_status, EmergencyBrakes &embrakes_data,
-                                      Navigation &nav_data, Batteries &batteries_data,
-                                      Telemetry &telemetry_data, Sensors &sensors_data,
-                                      Motors &motors_data)
-  {
-    constexpr int num_statuses = 4;
-    constexpr int num_modules  = 6;
-    for (int i = 0; i <= pow(static_cast<double>(num_statuses), static_cast<double>(num_modules));
-         i++) {
-      embrakes_data.module_status = static_cast<ModuleStatus>(i % num_modules);
-      i /= num_statuses;
-      nav_data.module_status = static_cast<ModuleStatus>(i % num_modules);
-      i /= num_statuses;
-      batteries_data.module_status = static_cast<ModuleStatus>(i % num_modules);
-      i /= num_statuses;
-      telemetry_data.module_status = static_cast<ModuleStatus>(i % num_modules);
-      i /= num_statuses;
-      sensors_data.module_status = static_cast<ModuleStatus>(i % num_modules);
-      i /= num_statuses;
-      motors_data.module_status = static_cast<ModuleStatus>(i % num_modules);
-      i /= num_statuses;
-    }
   }
 };
 

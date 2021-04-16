@@ -19,7 +19,6 @@
 #include <cstdlib>
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
-#include "vector_operations_with_vectors.test.cpp"
 
 
 
@@ -29,6 +28,20 @@ namespace utils
 {
 namespace math
 {
+
+/**
+ * @brief Helper method used to generate an array of three random integers.
+ * each integer will be in the range -1000, 1000 (not inclusive)
+ */
+std::array<int, 3> createRandomArrayForBasic()
+{
+  std::array<int, 3> output = std::array<int, 3>();
+  for (int i = 0;i < 3;i++) {
+    output[i] = rand()%1000;
+  }
+  return output;
+}
+
 /**
  * @brief Struct used to set up all the variables used in the tests for basic operationsof a vector
  * with constants.
@@ -46,13 +59,15 @@ struct OperationsByConstant : public::testing::Test
   int kValue = rand()%1000;
   void SetUp()
   {
-    vector_one = Vector<int, 3>(createRandomArray());
-    vector_two = Vector<int, 3>(createRandomArray());
-    vector_three = Vector<int, 3>(createRandomArray());
+    std::srand(time(0));
+    vector_one = Vector<int, 3>(createRandomArrayForBasic());
+    vector_two = Vector<int, 3>(createRandomArrayForBasic());
+    vector_three = Vector<int, 3>(createRandomArrayForBasic());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
 };
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows adding in
  * a vector with a constant in normal way (adding the constant to each element),
@@ -68,6 +83,7 @@ TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
     ASSERT_EQ(vector_result_two[i], vector_one[i] + kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows adding
  * a vector with a constant in place (updating the initial vector) in a normal way
@@ -85,6 +101,7 @@ TEST_F(OperationsByConstant, handlesAdditionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * substracting a constant to a vector in normal way (substracting the constant to each element),
@@ -100,6 +117,7 @@ TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
     ASSERT_EQ(vector_result_two[i], -vector_one[i] + kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * substracting a constant to a vector in place (updating the initial vector)
@@ -118,6 +136,7 @@ TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in normal way (multiplying the constant with each element),
@@ -137,6 +156,7 @@ TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
     ASSERT_EQ(vector_result_two[i], vector_one[i] * kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in place (updating the initial vector)
@@ -157,6 +177,7 @@ TEST_F(OperationsByConstant, handlesMultiplicationWithConstant)
     ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in normal way (dividing each element by the constant),
@@ -179,6 +200,7 @@ TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
   }
 }
+
 /**
  * @brief Test used to determine if the current implementation of the class vector allows
  * multiplying a constant to a vector in place (updating the initial vector)
@@ -203,6 +225,4 @@ TEST_F(OperationsByConstant, handlesDivisionWithConstant)
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
   }
 }
-}
-}
-}
+}}}  // hyped::utils::math

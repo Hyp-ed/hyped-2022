@@ -84,8 +84,7 @@ void FakeGpioCounter::getData(StripeCounter* stripe_count)     // returns incorr
 
   if (is_from_file_) {
     // Get time in micro seconds and iterate through the vector until we find what stripe we are at
-    if ((state == data::State::kAccelerating || state == data::State::kNominalBraking)
-       && acc_ref_init_) {
+    if ((state == data::State::kAccelerating || state == data::State::kNominalBraking || state == data::State::kCruising) && acc_ref_init_) {
       uint64_t time_now_micro = (utils::Timer::getTimeMicros() - accel_start_time_);
 
       for (StripeCounter stripe : stripe_data_) {

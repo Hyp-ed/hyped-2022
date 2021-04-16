@@ -32,65 +32,6 @@
 using namespace hyped::data;
 using namespace hyped::state_machine;
 
-/**
- * Struct used for testing state behaviour. Contains
- *
- * 1. Variables
- * 1. Logger
- * 2. Error messages
- * 3. Constant test size
- */
-
-struct StateTest : public ::testing::Test {
-  // ---- Variables ------------
-
-  Data &data = Data::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
-  // ---- Logger ---------------
-
-  hyped::utils::Logger log;
-  int stdout_f;
-  int tmp_stdout_f;
-
-  // ---- Error messages -------
-
-  const std::string not_enter_emergency_error = "Does not enter emergency when required.";
-  const std::string enter_emergency_error     = "Enters emergency when not required.";
-  const std::string not_enter_off_error       = "Does not enter Off when required.";
-  const std::string enter_off_error           = "Enters Off when not required.";
-  const std::string not_enter_failure_stopped_error
-    = "Does not enter Failure Stopped when required.";
-  const std::string enter_failure_stopped_error = "Enters Failure Stopped when not required.";
-
-  // ---- Test size -----------
-
-  static constexpr int TEST_SIZE = 1000;
-
- protected:
-  void SetUp()
-  {
-    fflush(stdout);
-    stdout_f     = dup(1);
-    tmp_stdout_f = open("/dev/null", O_WRONLY);
-    dup2(tmp_stdout_f, 1);
-    close(tmp_stdout_f);
-  }
-
-  void TearDown()
-  {
-    fflush(stdout);
-    dup2(stdout_f, 1);
-    close(stdout_f);
-  }
-};
-
 //---------------------------------------------------------------------------
 // Randomiser
 //---------------------------------------------------------------------------
@@ -301,6 +242,87 @@ class Randomiser {
 //--------------------------------- TESTS -----------------------------------
 //---------------------------------------------------------------------------
 
+/**
+ * Struct used for testing state behaviour. Contains
+ *
+ * 1. Variables
+ * 1. Logger
+ * 2. Error messages
+ * 3. Constant test size
+ */
+
+struct StateTest : public ::testing::Test {
+  // ---- Variables ------------
+
+  Data &data = Data::getInstance();
+
+  EmergencyBrakes embrakes_data;
+  Navigation nav_data;
+  Batteries batteries_data;
+  Telemetry telemetry_data;
+  Sensors sensors_data;
+  Motors motors_data;
+
+  // ---- Logger ---------------
+
+  hyped::utils::Logger log;
+  int stdout_f;
+  int tmp_stdout_f;
+
+  // ---- Error messages -------
+
+  const std::string not_enter_emergency_error = "Does not enter emergency when required.";
+  const std::string enter_emergency_error     = "Enters emergency when not required.";
+  const std::string not_enter_off_error       = "Does not enter Off when required.";
+  const std::string enter_off_error           = "Enters Off when not required.";
+  const std::string not_enter_failure_stopped_error
+    = "Does not enter Failure Stopped when required.";
+  const std::string enter_failure_stopped_error = "Enters Failure Stopped when not required.";
+
+  // ---- Test size -----------
+
+  static constexpr int TEST_SIZE = 1000;
+
+  // ---- Methods -------------
+
+  /**
+   * Generates random values for all the entries in data and overwrites them.
+   */
+  void randomiseData()
+  {
+    Randomiser::randomiseEmbrakes(embrakes_data);
+    Randomiser::randomiseNavigation(nav_data);
+    Randomiser::randomiseTelemetry(telemetry_data);
+    Randomiser::randomiseMotors(motors_data);
+    Randomiser::randomiseSensorsData(sensors_data);
+    Randomiser::randomiseBatteriesData(batteries_data);
+
+    data.setEmergencyBrakesData(embrakes_data);
+    data.setNavigationData(nav_data);
+    data.setTelemetryData(telemetry_data);
+    data.setMotorData(motors_data);
+    data.setSensorsData(sensors_data);
+    data.setBatteriesData(batteries_data);
+  }
+
+ protected:
+  void SetUp()
+  {
+    fflush(stdout);
+    stdout_f     = dup(1);
+    tmp_stdout_f = open("/dev/null", O_WRONLY);
+    dup2(tmp_stdout_f, 1);
+    close(tmp_stdout_f);
+  }
+
+  void TearDown()
+  {
+    fflush(stdout);
+    dup2(stdout_f, 1);
+    close(stdout_f);
+  }
+};
+
 //---------------------------------------------------------------------------
 // Idle Tests
 //---------------------------------------------------------------------------
@@ -323,19 +345,7 @@ struct IdleTest : public StateTest {
 TEST_F(IdleTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -357,19 +367,7 @@ TEST_F(IdleTest, handlesEmergency)
 TEST_F(IdleTest, handlesCalibrateCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -391,19 +389,7 @@ TEST_F(IdleTest, handlesCalibrateCommand)
 TEST_F(IdleTest, handlesAllInitialised)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -446,19 +432,7 @@ struct CalibratingTest : public StateTest {
 TEST_F(CalibratingTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -480,19 +454,7 @@ TEST_F(CalibratingTest, handlesEmergency)
 TEST_F(CalibratingTest, handlesAllReady)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -531,19 +493,7 @@ struct ReadyTest : public StateTest {
 TEST_F(ReadyTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -565,19 +515,7 @@ TEST_F(ReadyTest, handlesEmergency)
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -616,19 +554,7 @@ struct AcceleratingTest : public StateTest {
 TEST_F(AcceleratingTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -650,19 +576,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -701,19 +615,7 @@ struct NominalBrakingTest : public StateTest {
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -734,19 +636,7 @@ TEST_F(NominalBrakingTest, handlesEmergency)
 TEST_F(NominalBrakingTest, handlesStopped)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
-
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    randomiseData();
 
     bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
@@ -782,9 +672,7 @@ struct FinishedTest : public StateTest {
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseTelemetry(telemetry_data);
-
-    data.setTelemetryData(telemetry_data);
+    randomiseData();
 
     bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
@@ -815,9 +703,7 @@ struct FailureBrakingTest : public StateTest {
 TEST_F(FailureBrakingTest, handlesStopped)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseNavigation(nav_data);
-
-    data.setNavigationData(nav_data);
+    randomiseData();
 
     bool stopped                           = checkPodStopped(log, nav_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
@@ -848,9 +734,7 @@ struct FailureStoppedTest : public StateTest {
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    Randomiser::randomiseTelemetry(telemetry_data);
-
-    data.setTelemetryData(telemetry_data);
+    randomiseData();
 
     bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);

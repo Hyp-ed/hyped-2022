@@ -143,17 +143,18 @@ void FakeImuFromFile::getData(ImuData* imu)
     }
 
     if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) acc_val_read_.size());
+      acc_count_ = std::min(acc_count_, static_cast<int64_t>(acc_val_read_.size()));
       // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) acc_val_read_.size()) {
-        prev_acc_ = acc_val_read_[acc_count_- 1];
-        operational = acc_val_operational_[acc_count_ - 1];
+      if (acc_count_ == static_cast<int64_t>(acc_val_read_.size())) {
+        prev_acc_ = acc_val_read_.at(acc_count_- 1);
+        operational = acc_val_operational_.at(acc_count_ - 1);
       } else {
-        prev_acc_ = acc_val_read_[acc_count_];
-        operational = acc_val_operational_[acc_count_];
+        prev_acc_ = acc_val_read_.at(acc_count_);
+        operational = acc_val_operational_.at(acc_count_);
       }
       if (is_fail_acc_) {
-        if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ || failure_happened_) { // NOLINT [whitespace/line_length]
+        if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ ||
+          failure_happened_) {
           if (!failure_happened_) {
             log_.INFO("Fake-IMU", "Start failure...");
           }
@@ -172,17 +173,18 @@ void FakeImuFromFile::getData(ImuData* imu)
     }
 
     if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) acc_val_read_.size());
+      acc_count_ = std::min(acc_count_, static_cast<int64_t>(acc_val_read_.size()));
       // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) acc_val_read_.size()) {
-        prev_acc_ = acc_val_read_[acc_count_- 1];
-        operational = acc_val_operational_[acc_count_ - 1];
+      if (acc_count_ == static_cast<int64_t>(acc_val_read_.size())) {
+        prev_acc_ = acc_val_read_.at(acc_count_- 1);
+        operational = acc_val_operational_.at(acc_count_ - 1);
       } else {
-        prev_acc_ = acc_val_read_[acc_count_];
-        operational = acc_val_operational_[acc_count_];
+        prev_acc_ = acc_val_read_.at(acc_count_);
+        operational = acc_val_operational_.at(acc_count_);
       }
       if (is_fail_acc_) {
-        if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ || failure_happened_) { // NOLINT [whitespace/line_length]
+        if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ ||
+          failure_happened_) {
           if (!failure_happened_) {
             log_.INFO("Fake-IMU", "Start failure...");
           }
@@ -200,14 +202,14 @@ void FakeImuFromFile::getData(ImuData* imu)
     }
 
     if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) dec_val_read_.size());
+      acc_count_ = std::min(acc_count_, static_cast<int64_t>(dec_val_read_.size()));
       // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) dec_val_read_.size()) {
-        prev_acc_ = dec_val_read_[acc_count_-1];
-        operational = dec_val_operational_[acc_count_-1];
+      if (acc_count_ == static_cast<int64_t>(dec_val_read_.size())) {
+        prev_acc_ = dec_val_read_.at(acc_count_ - 1);
+        operational = dec_val_operational_.at(acc_count_ - 1);
       } else {
-        prev_acc_ = dec_val_read_[acc_count_];
-        operational = dec_val_operational_[acc_count_];
+        prev_acc_ = dec_val_read_.at(acc_count_);
+        operational = dec_val_operational_.at(acc_count_);
       }
       if (is_fail_dec_) {
         if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_dec_ || failure_happened_) { // NOLINT [whitespace/line_length]
@@ -236,13 +238,13 @@ void FakeImuFromFile::getData(ImuData* imu)
     }
 
     if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) em_val_read_.size());
+      acc_count_ = std::min(acc_count_, static_cast<int64_t>(em_val_read_.size()));
 
       // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) em_val_read_.size()) {
-        prev_acc_ = em_val_read_[acc_count_-1];
+      if (acc_count_ == static_cast<int64_t>(em_val_read_.size())) {
+        prev_acc_ = em_val_read_.at(acc_count_ - 1);
       } else {
-        prev_acc_ = em_val_read_[acc_count_];
+        prev_acc_ = em_val_read_.at(acc_count_);
       }
       float vel = data_.getNavigationData().velocity;
       log_.DBG3("Fake-IMU", "velocity: %f", vel);

@@ -169,6 +169,8 @@ struct RunTest : public ::testing::Test {
   }
 };
 
+/*******************************
+
 TEST_F(RunTest, fullRun)
 {
   System &sys = System::getSystem();
@@ -187,3 +189,5 @@ TEST_F(RunTest, fullRun)
   sys.running_ = false;
   state_machine->join();
 }
+
+**********************************/

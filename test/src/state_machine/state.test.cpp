@@ -138,35 +138,35 @@ class Randomiser {
 
   static void randomiseBatteryData(BatteryData &battery_data)
   {
-    // Generates a voltage data between 0 and 499.
-    battery_data.voltage = static_cast<uint16_t>(rand() % 500);
+    // Generates a voltage data between 175 and 294.
+    battery_data.voltage = static_cast<uint16_t>((rand() % 120) + 175);
 
-    // Generates a current data between 0 and 499.
-    battery_data.current = static_cast<int16_t>(rand() % 500);
+    // Generates a current data between 0 and 500.
+    battery_data.current = static_cast<int16_t>(rand() % 501);
 
-    // Generates a charge percentage data between 0 and 100.
-    battery_data.charge = static_cast<uint8_t>(rand() % 101);
+    // Generates a charge percentage data between 20 and 100.
+    battery_data.charge = static_cast<uint8_t>((rand() % 81) + 20);
 
-    // Generates an average temperature data between 0 and 99 C.
-    battery_data.average_temperature = static_cast<int8_t>(rand() % 100);
+    // Generates an average temperature data between 10 and 60.
+    battery_data.average_temperature = static_cast<int8_t>((rand() % 51) + 10);
 
     // Below only for BMSHP! Value for BMSLP = 0
-    // Generates a cell voltage data between 0 and 50000 mV.
+    // Generates a cell voltage data between 1000 and 1296.
     for (int i = 0; i < 36; i++) {
-      battery_data.cell_voltage[i] = static_cast<uint16_t>((rand() % 500) * 100);
+      battery_data.cell_voltage[i] = static_cast<uint16_t>((rand() % 297) + 1000);
     }
 
-    // Generates a low temperature data between 0 and 99 C.
-    battery_data.low_temperature = static_cast<int8_t>(rand() % 100);
+    // Generates a low temperature data between 10 and 65.
+    battery_data.low_temperature = static_cast<int8_t>((rand() % 56) + 10);
 
-    // Generates a high temperature data between 0 and 99 C.
-    battery_data.high_temperature = static_cast<int8_t>(rand() % 100);
+    // Generates a high temperature data between 10 and 65.
+    battery_data.high_temperature = static_cast<int8_t>((rand() % 56) + 10);
 
-    // Generates a low cell voltage data between 0 and 50000 mV.
-    battery_data.low_voltage_cell = static_cast<uint16_t>((rand() % 500) * 100);
+    // Generates a low cell voltage data between 1000 and 1296.
+    battery_data.low_voltage_cell = static_cast<uint16_t>((rand() % 297) + 1000);
 
-    // Generates a high cell voltage data between 0 and 50000 mV.
-    battery_data.high_voltage_cell = static_cast<uint16_t>((rand() % 500) * 100);
+    // Generates a high cell voltage data between 1000 and 1296.
+    battery_data.high_voltage_cell = static_cast<uint16_t>((rand() % 297) + 1000);
 
     // Generates a random bool value for IMD fault.
     battery_data.imd_fault = static_cast<bool>(rand() > (RAND_MAX / 2));

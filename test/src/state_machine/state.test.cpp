@@ -210,9 +210,9 @@ class Randomiser {
   {
     randomiseModuleStatus(motors_data.module_status);
 
-    // Generates a RPM data between 0 and 199 for all 4 motors.
+    // Generates a RPM data between 0 and 1999 for all 4 motors. (exact: 33 and 1400)
     for (int i = 0; i < motors_data.kNumMotors; i++) {
-      motors_data.rpms[i] = static_cast<uint32_t>(rand() % 200);
+      motors_data.rpms[i] = static_cast<uint32_t>(rand() % 2000);
     }
   }
 

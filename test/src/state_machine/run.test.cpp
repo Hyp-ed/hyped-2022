@@ -48,7 +48,10 @@ struct RunTest : public ::testing::Test {
 
   // ---- Error messages -------
 
-  // TODO(efe-ozbatur)
+  const std::string encountered_critical_failure_error = "We encountered critical failure.";
+  const std::string not_encountered_critical_failure_error =
+                                                         "Did not encounter critical failure.";
+  const std::string transition_failed_error = "Did not transition";
 
   // ---- Data -----------------
 
@@ -64,6 +67,9 @@ struct RunTest : public ::testing::Test {
 
   // ---- Utilities -------------
 
+  /**
+   *  The whole data is randomised before updating the necessary data.
+   */
   void randomiseInternally()
   {
     Randomiser::randomiseEmbrakes(embrakes_data);
@@ -74,6 +80,9 @@ struct RunTest : public ::testing::Test {
     Randomiser::randomiseBatteriesData(batteries_data);
   }
 
+  /**
+   *  The updated data is written.
+   */
   void writeData()
   {
     data.setEmergencyBrakesData(embrakes_data);
@@ -84,26 +93,50 @@ struct RunTest : public ::testing::Test {
     data.setBatteriesData(batteries_data);
   }
 
+  /**
+   *  The written data is read.
+   */
   void readData()
   {
-    embrakes_data = data.getEmergencyBrakesData();
-    stm_data      = data.getStateMachineData();
-    // ...
+    embrakes_data  = data.getEmergencyBrakesData();
+    stm_data       = data.getStateMachineData();
+    nav_data       = data.getNavigationData();
+    telemetry_data = data.getTelemetryData();
+    motors_data    = data.getMotorData();
+    sensors_data   = data.getSensorsData();
+    batteries_data = data.getBatteriesData();
   }
 
   void waitForUpdate() { Thread::sleep(100); }
 
+  /**
+   *  This array is used for randomising which module status should be set to
+   *  kCriticalFailure in order to create the emergency scenario.
+   */
+  std::array<ModuleStatus, 6> module_statuses = { embrakes_data.module_status,
+                                                  nav_data.module_status,
+                                                  telemetry_data.module_status,
+                                                  motors_data.module_status,
+                                                  sensors_data.module_status,
+                                                  batteries_data.module_status };
+
   // ---- Run steps --------------
+
 
   void initialiseData()
   {
     randomiseInternally();
 
-    embrakes_data.module_status = ModuleStatus::kStart;
-    // ...
+    embrakes_data.module_status    = ModuleStatus::kStart;
+    nav_data.module_status         = ModuleStatus::kStart;
+    telemetry_data.module_status   = ModuleStatus::kStart;
+    motors_data.module_status      = ModuleStatus::kStart;
+    sensors_data.module_status     = ModuleStatus::kStart;
+    batteries_data.module_status   = ModuleStatus::kStart;
 
     writeData();
   }
+
 
   void checkIdleToCalibrating()
   {
@@ -111,7 +144,11 @@ struct RunTest : public ::testing::Test {
 
     telemetry_data.calibrate_command = true;
     embrakes_data.module_status      = ModuleStatus::kInit;
-    // ...
+    nav_data.module_status           = ModuleStatus::kInit;
+    telemetry_data.module_status     = ModuleStatus::kInit;
+    motors_data.module_status        = ModuleStatus::kInit;
+    sensors_data.module_status       = ModuleStatus::kInit;
+    batteries_data.module_status     = ModuleStatus::kInit;
 
     writeData();
 
@@ -119,37 +156,238 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, false) << "We encountered critical failure.";
-    ASSERT_EQ(stm_data.current_state, hyped::data::State::kCalibrating) << "Did not transition.";
+    ASSERT_EQ(stm_data.critical_failure, false) << encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kCalibrating) <<
+                                                              transition_failed_error;
   }
 
-  void checkIdleEmergency() {}
 
-  void checkCalibratingToReady() {}
+  void checkIdleEmergency()
+  {
+    randomiseInternally();
 
-  void checkCalibratingEmergency() {}
+    int random = static_cast<int8_t>(rand() % 6);
 
-  void checkReadyToAccelerating() {}
+    module_statuses[random] = ModuleStatus::kCriticalFailure;
 
-  void checkReadyEmergency() {}
+    writeData();
 
-  void checkAcceleratingToNominalBraking() {}
+    waitForUpdate();
 
-  void checkAcceleratingToCruising() {}
+    readData();
 
-  void checkCruisingEmergency() {}
+    ASSERT_EQ(stm_data.critical_failure, true) << not_encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
+                                                                 transition_failed_error;
+  }
 
-  void checkAcceleratingEmergency() {}
 
-  void checkNominalBrakingToFinished() {}
+  void checkCalibratingToReady()
+  {
+    randomiseInternally();
 
-  void checkNominalBrakingEmergency() {}
+    embrakes_data.module_status = ModuleStatus::kReady;
+    nav_data.module_status      = ModuleStatus::kReady;
+    motors_data.module_status   = ModuleStatus::kReady;
 
-  void checkFinishedToOff() {}
+    writeData();
 
-  void checkFailureBrakingToStopped() {}
+    waitForUpdate();
 
-  void checkFailureStoppedToOff() {}
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, false) << encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kReady) <<
+                                                              transition_failed_error;
+  }
+
+
+  void checkCalibratingEmergency()
+  {
+    randomiseInternally();
+
+    int random = static_cast<int8_t>(rand() % 6);
+
+    module_statuses[random] = ModuleStatus::kCriticalFailure;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, true) << not_encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
+                                                                 transition_failed_error;
+  }
+
+  void checkReadyToAccelerating()
+  {
+    randomiseInternally();
+
+    initialiseData();
+
+    telemetry_data.launch_command = true;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, false) << encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kAccelerating) <<
+                                                              transition_failed_error;
+  }
+
+  void checkReadyEmergency()
+  {
+    randomiseInternally();
+
+    int random = static_cast<int8_t>(rand() % 6);
+
+    module_statuses[random] = ModuleStatus::kCriticalFailure;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, true) << not_encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
+                                                                 transition_failed_error;
+  }
+
+  void checkAcceleratingToNominalBraking()
+  {
+    randomiseInternally();
+
+    // These values are assigned to ensure the transition conditions.
+    nav_data.displacement = 1000;
+    nav_data.braking_distance = 1000;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, false) << encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kNominalBraking) <<
+                                                              transition_failed_error;
+  }
+
+  void checkAcceleratingToCruising()
+  {
+    // Not completed yet
+  }
+
+  void checkCruisingEmergency()
+  {
+    // Not completed yet
+  }
+
+  void checkAcceleratingEmergency()
+  {
+    randomiseInternally();
+
+    int random = static_cast<int8_t>(rand() % 6);
+
+    module_statuses[random] = ModuleStatus::kCriticalFailure;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, true) << not_encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking) <<
+                                                                 transition_failed_error;
+  }
+
+  void checkNominalBrakingToFinished()
+  {
+    randomiseInternally();
+
+    nav_data.velocity = 0;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, false) << encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kFinished) <<
+                                                              transition_failed_error;
+  }
+
+  void checkNominalBrakingEmergency()
+  {
+    randomiseInternally();
+
+    int random = static_cast<int8_t>(rand() % 6);
+
+    module_statuses[random] = ModuleStatus::kCriticalFailure;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.critical_failure, true) << not_encountered_critical_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking) <<
+                                                                 transition_failed_error;
+  }
+
+  void checkFinishedToOff()
+  {
+    randomiseInternally();
+
+    telemetry_data.shutdown_command = true;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kExiting) << transition_failed_error;
+  }
+
+  void checkFailureBrakingToStopped()
+  {
+    randomiseInternally();
+
+    nav_data.velocity = 0;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
+                                                         transition_failed_error;
+  }
+
+  void checkFailureStoppedToOff()
+  {
+    randomiseInternally();
+
+    telemetry_data.shutdown_command = true;
+
+    writeData();
+
+    waitForUpdate();
+
+    readData();
+
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kExiting) << transition_failed_error;
+  }
 
  protected:
   void SetUp()

@@ -465,7 +465,7 @@ TEST_F(CalibratingTest, handlesAllReady)
                                         telemetry_data, sensors_data, motors_data);
 
     if (!has_emergency) {
-      bool all_ready = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+      bool all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
       if (all_ready) {

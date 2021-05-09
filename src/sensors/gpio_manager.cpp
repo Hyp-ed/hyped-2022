@@ -89,7 +89,7 @@ void GpioManager::run()
           setHP();
           log_.ERR("GPIO-MANAGER", "Module Status kReady! HP SSR set");
           break;
-        default: // default case to indicate non-action explicitly
+        default:  // default case to indicate non-action explicitly
           break;
       }
     }
@@ -117,7 +117,7 @@ void GpioManager::run()
         default:      // undefied behaviour, e.g. kInvalid
           clearHP();  // shutting down HP asap
           log_.ERR("GPIO-MANAGER", "Unknown State! HP SSR cleared, shutting down!");
-          
+
           // signalling failure to get out of undefied behaviour
           data::Batteries batteries_data = data_.getBatteriesData();
           batteries_data.module_status = data::ModuleStatus::kCriticalFailure;

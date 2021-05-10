@@ -191,7 +191,7 @@ TEST_F(IdleTest, handlesAllInitialised)
 
     bool calibrate_command = checkCalibrateCommand(log, telemetry_data);
 
-    if (!has_emergency && !calibrate_command) {
+    if (!has_emergency && calibrate_command) {
       bool all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                                      telemetry_data, sensors_data, motors_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);

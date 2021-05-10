@@ -116,7 +116,12 @@ struct RunTest : public ::testing::Test {
   /**
    *  This method is used to force the emergency case.
    */
-  void forceEmergency() { embrakes_data.module_status = ModuleStatus::kCriticalFailure; }
+  void forceEmergency()
+  {
+    // We only need to set one critical failure as other behaviour
+    // is tested in transitions.test.cpp.
+    embrakes_data.module_status = ModuleStatus::kCriticalFailure;
+  }
 
   /**
    *  The updated data is written.
@@ -146,14 +151,6 @@ struct RunTest : public ::testing::Test {
   }
 
   void waitForUpdate() { Thread::sleep(100); }
-
-  /**
-   *  This array is used for randomising which module status should be set to
-   *  kCriticalFailure in order to create the emergency scenario.
-   */
-  std::array<ModuleStatus, 6> module_statuses
-    = {embrakes_data.module_status, nav_data.module_status,     telemetry_data.module_status,
-       motors_data.module_status,   sensors_data.module_status, batteries_data.module_status};
 
   // ---- Run steps --------------
 

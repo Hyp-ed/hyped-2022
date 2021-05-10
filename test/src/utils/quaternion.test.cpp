@@ -124,7 +124,7 @@ struct QuaternionConstruction : public::testing::Test
     void SetUp()
     {
         std::srand(time(0));
-        kValue = rand()%1000;
+        kValue = rand() % 1000 + 1;
     }
 };
 
@@ -163,7 +163,7 @@ struct QuaternionFunctionality : public::testing::Test
     void SetUp()
     {
         std::srand(time(0));
-        kValue = rand()%1000;
+        kValue = rand() % 1000 + 1;
         quaternion_one = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
         quaternion_two = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
     }

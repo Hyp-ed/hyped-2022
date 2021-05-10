@@ -100,6 +100,28 @@ struct RunTest : public ::testing::Test {
 
   // ---- Utilities -------------
 
+  bool output_enabled = true;
+
+  void disableOutput()
+  {
+    if (!output_enabled) { return; }
+    output_enabled = false;
+    fflush(stdout);
+    stdout_f     = dup(1);
+    tmp_stdout_f = open("/dev/null", O_WRONLY);
+    dup2(tmp_stdout_f, 1);
+    close(tmp_stdout_f);
+  }
+
+  void enableOutput()
+  {
+    if (output_enabled) { return; }
+    output_enabled = true;
+    fflush(stdout);
+    dup2(stdout_f, 1);
+    close(stdout_f);
+  }
+
   /**
    *  The whole data is randomised before updating the necessary data.
    */
@@ -186,9 +208,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << idle_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kCalibrating)
       << idle_calibrating_transition_error;
+    disableOutput();
   }
 
   void checkIdleEmergency()
@@ -203,9 +227,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << idle_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped)
       << idle_failure_transition_error;
+    disableOutput();
   }
 
   void checkCalibratingToReady()
@@ -222,9 +248,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << calibrating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kReady)
       << calibrating_ready_transition_erorr;
+    disableOutput();
   }
 
   void checkCalibratingEmergency()
@@ -239,9 +267,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << calibrating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped)
       << calibrating_failure_transition_error;
+    disableOutput();
   }
 
   void checkReadyToAccelerating()
@@ -258,9 +288,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << ready_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kAccelerating)
       << ready_accelerating_transition_error;
+    disableOutput();
   }
 
   void checkReadyEmergency()
@@ -275,9 +307,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << ready_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped)
       << ready_failure_transition_error;
+    disableOutput();
   }
 
   void checkAcceleratingToNominalBraking()
@@ -294,9 +328,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << accelerating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kNominalBraking)
       << accelerating_braking_transition_error;
+    disableOutput();
   }
 
   void checkAcceleratingToCruising()
@@ -321,9 +357,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << accelerating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking)
       << accelerating_failure_transition_error;
+    disableOutput();
   }
 
   void checkNominalBrakingToFinished()
@@ -338,9 +376,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << nominal_braking_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFinished)
       << braking_finished_transition_error;
+    disableOutput();
   }
 
   void checkNominalBrakingEmergency()
@@ -355,9 +395,11 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.critical_failure, false) << nominal_braking_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking)
       << braking_failure_transition_error;
+    disableOutput();
   }
 
   void checkFinishedToOff()
@@ -372,8 +414,10 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kExiting)
       << finished_off_transition_error;
+    disableOutput();
   }
 
   void checkFailureBrakingToStopped()
@@ -388,8 +432,10 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped)
       << failure_braking_stopped_transition_error;
+    disableOutput();
   }
 
   void checkFailureStoppedToOff()
@@ -404,26 +450,16 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
+    enableOutput();
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kExiting)
       << failure_stopped_off_transition_error;
+    disableOutput();
   }
 
  protected:
-  void SetUp()
-  {
-    fflush(stdout);
-    stdout_f     = dup(1);
-    tmp_stdout_f = open("/dev/null", O_WRONLY);
-    dup2(tmp_stdout_f, 1);
-    close(tmp_stdout_f);
-  }
+  void SetUp() { disableOutput(); }
 
-  void TearDown()
-  {
-    fflush(stdout);
-    dup2(stdout_f, 1);
-    close(stdout_f);
-  }
+  void TearDown() { enableOutput(); }
 };
 
 /*******************************

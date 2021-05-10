@@ -285,8 +285,8 @@ struct RunTest : public ::testing::Test {
     randomiseInternally();
 
     // These values are assigned to ensure the transition conditions.
-    nav_data.displacement     = 1000;
     nav_data.braking_distance = 1000;
+    nav_data.displacement     = Navigation::kRunLength - nav_data.braking_distance;
 
     writeData();
 

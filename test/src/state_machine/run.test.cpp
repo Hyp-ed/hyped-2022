@@ -50,54 +50,44 @@ struct RunTest : public ::testing::Test {
 
   // Messages for critical failure encounters:
 
-  const std::string idle_unexpected_failure_error =
+  const std::string idle_failure_error =
                                     "Encountered critical failure during Idle.";
   const std::string calibrating_failure_error =
                                     "Encountered critical failure during Calibrating.";
   const std::string ready_failure_error =
                                     "Encountered critical failure during Ready.";
-  const std::string accelerating_unexpected_failure_error =
+  const std::string accelerating_failure_error =
                                     "Encountered critical failure during Accelerating.";
-  const std::string nominal_braking_unexpected_failure_error =
+  const std::string nominal_braking_failure_error =
                                     "Encountered critical failure during NominalBraking.";
-  const std::string idle_expected_failure_error =
-                                    "Did not encounter critical failure during Idle.";
-  const std::string calibrating_expected_failure_error =
-                                    "Did not encounter critical failure during Calibrating.";
-  const std::string ready_expected_failure_error =
-                                    "Did not encounter critical failure during Ready.";
-  const std::string accelerating_expected_failure_error =
-                                    "Did not encounter critical failure during Accelerating.";
-  const std::string nominal_braking_expected_failure_error =
-                                    "Did not encounter critical failure during NominalBraking.";
 
   // Messages for transition failures:
 
-  const std::string transition_failed_from_idle_error =
+  const std::string idle_calibrating_transition_error =
                                     "Did not transition from Idle to Calibrating.";
-  const std::string transition_failed_from_idle_failure_error =
+  const std::string idle_failure_transition_error =
                                     "Did not transition from Idle to FailureStopped.";
-  const std::string transition_failed_from_calibrating_error =
+  const std::string calibrating_ready_transition_erorr =
                                     "Did not transition from Calibrating to Ready.";
-  const std::string transition_failed_from_calibrating_failure_error =
+  const std::string calibrating_failure_transition_error =
                                     "Did not transition from Calibrating to Failure Stopped.";
-  const std::string transition_failed_from_ready_error =
+  const std::string ready_accelerating_transition_error =
                                     "Did not transition from Ready to Accelerating.";
-  const std::string transition_failed_from_ready_failure_error =
+  const std::string ready_failure_transition_error =
                                     "Did not transition from Ready to Failure Stopped.";
-  const std::string transition_failed_from_accelerating_error =
+  const std::string accelerating_braking_transition_error =
                                     "Did not transition from Accelerating to Nominal Braking.";
-  const std::string transition_failed_from_accelerating_failure_error =
+  const std::string accelerating_failure_transition_error =
                                     "Did not transition from Accelerating to Failure Braking.";
-  const std::string transition_failed_from_braking_error =
+  const std::string braking_finished_transition_error =
                                     "Did not transition from Nominal Braking to Finished.";
-  const std::string transition_failed_from_braking_failure_error =
+  const std::string braking_failure_transition_error =
                                     "Did not transition from Nominal Braking to Failure Braking.";
-  const std::string transition_failed_from_finished_error =
+  const std::string finished_off_transition_error =
                                     "Did not transition from Finished to Off.";
-  const std::string transition_failed_from_failurebraking_error =
+  const std::string failure_braking_stopped_transition_error =
                                     "Did not transition from Failure Braking to Failure Stopped.";
-  const std::string transition_failed_from_failurestopped_error =
+  const std::string failure_stopped_off_transition_error =
                                     "Did not transition from Failure Stopped to Off.";
 
   // ---- Data -----------------
@@ -211,9 +201,9 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, false) << idle_unexpected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) << idle_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kCalibrating) <<
-                                                         transition_failed_from_idle_error;
+                                                         idle_calibrating_transition_error;
   }
 
 
@@ -229,9 +219,9 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, true) << idle_expected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) << idle_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
-                                                    transition_failed_from_idle_failure_error;
+                                                    idle_failure_transition_error;
   }
 
 
@@ -251,7 +241,7 @@ struct RunTest : public ::testing::Test {
 
     ASSERT_EQ(stm_data.critical_failure, false) << calibrating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kReady) <<
-                                                         transition_failed_from_calibrating_error;
+                                                         calibrating_ready_transition_erorr;
   }
 
 
@@ -267,10 +257,10 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, true) <<
-                                      calibrating_expected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) <<
+                                      calibrating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
-                                        transition_failed_from_calibrating_failure_error;
+                                        calibrating_failure_transition_error;
   }
 
   void checkReadyToAccelerating()
@@ -289,7 +279,7 @@ struct RunTest : public ::testing::Test {
 
     ASSERT_EQ(stm_data.critical_failure, false) << ready_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kAccelerating) <<
-                                                         transition_failed_from_ready_error;
+                                                         ready_accelerating_transition_error;
   }
 
   void checkReadyEmergency()
@@ -304,9 +294,9 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, true) << ready_expected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) << ready_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
-                                                    transition_failed_from_ready_failure_error;
+                                                    ready_failure_transition_error;
   }
 
   void checkAcceleratingToNominalBraking()
@@ -323,9 +313,9 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, false) << accelerating_unexpected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) << accelerating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kNominalBraking) <<
-                                                         transition_failed_from_accelerating_error;
+                                                         accelerating_braking_transition_error;
   }
 
   void checkAcceleratingToCruising()
@@ -350,10 +340,10 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, true) <<
-                                     accelerating_expected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) <<
+                                     accelerating_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking) <<
-                                       transition_failed_from_accelerating_failure_error;
+                                       accelerating_failure_transition_error;
   }
 
   void checkNominalBrakingToFinished()
@@ -368,9 +358,9 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, false) << nominal_braking_unexpected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) << nominal_braking_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFinished) <<
-                                                         transition_failed_from_braking_error;
+                                                         braking_finished_transition_error;
   }
 
   void checkNominalBrakingEmergency()
@@ -385,9 +375,9 @@ struct RunTest : public ::testing::Test {
 
     readData();
 
-    ASSERT_EQ(stm_data.critical_failure, true) << nominal_braking_expected_failure_error;
+    ASSERT_EQ(stm_data.critical_failure, false) << nominal_braking_failure_error;
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking) <<
-                                                    transition_failed_from_braking_failure_error;
+                                                    braking_failure_transition_error;
   }
 
   void checkFinishedToOff()
@@ -403,7 +393,7 @@ struct RunTest : public ::testing::Test {
     readData();
 
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kExiting) <<
-                                                          transition_failed_from_finished_error;
+                                                          finished_off_transition_error;
   }
 
   void checkFailureBrakingToStopped()
@@ -419,7 +409,7 @@ struct RunTest : public ::testing::Test {
     readData();
 
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kFailureStopped) <<
-                                                   transition_failed_from_failurebraking_error;
+                                                   failure_braking_stopped_transition_error;
   }
 
   void checkFailureStoppedToOff()
@@ -435,7 +425,7 @@ struct RunTest : public ::testing::Test {
     readData();
 
     ASSERT_EQ(stm_data.current_state, hyped::data::State::kExiting) <<
-                                                  transition_failed_from_failurestopped_error;
+                                                  failure_stopped_off_transition_error;
   }
 
  protected:

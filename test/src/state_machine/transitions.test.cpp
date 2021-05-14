@@ -87,9 +87,12 @@ struct TransitionFunctionality : public ::testing::Test {
 
   int randomInRange(int, int);
 
- protected:
-  void SetUp()
+  bool output_enabled = true;
+
+  void disableOutput()
   {
+    if (!output_enabled) { return; }
+    output_enabled = false;
     fflush(stdout);
     stdout_f     = dup(1);
     tmp_stdout_f = open("/dev/null", O_WRONLY);
@@ -97,11 +100,24 @@ struct TransitionFunctionality : public ::testing::Test {
     close(tmp_stdout_f);
   }
 
-  void TearDown()
+  void enableOutput()
   {
+    if (output_enabled) { return; }
+    output_enabled = true;
     fflush(stdout);
     dup2(stdout_f, 1);
     close(stdout_f);
+  }
+
+ protected:
+  void SetUp()
+  {
+    disableOutput();
+  }
+
+  void TearDown()
+  {
+    enableOutput();
   }
 };
 
@@ -144,7 +160,9 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, false) << no_emergency_error;
+    disableOutput();
   }
 }
 
@@ -177,7 +195,9 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << brake_emergency_error;
+    disableOutput();
   }
 }
 
@@ -210,7 +230,9 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << nav_emergency_error;
+    disableOutput();
   }
 }
 
@@ -243,7 +265,9 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << batteries_emergency_error;
+    disableOutput();
   }
 }
 
@@ -276,7 +300,9 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << telemetry_emergency_error;
+    disableOutput();
   }
 }
 
@@ -309,7 +335,9 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << sensors_emergency_error;
+    disableOutput();
   }
 }
 
@@ -342,7 +370,9 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
     telemetry_data.emergency_stop_command = false;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << motors_emergency_error;
+    disableOutput();
   }
 }
 
@@ -375,7 +405,9 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
     telemetry_data.emergency_stop_command = true;
     has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data, telemetry_data,
                                    sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(has_emergency, true) << stop_command_error;
+    disableOutput();
   }
 }
 
@@ -408,7 +440,9 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
   motors_data.module_status    = ModuleStatus::kInit;
   all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                             telemetry_data, sensors_data, motors_data);
+  enableOutput();
   ASSERT_EQ(all_initialised, true) << all_initialised_error;
+  disableOutput();
 }
 
 /**
@@ -441,7 +475,9 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
     motors_data.module_status    = ModuleStatus::kInit;
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_initialised, false) << brakes_not_initialised_error;
+    disableOutput();
   }
 }
 
@@ -475,7 +511,9 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
     motors_data.module_status    = ModuleStatus::kInit;
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_initialised, false) << nav_not_initialised_error;
+    disableOutput();
   }
 }
 
@@ -509,7 +547,9 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
     motors_data.module_status    = ModuleStatus::kInit;
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_initialised, false) << batteries_not_initialised_error;
+    disableOutput();
   }
 }
 
@@ -543,7 +583,9 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
     motors_data.module_status    = ModuleStatus::kInit;
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_initialised, false) << telemetry_not_initialised_error;
+    disableOutput();
   }
 }
 
@@ -577,7 +619,9 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
     motors_data.module_status    = ModuleStatus::kInit;
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_initialised, false) << sensors_not_initialised_error;
+    disableOutput();
   }
 }
 
@@ -611,7 +655,9 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
     motors_data.module_status    = other;
     all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
                                               telemetry_data, sensors_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_initialised, false) << motors_not_initialised_error;
+    disableOutput();
   }
 }
 
@@ -633,7 +679,9 @@ TEST_F(TransitionFunctionality, handlesAllReady)
   nav_data.module_status      = ModuleStatus::kReady;
   motors_data.module_status   = ModuleStatus::kReady;
   all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+  enableOutput();
   ASSERT_EQ(all_ready, true) << all_ready_error;
+  disableOutput();
 }
 
 /**
@@ -658,7 +706,9 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
     nav_data.module_status      = ModuleStatus::kReady;
     motors_data.module_status   = ModuleStatus::kReady;
     all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_ready, false) << brakes_not_ready_error;
+    disableOutput();
   }
 }
 
@@ -684,7 +734,9 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
     nav_data.module_status      = other;
     motors_data.module_status   = ModuleStatus::kReady;
     all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_ready, false) << nav_not_ready_error;
+    disableOutput();
   }
 }
 
@@ -710,7 +762,9 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
     nav_data.module_status      = ModuleStatus::kReady;
     motors_data.module_status   = other;
     all_ready                   = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    enableOutput();
     ASSERT_EQ(all_ready, false) << motors_not_ready_error;
+    disableOutput();
   }
 }
 
@@ -733,12 +787,14 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
     telemetry_data.calibrate_command = static_cast<bool>(i & 1);
     telemetry_data.launch_command    = static_cast<bool>((i >> 1) & 1);
     telemetry_data.shutdown_command  = static_cast<bool>((i >> 2) & 1);
+    enableOutput();
     ASSERT_EQ(telemetry_data.calibrate_command, checkCalibrateCommand(log, telemetry_data))
       << calibrate_command_error;
     ASSERT_EQ(telemetry_data.launch_command, checkLaunchCommand(log, telemetry_data))
       << launch_command_error;
     ASSERT_EQ(telemetry_data.shutdown_command, checkShutdownCommand(log, telemetry_data))
       << shutdown_command_error;
+    disableOutput();
   }
 }
 
@@ -773,8 +829,9 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
     nav_data.velocity     = static_cast<nav_t>(rand());
     nav_data.acceleration = nav_data.velocity;
     nav_data.emergency_braking_distance = nav_data.velocity;
-
+    enableOutput();
     ASSERT_EQ(false, checkEnteredBrakingZone(log, nav_data)) << braking_zone_false_positive_error;
+    disableOutput();
   }
 }
 
@@ -803,8 +860,9 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
     nav_data.velocity     = static_cast<nav_t>(rand());
     nav_data.acceleration = static_cast<nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<nav_t>(rand());
-
+    enableOutput();
     ASSERT_EQ(true, checkEnteredBrakingZone(log, nav_data)) << braking_zone_false_negative_error;
+    disableOutput();
   }
 }
 
@@ -832,6 +890,7 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
     critical_displacement
       = Navigation::kRunLength - Navigation::kBrakingBuffer - nav_data.braking_distance;
 
+    enableOutput();
     for (int j = 0; j < TEST_SIZE; j++) {
       nav_data.displacement = critical_displacement - 0.5 + step_size * static_cast<nav_t>(j);
       if (j < TEST_SIZE / 2) {
@@ -842,6 +901,7 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
           << braking_zone_false_negative_error;
       }
     }
+    disableOutput();
   }
 }
 
@@ -868,6 +928,7 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
     critical_braking_distance
       = Navigation::kRunLength - Navigation::kBrakingBuffer - nav_data.displacement;
 
+    enableOutput();
     for (int j = 0; j < TEST_SIZE; j++) {
       nav_data.braking_distance
         = critical_braking_distance - 0.5 + step_size * static_cast<nav_t>(j);
@@ -879,6 +940,7 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
           << braking_zone_false_negative_error;
       }
     }
+    disableOutput();
   }
 }
 
@@ -902,8 +964,9 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
     nav_data.displacement               = static_cast<nav_t>(rand());
     nav_data.braking_distance           = static_cast<nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<nav_t>(rand());
-
+    enableOutput();
     ASSERT_EQ(false, checkPodStopped(log, nav_data)) << pod_stopped_false_positive_error;
+    disableOutput();
   }
 }
 
@@ -927,7 +990,8 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
     nav_data.displacement               = static_cast<nav_t>(rand());
     nav_data.braking_distance           = static_cast<nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<nav_t>(rand());
-
+    enableOutput();
     ASSERT_EQ(true, checkPodStopped(log, nav_data)) << pod_stopped_false_negative_error;
+    disableOutput();
   }
 }

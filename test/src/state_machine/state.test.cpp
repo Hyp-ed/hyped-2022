@@ -310,9 +310,14 @@ struct StateTest : public ::testing::Test {
     data.setBatteriesData(batteries_data);
   }
 
- protected:
-  void SetUp()
+  // ---- Utilities -------------
+
+  bool output_enabled = true;
+
+  void disableOutput()
   {
+    if (!output_enabled) { return; }
+    output_enabled = false;
     fflush(stdout);
     stdout_f     = dup(1);
     tmp_stdout_f = open("/dev/null", O_WRONLY);
@@ -320,11 +325,24 @@ struct StateTest : public ::testing::Test {
     close(tmp_stdout_f);
   }
 
-  void TearDown()
+  void enableOutput()
   {
+    if (output_enabled) { return; }
+    output_enabled = true;
     fflush(stdout);
     dup2(stdout_f, 1);
     close(stdout_f);
+  }
+
+ protected:
+  void SetUp()
+  {
+    disableOutput();
+  }
+
+  void TearDown()
+  {
+    enableOutput();
   }
 };
 
@@ -356,11 +374,13 @@ TEST_F(IdleTest, handlesEmergency)
                                         telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
     } else {
       ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
     }
+    disableOutput();
   }
 }
 
@@ -381,7 +401,11 @@ TEST_F(IdleTest, handlesCalibrateCommand)
       bool calibrate_command                 = checkCalibrateCommand(log, telemetry_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
-      if (!calibrate_command) { ASSERT_EQ(new_state, nullptr) << calibrate_command_error; }
+      if (!calibrate_command) {
+        enableOutput();
+        ASSERT_EQ(new_state, nullptr) << calibrate_command_error;
+        disableOutput();
+      }
     }
   }
 }
@@ -406,11 +430,13 @@ TEST_F(IdleTest, handlesAllInitialised)
                                                      telemetry_data, sensors_data, motors_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
+      enableOutput();
       if (all_initialised) {
         ASSERT_EQ(new_state, Calibrating::getInstance()) << not_enter_calibrating_error;
       } else {
         ASSERT_NE(new_state, Calibrating::getInstance()) << enter_calibrating_error;
       }
+      disableOutput();
     }
   }
 }
@@ -443,11 +469,13 @@ TEST_F(CalibratingTest, handlesEmergency)
                                         telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
     } else {
       ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
     }
+    disableOutput();
   }
 }
 
@@ -468,11 +496,13 @@ TEST_F(CalibratingTest, handlesAllReady)
       bool all_ready = checkModulesReady(log, embrakes_data, nav_data, motors_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
+      enableOutput();
       if (all_ready) {
         ASSERT_EQ(new_state, Ready::getInstance()) << not_enter_ready_error;
       } else {
         ASSERT_NE(new_state, Ready::getInstance()) << enter_ready_error;
       }
+      disableOutput();
     }
   }
 }
@@ -506,11 +536,13 @@ TEST_F(ReadyTest, handlesEmergency)
                                         telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
     } else {
       ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
     }
+    disableOutput();
   }
 }
 
@@ -533,11 +565,13 @@ TEST_F(ReadyTest, handlesLaunchCommand)
       bool received_launch_command           = checkLaunchCommand(log, telemetry_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
+      enableOutput();
       if (received_launch_command) {
         ASSERT_EQ(new_state, Accelerating::getInstance()) << not_enter_accelerating_error;
       } else {
         ASSERT_NE(new_state, Accelerating::getInstance()) << enter_accelerating_error;
       }
+      disableOutput();
     }
   }
 }
@@ -571,11 +605,13 @@ TEST_F(AcceleratingTest, handlesEmergency)
                                         telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, FailureBraking::getInstance()) << not_enter_emergency_error;
     } else {
       ASSERT_NE(new_state, FailureBraking::getInstance()) << enter_emergency_error;
     }
+    disableOutput();
   }
 }
 
@@ -598,11 +634,13 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
       bool in_braking_zone                   = checkEnteredBrakingZone(log, nav_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
+      enableOutput();
       if (in_braking_zone) {
         ASSERT_EQ(new_state, NominalBraking::getInstance()) << not_enter_braking_error;
       } else {
         ASSERT_NE(new_state, NominalBraking::getInstance()) << enter_braking_error;
       }
+      disableOutput();
     }
   }
 }
@@ -636,11 +674,13 @@ TEST_F(NominalBrakingTest, handlesEmergency)
                                         telemetry_data, sensors_data, motors_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, FailureBraking::getInstance()) << not_enter_emergency_error;
     } else {
       ASSERT_NE(new_state, FailureBraking::getInstance()) << enter_emergency_error;
     }
+    disableOutput();
   }
 }
 
@@ -662,11 +702,13 @@ TEST_F(NominalBrakingTest, handlesStopped)
       bool stopped                           = checkPodStopped(log, nav_data);
       hyped::state_machine::State *new_state = state->checkTransition(log);
 
+      enableOutput();
       if (stopped) {
         ASSERT_EQ(new_state, Finished::getInstance()) << not_enter_finished_error;
       } else {
         ASSERT_NE(new_state, Finished::getInstance()) << enter_finished_error;
       }
+      disableOutput();
     }
   }
 }
@@ -696,11 +738,13 @@ TEST_F(FinishedTest, handlesShutdownCommand)
     bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (received_shutdown_command) {
       ASSERT_EQ(new_state, Off::getInstance()) << not_enter_off_error;
     } else {
       ASSERT_NE(new_state, Off::getInstance()) << enter_off_error;
     }
+    disableOutput();
   }
 }
 
@@ -729,11 +773,13 @@ TEST_F(FailureBrakingTest, handlesStopped)
     bool stopped                           = checkPodStopped(log, nav_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (stopped) {
       ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_failure_stopped_error;
     } else {
       ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_failure_stopped_error;
     }
+    disableOutput();
   }
 }
 
@@ -762,10 +808,12 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
     bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
     hyped::state_machine::State *new_state = state->checkTransition(log);
 
+    enableOutput();
     if (received_shutdown_command) {
       ASSERT_EQ(new_state, Off::getInstance()) << not_enter_off_error;
     } else {
       ASSERT_NE(new_state, Off::getInstance()) << enter_off_error;
     }
+    disableOutput();
   }
 }

@@ -16,6 +16,8 @@
  *    limitations under the License.
  */
 
+#include "state_machine/transitions.hpp"
+
 #include <fcntl.h>
 #include <stdlib.h>
 
@@ -24,7 +26,6 @@
 
 #include "data/data.hpp"
 #include "gtest/gtest.h"
-#include "state_machine/transitions.hpp"
 #include "utils/logger.hpp"
 
 using namespace hyped::data;
@@ -39,8 +40,6 @@ using namespace hyped::state_machine;
  * 4. Utility functions
  */
 struct TransitionFunctionality : public ::testing::Test {
-  // TODO(miltfra): Disable printing log messages to stdout/stderr
-
   // ---- Logger ---------------
 
   hyped::utils::Logger log;

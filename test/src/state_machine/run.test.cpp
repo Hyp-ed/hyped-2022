@@ -214,7 +214,7 @@ struct RunTest : public ::testing::Test {
     readData();
   }
 
-  void checkIdleToCalibrating()
+  void testIdleToCalibrating()
   {
     // Check initial state
     readData();
@@ -268,7 +268,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkIdleEmergency()
+  void testIdleEmergency()
   {
     // Check initial state
     readData();
@@ -307,7 +307,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkCalibratingToReady()
+  void testCalibratingToReady()
   {
     // Check initial state
     readData();
@@ -357,7 +357,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkCalibratingEmergency()
+  void testCalibratingEmergency()
   {
     // Check initial state
     readData();
@@ -397,7 +397,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkReadyToAccelerating()
+  void testReadyToAccelerating()
   {
     // Check initial state
     readData();
@@ -449,7 +449,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkReadyEmergency()
+  void testReadyEmergency()
   {
     // Check initial state
     readData();
@@ -488,7 +488,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkAcceleratingToNominalBraking()
+  void testAcceleratingToNominalBraking()
   {
     // Check initial state
     readData();
@@ -540,17 +540,17 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkAcceleratingToCruising()
+  void testAcceleratingToCruising()
   {
     // TODO(miltfra): Insert this once Cruising is done.
   }
 
-  void checkCruisingEmergency()
+  void testCruisingEmergency()
   {
     // TODO(miltfra): Insert this once Cruising is done.
   }
 
-  void checkAcceleratingEmergency()
+  void testAcceleratingEmergency()
   {
     // Check initial state
     readData();
@@ -590,7 +590,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkNominalBrakingToFinished()
+  void testNominalBrakingToFinished()
   {
     // Check initial state
     readData();
@@ -641,7 +641,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkNominalBrakingEmergency()
+  void testNominalBrakingEmergency()
   {
     // Check initial state
     readData();
@@ -681,7 +681,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkFinishedToOff()
+  void testFinishedToOff()
   {
     // Check initial state
     readData();
@@ -714,7 +714,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkFailureBrakingToStopped()
+  void testFailureBrakingToStopped()
   {
     // Check initial state
     readData();
@@ -752,7 +752,7 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
-  void checkFailureStoppedToOff()
+  void testFailureStoppedToOff()
   {
     // Check initial state
     readData();
@@ -804,12 +804,12 @@ TEST_F(RunTest, nominalRun)
 
     waitForUpdate();
 
-    checkIdleToCalibrating();
-    checkCalibratingToReady();
-    checkReadyToAccelerating();
-    checkAcceleratingToNominalBraking();
-    checkNominalBrakingToFinished();
-    checkFinishedToOff();
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyToAccelerating();
+    testAcceleratingToNominalBraking();
+    testNominalBrakingToFinished();
+    testFinishedToOff();
 
     state_machine->join();
     delete state_machine;
@@ -829,8 +829,8 @@ TEST_F(RunTest, idleEmergency)
 
     waitForUpdate();
 
-    checkIdleEmergency();
-    checkFailureStoppedToOff();
+    testIdleEmergency();
+    testFailureStoppedToOff();
 
     state_machine->join();
     delete state_machine;
@@ -850,9 +850,9 @@ TEST_F(RunTest, calibratingEmergency)
 
     waitForUpdate();
 
-    checkIdleToCalibrating();
-    checkCalibratingEmergency();
-    checkFailureStoppedToOff();
+    testIdleToCalibrating();
+    testCalibratingEmergency();
+    testFailureStoppedToOff();
     state_machine->join();
 
     delete state_machine;
@@ -872,10 +872,10 @@ TEST_F(RunTest, readyEmergency)
 
     waitForUpdate();
 
-    checkIdleToCalibrating();
-    checkCalibratingToReady();
-    checkReadyEmergency();
-    checkFailureStoppedToOff();
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyEmergency();
+    testFailureStoppedToOff();
 
     state_machine->join();
     delete state_machine;
@@ -895,12 +895,12 @@ TEST_F(RunTest, acceleratingEmergency)
 
     waitForUpdate();
 
-    checkIdleToCalibrating();
-    checkCalibratingToReady();
-    checkReadyToAccelerating();
-    checkAcceleratingEmergency();
-    checkFailureBrakingToStopped();
-    checkFailureStoppedToOff();
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyToAccelerating();
+    testAcceleratingEmergency();
+    testFailureBrakingToStopped();
+    testFailureStoppedToOff();
 
     state_machine->join();
     delete state_machine;
@@ -920,13 +920,13 @@ TEST_F(RunTest, brakingEmergency)
 
     waitForUpdate();
 
-    checkIdleToCalibrating();
-    checkCalibratingToReady();
-    checkReadyToAccelerating();
-    checkAcceleratingToNominalBraking();
-    checkNominalBrakingEmergency();
-    checkFailureBrakingToStopped();
-    checkFailureStoppedToOff();
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyToAccelerating();
+    testAcceleratingToNominalBraking();
+    testNominalBrakingEmergency();
+    testFailureBrakingToStopped();
+    testFailureStoppedToOff();
 
     state_machine->join();
     delete state_machine;

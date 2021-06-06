@@ -41,8 +41,14 @@ struct RunTest : public ::testing::Test {
 
   // ---- Logger ---------------
 
+  // Logger that is used by the test thread.
   hyped::utils::Logger log;
+
+  // Logger that is used by the state machine thread during testing.
   hyped::utils::Logger stm_log;
+
+  // File descriptors for the original and the temporary standard output stream to avoid logging
+  // during testing.
   int stdout_f;
   int tmp_stdout_f;
 
@@ -102,6 +108,9 @@ struct RunTest : public ::testing::Test {
 
   bool output_enabled = true;
 
+  /**
+   * Reroutes stdout into /dev/null and saves the original output stream to be restored later.
+   */
   void disableOutput()
   {
     if (!output_enabled) { return; }
@@ -113,6 +122,9 @@ struct RunTest : public ::testing::Test {
     close(tmp_stdout_f);
   }
 
+  /**
+   *  Restores the original output stream to stdout.
+   */
   void enableOutput()
   {
     if (output_enabled) { return; }
@@ -172,10 +184,21 @@ struct RunTest : public ::testing::Test {
     batteries_data = data.getBatteriesData();
   }
 
+  /**
+   * Allows the state machine thread to process the central data structure and transition between
+   * states.
+   *
+   * If tests are failing for no apparent reason, try increasing the sleep duration to be sure this
+   * is not the source of the problem.
+   */
   void waitForUpdate() { Thread::sleep(10); }
 
   // ---- Run steps --------------
 
+  /**
+   * Simulating program start up and making sure undesired transitions from Idle are being
+   * prevented.
+   */
   void initialiseData()
   {
     readData();
@@ -214,6 +237,10 @@ struct RunTest : public ::testing::Test {
     readData();
   }
 
+  /**
+   * Modifies data such that the Idle -> Calibrating transition conditions are met and verifies the
+   * behaviour.
+   */
   void testIdleToCalibrating()
   {
     // Check initial state
@@ -268,6 +295,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Idle -> FailureStopped transition conditions are met and verifies
+   * the behaviour.
+   */
   void testIdleEmergency()
   {
     // Check initial state
@@ -307,6 +338,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Calibrating -> Ready transition conditions are met and verifies
+   * the behaviour.
+   */
   void testCalibratingToReady()
   {
     // Check initial state
@@ -357,6 +392,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Calibrating -> FailureStopped transition conditions are met and
+   * verifies the behaviour.
+   */
   void testCalibratingEmergency()
   {
     // Check initial state
@@ -397,6 +436,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Ready -> Accelerating transition conditions are met and
+   * verifies the behaviour.
+   */
   void testReadyToAccelerating()
   {
     // Check initial state
@@ -449,6 +492,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Ready -> FailureStopped transition conditions are met and
+   * verifies the behaviour.
+   */
   void testReadyEmergency()
   {
     // Check initial state
@@ -488,6 +535,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Accelerating -> NominalBraking transition conditions are met and
+   * verifies the behaviour.
+   */
   void testAcceleratingToNominalBraking()
   {
     // Check initial state
@@ -550,6 +601,10 @@ struct RunTest : public ::testing::Test {
     // TODO(miltfra): Insert this once Cruising is done.
   }
 
+  /**
+   * Modifies data such that the Accelerating -> FailureBraking transition conditions are met and
+   * verifies the behaviour.
+   */
   void testAcceleratingEmergency()
   {
     // Check initial state
@@ -590,6 +645,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the NominalBraking -> Finished transition conditions are met and
+   * verifies the behaviour.
+   */
   void testNominalBrakingToFinished()
   {
     // Check initial state
@@ -641,6 +700,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the NominalBraking -> FailureBraking transition conditions are met and
+   * verifies the behaviour.
+   */
   void testNominalBrakingEmergency()
   {
     // Check initial state
@@ -681,6 +744,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Finished -> Off transition conditions are met and
+   * verifies the behaviour.
+   */
   void testFinishedToOff()
   {
     // Check initial state
@@ -714,6 +781,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the FailureBraking -> Stopped transition conditions are met and
+   * verifies the behaviour.
+   */
   void testFailureBrakingToStopped()
   {
     // Check initial state
@@ -752,6 +823,10 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the FailureStopped -> Off transition conditions are met and
+   * verifies the behaviour.
+   */
   void testFailureStoppedToOff()
   {
     // Check initial state
@@ -791,6 +866,9 @@ struct RunTest : public ::testing::Test {
   void TearDown() { enableOutput(); }
 };
 
+/**
+ * Verifies the nominal run behaviour without any emergencies.
+ */
 TEST_F(RunTest, nominalRun)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -816,6 +894,9 @@ TEST_F(RunTest, nominalRun)
   }
 }
 
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Idle.
+ */
 TEST_F(RunTest, idleEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -837,6 +918,9 @@ TEST_F(RunTest, idleEmergency)
   }
 }
 
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Calibrating.
+ */
 TEST_F(RunTest, calibratingEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -859,6 +943,9 @@ TEST_F(RunTest, calibratingEmergency)
   }
 }
 
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Ready.
+ */
 TEST_F(RunTest, readyEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -882,6 +969,9 @@ TEST_F(RunTest, readyEmergency)
   }
 }
 
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Accelerating.
+ */
 TEST_F(RunTest, acceleratingEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
@@ -907,6 +997,9 @@ TEST_F(RunTest, acceleratingEmergency)
   }
 }
 
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Braking.
+ */
 TEST_F(RunTest, brakingEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {

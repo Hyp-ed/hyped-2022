@@ -45,6 +45,7 @@ using namespace hyped::state_machine;
  */
 class Randomiser {
  public:
+  // Generates a random floating point number in the inverval [0.0, 1.0].
   static nav_t randomDecimal()
   {
     static std::default_random_engine generator;
@@ -52,6 +53,7 @@ class Randomiser {
     return distribution(generator);
   }
 
+  // Randomises a module status to any of the possible values.
   static void randomiseModuleStatus(ModuleStatus &module_status)
   {
     // Randomises the module status.
@@ -63,6 +65,7 @@ class Randomiser {
   // Navigation data
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::Navigation struct.
   static void randomiseNavigation(Navigation &nav_data)
   {
     randomiseModuleStatus(nav_data.module_status);
@@ -89,6 +92,7 @@ class Randomiser {
   // Raw Sensor data
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::ImuData struct.
   static void randomiseImuData(ImuData &imu_data)
   {
     for (int i = 0; i < 3; i++) {
@@ -99,12 +103,14 @@ class Randomiser {
     }
   }
 
+  // Randomises the entries in a hyped::data::EncoderData struct.
   static void randomiseEncoderData(EncoderData &encoder_data)
   {
     // Generates a disp value between 750 and 1749 in accord to the randomised displacement value.
     encoder_data.disp = static_cast<nav_t>((rand() % 1000 + 750) + randomDecimal());
   }
 
+  // Randomises the entries in a hyped::data::StripeCounter struct.
   static void randomiseStripeCounter(StripeCounter &stripe_counter)
   {
     // Generates a count timestamp and value between 0 and 10.
@@ -112,12 +118,14 @@ class Randomiser {
     stripe_counter.count.value     = static_cast<uint32_t>(rand() % 11);
   }
 
+  // Randomises the entries in a hyped::data::TemperatureData struct.
   static void randomiseTemperatureData(TemperatureData &temp_data)
   {
     // Generates a temperature value between 0 and 99 C.
     temp_data.temp = static_cast<int>(rand() % 100);
   }
 
+  // Randomises the entries in a hyped::data::Sensors struct.
   static void randomiseSensorsData(Sensors &sensors_data)
   {
     randomiseModuleStatus(sensors_data.module_status);
@@ -139,6 +147,7 @@ class Randomiser {
   // Battery data
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::BatteryData struct.
   static void randomiseBatteryData(BatteryData &battery_data)
   {
     // Generates a voltage data between 0 and 499.
@@ -175,6 +184,7 @@ class Randomiser {
     battery_data.imd_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
 
+  // Randomises the entries in a hyped::data::Batteries struct.
   static void randomiseBatteriesData(Batteries &batteries_data)
   {
     randomiseModuleStatus(batteries_data.module_status);
@@ -191,6 +201,7 @@ class Randomiser {
   // Emergency Brakes data
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::EmergencyBrakes struct.
   static void randomiseEmbrakes(EmergencyBrakes &embrakes_data)
   {
     randomiseModuleStatus(embrakes_data.module_status);
@@ -204,6 +215,7 @@ class Randomiser {
   // Motor data
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::Motors struct.
   static void randomiseMotors(Motors &motors_data)
   {
     randomiseModuleStatus(motors_data.module_status);
@@ -218,6 +230,7 @@ class Randomiser {
   // Telemetry data
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::Telemetry struct.
   static void randomiseTelemetry(Telemetry &telemetry_data)
   {
     randomiseModuleStatus(telemetry_data.module_status);
@@ -235,6 +248,7 @@ class Randomiser {
   // State Machine States
   //---------------------------------------------------------------------------
 
+  // Randomises the entries in a hyped::data::StateMachine struct.
   static void randomiseStateMachine(StateMachine &stm_data)
   {
     stm_data.critical_failure = static_cast<bool>(rand() > (RAND_MAX / 2));

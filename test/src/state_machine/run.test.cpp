@@ -469,16 +469,21 @@ struct RunTest : public ::testing::Test {
     nav_data.displacement     = 0;
     nav_data.braking_distance = 0;
 
+    // Prevent Accelerating -> Cruising
+    nav_data.velocity = Navigation::kMaximumVelocity / 2;
+
     // Verify transition conditions are as intended
     bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
     bool has_launch_command       = checkLaunchCommand(log, telemetry_data);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
+    bool has_reached_max_velocity = checkReachedMaxVelocity(log, nav_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_launch_command);
     ASSERT_EQ(false, has_entered_braking_zone);
+    ASSERT_EQ(false, has_reached_max_velocity);
     disableOutput();
 
     // Let STM do its thing

@@ -80,8 +80,14 @@ struct RunTest : public ::testing::Test {
     = "Did not transition from Ready to Failure Stopped.";
   const std::string accelerating_braking_transition_error
     = "Did not transition from Accelerating to Nominal Braking.";
+  const std::string accelerating_cruising_transition_error
+    = "Did not transition from Accelerating to Cruising.";
   const std::string accelerating_failure_transition_error
     = "Did not transition from Accelerating to Failure Braking.";
+  const std::string cruising_braking_transition_error
+    = "Did not transition from Cruising to Nominal Braking.";
+  const std::string cruising_failure_transition_error
+    = "Did not transition from Cruising to Failure Braking.";
   const std::string braking_finished_transition_error
     = "Did not transition from Nominal Braking to Finished.";
   const std::string braking_failure_transition_error
@@ -598,14 +604,61 @@ struct RunTest : public ::testing::Test {
     disableOutput();
   }
 
+  /**
+   * Modifies data such that the Accelerating -> Cruising transition conditions are met and
+   * verifies the behaviour.
+   */
   void testAcceleratingToCruising()
   {
-    // TODO(miltfra): Insert this once Cruising is done.
-  }
+    // Check initial state
+    readData();
+    enableOutput();
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kAccelerating);
+    disableOutput();
 
-  void testCruisingEmergency()
-  {
-    // TODO(miltfra): Insert this once Cruising is done.
+    // Randomise data
+    randomiseInternally();
+
+    // Prevent Accelerating -> FailureBraking
+    embrakes_data.module_status           = ModuleStatus::kReady;
+    nav_data.module_status                = ModuleStatus::kReady;
+    telemetry_data.module_status          = ModuleStatus::kReady;
+    motors_data.module_status             = ModuleStatus::kReady;
+    sensors_data.module_status            = ModuleStatus::kReady;
+    batteries_data.module_status          = ModuleStatus::kReady;
+    telemetry_data.emergency_stop_command = false;
+
+    // Prevent Accelerating -> NominalBraking
+    // Prevent Cruising -> NominalBraking
+    nav_data.braking_distance = 0;
+    nav_data.displacement     = 0;
+
+    // Enforce Accelerating -> Cruising
+    nav_data.velocity = Navigation::kMaximumVelocity;
+
+    // Verify transition conditions are as intended
+    bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                        telemetry_data, sensors_data, motors_data);
+    bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
+    bool has_reached_max_velocity = checkReachedMaxVelocity(log, nav_data);
+
+    enableOutput();
+    ASSERT_EQ(false, has_emergency);
+    ASSERT_EQ(false, has_entered_braking_zone);
+    ASSERT_EQ(true, has_reached_max_velocity);
+    disableOutput();
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    enableOutput();
+    ASSERT_EQ(stm_data.critical_failure, false) << accelerating_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kCruising)
+      << accelerating_cruising_transition_error;
+    disableOutput();
   }
 
   /**
@@ -624,6 +677,98 @@ struct RunTest : public ::testing::Test {
     randomiseInternally();
 
     // Enforce Accelerating -> FailureBraking
+    forceEmergency();
+
+    // Prevent FailureBraking -> FailureStopped
+    nav_data.velocity = 100;
+
+    // Verify transition conditions are as intended
+    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                        telemetry_data, sensors_data, motors_data);
+    bool has_stopped   = checkPodStopped(log, nav_data);
+
+    enableOutput();
+    ASSERT_EQ(true, has_emergency);
+    ASSERT_EQ(false, has_stopped);
+    disableOutput();
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    enableOutput();
+    ASSERT_EQ(stm_data.critical_failure, false) << accelerating_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kEmergencyBraking)
+      << accelerating_failure_transition_error;
+    disableOutput();
+  }
+
+  void testCruisingToNominalBraking()
+  {
+    // Check initial state
+    readData();
+    enableOutput();
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kCruising);
+    disableOutput();
+
+    // Randomise data
+    randomiseInternally();
+
+    // Prevent Cruising -> FailureBraking
+    embrakes_data.module_status           = ModuleStatus::kReady;
+    nav_data.module_status                = ModuleStatus::kReady;
+    telemetry_data.module_status          = ModuleStatus::kReady;
+    motors_data.module_status             = ModuleStatus::kReady;
+    sensors_data.module_status            = ModuleStatus::kReady;
+    batteries_data.module_status          = ModuleStatus::kReady;
+    telemetry_data.emergency_stop_command = false;
+
+    // Enforce Cruising -> NominalBraking
+    nav_data.braking_distance = 1000;
+    nav_data.displacement     = Navigation::kRunLength - nav_data.braking_distance;
+
+    // Prevent NominalBraking -> Finished
+    nav_data.velocity = 100;
+
+    // Verify transition conditions are as intended
+    bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+                                        telemetry_data, sensors_data, motors_data);
+    bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
+    bool has_stopped              = checkPodStopped(log, nav_data);
+
+    enableOutput();
+    ASSERT_EQ(false, has_emergency);
+    ASSERT_EQ(true, has_entered_braking_zone);
+    ASSERT_EQ(false, has_stopped);
+    disableOutput();
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    enableOutput();
+    ASSERT_EQ(stm_data.critical_failure, false) << accelerating_failure_error;
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kNominalBraking)
+      << cruising_braking_transition_error;
+    disableOutput();
+  }
+
+  void testCruisingEmergency()
+  {
+    // Check initial state
+    readData();
+    enableOutput();
+    ASSERT_EQ(stm_data.current_state, hyped::data::State::kCruising);
+    disableOutput();
+
+    // Randomise data
+    randomiseInternally();
+
+    // Enforce Cruising -> FailureBraking
     forceEmergency();
 
     // Prevent FailureBraking -> FailureStopped
@@ -874,9 +1019,9 @@ struct RunTest : public ::testing::Test {
 };
 
 /**
- * Verifies the nominal run behaviour without any emergencies.
+ * Verifies the nominal run behaviour without any emergencies and without the Cruising state.
  */
-TEST_F(RunTest, nominalRun)
+TEST_F(RunTest, nominalRunWithoutCruising)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
     System &sys  = System::getSystem();
@@ -893,6 +1038,35 @@ TEST_F(RunTest, nominalRun)
     testCalibratingToReady();
     testReadyToAccelerating();
     testAcceleratingToNominalBraking();
+    testNominalBrakingToFinished();
+    testFinishedToOff();
+
+    state_machine->join();
+    delete state_machine;
+  }
+}
+
+/**
+ * Verifies the nominal run behaviour without any emergencies but with the Cruising state.
+ */
+TEST_F(RunTest, nominalRunWithCruising)
+{
+  for (int i = 0; i < TEST_SIZE; i++) {
+    System &sys  = System::getSystem();
+    sys.running_ = true;
+
+    initialiseData();
+
+    Thread *state_machine = new Main(0, stm_log);
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyToAccelerating();
+    testAcceleratingToCruising();
+    testCruisingToNominalBraking();
     testNominalBrakingToFinished();
     testFinishedToOff();
 
@@ -1005,9 +1179,39 @@ TEST_F(RunTest, acceleratingEmergency)
 }
 
 /**
- * Verifies the state machine behaviour upon encountering an emergency in Braking.
+ * Verifies the state machine behaviour upon encountering an emergency in Cruising.
  */
-TEST_F(RunTest, brakingEmergency)
+TEST_F(RunTest, cruisingEmergency)
+{
+  for (int i = 0; i < TEST_SIZE; i++) {
+    System &sys  = System::getSystem();
+    sys.running_ = true;
+
+    initialiseData();
+
+    Thread *state_machine = new Main(0, stm_log);
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyToAccelerating();
+    testAcceleratingToCruising();
+    testCruisingEmergency();
+    testFailureBrakingToStopped();
+    testFailureStoppedToOff();
+
+    state_machine->join();
+    delete state_machine;
+  }
+}
+
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Braking without the
+ * Cruising state.
+ */
+TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
     System &sys  = System::getSystem();
@@ -1024,6 +1228,37 @@ TEST_F(RunTest, brakingEmergency)
     testCalibratingToReady();
     testReadyToAccelerating();
     testAcceleratingToNominalBraking();
+    testNominalBrakingEmergency();
+    testFailureBrakingToStopped();
+    testFailureStoppedToOff();
+
+    state_machine->join();
+    delete state_machine;
+  }
+}
+
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in Braking with the Cruising
+ * state.
+ */
+TEST_F(RunTest, brakingEmergencyWithCruising)
+{
+  for (int i = 0; i < TEST_SIZE; i++) {
+    System &sys  = System::getSystem();
+    sys.running_ = true;
+
+    initialiseData();
+
+    Thread *state_machine = new Main(0, stm_log);
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToCalibrating();
+    testCalibratingToReady();
+    testReadyToAccelerating();
+    testAcceleratingToCruising();
+    testCruisingToNominalBraking();
     testNominalBrakingEmergency();
     testFailureBrakingToStopped();
     testFailureStoppedToOff();

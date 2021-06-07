@@ -65,9 +65,10 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Naviga
                              Sensors &sensors_data, Motors &motors_data);
 
 /*
- * @brief    Returns true iff all of Embrakes, Navigation and Motors are ready.
+ * @brief    Returns true iff all modules are ready.
  */
 bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+                       Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                        Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
@@ -97,6 +98,11 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data);
  * @brief   Returns true iff the pod is close enough to the end of the track.
  */
 bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data);
+
+/*
+ * @brief   Returns true iff the pod has reached the maximum velocity.
+ */
+bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data);
 
 /*
  * @brief   Returns true iff the pod has reached zero velocity.

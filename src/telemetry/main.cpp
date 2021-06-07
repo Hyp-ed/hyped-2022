@@ -41,16 +41,17 @@ void Main::run()
 {
   // check if telemetry is disabled
   hyped::utils::System& sys = hyped::utils::System::getSystem();
+  data::Telemetry telem_data_struct = data_.getTelemetryData();
+
   if (sys.telemetry_off) {
     log_.DBG("Telemetry", "Telemetry is disabled");
     log_.DBG("Telemetry", "Exiting Telemetry Main thread");
+    telem_data_struct.module_status = ModuleStatus::kReady;
+    data_.setTelemetryData(telem_data_struct);
     return;
   }
 
   log_.DBG("Telemetry", "Telemetry Main thread started");
-
-  data::Telemetry telem_data_struct = data_.getTelemetryData();
-
 
   try {
     client_.connect();
@@ -65,8 +66,7 @@ void Main::run()
     return;
   }
 
-
-  telem_data_struct.module_status = ModuleStatus::kInit;
+  telem_data_struct.module_status = ModuleStatus::kReady;
   data_.setTelemetryData(telem_data_struct);
 
   SendLoop sendloop_thread {log_, data_, this};

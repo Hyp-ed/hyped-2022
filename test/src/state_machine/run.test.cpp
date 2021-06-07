@@ -273,7 +273,8 @@ struct RunTest : public ::testing::Test {
     bool has_calibrating_command = checkCalibrateCommand(log, telemetry_data);
     bool has_modules_initialised = checkModulesInitialised(
       log, embrakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    bool has_modules_ready = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    bool has_modules_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data,
+                                               telemetry_data, sensors_data, motors_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -370,7 +371,8 @@ struct RunTest : public ::testing::Test {
     // Verify transition conditions are as intended
     bool has_emergency      = checkEmergency(log, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_modules_ready  = checkModulesReady(log, embrakes_data, nav_data, motors_data);
+    bool has_modules_ready  = checkModulesReady(log, embrakes_data, nav_data, batteries_data,
+                                               telemetry_data, sensors_data, motors_data);
     bool has_launch_command = checkLaunchCommand(log, telemetry_data);
 
     enableOutput();

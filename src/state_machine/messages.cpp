@@ -61,6 +61,8 @@ const char Messages::kModulesCalibratedLog[] = "All modules calibrated";
 
 const char Messages::kBrakingZoneLog[] = "Entered braking zone";
 
+const char Messages::kMaxVelocityLog[] = "Reached maximum velocity";
+
 const char Messages::kPodStoppedLog[] = "The pod has stopped";
 
 //--------------------------------------------------------------------------------------

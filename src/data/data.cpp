@@ -29,12 +29,12 @@ const char* states[num_states] = {
   "Calibrating",
   "Ready",
   "Accelerating",
+  "Cruising",
   "NominalBraking",
   "EmergencyBraking",
-  "RunComplete",
   "FailureStopped",
-  "Exiting",
   "Finished",
+  "Invalid",
 };
 
 Data& Data::getInstance()

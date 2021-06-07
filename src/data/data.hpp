@@ -42,10 +42,10 @@ namespace data {
 // Global Module States
 // -------------------------------------------------------------------------------------------------
 enum class ModuleStatus {
-  kStart,   // Initial module state
-  kInit,  // SM transistions to Calibrating if all modules have Init status.
-  kReady,  // SM transistions to Ready if Motors and Navigation have the Ready status.
-  kCriticalFailure  // SM transitions to EmergencyBraking/FailureStopped
+  kCriticalFailure,  // STM transitions to EmergencyBraking/FailureStopped
+  kStart,            // Initial module state
+  kInit,             // STM transistions to Calibrating if all modules have Init or Ready status.
+  kReady,            // STM transistions to Ready if all modules have Ready status.
 };
 
 struct Module {
@@ -58,6 +58,7 @@ struct Module {
 typedef float nav_t;
 typedef Vector<nav_t, 3> NavigationVector;
 struct Navigation : public Module {
+  static constexpr nav_t kMaximumVelocity = 18;    // m/s
   static constexpr nav_t kRunLength     = 1250.0;  // m
   static constexpr nav_t kBrakingBuffer = 20.0;    // m
   nav_t  displacement;                             // m
@@ -162,11 +163,10 @@ enum State {
   kCalibrating,
   kReady,
   kAccelerating,
+  kCruising,
   kNominalBraking,
   kEmergencyBraking,
-  kRunComplete,
   kFailureStopped,
-  kExiting,
   kFinished,
   kInvalid,
   num_states

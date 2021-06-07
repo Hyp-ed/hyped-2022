@@ -41,6 +41,11 @@ namespace navigation {
     if (sys_.fake_keyence) nav_.Navigation::setKeyenceFake();
     if (sys_.enable_nav_write) nav_.logWrite();
 
+    // Setting module status for STM transition
+    data::Navigation nav_data = data.getNavigationData();
+    nav_data.module_status = ModuleStatus::kInit;
+    data.setNavigationData(nav_data);
+
     // wait for calibration state for calibration
     while (sys_.running_ && !navigation_complete) {
       State current_state = data.getStateMachineData().current_state;
@@ -63,9 +68,8 @@ namespace navigation {
            }
 
         case State::kNominalBraking :
+        case State::kCruising :
         case State::kEmergencyBraking :
-        case State::kExiting :
-        case State::kRunComplete :
           nav_.navigate();
           break;
 

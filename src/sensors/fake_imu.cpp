@@ -167,30 +167,13 @@ bool FakeImuFromFile::handleAccelerating() {
 
 bool FakeImuFromFile::handleCruising() 
 {
-  bool operational = true;
+  // During Cruising we're neither accelerating nor braking so our
+  // acceleration should be close to 0.
+  prev_acc_ = getZeroAcc();
 
-  // start acc
-  if (!acc_started_) {
-    log_.INFO("Fake-IMU", "Start cruising ...");
-    acc_started_ = true;
-    startAcc();
-  }
-
-  if (accCheckTime()) {
-    if (is_fail_acc_) {
-      if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ ||
-        failure_happened_) {
-        if (!failure_happened_) {
-          log_.INFO("Fake-IMU", "Start failure...");
-        }
-        prev_acc_ = acc_fail_;
-        operational = false;
-        failure_happened_ = true;
-      }
-    }
-  }
-
-  return operational;
+  // Failures cannot occur during Cruising so we're definitely still
+  // operational.
+  return true;
 }
 
 bool FakeImuFromFile::handleNominalBraking()
@@ -224,10 +207,10 @@ bool FakeImuFromFile::handleNominalBraking()
       }
     }
 
-    // prevent acc from becoming negative when pod is stopping
     float vel = data_.getNavigationData().velocity;
     log_.DBG3("Fake-IMU", "velocity: %f", vel);
-    if (vel < 1) {
+    // prevent acc from becoming significantly non-zero once stopped
+    if (vel < 0.01) {
       prev_acc_ = getZeroAcc();
     }
   }
@@ -250,10 +233,11 @@ bool FakeImuFromFile::handleEmergencyBraking()
     } else {
       prev_acc_ = em_val_read_.at(acc_count_);
     }
+
     float vel = data_.getNavigationData().velocity;
     log_.DBG3("Fake-IMU", "velocity: %f", vel);
-    // prevent acc from becoming negative when pod is stopping
-    if (vel < 1) {
+    // prevent acc from becoming significantly non-zero once stopped
+    if (vel < 0.01) {
       prev_acc_ = getZeroAcc();
     }
   }

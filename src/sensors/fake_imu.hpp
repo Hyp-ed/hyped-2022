@@ -98,6 +98,12 @@ class FakeImuFromFile : public ImuInterface {
   void startAcc();
   void startDec();
   void startEm();
+  
+  bool handleCalibrating();
+  bool handleAccelerating();
+  bool handleCruising();
+  bool handleNominalBraking();
+  bool handleEmergencyBraking();
 
   /**
    * @brief sets failure time for acc or dec configuration

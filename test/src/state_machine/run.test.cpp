@@ -37,7 +37,7 @@ using hyped::utils::System;
 using hyped::utils::concurrent::Thread;
 
 struct RunTest : public ::testing::Test {
-  static constexpr int TEST_SIZE = 20;
+  static constexpr int TEST_SIZE = 10;
 
   // ---- Logger ---------------
 
@@ -197,7 +197,7 @@ struct RunTest : public ::testing::Test {
    * If tests are failing for no apparent reason, try increasing the sleep duration to be sure this
    * is not the source of the problem.
    */
-  void waitForUpdate() { Thread::sleep(1); }
+  void waitForUpdate() { Thread::sleep(10); }
 
   // ---- Run steps --------------
 

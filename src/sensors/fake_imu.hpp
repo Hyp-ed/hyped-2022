@@ -98,7 +98,7 @@ class FakeImuFromFile : public ImuInterface {
   void startAcc();
   void startDec();
   void startEm();
-  
+
   bool handleCalibrating();
   bool handleAccelerating();
   bool handleCruising();

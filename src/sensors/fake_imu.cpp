@@ -125,7 +125,7 @@ bool FakeImuFromFile::handleCalibrating() {
   // pod stationary
   prev_acc_ = getZeroAcc();
 
-  // Failures cannot occur during Calibrating so we're 
+  // Failures cannot occur during Calibrating so we're
   // definitely still operational.
   return true;
 }
@@ -165,7 +165,7 @@ bool FakeImuFromFile::handleAccelerating() {
   return operational;
 }
 
-bool FakeImuFromFile::handleCruising() 
+bool FakeImuFromFile::handleCruising()
 {
   // During Cruising we're neither accelerating nor braking so our
   // acceleration should be close to 0.
@@ -242,7 +242,7 @@ bool FakeImuFromFile::handleEmergencyBraking()
     }
   }
 
-  // Failures cannot occur during EmergencyBraking so we're 
+  // Failures cannot occur during EmergencyBraking so we're
   // definitely still operational.
   return true;
 }

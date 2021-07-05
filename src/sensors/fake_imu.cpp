@@ -130,7 +130,7 @@ void FakeImuFromFile::handleCalibrating(bool &operational) {
   operational = true;
 }
 
-bool FakeImuFromFile::handleAccelerating(bool &operational) {
+void FakeImuFromFile::handleAccelerating(bool &operational) {
   // start acc
   if (!acc_started_) {
     log_.INFO("Fake-IMU", "Start accelerating ...");
@@ -222,7 +222,7 @@ void FakeImuFromFile::handleEmergencyBraking(bool &operational)
   }
 
   if (accCheckTime()) {
-    int64_t num_emergency_values = static_cast<int64_t>(em_val_read_.size()));
+    int64_t num_emergency_values = static_cast<int64_t>(em_val_read_.size());
     // Check so you don't go out of bounds
     if (acc_count_ >= num_emergency_values) {
       prev_acc_  = em_val_read_.at(acc_count_ - 1);
@@ -247,7 +247,7 @@ void FakeImuFromFile::handleEmergencyBraking(bool &operational)
 void FakeImuFromFile::getData(ImuData* imu)
 {
   data::State state = data_.getStateMachineData().current_state;
-  bool operational = true;;
+  bool operational = true;
 
   if (failure_time_acc_ == 0 || failure_time_dec_ == 0) {
     setFailure(state);

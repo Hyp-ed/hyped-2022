@@ -228,11 +228,11 @@ bool FakeImuFromFile::handleEmergencyBraking()
   }
 
   if (accCheckTime()) {
-    acc_count_ = std::min(acc_count_, static_cast<int64_t>(em_val_read_.size()));
-
+    int64_t num_emergency_values = static_cast<int64_t>(em_val_read_.size()));
     // Check so you don't go out of bounds
-    if (acc_count_ == static_cast<int64_t>(em_val_read_.size())) {
-      prev_acc_ = em_val_read_.at(acc_count_ - 1);
+    if (acc_count_ >= num_emergency_values) {
+      prev_acc_  = em_val_read_.at(acc_count_ - 1);
+      acc_count_ = num_emergency_values; // reset to avoid overflow
     } else {
       prev_acc_ = em_val_read_.at(acc_count_);
     }

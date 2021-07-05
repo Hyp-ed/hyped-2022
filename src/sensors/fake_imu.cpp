@@ -216,6 +216,7 @@ bool FakeImuFromFile::handleNominalBraking()
       prev_acc_ = getZeroAcc();
     }
   }
+  return operational;
 }
 
 bool FakeImuFromFile::handleEmergencyBraking()

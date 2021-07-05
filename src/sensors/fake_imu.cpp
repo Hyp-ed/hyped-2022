@@ -114,7 +114,7 @@ void FakeImuFromFile::setFailure(data::State& state)
   }
 }
 
-bool FakeImuFromFile::handleCalibrating() {
+void FakeImuFromFile::handleCalibrating(bool &operational) {
   // start cal
   if (!cal_started_) {
     log_.INFO("Fake-IMU", "Start calibrating ...");
@@ -127,12 +127,10 @@ bool FakeImuFromFile::handleCalibrating() {
 
   // Failures cannot occur during Calibrating so we're
   // definitely still operational.
-  return true;
+  operational = true;
 }
 
-bool FakeImuFromFile::handleAccelerating() {
-  bool operational = true;
-
+bool FakeImuFromFile::handleAccelerating(bool &operational) {
   // start acc
   if (!acc_started_) {
     log_.INFO("Fake-IMU", "Start accelerating ...");
@@ -163,10 +161,9 @@ bool FakeImuFromFile::handleAccelerating() {
       }
     }
   }
-  return operational;
 }
 
-bool FakeImuFromFile::handleCruising()
+void FakeImuFromFile::handleCruising(bool &operational)
 {
   // During Cruising we're neither accelerating nor braking so our
   // acceleration should be close to 0.
@@ -174,13 +171,11 @@ bool FakeImuFromFile::handleCruising()
 
   // Failures cannot occur during Cruising so we're definitely still
   // operational.
-  return true;
+  operational = true;
 }
 
-bool FakeImuFromFile::handleNominalBraking()
+void FakeImuFromFile::handleNominalBraking(bool &operational)
 {
-  bool operational = true;
-
   if (!dec_started_) {
     log_.INFO("Fake-IMU", "Start decelerating...");
     dec_started_ = true;
@@ -216,10 +211,9 @@ bool FakeImuFromFile::handleNominalBraking()
       prev_acc_ = getZeroAcc();
     }
   }
-  return operational;
 }
 
-bool FakeImuFromFile::handleEmergencyBraking()
+void FakeImuFromFile::handleEmergencyBraking(bool &operational)
 {
   if (!em_started_) {
     log_.INFO("Fake-IMU", "Start emergency breaking...");
@@ -247,13 +241,13 @@ bool FakeImuFromFile::handleEmergencyBraking()
 
   // Failures cannot occur during EmergencyBraking so we're
   // definitely still operational.
-  return true;
+  operational = true;
 }
 
 void FakeImuFromFile::getData(ImuData* imu)
 {
   data::State state = data_.getStateMachineData().current_state;
-  bool operational;
+  bool operational = true;;
 
   if (failure_time_acc_ == 0 || failure_time_dec_ == 0) {
     setFailure(state);
@@ -262,19 +256,19 @@ void FakeImuFromFile::getData(ImuData* imu)
   switch (state)
   {
   case data::State::kCalibrating:
-    operational = handleCalibrating();
+    handleCalibrating(operational);
     break;
   case data::State::kAccelerating:
-    operational = handleAccelerating();
+    handleAccelerating(operational);
     break;
   case data::State::kCruising:
-    operational = handleCruising();
+    handleCruising(operational);
     break;
   case data::State::kNominalBraking:
-    operational = handleNominalBraking();
+    handleNominalBraking(operational);
     break;
   case data::State::kEmergencyBraking:
-    operational = handleEmergencyBraking();
+    handleEmergencyBraking(operational);
     break;
   case data::State::kInvalid:
     operational = false;

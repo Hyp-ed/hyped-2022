@@ -141,13 +141,14 @@ bool FakeImuFromFile::handleAccelerating() {
   }
 
   if (accCheckTime()) {
-    acc_count_ = std::min(acc_count_, static_cast<int64_t>(acc_val_read_.size()));
+    int64_t num_accelerating_values = static_cast<int64_t>(acc_val_read_.size());
     // Check so you don't go out of bounds
-    if (acc_count_ == static_cast<int64_t>(acc_val_read_.size())) {
-      prev_acc_ = acc_val_read_.at(acc_count_- 1);
-      operational = acc_val_operational_.at(acc_count_ - 1);
+    if (acc_count_ >= num_accelerating_values) {
+      prev_acc_   = acc_val_read_.at(num_accelerating_values- 1);
+      operational = acc_val_operational_.at(num_accelerating_values - 1);
+      acc_count_  = num_accelerating_values; // reset to avoid overflow
     } else {
-      prev_acc_ = acc_val_read_.at(acc_count_);
+      prev_acc_   = acc_val_read_.at(acc_count_);
       operational = acc_val_operational_.at(acc_count_);
     }
     if (is_fail_acc_) {
@@ -187,13 +188,14 @@ bool FakeImuFromFile::handleNominalBraking()
   }
 
   if (accCheckTime()) {
-    acc_count_ = std::min(acc_count_, static_cast<int64_t>(dec_val_read_.size()));
+    int64_t num_decelerating_values = static_cast<int64_t>(dec_val_read_.size());
     // Check so you don't go out of bounds
-    if (acc_count_ == static_cast<int64_t>(dec_val_read_.size())) {
-      prev_acc_ = dec_val_read_.at(acc_count_ - 1);
-      operational = dec_val_operational_.at(acc_count_ - 1);
+    if (acc_count_ >= num_decelerating_values) {
+      prev_acc_   = dec_val_read_.at(num_decelerating_values - 1);
+      operational = dec_val_operational_.at(num_decelerating_values - 1);
+      acc_count_  = num_decelerating_values; // reset to avoid overflow
     } else {
-      prev_acc_ = dec_val_read_.at(acc_count_);
+      prev_acc_   = dec_val_read_.at(acc_count_);
       operational = dec_val_operational_.at(acc_count_);
     }
     if (is_fail_dec_) {
@@ -355,6 +357,7 @@ void FakeImuFromFile::readDataFromFile(std::string acc_file_path,
     }
 
     file.close();
+    log_.DBG3("Fake-IMU", "Read %u values", val_read->size());
   }
 }
 

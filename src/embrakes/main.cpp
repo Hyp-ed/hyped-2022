@@ -44,6 +44,11 @@ Main::Main(uint8_t id, Logger &log)
 
 void Main::run()
 {
+  // Setting module status for STM transition
+  em_brakes_ = data_.getEmergencyBrakesData();
+  em_brakes_.module_status = ModuleStatus::kInit;
+  data_.setEmergencyBrakesData(em_brakes_);
+
   log_.INFO("Brakes", "Thread started");
 
   System &sys = System::getSystem();
@@ -105,23 +110,11 @@ void Main::run()
         f_brake_->checkAccFailure();
         break;
       case data::State::kAccelerating:
+      case data::State::kCruising:
         m_brake_->checkAccFailure();
         f_brake_->checkAccFailure();
         break;
       case data::State::kNominalBraking:
-        if (!m_brake_->checkClamped()) {
-          m_brake_->sendClamp();
-        }
-        if (!f_brake_->checkClamped()) {
-          f_brake_->sendClamp();
-        }
-        Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
-        m_brake_->checkHome();
-        f_brake_->checkHome();
-
-        m_brake_->checkBrakingFailure();
-        f_brake_->checkBrakingFailure();
-        break;
       case data::State::kEmergencyBraking:
         if (!m_brake_->checkClamped()) {
           m_brake_->sendClamp();

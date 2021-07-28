@@ -18,17 +18,18 @@
  *    limitations under the License.
  */
 
+#include "sensors/fake_batteries.hpp"
+
 #include <stdlib.h>
 
-#include "sensors/fake_batteries.hpp"
 #include "utils/timer.hpp"
 
 namespace hyped {
 
 namespace sensors {
 
-FakeBatteries::FakeBatteries(Logger& log, bool is_lp, bool is_fail)
-      : data_(Data::getInstance()),
+FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
+    : data_(Data::getInstance()),
       log_(log),
       lp_failure_ {{100, 1000, 0, 0, 100, 0, 0, 0}},
       lp_success_ {{245, 450, 70, 0, 35, 0, 0, 0}},
@@ -63,7 +64,7 @@ FakeBatteries::FakeBatteries(Logger& log, bool is_lp, bool is_fail)
   }
 }
 
-void FakeBatteries::getData(BatteryData* battery)
+void FakeBatteries::getData(BatteryData *battery)
 {
   // We want to fail after we start accelerating
   // We can make it random from 0 to 20 seconds
@@ -72,20 +73,20 @@ void FakeBatteries::getData(BatteryData* battery)
     if (state == data::State::kAccelerating) {
       acc_start_time_ = utils::Timer::getTimeMicros();
       // Generate a random time for a failure
-      if (is_fail_)
-        failure_time_ = (rand() % 20 + 1) * 1000000;
+      if (is_fail_) failure_time_ = (rand() % 20 + 1) * 1000000;
       acc_started_ = true;
     }
   }
   checkFailure();
-  battery->voltage              = local_data_.voltage;
-  battery->current              = local_data_.current;
-  battery->charge               = local_data_.charge;
-  battery->low_temperature      = local_data_.low_temperature;  // 0 for LP
-  battery->average_temperature  = local_data_.average_temperature;
-  battery->high_temperature     = local_data_.high_temperature;  // 0 for LP
-  battery->low_voltage_cell     = local_data_.low_voltage_cell;  // 0 for LP
-  battery->high_voltage_cell    = local_data_.high_voltage_cell;  // 0 for LP
+  battery->voltage             = local_data_.voltage;
+  battery->current             = local_data_.current;
+  battery->charge              = local_data_.charge;
+  battery->low_temperature     = local_data_.low_temperature;  // 0 for LP
+  battery->average_temperature = local_data_.average_temperature;
+  battery->high_temperature    = local_data_.high_temperature;   // 0 for LP
+  battery->low_voltage_cell    = local_data_.low_voltage_cell;   // 0 for LP
+  battery->high_voltage_cell   = local_data_.high_voltage_cell;  // 0 for LP
+  battery->imd_fault           = local_data_.imd_fault;
 }
 
 void FakeBatteries::checkFailure()
@@ -109,6 +110,7 @@ void FakeBatteries::updateBatteryData()
   local_data_.high_temperature    = cases_[case_index_][5];
   local_data_.low_voltage_cell    = cases_[case_index_][6];
   local_data_.high_voltage_cell   = cases_[case_index_][7];
+  local_data_.imd_fault           = false;
 }
 
 bool FakeBatteries::isOnline()
@@ -116,4 +118,5 @@ bool FakeBatteries::isOnline()
   return true;
 }
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped

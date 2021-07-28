@@ -75,6 +75,9 @@ struct Messages {
   // Navigation Data Events
   //--------------------------------------------------------------------------------------
 
+  // Sent upon reaching the maximum velocity
+  static const char kMaxVelocityLog[];
+
   // Sent upon entering braking zone
   static const char kBrakingZoneLog[];
 

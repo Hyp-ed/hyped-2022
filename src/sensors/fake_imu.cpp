@@ -114,6 +114,136 @@ void FakeImuFromFile::setFailure(data::State& state)
   }
 }
 
+void FakeImuFromFile::handleCalibrating(bool &operational) {
+  // start cal
+  if (!cal_started_) {
+    log_.INFO("Fake-IMU", "Start calibrating ...");
+    cal_started_ = true;
+    startCal();
+  }
+
+  // pod stationary
+  prev_acc_ = getZeroAcc();
+
+  // Failures cannot occur during Calibrating so we're
+  // definitely still operational.
+  operational = true;
+}
+
+void FakeImuFromFile::handleAccelerating(bool &operational) {
+  // start acc
+  if (!acc_started_) {
+    log_.INFO("Fake-IMU", "Start accelerating ...");
+    acc_started_ = true;
+    startAcc();
+  }
+
+  if (accCheckTime()) {
+    int64_t num_accelerating_values = static_cast<int64_t>(acc_val_read_.size());
+    // Check so you don't go out of bounds
+    if (acc_count_ >= num_accelerating_values) {
+      prev_acc_   = acc_val_read_.at(num_accelerating_values- 1);
+      operational = acc_val_operational_.at(num_accelerating_values - 1);
+      acc_count_  = num_accelerating_values; // reset to avoid overflow
+    } else {
+      prev_acc_   = acc_val_read_.at(acc_count_);
+      operational = acc_val_operational_.at(acc_count_);
+    }
+    if (is_fail_acc_) {
+      if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ ||
+        failure_happened_) {
+        if (!failure_happened_) {
+          log_.INFO("Fake-IMU", "Start failure...");
+        }
+        prev_acc_ = acc_fail_;
+        operational = false;
+        failure_happened_ = true;
+      }
+    }
+  }
+}
+
+void FakeImuFromFile::handleCruising(bool &operational)
+{
+  // During Cruising we're neither accelerating nor braking so our
+  // acceleration should be close to 0.
+  prev_acc_ = getZeroAcc();
+
+  // Failures cannot occur during Cruising so we're definitely still
+  // operational.
+  operational = true;
+}
+
+void FakeImuFromFile::handleNominalBraking(bool &operational)
+{
+  if (!dec_started_) {
+    log_.INFO("Fake-IMU", "Start decelerating...");
+    dec_started_ = true;
+    startDec();
+  }
+
+  if (accCheckTime()) {
+    int64_t num_decelerating_values = static_cast<int64_t>(dec_val_read_.size());
+    // Check so you don't go out of bounds
+    if (acc_count_ >= num_decelerating_values) {
+      prev_acc_   = dec_val_read_.at(num_decelerating_values - 1);
+      operational = dec_val_operational_.at(num_decelerating_values - 1);
+      acc_count_  = num_decelerating_values; // reset to avoid overflow
+    } else {
+      prev_acc_   = dec_val_read_.at(acc_count_);
+      operational = dec_val_operational_.at(acc_count_);
+    }
+    if (is_fail_dec_) {
+      if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_dec_ || failure_happened_) { // NOLINT [whitespace/line_length]
+        if (!failure_happened_) {
+          log_.INFO("Fake-IMU", "Start failure...");
+        }
+        prev_acc_ = acc_fail_;
+        operational = false;
+        failure_happened_ = true;
+      }
+    }
+
+    float vel = data_.getNavigationData().velocity;
+    log_.DBG3("Fake-IMU", "velocity: %f", vel);
+    // prevent acc from becoming significantly non-zero once stopped
+    if (vel < 0.01) {
+      prev_acc_ = getZeroAcc();
+    }
+  }
+}
+
+void FakeImuFromFile::handleEmergencyBraking(bool &operational)
+{
+  if (!em_started_) {
+    log_.INFO("Fake-IMU", "Start emergency breaking...");
+    em_started_ = true;
+    startEm();
+  }
+
+  if (accCheckTime()) {
+    int64_t num_emergency_values = static_cast<int64_t>(em_val_read_.size());
+    // Check so you don't go out of bounds
+    if (acc_count_ >= num_emergency_values) {
+      prev_acc_  = em_val_read_.at(acc_count_ - 1);
+      acc_count_ = num_emergency_values; // reset to avoid overflow
+    } else {
+      prev_acc_ = em_val_read_.at(acc_count_);
+    }
+
+    float vel = data_.getNavigationData().velocity;
+    log_.DBG3("Fake-IMU", "velocity: %f", vel);
+    // prevent acc from becoming significantly non-zero once stopped
+    if (vel < 0.01) {
+      prev_acc_ = getZeroAcc();
+    }
+  }
+
+  // Failures cannot occur during EmergencyBraking so we're
+  // definitely still operational.
+  operational = true;
+}
+
 void FakeImuFromFile::getData(ImuData* imu)
 {
   data::State state = data_.getStateMachineData().current_state;
@@ -123,112 +253,32 @@ void FakeImuFromFile::getData(ImuData* imu)
     setFailure(state);
   }
 
-  if (state == data::State::kCalibrating) {
-    // start cal
-    if (!cal_started_) {
-      log_.INFO("Fake-IMU", "Start calibrating ...");
-      cal_started_ = true;
-      startCal();
-    }
-
-    // pod stationary
-    prev_acc_ = getZeroAcc();
-
-  } else if (state == data::State::kAccelerating) {
-    // start acc
-    if (!acc_started_) {
-      log_.INFO("Fake-IMU", "Start accelerating ...");
-      acc_started_ = true;
-      startAcc();
-    }
-
-    if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) acc_val_read_.size());
-      // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) acc_val_read_.size()) {
-        prev_acc_ = acc_val_read_[acc_count_- 1];
-        operational = acc_val_operational_[acc_count_ - 1];
-      } else {
-        prev_acc_ = acc_val_read_[acc_count_];
-        operational = acc_val_operational_[acc_count_];
-      }
-      if (is_fail_acc_) {
-        if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_acc_ || failure_happened_) { // NOLINT [whitespace/line_length]
-          if (!failure_happened_) {
-            log_.INFO("Fake-IMU", "Start failure...");
-          }
-          prev_acc_ = acc_fail_;
-          operational = false;
-          failure_happened_ = true;
-        }
-      }
-    }
-
-  } else if (state == data::State::kNominalBraking) {
-    if (!dec_started_) {
-      log_.INFO("Fake-IMU", "Start decelerating...");
-      dec_started_ = true;
-      startDec();
-    }
-
-    if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) dec_val_read_.size());
-      // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) dec_val_read_.size()) {
-        prev_acc_ = dec_val_read_[acc_count_-1];
-        operational = dec_val_operational_[acc_count_-1];
-      } else {
-        prev_acc_ = dec_val_read_[acc_count_];
-        operational = dec_val_operational_[acc_count_];
-      }
-      if (is_fail_dec_) {
-        if (utils::Timer::getTimeMicros() - imu_ref_time_ >= failure_time_dec_ || failure_happened_) { // NOLINT [whitespace/line_length]
-          if (!failure_happened_) {
-            log_.INFO("Fake-IMU", "Start failure...");
-          }
-          prev_acc_ = acc_fail_;
-          operational = false;
-          failure_happened_ = true;
-        }
-      }
-
-      // prevent acc from becoming negative when pod is stopping
-      float vel = data_.getNavigationData().velocity;
-      log_.DBG3("Fake-IMU", "velocity: %f", vel);
-      if (vel < 1) {
-        prev_acc_ = getZeroAcc();
-      }
-    }
-
-  } else if (state == data::State::kEmergencyBraking) {
-    if (!em_started_) {
-      log_.INFO("Fake-IMU", "Start emergency breaking...");
-      em_started_ = true;
-      startEm();
-    }
-
-    if (accCheckTime()) {
-      acc_count_ = std::min(acc_count_, (int64_t) em_val_read_.size());
-
-      // Check so you don't go out of bounds
-      if (acc_count_ == (int64_t) em_val_read_.size()) {
-        prev_acc_ = em_val_read_[acc_count_-1];
-      } else {
-        prev_acc_ = em_val_read_[acc_count_];
-      }
-      float vel = data_.getNavigationData().velocity;
-      log_.DBG3("Fake-IMU", "velocity: %f", vel);
-      // prevent acc from becoming negative when pod is stopping
-      if (vel < 1) {
-        prev_acc_ = getZeroAcc();
-      }
-      operational = true;
-    }
-
-  } else {
+  switch (state)
+  {
+  case data::State::kCalibrating:
+    handleCalibrating(operational);
+    break;
+  case data::State::kAccelerating:
+    handleAccelerating(operational);
+    break;
+  case data::State::kCruising:
+    handleCruising(operational);
+    break;
+  case data::State::kNominalBraking:
+    handleNominalBraking(operational);
+    break;
+  case data::State::kEmergencyBraking:
+    handleEmergencyBraking(operational);
+    break;
+  case data::State::kInvalid:
+    operational = false;
+    break;
+  default:
     prev_acc_ = getZeroAcc();
     operational = true;
+    break;
   }
+
   imu->acc = prev_acc_;
   imu->operational = operational;
 }
@@ -302,6 +352,7 @@ void FakeImuFromFile::readDataFromFile(std::string acc_file_path,
     }
 
     file.close();
+    log_.DBG3("Fake-IMU", "Read %u values", val_read->size());
   }
 }
 

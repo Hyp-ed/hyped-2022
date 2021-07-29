@@ -18,9 +18,9 @@
 
 #include <string>
 
+#include "data/data.hpp"
 #include "gtest/gtest.h"
 #include "telemetry/writer.hpp"
-#include "data/data.hpp"
 
 using namespace hyped::telemetry;
 using namespace hyped::data;
@@ -30,9 +30,9 @@ using namespace hyped::data;
  */
 struct WriterConvertModuleStatus : public ::testing::Test {
   // ---- Error messages -------
-  const std::string start_status_error = "Should convert Start status.";
-  const std::string init_status_error = "Should convert Init status.";
-  const std::string ready_status_error = "Should convert Ready status.";
+  const std::string start_status_error            = "Should convert Start status.";
+  const std::string init_status_error             = "Should convert Init status.";
+  const std::string ready_status_error            = "Should convert Ready status.";
   const std::string critical_failure_status_error = "Should convert Critical Failure status.";
 
  protected:

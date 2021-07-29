@@ -37,28 +37,44 @@
 namespace hyped {
 
 // Forward declarations
-namespace utils { class Logger; }
-namespace utils { namespace io { class Can; } }
-namespace utils { namespace io { class CanProccesor; } }
-namespace utils { namespace io { namespace can { struct Frame; } } }
+namespace utils {
+class Logger;
+}
+namespace utils {
+namespace io {
+class Can;
+}
+}  // namespace utils
+namespace utils {
+namespace io {
+class CanProccesor;
+}
+}  // namespace utils
+namespace utils {
+namespace io {
+namespace can {
+struct Frame;
+}
+}  // namespace io
+}  // namespace utils
 
 namespace sensors {
 
+using data::Data;
 using utils::Logger;
+using utils::concurrent::Thread;
 using utils::io::Can;
 using utils::io::CanProccesor;
-using utils::concurrent::Thread;
-using data::Data;
 
 namespace bms {
 // how often shall request messages be sent
-constexpr uint32_t kFreq    = 4;           // in Hz
-constexpr uint32_t kPeriod  = 1000/kFreq;  // in milliseconds
+constexpr uint32_t kFreq   = 4;             // in Hz
+constexpr uint32_t kPeriod = 1000 / kFreq;  // in milliseconds
 
 // what is the CAN ID space for BMS units
-constexpr uint16_t kIdBase      = 300;     // Base for ids of CAN messages related to BMS
-constexpr uint16_t kIdIncrement = 10;      // increment of base dependent on id_
-constexpr uint16_t kIdSize      = 5;       // size of id-space of BMS-CAN messages
+constexpr uint16_t kIdBase      = 300;  // Base for ids of CAN messages related to BMS
+constexpr uint16_t kIdIncrement = 10;   // increment of base dependent on id_
+constexpr uint16_t kIdSize      = 5;    // size of id-space of BMS-CAN messages
 /**
  * Bases of IDs of CAN messagese for a BMS unit are calculated as follows:
  * base = kIdBase + (kIdIncrement * id_)
@@ -74,18 +90,18 @@ constexpr uint16_t kIdSize      = 5;       // size of id-space of BMS-CAN messag
  *       Hex:  0x1839F380 0x1839F381
  */
 
-constexpr uint16_t kHPBase      = 0x6B0;    // CAN id for high power BMSHP
+constexpr uint16_t kHPBase         = 0x6B0;       // CAN id for high power BMSHP
 constexpr uint64_t kThermistorBase = 0x1839F380;  // HP Thermistor expansion module
-constexpr uint16_t kCellBase = 0x36;        // BMS Broadcast ID
+constexpr uint16_t kCellBase       = 0x36;        // BMS Broadcast ID
 
 struct Data {
   static constexpr uint8_t kTemperatureOffset = 40;
   static constexpr uint8_t kCellNum           = 7;
   uint16_t voltage[kCellNum];
-  int8_t   temperature;
+  int8_t temperature;
 };
 
-}   // namespace bms
+}  // namespace bms
 
 class BMS : public Thread, public CanProccesor, public BMSInterface {
   friend Can;
@@ -96,7 +112,7 @@ class BMS : public Thread, public CanProccesor, public BMSInterface {
    * @param id  - should correspond to the id sessing on the actual BMS unit
    * @param log - for printing nice messages
    */
-  BMS(uint8_t id, Logger& log = utils::System::getLogger());
+  BMS(uint8_t id, Logger &log = utils::System::getLogger());
 
   ~BMS();
 
@@ -108,7 +124,7 @@ class BMS : public Thread, public CanProccesor, public BMSInterface {
 
   // From BMSInterface
   bool isOnline() override;
-  void getData(BatteryData* battery) override;
+  void getData(BatteryData *battery) override;
 
   // From CanProcessor interface
   bool hasId(uint32_t id, bool extended) override;
@@ -125,17 +141,17 @@ class BMS : public Thread, public CanProccesor, public BMSInterface {
    *
    * @param message received CAN message to be processed
    */
-  void processNewData(utils::io::can::Frame& message) override;
+  void processNewData(utils::io::can::Frame &message) override;
 
  private:
-  bms::Data       data_;
-  uint8_t         id_;                // my BMS id in (0,..,15)
-  uint32_t        id_base_;           // my starting CAN id
-  uint64_t        last_update_time_;  // stores arrival time of CAN response
+  bms::Data data_;
+  uint8_t id_;                 // my BMS id in (0,..,15)
+  uint32_t id_base_;           // my starting CAN id
+  uint64_t last_update_time_;  // stores arrival time of CAN response
 
   // for request thread
-  Can&            can_;
-  bool            running_;
+  Can &can_;
+  bool running_;
 
   // for making sure only one object per BMS unit exist
   static std::vector<uint8_t> existing_ids_;
@@ -152,30 +168,31 @@ class BMSHP : public CanProccesor, public BMSInterface {
    * @param id  - should directly correspond to the CAN id to be used
    * @param log - for printing nice messages
    */
-  BMSHP(uint16_t id, Logger& log = utils::System::getLogger());
+  BMSHP(uint16_t id, Logger &log = utils::System::getLogger());
 
   // from BMSInterface
   bool isOnline() override;
-  void getData(BatteryData* battery) override;
+  void getData(BatteryData *battery) override;
 
   // from CanProcessor
   bool hasId(uint32_t id, bool extended) override;
 
  private:
-  void processNewData(utils::io::can::Frame& message) override;
+  void processNewData(utils::io::can::Frame &message) override;
 
  private:
-  Logger&         log_;
-  uint16_t        can_id_;            // CAN id to be used
-  uint64_t        thermistor_id_;     // thermistor expansion module CAN id
-  uint16_t        cell_id_;           // broadcast message ID
-  BatteryData     local_data_;        // stores values from CAN
-  uint64_t        last_update_time_;  // stores arrival time of CAN message
+  Logger &log_;
+  uint16_t can_id_;            // CAN id to be used
+  uint64_t thermistor_id_;     // thermistor expansion module CAN id
+  uint16_t cell_id_;           // broadcast message ID
+  BatteryData local_data_;     // stores values from CAN
+  uint64_t last_update_time_;  // stores arrival time of CAN message
   // for making sure only one object per BMS unit exist
   static std::vector<uint16_t> existing_ids_;
   NO_COPY_ASSIGN(BMSHP);
 };
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_BMS_HPP_

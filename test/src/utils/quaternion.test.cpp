@@ -16,15 +16,16 @@
  *    limitations under the License.
  */
 
+#include "utils/math/quaternion.hpp"
 
 #include <iostream>
 #include <string>
-#include "math.h"
+
+#include "data/data_point.hpp"
 #include "gtest/gtest.h"
-#include "utils/math/quaternion.hpp"
+#include "math.h"
 #include "utils/math/vector.hpp"
 #include "utils/system.hpp"
-#include "data/data_point.hpp"
 
 namespace hyped {
 namespace utils {
@@ -45,8 +46,8 @@ std::array<int, 4> createRandomArrayForQuaternion()
 {
   std::srand(time(0));
   std::array<int, 4> output = std::array<int, 4>();
-  for (int i = 0;i < 4;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 4; i++) {
+    output[i] = rand() % 1000;
   }
   return output;
 }
@@ -62,9 +63,9 @@ std::array<int, 4> createRandomArrayForQuaternion()
 bool compare_float_for_quaternion(float elem1, float elem2, float epsilon = 0.1f)
 {
   if (fabs(elem1 - elem2) < epsilon) {
-       return true;
+    return true;
   } else {
-       return false;
+    return false;
   }
 }
 
@@ -93,8 +94,8 @@ std::array<int, 3> createRandomArrayForVector()
 {
   std::srand(time(0));
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0;i < 3;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 3; i++) {
+    output[i] = rand() % 1000;
   }
   return output;
 }
@@ -109,64 +110,59 @@ const int kSizeOfQuaternion = 4;
  * Struct used for testing the construction
  * of quaternion.hpp
  */
-struct QuaternionConstruction : public::testing::Test
-{
+struct QuaternionConstruction : public ::testing::Test {
   /* data */
-    Vector<int, 4> test_vector;
-    Vector<int, 3> test_vector_3d;
+  Vector<int, 4> test_vector;
+  Vector<int, 3> test_vector_3d;
 
-    int kValue;
+  int kValue;
 
-    std::string zero_construction_error = "Construction of zero quaternion handled incorrectly";
-    std::string nzero_construction_error = "Construction of std quaternion handled incorrectly";
-    std::string vector_construction_error = "Construction of vector quaternion incorrect";
+  std::string zero_construction_error   = "Construction of zero quaternion handled incorrectly";
+  std::string nzero_construction_error  = "Construction of std quaternion handled incorrectly";
+  std::string vector_construction_error = "Construction of vector quaternion incorrect";
 
-    void SetUp()
-    {
-        std::srand(time(0));
-        kValue = rand() % 1000 + 1;
-    }
+  void SetUp()
+  {
+    std::srand(time(0));
+    kValue = rand() % 1000 + 1;
+  }
 };
 
 /**
  * Struct used for testing the functionality
  * of quaternion.hpp
  */
-struct QuaternionFunctionality : public::testing::Test
-{
-    /* data */
-    Quaternion<int> quaternion_one;
-    Quaternion<int> quaternion_two;
+struct QuaternionFunctionality : public ::testing::Test {
+  /* data */
+  Quaternion<int> quaternion_one;
+  Quaternion<int> quaternion_two;
 
-    Quaternion<int> quaternion_result_one;
-    Quaternion<int> quaternion_result_two;
+  Quaternion<int> quaternion_result_one;
+  Quaternion<int> quaternion_result_two;
 
+  float arithmetic_result;
 
+  int kValue;
 
-    float arithmetic_result;
+  // Error messages
+  std::string autoaddition_error    = "Autoaddition by constant incorrect";
+  std::string addition_error        = "Addition by constant incorrect";
+  std::string autosubtraction_error = "Autosubtraction by constant incorrect";
+  std::string subtraction_error     = "Subtraction by constant incorrect";
+  std::string autoproduct_error     = "Automultiplication by constant incorrect";
+  std::string product_error         = "Multiplication by constant incorrect";
+  std::string autodivision_error    = "Autodivision by constant incorrect";
+  std::string division_error        = "Division by constant incorrect";
+  std::string quaternion_mult_error = "Quaternion multiplication incorrect";
+  std::string norm_error            = "Calculation of quaternion norm incorrect";
 
-    int kValue;
-
-    // Error messages
-    std::string autoaddition_error = "Autoaddition by constant incorrect";
-    std::string addition_error = "Addition by constant incorrect";
-    std::string autosubtraction_error = "Autosubtraction by constant incorrect";
-    std::string subtraction_error = "Subtraction by constant incorrect";
-    std::string autoproduct_error = "Automultiplication by constant incorrect";
-    std::string product_error = "Multiplication by constant incorrect";
-    std::string autodivision_error = "Autodivision by constant incorrect";
-    std::string division_error = "Division by constant incorrect";
-    std::string quaternion_mult_error = "Quaternion multiplication incorrect";
-    std::string norm_error = "Calculation of quaternion norm incorrect";
-
-
-    void SetUp()
-    {
-        std::srand(time(0));
-        kValue = rand() % 1000 + 1;
-        quaternion_one = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
-        quaternion_two = Quaternion<int>(rand()%1000, rand()%1000, rand()%1000, rand()%1000);
-    }
+  void SetUp()
+  {
+    std::srand(time(0));
+    kValue         = rand() % 1000 + 1;
+    quaternion_one = Quaternion<int>(rand() % 1000, rand() % 1000, rand() % 1000, rand() % 1000);
+    quaternion_two = Quaternion<int>(rand() % 1000, rand() % 1000, rand() % 1000, rand() % 1000);
+  }
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -179,11 +175,11 @@ struct QuaternionFunctionality : public::testing::Test
  */
 TEST_F(QuaternionConstruction, handlesConstructionOfZeroQuaternion)
 {
-    Quaternion<int> zeroQuaternion = Quaternion<int>(0);
-    ASSERT_EQ(0, zeroQuaternion.norm()) << zero_construction_error;
-    for (int i = 0; i < kSizeOfQuaternion; i++) {
-        ASSERT_EQ(0, zeroQuaternion[i]);
-    }
+  Quaternion<int> zeroQuaternion = Quaternion<int>(0);
+  ASSERT_EQ(0, zeroQuaternion.norm()) << zero_construction_error;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(0, zeroQuaternion[i]);
+  }
 }
 
 /**
@@ -194,16 +190,13 @@ TEST_F(QuaternionConstruction, handlesConstructionOfNonZeroQuaternion)
 {
   int component_array[kSizeOfQuaternion];
   for (int i = 0; i < kSizeOfQuaternion; i++) {
-    component_array[i] = rand()%1000;
+    component_array[i] = rand() % 1000;
     while (component_array[i] == 0) {
-      component_array[i] = rand()%1000;
+      component_array[i] = rand() % 1000;
     }
   }
-  Quaternion<int> nonZeroQuaternion = Quaternion<int>(
-    component_array[0],
-    component_array[1],
-    component_array[2],
-    component_array[3]);
+  Quaternion<int> nonZeroQuaternion = Quaternion<int>(component_array[0], component_array[1],
+                                                      component_array[2], component_array[3]);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(nonZeroQuaternion[i], component_array[i]) << nzero_construction_error;
   }
@@ -217,25 +210,25 @@ TEST_F(QuaternionConstruction, handlesConstructionOfNonZeroQuaternion)
 TEST_F(QuaternionConstruction, handlesConstructionByVector)
 {
   // Testing construction by 4D Vector
-  test_vector = Vector<int, 4>(createRandomArrayForQuaternion());
+  test_vector                       = Vector<int, 4>(createRandomArrayForQuaternion());
   Quaternion<int> quaternion_vector = Quaternion<int>(test_vector);
   for (int i = 0; i < kSizeOfQuaternion; i++) {
     ASSERT_EQ(test_vector[i], quaternion_vector[i]) << vector_construction_error;
   }
 
   // Testing  construction by 3D Vector
-  test_vector_3d = Vector<int, 3>(createRandomArrayForVector());
+  test_vector_3d                       = Vector<int, 3>(createRandomArrayForVector());
   Quaternion<int> quaternion_vector_3d = Quaternion<int>(test_vector_3d);
   ASSERT_EQ(0, quaternion_vector_3d[0]) << vector_construction_error;
   for (int i = 1; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_vector_3d[i], test_vector_3d[i-1]) << vector_construction_error;
+    ASSERT_EQ(quaternion_vector_3d[i], test_vector_3d[i - 1]) << vector_construction_error;
   }
 
   // Testing construction by 3D Vector and constant
   Quaternion<int> quaternion_vector_3d_const = Quaternion<int>(kValue, test_vector_3d);
   ASSERT_EQ(kValue, quaternion_vector_3d_const[0]) << vector_construction_error;
   for (int i = 1; i < kSizeOfQuaternion; i++) {
-    ASSERT_EQ(quaternion_vector_3d_const[i], test_vector_3d[i-1]) << vector_construction_error;
+    ASSERT_EQ(quaternion_vector_3d_const[i], test_vector_3d[i - 1]) << vector_construction_error;
   }
 }
 
@@ -247,12 +240,12 @@ TEST_F(QuaternionConstruction, handlesConstructionByVector)
  */
 TEST_F(QuaternionFunctionality, handlesAutoAdditionByConstant)
 {
-    quaternion_result_one = quaternion_one + kValue;
-    quaternion_result_two = kValue + quaternion_one;
-    for (int i = 0; i < kSizeOfQuaternion; i++) {
-        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue) << autoaddition_error;
-        ASSERT_EQ(quaternion_result_two[i], quaternion_one[i] + kValue) << autoaddition_error;
-    }
+  quaternion_result_one = quaternion_one + kValue;
+  quaternion_result_two = kValue + quaternion_one;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] + kValue) << autoaddition_error;
+    ASSERT_EQ(quaternion_result_two[i], quaternion_one[i] + kValue) << autoaddition_error;
+  }
 }
 
 /**
@@ -282,10 +275,10 @@ TEST_F(QuaternionFunctionality, handlesAdditionByConstant)
  */
 TEST_F(QuaternionFunctionality, handlesAutoSubtractionByConstant)
 {
-    quaternion_result_one = quaternion_one - kValue;
-    for (int i = 0; i < kSizeOfQuaternion; i++) {
-        ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue) << autosubtraction_error;
-    }
+  quaternion_result_one = quaternion_one - kValue;
+  for (int i = 0; i < kSizeOfQuaternion; i++) {
+    ASSERT_EQ(quaternion_result_one[i], quaternion_one[i] - kValue) << autosubtraction_error;
+  }
 }
 
 /**
@@ -371,24 +364,24 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
   quaternion_result_one *= quaternion_two;
   // Asserting correct multiplication for first element
   ASSERT_EQ(quaternion_result_one[0],
-            quaternion_two[0]*quaternion_one[0] - quaternion_two[1]*quaternion_one[1]
-            - quaternion_two[2]*quaternion_one[2] - quaternion_two[3]*quaternion_one[3])
-            << quaternion_mult_error;
+            quaternion_two[0] * quaternion_one[0] - quaternion_two[1] * quaternion_one[1]
+              - quaternion_two[2] * quaternion_one[2] - quaternion_two[3] * quaternion_one[3])
+    << quaternion_mult_error;
   // Asserting correct multiplication for second element
   ASSERT_EQ(quaternion_result_one[1],
-            quaternion_two[0]*quaternion_one[1] + quaternion_two[1]*quaternion_one[0]
-            - quaternion_two[2]*quaternion_one[3] + quaternion_two[3]*quaternion_one[2])
-            << quaternion_mult_error;
+            quaternion_two[0] * quaternion_one[1] + quaternion_two[1] * quaternion_one[0]
+              - quaternion_two[2] * quaternion_one[3] + quaternion_two[3] * quaternion_one[2])
+    << quaternion_mult_error;
   // Asserting correct multiplication for third element
   ASSERT_EQ(quaternion_result_one[2],
-            quaternion_two[0]*quaternion_one[2] + quaternion_two[1]*quaternion_one[3]
-            + quaternion_two[2]*quaternion_one[0] - quaternion_two[3]*quaternion_one[1])
-            << quaternion_mult_error;
+            quaternion_two[0] * quaternion_one[2] + quaternion_two[1] * quaternion_one[3]
+              + quaternion_two[2] * quaternion_one[0] - quaternion_two[3] * quaternion_one[1])
+    << quaternion_mult_error;
   // Asserting correct multiplication for forth element
   ASSERT_EQ(quaternion_result_one[3],
-            quaternion_two[0]*quaternion_one[3] - quaternion_two[1]*quaternion_one[2]
-            + quaternion_two[2]*quaternion_one[1] + quaternion_two[3]*quaternion_one[0])
-            << quaternion_mult_error;
+            quaternion_two[0] * quaternion_one[3] - quaternion_two[1] * quaternion_one[2]
+              + quaternion_two[2] * quaternion_one[1] + quaternion_two[3] * quaternion_one[0])
+    << quaternion_mult_error;
 }
 
 /**
@@ -400,9 +393,11 @@ TEST_F(QuaternionFunctionality, handleQuaternionMultiplicationByQuaternion)
 TEST_F(QuaternionFunctionality, handleQuaternionNormCalculation)
 {
   ASSERT_TRUE(compare_float_for_quaternion(quaternion_one.norm(), calculateNorm(quaternion_one)))
-  << norm_error;
+    << norm_error;
   ASSERT_TRUE(compare_float_for_quaternion(quaternion_two.norm(), calculateNorm(quaternion_two)))
-  << norm_error;
+    << norm_error;
 }
 
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped

@@ -18,10 +18,11 @@
  *    limitations under the License.
  */
 
-#include "utils/system.hpp"
 #include "telemetry/main.hpp"
-#include "telemetry/sendloop.hpp"
+
 #include "telemetry/recvloop.hpp"
+#include "telemetry/sendloop.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
@@ -29,10 +30,10 @@ using data::ModuleStatus;
 
 namespace telemetry {
 
-Main::Main(uint8_t id, Logger& log)
-  : Thread {id, log},
-    data_ {data::Data::getInstance()},
-    client_ {log}
+Main::Main(uint8_t id, Logger &log)
+    : Thread{id, log},
+      data_{data::Data::getInstance()},
+      client_{log}
 {
   log_.DBG("Telemetry", "Telemetry Main thread object created");
 }
@@ -40,7 +41,7 @@ Main::Main(uint8_t id, Logger& log)
 void Main::run()
 {
   // check if telemetry is disabled
-  hyped::utils::System& sys = hyped::utils::System::getSystem();
+  hyped::utils::System &sys         = hyped::utils::System::getSystem();
   data::Telemetry telem_data_struct = data_.getTelemetryData();
 
   if (sys.telemetry_off) {
@@ -55,8 +56,7 @@ void Main::run()
 
   try {
     client_.connect();
-  }
-  catch (std::exception& e) {
+  } catch (std::exception &e) {
     log_.ERR("Telemetry", e.what());
     log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
@@ -69,13 +69,12 @@ void Main::run()
   telem_data_struct.module_status = ModuleStatus::kReady;
   data_.setTelemetryData(telem_data_struct);
 
-  SendLoop sendloop_thread {log_, data_, this};
-  RecvLoop recvloop_thread {log_, data_, this};
+  SendLoop sendloop_thread{log_, data_, this};
+  RecvLoop recvloop_thread{log_, data_, this};
   sendloop_thread.start();
   recvloop_thread.start();
   sendloop_thread.join();
   recvloop_thread.join();
-
 
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }

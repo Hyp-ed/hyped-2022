@@ -42,17 +42,16 @@ namespace utils {
 
 template<class Interface>
 class InterfaceFactory {
-  typedef Interface* (*InterfaceCreator)();
+  typedef Interface *(*InterfaceCreator)();
 
  public:
   static InterfaceCreator getCreator(string implementation)
   {
-    InterfaceFactory* instance = getInstance();
-    auto result = instance->mapping_.find(implementation);
+    InterfaceFactory *instance = getInstance();
+    auto result                = instance->mapping_.find(implementation);
     if (result == instance->mapping_.end()) {
       instance->log_.ERR("FACTORY", "no mapping for interface \"%s\" named \"%s\"",
-                                    interfaceName<Interface>(),
-                                    implementation.c_str());
+                         interfaceName<Interface>(), implementation.c_str());
       return 0;
     } else {
       return result->second;
@@ -61,30 +60,31 @@ class InterfaceFactory {
 
   static bool registerCreator(string implementation, InterfaceCreator creator)
   {
-    InterfaceFactory* instance = getInstance();
+    InterfaceFactory *instance = getInstance();
     return instance->mapping_.insert({implementation, creator}).second;
   }
 
  private:
   // implement singleton
-  static InterfaceFactory* getInstance()
+  static InterfaceFactory *getInstance()
   {
     if (!instance_) instance_ = new InterfaceFactory();
 
     return instance_;
   }
-  static InterfaceFactory* instance_;
+  static InterfaceFactory *instance_;
 
-  InterfaceFactory(): log_(false, -1) {}
+  InterfaceFactory() : log_(false, -1) {}
   // InterfaceFactory member variables
   Logger log_;
   std::map<string, InterfaceCreator> mapping_;
 };
 
 // define static intances (otherwise, linker error)
-template <class Interface>
-InterfaceFactory<Interface>* InterfaceFactory<Interface>::instance_ = 0;
+template<class Interface>
+InterfaceFactory<Interface> *InterfaceFactory<Interface>::instance_ = 0;
 
-}}  // namespace hyped::utils
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_INTERFACE_FACTORY_HPP_

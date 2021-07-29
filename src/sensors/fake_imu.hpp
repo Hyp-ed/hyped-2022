@@ -28,8 +28,8 @@
 
 namespace hyped {
 
-using data::ImuData;
 using data::DataPoint;
+using data::ImuData;
 using data::nav_t;
 using data::NavigationVector;
 
@@ -63,13 +63,8 @@ class FakeImuFromFile : public ImuInterface {
    * @param is_fail_dec
    * @param noise
    */
-  FakeImuFromFile(utils::Logger& log_,
-          std::string acc_file_path,
-          std::string dec_file_path,
-          std::string em_file_path,
-          bool is_fail_acc,
-          bool is_fail_dec,
-          float noise = 0.2);
+  FakeImuFromFile(utils::Logger &log_, std::string acc_file_path, std::string dec_file_path,
+                  std::string em_file_path, bool is_fail_acc, bool is_fail_dec, float noise = 0.2);
 
   bool isOnline() override { return true; }
 
@@ -79,7 +74,7 @@ class FakeImuFromFile : public ImuInterface {
    *            will also skip a couple of data points if the time since the last call has been
    *            sufficiently long.
    */
-  void getData(ImuData* imu) override;
+  void getData(ImuData *imu) override;
 
   /*
    * @brief     A function that adds noise to the imu data using normal distribution
@@ -92,7 +87,7 @@ class FakeImuFromFile : public ImuInterface {
   static NavigationVector addNoiseToData(NavigationVector value, float noise);
 
  private:
-  utils::Logger&       log_;
+  utils::Logger &log_;
   const uint64_t kAccTimeInterval = 50;
   void startCal();
   void startAcc();
@@ -109,7 +104,7 @@ class FakeImuFromFile : public ImuInterface {
    * @brief sets failure time for acc or dec configuration
    * @param state current state
    */
-  void setFailure(data::State& state);
+  void setFailure(data::State &state);
 
   /**
    * @return NavigationVector zero acceleration as a vector
@@ -125,8 +120,7 @@ class FakeImuFromFile : public ImuInterface {
    *
    * @param[in]    The file format is as stated in the constructor comments
    */
-  void readDataFromFile(std::string acc_file_path,
-                        std::string dec_file_path,
+  void readDataFromFile(std::string acc_file_path, std::string dec_file_path,
                         std::string em_file_path);
 
   /*
@@ -139,13 +133,12 @@ class FakeImuFromFile : public ImuInterface {
   NavigationVector prev_acc_;
   NavigationVector acc_fail_;
 
-
   std::vector<NavigationVector> acc_val_read_;
-  std::vector<bool>             acc_val_operational_;
+  std::vector<bool> acc_val_operational_;
   std::vector<NavigationVector> dec_val_read_;
-  std::vector<bool>             dec_val_operational_;
+  std::vector<bool> dec_val_operational_;
   std::vector<NavigationVector> em_val_read_;
-  std::vector<bool>             em_val_operational_;
+  std::vector<bool> em_val_operational_;
 
   /**
    * @brief used in accCheckTime()
@@ -169,7 +162,7 @@ class FakeImuFromFile : public ImuInterface {
   uint64_t failure_time_acc_;
   uint64_t failure_time_dec_;
   float noise_;
-  data::Data&  data_;
+  data::Data &data_;
 };
 
 // todo - implement different options for fake imus
@@ -187,7 +180,7 @@ class FakeImuFromFile : public ImuInterface {
 //   utils::Logger& log_;
 // };
 
-}}  // namespace hyped::sensors
-
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_FAKE_IMU_HPP_

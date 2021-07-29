@@ -24,7 +24,7 @@
 namespace hyped {
 namespace motor_control {
 
-Controller::Controller(Logger& log, uint8_t id)
+Controller::Controller(Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
@@ -37,18 +37,18 @@ Controller::Controller(Logger& log, uint8_t id)
       controller_temperature_(0),
       sender(this, node_id_, log)
 {
-  sdo_message_.id         = kSdoReceive + node_id_;
-  sdo_message_.extended   = false;
-  sdo_message_.len        = 8;
+  sdo_message_.id       = kSdoReceive + node_id_;
+  sdo_message_.extended = false;
+  sdo_message_.len      = 8;
 
-  nmt_message_.id         = kNmtReceive;
-  nmt_message_.extended   = false;
-  nmt_message_.len        = 2;
+  nmt_message_.id       = kNmtReceive;
+  nmt_message_.extended = false;
+  nmt_message_.len      = 2;
 
   // Initialse arrays of message data:
   FileReader::readFileData(configMsgs_, 24, kConfigMsgFile);
   FileReader::readFileData(enterOpMsgs_, 4, kEnterOpMsgFile);
-  FileReader::readFileData(enterPreOpMsg_, 1,  kEnterPreOpMsgFile);
+  FileReader::readFileData(enterPreOpMsg_, 1, kEnterPreOpMsgFile);
   FileReader::readFileData(checkStateMsg_, 1, kCheckStateMsgFile);
   FileReader::readFileData(sendTargetVelMsg, 1, kSendTargetVelMsgFile);
   FileReader::readFileData(sendTargetTorqMsg, 1, kSendTargetTorqMsgFile);
@@ -71,9 +71,7 @@ bool Controller::sendControllerMessage(ControllerMessage message_template)
 
   log_.DBG1("MOTOR", message_template.logger_output, node_id_);
 
-  if (critical_failure_) {
-    return true;
-  }
+  if (critical_failure_) { return true; }
   return false;
 }
 
@@ -183,7 +181,6 @@ void Controller::updateActualTorque()
   if (sendControllerMessage(updateActualTorqMsg[0])) return;
 }
 
-
 void Controller::quickStop()
 {
   // Send quickStop command
@@ -210,7 +207,7 @@ void Controller::updateControllerTemp()
   if (sendControllerMessage(updateContrTempMsg[0])) return;
 }
 
-void Controller::sendSdoMessage(utils::io::can::Frame& message)
+void Controller::sendSdoMessage(utils::io::can::Frame &message)
 {
   if (!sender.sendMessage(message)) {
     log_.ERR("MOTOR", "Controller %d: No response from controller", node_id_);
@@ -220,13 +217,13 @@ void Controller::sendSdoMessage(utils::io::can::Frame& message)
 
 void Controller::throwCriticalFailure()
 {
-  critical_failure_ = true;
-  motor_data_ = data_.getMotorData();
+  critical_failure_         = true;
+  motor_data_               = data_.getMotorData();
   motor_data_.module_status = data::ModuleStatus::kCriticalFailure;
   data_.setMotorData(motor_data_);
 }
 
-void Controller::requestStateTransition(utils::io::can::Frame& message, ControllerState state)
+void Controller::requestStateTransition(utils::io::can::Frame &message, ControllerState state)
 {
   uint8_t state_count;
   // Wait for max of 3 seconds, checking if the state has changed every second
@@ -235,9 +232,7 @@ void Controller::requestStateTransition(utils::io::can::Frame& message, Controll
     sender.sendMessage(message);
     Thread::sleep(1000);
     checkState();
-    if (state_ == state) {
-      return;
-    }
+    if (state_ == state) { return; }
   }
   if (state_ != state) {
     throwCriticalFailure();
@@ -255,40 +250,30 @@ void Controller::autoAlignMotorPosition()
   if (sendControllerMessage(autoAlignMsg[0])) return;
 }
 
-void Controller::processEmergencyMessage(utils::io::can::Frame& message)
+void Controller::processEmergencyMessage(utils::io::can::Frame &message)
 {
   log_.ERR("MOTOR", "Controller %d: CAN Emergency", node_id_);
   throwCriticalFailure();
-  uint8_t index_1   = message.data[0];
-  uint8_t index_2   = message.data[1];
+  uint8_t index_1 = message.data[0];
+  uint8_t index_2 = message.data[1];
 
-  if (index_2 == 0x00) {
-    log_.ERR("MOTOR", "Controller %d: No emergency/error", node_id_);
-  }
+  if (index_2 == 0x00) { log_.ERR("MOTOR", "Controller %d: No emergency/error", node_id_); }
 
-  if (index_2 == 0x10) {
-    log_.ERR("MOTOR", "Controller %d: Generic error", node_id_);
-  }
+  if (index_2 == 0x10) { log_.ERR("MOTOR", "Controller %d: Generic error", node_id_); }
 
   if (index_2 == 0x20 || index_2 == 0x21) {
     log_.ERR("MOTOR", "Controller %d: Current error", node_id_);
   }
 
-  if (index_2 == 0x22) {
-    log_.ERR("MOTOR", "Controller %d: Internal Current error", node_id_);
-  }
+  if (index_2 == 0x22) { log_.ERR("MOTOR", "Controller %d: Internal Current error", node_id_); }
 
   if (index_2 == 0x23) {
     log_.ERR("MOTOR", "Controller %d: Current on device ouput side error", node_id_);
   }
 
-  if (index_2 == 0x30) {
-    log_.ERR("MOTOR", "Controller %d: Voltage error", node_id_);
-  }
+  if (index_2 == 0x30) { log_.ERR("MOTOR", "Controller %d: Voltage error", node_id_); }
 
-  if (index_2 == 0x31) {
-    log_.ERR("MOTOR", "Controller %d: Mains voltage error", node_id_);
-  }
+  if (index_2 == 0x31) { log_.ERR("MOTOR", "Controller %d: Mains voltage error", node_id_); }
 
   if (index_2 == 0x31 && index_1 >= 0x10 && index_1 <= 0x13) {
     log_.ERR("MOTOR", "Controller %d: Mains over-voltage error", node_id_);
@@ -298,9 +283,7 @@ void Controller::processEmergencyMessage(utils::io::can::Frame& message)
     log_.ERR("MOTOR", "Controller %d: Mains under-voltage error", node_id_);
   }
 
-  if (index_2 == 0x32) {
-    log_.ERR("MOTOR", "Controller %d: DC link voltage", node_id_);
-  }
+  if (index_2 == 0x32) { log_.ERR("MOTOR", "Controller %d: DC link voltage", node_id_); }
 
   if (index_2 == 0x32 && index_1 >= 0x10 && index_1 <= 0x12) {
     log_.ERR("MOTOR", "Controller %d: DC link over-voltage", node_id_);
@@ -310,15 +293,13 @@ void Controller::processEmergencyMessage(utils::io::can::Frame& message)
     log_.ERR("MOTOR", "Controller %d: DC link under-voltage", node_id_);
   }
 
-  if (index_2 == 0x33) {
-    log_.ERR("MOTOR", "Controller %d: Output voltage", node_id_);
-  }
+  if (index_2 == 0x33) { log_.ERR("MOTOR", "Controller %d: Output voltage", node_id_); }
 
   if (index_2 == 0x33 && index_1 >= 0x10 && index_1 <= 0x13) {
     log_.ERR("MOTOR", "Controller %d: Output over-voltage", node_id_);
   }
 
-  if (index_2 >= 0x40 && index_2 <=0x44) {
+  if (index_2 >= 0x40 && index_2 <= 0x44) {
     log_.ERR("MOTOR", "Controller %d: Temperature error", node_id_);
   }
 
@@ -326,21 +307,15 @@ void Controller::processEmergencyMessage(utils::io::can::Frame& message)
     log_.ERR("MOTOR", "Controller %d: Device hardware error", node_id_);
   }
 
-  if (index_2 == 0x55) {
-    log_.ERR("MOTOR", "Controller %d: Device storage error", node_id_);
-  }
+  if (index_2 == 0x55) { log_.ERR("MOTOR", "Controller %d: Device storage error", node_id_); }
 
-  if (index_2 >= 0x60 && index_2 <=0x63) {
+  if (index_2 >= 0x60 && index_2 <= 0x63) {
     log_.ERR("MOTOR", "Controller %d: Device software error", node_id_);
   }
 
-  if (index_2 == 0x70) {
-    log_.ERR("MOTOR", "Controller %d: Additional modules error", node_id_);
-  }
+  if (index_2 == 0x70) { log_.ERR("MOTOR", "Controller %d: Additional modules error", node_id_); }
 
-  if (index_2 == 0x71) {
-    log_.ERR("MOTOR", "Controller %d: Power error", node_id_);
-  }
+  if (index_2 == 0x71) { log_.ERR("MOTOR", "Controller %d: Power error", node_id_); }
 
   if (index_2 == 0x71 && index_1 >= 0x10 && index_1 <= 0x13) {
     log_.ERR("MOTOR", "Controller %d: Brake chopper error", node_id_);
@@ -350,73 +325,43 @@ void Controller::processEmergencyMessage(utils::io::can::Frame& message)
     log_.ERR("MOTOR", "Controller %d: Motor error", node_id_);
   }
 
-  if (index_2 == 0x72) {
-    log_.ERR("MOTOR", "Controller %d: Measurement circuit error", node_id_);
-  }
+  if (index_2 == 0x72) { log_.ERR("MOTOR", "Controller %d: Measurement circuit error", node_id_); }
 
-  if (index_2 == 0x73) {
-    log_.ERR("MOTOR", "Controller %d: Sensor error", node_id_);
-  }
+  if (index_2 == 0x73) { log_.ERR("MOTOR", "Controller %d: Sensor error", node_id_); }
 
-  if (index_2 == 0x74) {
-    log_.ERR("MOTOR", "Controller %d: Computation circuit error", node_id_);
-  }
+  if (index_2 == 0x74) { log_.ERR("MOTOR", "Controller %d: Computation circuit error", node_id_); }
 
-  if (index_2 == 0x75) {
-    log_.ERR("MOTOR", "Controller %d: Communication error", node_id_);
-  }
+  if (index_2 == 0x75) { log_.ERR("MOTOR", "Controller %d: Communication error", node_id_); }
 
-  if (index_2 == 0x76) {
-    log_.ERR("MOTOR", "Controller %d: Data storage error", node_id_);
-  }
+  if (index_2 == 0x76) { log_.ERR("MOTOR", "Controller %d: Data storage error", node_id_); }
 
-  if (index_2 == 0x80) {
-    log_.ERR("MOTOR", "Controller %d: Monitoring error", node_id_);
-  }
+  if (index_2 == 0x80) { log_.ERR("MOTOR", "Controller %d: Monitoring error", node_id_); }
 
-  if (index_2 == 0x81) {
-    log_.ERR("MOTOR", "Controller %d: Commmunication error", node_id_);
-  }
+  if (index_2 == 0x81) { log_.ERR("MOTOR", "Controller %d: Commmunication error", node_id_); }
 
-  if (index_2 == 0x82) {
-    log_.ERR("MOTOR", "Controller %d: Protocol error", node_id_);
-  }
+  if (index_2 == 0x82) { log_.ERR("MOTOR", "Controller %d: Protocol error", node_id_); }
 
-  if (index_2 == 0x83) {
-    log_.ERR("MOTOR", "Controller %d: Torque control error", node_id_);
-  }
+  if (index_2 == 0x83) { log_.ERR("MOTOR", "Controller %d: Torque control error", node_id_); }
 
   if (index_2 == 0x84) {
     log_.ERR("MOTOR", "Controller %d: Velocity speed controller error", node_id_);
   }
 
-  if (index_2 == 0x85) {
-    log_.ERR("MOTOR", "Controller %d: Position controller error", node_id_);
-  }
+  if (index_2 == 0x85) { log_.ERR("MOTOR", "Controller %d: Position controller error", node_id_); }
 
   if (index_2 == 0x86) {
     log_.ERR("MOTOR", "Controller %d: Positioning controller error", node_id_);
   }
 
-  if (index_2 == 0x87) {
-    log_.ERR("MOTOR", "Controller %d: Sync controller error", node_id_);
-  }
+  if (index_2 == 0x87) { log_.ERR("MOTOR", "Controller %d: Sync controller error", node_id_); }
 
-  if (index_2 == 0x88) {
-    log_.ERR("MOTOR", "Controller %d: Winding controller error", node_id_);
-  }
+  if (index_2 == 0x88) { log_.ERR("MOTOR", "Controller %d: Winding controller error", node_id_); }
 
-  if (index_2 == 0x89) {
-    log_.ERR("MOTOR", "Controller %d: Process data error", node_id_);
-  }
+  if (index_2 == 0x89) { log_.ERR("MOTOR", "Controller %d: Process data error", node_id_); }
 
-  if (index_2 == 0x8A) {
-    log_.ERR("MOTOR", "Controller %d: Control error", node_id_);
-  }
+  if (index_2 == 0x8A) { log_.ERR("MOTOR", "Controller %d: Control error", node_id_); }
 
-  if (index_2 == 0x90) {
-    log_.ERR("MOTOR", "Controller %d: External error", node_id_);
-  }
+  if (index_2 == 0x90) { log_.ERR("MOTOR", "Controller %d: External error", node_id_); }
 
   if (index_2 == 0xF0 && index_1 == 0x01) {
     log_.ERR("MOTOR", "Controller %d: Deceleration error", node_id_);
@@ -507,7 +452,7 @@ void Controller::processErrorMessage(uint16_t error_message)
   }
 }
 
-void Controller::processSdoMessage(utils::io::can::Frame& message)
+void Controller::processSdoMessage(utils::io::can::Frame &message)
 {
   uint8_t index_1   = message.data[1];
   uint8_t index_2   = message.data[2];
@@ -515,23 +460,19 @@ void Controller::processSdoMessage(utils::io::can::Frame& message)
 
   // Process actual velocity
   if (index_1 == 0x6C && index_2 == 0x60) {
-    actual_velocity_ =  ((int32_t) message.data[7]) << 24
-                      | ((int32_t) message.data[6]) << 16
-                      | ((int32_t) message.data[5]) << 8
-                      | message.data[4];
+    actual_velocity_ = ((int32_t)message.data[7]) << 24 | ((int32_t)message.data[6]) << 16
+                       | ((int32_t)message.data[5]) << 8 | message.data[4];
     return;
   }
 
   // Process actual torque
   if (index_1 == 0x77 && index_2 == 0x60) {
-    actual_torque_   = ((int16_t) message.data[5]) << 8 | message.data[4];
+    actual_torque_ = ((int16_t)message.data[5]) << 8 | message.data[4];
     return;
   }
 
   // Process motor temperature
-  if (index_1 == 0x25 && index_2 == 0x20) {
-    motor_temperature_ = message.data[4];
-  }
+  if (index_1 == 0x25 && index_2 == 0x20) { motor_temperature_ = message.data[4]; }
 
   // Process controller temperature
   if (index_1 == 0x26 && index_2 == 0x20 && sub_index == 0x01) {
@@ -597,40 +538,40 @@ void Controller::processSdoMessage(utils::io::can::Frame& message)
   if (index_1 == 0x41 && index_2 == 0x60 && sub_index == 0x00) {
     uint8_t status = message.data[4];
     switch (status) {
-    case 0x00:
-      state_ = kNotReadyToSwitchOn;
-      log_.DBG1("MOTOR", "Controller %d state: Not ready to switch on", node_id_);
-      break;
-    case 0x40:
-      state_ = kSwitchOnDisabled;
-      log_.DBG1("MOTOR", "Controller %d state: Switch on disabled", node_id_);
-      break;
-    case 0x21:
-      state_ = kReadyToSwitchOn;
-      log_.DBG1("MOTOR", "Controller %d state: Ready to switch on", node_id_);
-      break;
-    case 0x23:
-      state_ = kSwitchedOn;
-      log_.DBG1("MOTOR", "Controller %d state: Switched on", node_id_);
-      break;
-    case 0x27:
-      state_ = kOperationEnabled;
-      log_.DBG1("MOTOR", "Controller %d state: Operation enabled", node_id_);
-      break;
-    case 0x07:
-      state_ = kQuickStopActive;
-      log_.DBG1("MOTOR", "Controller %d state: Quick stop active", node_id_);
-      break;
-    case 0x0F:
-      state_ = kFaultReactionActive;
-      log_.DBG1("MOTOR", "Controller %d state: Fault reaction active", node_id_);
-      break;
-    case 0x08:
-      state_ = kFault;
-      log_.DBG1("MOTOR", "Controller %d state: Fault", node_id_);
-      break;
-    default:
-      log_.DBG1("MOTOR", "Controller %d state: State not recognised", node_id_);
+      case 0x00:
+        state_ = kNotReadyToSwitchOn;
+        log_.DBG1("MOTOR", "Controller %d state: Not ready to switch on", node_id_);
+        break;
+      case 0x40:
+        state_ = kSwitchOnDisabled;
+        log_.DBG1("MOTOR", "Controller %d state: Switch on disabled", node_id_);
+        break;
+      case 0x21:
+        state_ = kReadyToSwitchOn;
+        log_.DBG1("MOTOR", "Controller %d state: Ready to switch on", node_id_);
+        break;
+      case 0x23:
+        state_ = kSwitchedOn;
+        log_.DBG1("MOTOR", "Controller %d state: Switched on", node_id_);
+        break;
+      case 0x27:
+        state_ = kOperationEnabled;
+        log_.DBG1("MOTOR", "Controller %d state: Operation enabled", node_id_);
+        break;
+      case 0x07:
+        state_ = kQuickStopActive;
+        log_.DBG1("MOTOR", "Controller %d state: Quick stop active", node_id_);
+        break;
+      case 0x0F:
+        state_ = kFaultReactionActive;
+        log_.DBG1("MOTOR", "Controller %d state: Fault reaction active", node_id_);
+        break;
+      case 0x08:
+        state_ = kFault;
+        log_.DBG1("MOTOR", "Controller %d state: Fault", node_id_);
+        break;
+      default:
+        log_.DBG1("MOTOR", "Controller %d state: State not recognised", node_id_);
     }
     return;
   }
@@ -716,7 +657,7 @@ void Controller::processSdoMessage(utils::io::can::Frame& message)
   }
 }
 
-void Controller::processNmtMessage(utils::io::can::Frame& message)
+void Controller::processNmtMessage(utils::io::can::Frame &message)
 {
   int8_t nmt_state = message.data[0];
   switch (nmt_state) {
@@ -776,4 +717,5 @@ uint8_t Controller::getControllerTemp()
 {
   return controller_temperature_;
 }
-}}  // namespace hyped::motor_control
+}  // namespace motor_control
+}  // namespace hyped

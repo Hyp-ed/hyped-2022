@@ -18,21 +18,20 @@
  *    limitations under the License.
  */
 
-
 #include "sensors/gpio_manager.hpp"
 
-#include "utils/timer.hpp"
 #include "utils/config.hpp"
+#include "utils/timer.hpp"
 
 namespace hyped {
 namespace sensors {
 
-GpioManager::GpioManager(Logger& log)
+GpioManager::GpioManager(Logger &log)
     : Thread(log),
       sys_(utils::System::getSystem()),
       data_(Data::getInstance())
 {
-    // clear HPSSRs if default is high
+  // clear HPSSRs if default is high
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
     hp_ssr_.push_back(new GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
     hp_ssr_[i]->clear();
@@ -51,7 +50,7 @@ void GpioManager::clearHP()
 {
   master_->clear();  // important to clear this first
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    hp_ssr_[i]->clear();      // HP off until kReady State
+    hp_ssr_[i]->clear();  // HP off until kReady State
   }
 }
 
@@ -76,7 +75,7 @@ void GpioManager::run()
      */
 
     data::ModuleStatus battery_status = data_.getBatteriesData().module_status;
-    data::State state = data_.getStateMachineData().current_state;
+    data::State state                 = data_.getStateMachineData().current_state;
 
     // kStart and kInit default clear from constructor
     if (battery_status != previous_battery_status_) {
@@ -120,15 +119,16 @@ void GpioManager::run()
 
           // signalling failure to get out of undefied behaviour
           data::Batteries batteries_data = data_.getBatteriesData();
-          batteries_data.module_status = data::ModuleStatus::kCriticalFailure;
+          batteries_data.module_status   = data::ModuleStatus::kCriticalFailure;
           data_.setBatteriesData(batteries_data);
           break;
       }
     }
     previous_battery_status_ = battery_status;
-    previous_state_ = state;
+    previous_state_          = state;
     sleep(100);
   }
 }
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped

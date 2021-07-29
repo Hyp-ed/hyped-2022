@@ -18,26 +18,29 @@
  *    limitations under the License.
  */
 
-#include <sys/types.h>
-#include <sys/socket.h>
+#include "telemetry/client.hpp"
+
 #include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
+
 #include <cstring>
 #include <string>
-#include "telemetry/client.hpp"
+
 #include "utils/system.hpp"
 
 namespace hyped {
 namespace telemetry {
 
-Client::Client(Logger& log)
-  : Client {log, *utils::System::getSystem().config}
-{}
+Client::Client(Logger &log) : Client{log, *utils::System::getSystem().config}
+{
+}
 
-Client::Client(Logger& log, const utils::Config& config)
-  : log_ {log},
-    kPort {config.telemetry.Port.c_str()},
-    kServerIP {config.telemetry.IP.c_str()}
+Client::Client(Logger &log, const utils::Config &config)
+    : log_{log},
+      kPort{config.telemetry.Port.c_str()},
+      kServerIP{config.telemetry.IP.c_str()}
 {
   log_.DBG("Telemetry", "Client object created");
 }
@@ -47,11 +50,11 @@ bool Client::connect()
   log_.INFO("Telemetry", "Beginning process to connect to server");
 
   struct addrinfo hints;
-  struct addrinfo* server_info;  // contains possible addresses to connect to according to hints
+  struct addrinfo *server_info;  // contains possible addresses to connect to according to hints
 
   // set up criteria for type of address we want to connect to
   memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_INET;
+  hints.ai_family   = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
 
   // get possible addresses we can connect to
@@ -94,9 +97,7 @@ bool Client::sendData(std::string message)
   int payload_length = message.length();
 
   // send payload
-  if (send(sockfd_, message.c_str(), payload_length, 0) == -1) {
-    return false;
-  }
+  if (send(sockfd_, message.c_str(), payload_length, 0) == -1) { return false; }
 
   log_.DBG3("Telemetry", "Finished sending message to server");
 
@@ -110,12 +111,10 @@ std::string Client::receiveData()
   char header[8];
 
   // receive header
-  if (recv(sockfd_, header, 8, 0) <= 0) {
-    throw std::runtime_error{"Error receiving header"};
-  }
+  if (recv(sockfd_, header, 8, 0) <= 0) { throw std::runtime_error{"Error receiving header"}; }
 
   int payload_length = strtol(header, NULL, 0);
-  char buffer[1024];  // power of 2 because apparently it's better for networking
+  char buffer[1024];                  // power of 2 because apparently it's better for networking
   memset(buffer, 0, sizeof(buffer));  // fill with 0's so null terminated by default
 
   // receive payload
@@ -128,5 +127,5 @@ std::string Client::receiveData()
   return std::string(buffer);
 }
 
-}  // namespace client
+}  // namespace telemetry
 }  // namespace hyped

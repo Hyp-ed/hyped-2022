@@ -24,16 +24,15 @@
 #include <string>
 #include <vector>
 
-#include "utils/concurrent/thread.hpp"
 #include "sensors/interface.hpp"
+#include "utils/concurrent/thread.hpp"
 
 namespace hyped {
 
-using utils::Logger;
 using data::Data;
+using utils::Logger;
 
 namespace sensors {
-
 
 class FakeBatteries : public BMSInterface {
   typedef array<uint16_t, 8> BatteryInformation;
@@ -47,18 +46,18 @@ class FakeBatteries : public BMSInterface {
    * @param is_lp
    * @param is_fail
    */
-  FakeBatteries(Logger& log, bool is_lp, bool is_fail);
+  FakeBatteries(Logger &log, bool is_lp, bool is_fail);
 
   /**
    * @brief waits for accelerating state, generate random time for error
    * @param battery BatteryData pointer
    */
-  void getData(BatteryData* battery) override;
+  void getData(BatteryData *battery) override;
   bool isOnline() override;
 
  private:
-  Data& data_;
-  utils::Logger& log_;
+  Data &data_;
+  utils::Logger &log_;
 
   /**
    * @brief if is_fail_ == true, will throw failure
@@ -79,7 +78,7 @@ class FakeBatteries : public BMSInterface {
 
   bool is_lp_;
   bool is_fail_;
-  int case_index_;    // handle for array of values for both hp/lp
+  int case_index_;  // handle for array of values for both hp/lp
 
   BatteryData local_data_;
 
@@ -88,6 +87,7 @@ class FakeBatteries : public BMSInterface {
   uint64_t failure_time_;
   bool failure_happened_;
 };
-}}    // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_FAKE_BATTERIES_HPP_

@@ -16,16 +16,16 @@
  *    limitations under the License.
  */
 
-
 #ifndef DATA_DATA_HPP_
 #define DATA_DATA_HPP_
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 #include <vector>
-#include "utils/math/vector.hpp"
+
 #include "data/data_point.hpp"
 #include "utils/concurrent/lock.hpp"
+#include "utils/math/vector.hpp"
 
 using std::array;
 using std::vector;
@@ -33,8 +33,8 @@ using std::vector;
 namespace hyped {
 
 // imports
-using utils::math::Vector;
 using utils::concurrent::Lock;
+using utils::math::Vector;
 
 namespace data {
 
@@ -58,14 +58,14 @@ struct Module {
 typedef float nav_t;
 typedef Vector<nav_t, 3> NavigationVector;
 struct Navigation : public Module {
-  static constexpr nav_t kMaximumVelocity = 100;    // m/s
-  static constexpr nav_t kRunLength     = 1250.0;  // m
-  static constexpr nav_t kBrakingBuffer = 20.0;    // m
-  nav_t  displacement;                             // m
-  nav_t  velocity;                                 // m/s
-  nav_t  acceleration;                             // m/s^2
-  nav_t  emergency_braking_distance;               // m
-  nav_t  braking_distance = 750;                   // m
+  static constexpr nav_t kMaximumVelocity = 100;     // m/s
+  static constexpr nav_t kRunLength       = 1250.0;  // m
+  static constexpr nav_t kBrakingBuffer   = 20.0;    // m
+  nav_t displacement;                                // m
+  nav_t velocity;                                    // m/s
+  nav_t acceleration;                                // m/s^2
+  nav_t emergency_braking_distance;                  // m
+  nav_t braking_distance = 750;                      // m
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -90,33 +90,33 @@ struct StripeCounter : public Sensor {
 };
 
 struct TemperatureData : public Sensor {
-  int temp;   // C
+  int temp;  // C
 };
 
 struct Sensors : public Module {
-  static constexpr int kNumImus = 4;
+  static constexpr int kNumImus     = 4;
   static constexpr int kNumEncoders = 4;
-  static constexpr int kNumKeyence = 2;
+  static constexpr int kNumKeyence  = 2;
 
   DataPoint<array<ImuData, kNumImus>> imu;
   DataPoint<array<EncoderData, kNumEncoders>> encoder;
-  array<StripeCounter, kNumKeyence>  keyence_stripe_counter;
+  array<StripeCounter, kNumKeyence> keyence_stripe_counter;
 };
 
 struct BatteryData {
   static constexpr int kNumCells = 36;
-  uint16_t  voltage;                    // dV
-  int16_t   current;                    // dA
-  uint8_t   charge;                     // %
-  int8_t    average_temperature;        // C
+  uint16_t voltage;            // dV
+  int16_t current;             // dA
+  uint8_t charge;              // %
+  int8_t average_temperature;  // C
 
   // below only for BMSHP! Value for BMSLP = 0
-  uint16_t  cell_voltage[kNumCells];    // mV
-  int8_t    low_temperature;            // C
-  int8_t    high_temperature;           // C
-  uint16_t  low_voltage_cell;           // mV
-  uint16_t  high_voltage_cell;          // mV
-  bool      imd_fault;
+  uint16_t cell_voltage[kNumCells];  // mV
+  int8_t low_temperature;            // C
+  int8_t high_temperature;           // C
+  uint16_t low_voltage_cell;         // mV
+  uint16_t high_voltage_cell;        // mV
+  bool imd_fault;
 };
 
 struct Batteries : public Module {
@@ -128,9 +128,9 @@ struct Batteries : public Module {
 };
 
 struct EmergencyBrakes : public Module {
-  static constexpr int kBrakeCommandWaitTime   = 1000;    // milliseconds
-  static constexpr int kNumEmbrakes            = 2;
-  bool brakes_retracted[kNumEmbrakes]          = {false};  // true if brakes retract
+  static constexpr int kBrakeCommandWaitTime = 1000;  // milliseconds
+  static constexpr int kNumEmbrakes          = 2;
+  bool brakes_retracted[kNumEmbrakes]        = {false};  // true if brakes retract
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -138,8 +138,8 @@ struct EmergencyBrakes : public Module {
 // -------------------------------------------------------------------------------------------------
 
 struct Motors : public Module {
-  static constexpr int kNumMotors = 4;
-  std::array<uint32_t, kNumMotors> rpms = { {0, 0, 0, 0} };
+  static constexpr int kNumMotors       = 4;
+  std::array<uint32_t, kNumMotors> rpms = {{0, 0, 0, 0}};
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -147,11 +147,11 @@ struct Motors : public Module {
 // -------------------------------------------------------------------------------------------------
 
 struct Telemetry : public Module {
-  bool calibrate_command = false;
-  bool launch_command = false;
-  bool shutdown_command = false;
-  bool service_propulsion_go = false;
-  bool emergency_stop_command = false;
+  bool calibrate_command       = false;
+  bool launch_command          = false;
+  bool shutdown_command        = false;
+  bool service_propulsion_go   = false;
+  bool emergency_stop_command  = false;
   bool nominal_braking_command = true;
 };
 
@@ -172,7 +172,7 @@ enum State {
   num_states
 };
 
-extern const char* states[num_states];
+extern const char *states[num_states];
 
 struct StateMachine {
   bool critical_failure;
@@ -191,7 +191,7 @@ class Data {
   /**
    * @brief      Always returns a reference to the only instance of `Data`.
    */
-  static Data& getInstance();
+  static Data &getInstance();
 
   /**
    * @brief      Retrieves data related to the state machine. Data has high priority.
@@ -201,7 +201,7 @@ class Data {
   /**
    * @brief      Should be called by state machine team to update data.
    */
-  void setStateMachineData(const StateMachine& sm_data);
+  void setStateMachineData(const StateMachine &sm_data);
 
   /**
    * @brief      Retrieves data produced by navigation sub-team.
@@ -211,8 +211,7 @@ class Data {
   /**
    * @brief      Should be called by navigation sub-team whenever they have new data.
    */
-  void setNavigationData(const Navigation& nav_data);
-
+  void setNavigationData(const Navigation &nav_data);
 
   /**
    * @brief Get the Temperature from averaged thermistor values
@@ -226,7 +225,7 @@ class Data {
    *
    * @param temp - temp in degrees C
    */
-  void setTemperature(const int& temp);
+  void setTemperature(const int &temp);
 
   /**
    * @brief      Retrieves data from all sensors
@@ -251,19 +250,20 @@ class Data {
   /**
    * @brief      Should be called to update sensor data.
    */
-  void setSensorsData(const Sensors& sensors_data);
+  void setSensorsData(const Sensors &sensors_data);
   /**
    * @brief      Should be called to update sensor imu data.
    */
-  void setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>>& imu);
+  void setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>> &imu);
   /**
    * @brief      Should be called to update sensor encoder data.
    */
-  void setSensorsEncoderData(const DataPoint<array<EncoderData, Sensors::kNumEncoders>>& imu);
+  void setSensorsEncoderData(const DataPoint<array<EncoderData, Sensors::kNumEncoders>> &imu);
   /**
    * @brief      Should be called to update sensor keyence data.
    */
-  void setSensorsKeyenceData(const array<StripeCounter, Sensors::kNumKeyence>&  keyence_stripe_counter);  //NOLINT
+  void setSensorsKeyenceData(
+    const array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter);  // NOLINT
 
   /**
    * @brief      Retrieves data from the batteries.
@@ -273,7 +273,7 @@ class Data {
   /**
    * @brief      Should be called to update battery data
    */
-  void setBatteriesData(const Batteries& batteries_data);
+  void setBatteriesData(const Batteries &batteries_data);
 
   /**
    * @brief      Retrieves data from the emergency brakes.
@@ -283,7 +283,7 @@ class Data {
   /**
    * @brief      Should be called to update emergency brakes data
    */
-  void setEmergencyBrakesData(const EmergencyBrakes& emergency_brakes_data);
+  void setEmergencyBrakesData(const EmergencyBrakes &emergency_brakes_data);
 
   /**
    * @brief      Retrieves data produced by each of the four motors.
@@ -293,7 +293,7 @@ class Data {
   /**
    * @brief      Should be called to update motor data.
    */
-  void setMotorData(const Motors& motor_data);
+  void setMotorData(const Motors &motor_data);
 
   /**
    * @brief      Retrieves data on whether stop/kill power commands have been issued.
@@ -303,7 +303,7 @@ class Data {
   /**
    * @brief      Should be called to update communications data.
    */
-  void setTelemetryData(const Telemetry& telemetry_data);
+  void setTelemetryData(const Telemetry &telemetry_data);
 
  private:
   StateMachine state_machine_;
@@ -314,7 +314,6 @@ class Data {
   Telemetry telemetry_;
   EmergencyBrakes emergency_brakes_;
   int temperature_;  // In degrees C
-
 
   // locks for data substructures
   Lock lock_state_machine_;
@@ -330,12 +329,13 @@ class Data {
   Data() {}
 
  public:
-  Data(const Data&) = delete;
-  Data& operator=(const Data &) = delete;
-  Data(Data &&) = delete;
-  Data & operator=(Data &&) = delete;
+  Data(const Data &) = delete;
+  Data &operator=(const Data &) = delete;
+  Data(Data &&)                 = delete;
+  Data &operator=(Data &&) = delete;
 };
 
-}}  // namespace hyped::data
+}  // namespace data
+}  // namespace hyped
 
 #endif  // DATA_DATA_HPP_

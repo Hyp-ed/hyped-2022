@@ -16,12 +16,14 @@
  *    limitations under the License.
  */
 
-#include <iostream>
-#include "math.h"
-#include "gtest/gtest.h"
 #include "utils/math/differentiator.hpp"
-#include "utils/system.hpp"
+
+#include <iostream>
+
 #include "data/data_point.hpp"
+#include "gtest/gtest.h"
+#include "math.h"
+#include "utils/system.hpp"
 
 using hyped::data::DataPoint;
 using hyped::utils::math::Differentiator;
@@ -45,13 +47,13 @@ struct DifferentiatorFunctionality : public ::testing::Test {
   void SetUp()
   {
     // Sets values of Data points
-    test_point.value = 10.5;
+    test_point.value     = 10.5;
     test_point.timestamp = 1;
 
-    second_point.value = 18.6;
+    second_point.value     = 18.6;
     second_point.timestamp = 2;
 
-    third_point.value= second_point.value;
+    third_point.value     = second_point.value;
     third_point.timestamp = 3;
   }
   void TearDown() {}
@@ -59,7 +61,7 @@ struct DifferentiatorFunctionality : public ::testing::Test {
 
 /**
  * @brief Returns the difference between two data point values.
-*/
+ */
 float deltaValue(DataPoint<float> point_1, DataPoint<float> prev_point)
 {
   return point_1.value - prev_point.value;
@@ -67,34 +69,33 @@ float deltaValue(DataPoint<float> point_1, DataPoint<float> prev_point)
 
 /**
  * @brief Returns the difference between two data point timestamps
-*/
+ */
 float deltaTime(DataPoint<float> point_1, DataPoint<float> prev_point)
 {
-  return point_1.timestamp- prev_point.timestamp;
+  return point_1.timestamp - prev_point.timestamp;
 }
 
 /**
  * @brief Returns the gradient between two data points
-*/
+ */
 float gradientOfPoints(DataPoint<float> point_1, DataPoint<float> prev_point)
 {
-    return (deltaValue(point_1, prev_point))/((deltaTime(point_1, prev_point))/1e6);
+  return (deltaValue(point_1, prev_point)) / ((deltaTime(point_1, prev_point)) / 1e6);
 }
 
 /**
  * Test fixture used for determining whether initialisation works correctly.
  * The value should always return 0
-*/
+ */
 TEST_F(DifferentiatorFunctionality, differentiatorInitialisedValue)
 {
-  ASSERT_EQ(diff_test.update(test_point).value, 0)
-    << "Initalised value should be 0";
+  ASSERT_EQ(diff_test.update(test_point).value, 0) << "Initalised value should be 0";
 }
 
 /**
  * Test fixture used for determining whether initialisation works correctly.
  * The timestamp should always be returned unchanged
-*/
+ */
 TEST_F(DifferentiatorFunctionality, differentiatorInitialisedTimestamp)
 {
   ASSERT_EQ(diff_test.update(test_point).timestamp, test_point.timestamp)
@@ -132,8 +133,7 @@ TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
 {
   diff_test.update(test_point);
   diff_test.update(second_point);
-  ASSERT_EQ(diff_test.update(third_point).value, 0)
-    << "Derivative of same values should return 0";
+  ASSERT_EQ(diff_test.update(third_point).value, 0) << "Derivative of same values should return 0";
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -158,9 +158,9 @@ struct SpecialCases : public ::testing::Test {
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
-      linear_data_point = DataPoint<float>(i*pow(10, 6), i);
-      linear_data[i] = linear_data_point;
-      constant_data_point = DataPoint<float>(i*pow(10, 6), kConstant);
+      linear_data_point    = DataPoint<float>(i * pow(10, 6), i);
+      linear_data[i]       = linear_data_point;
+      constant_data_point  = DataPoint<float>(i * pow(10, 6), kConstant);
       function_constant[i] = constant_data_point;
     }
   }
@@ -174,8 +174,7 @@ TEST_F(SpecialCases, differentiatorLinearCase)
   diff_linear.update(linear_data[0]);
   for (int i = 1; i < 100; i++) {
     float value = diff_linear.update(linear_data[i]).value;
-    ASSERT_EQ(1, value)
-      << "You Expect a perfect fit for linear case, please review implementation";
+    ASSERT_EQ(1, value) << "You Expect a perfect fit for linear case, please review implementation";
   }
 }
 
@@ -216,13 +215,13 @@ struct DifferentiatorProperty : public ::testing::Test {
   void SetUp()
   {
     for (int i = 0; i < 100; i++) {
-      data_point = DataPoint<float>(i*pow(10, 6), i);
-      linear_data[i] = data_point;
-      data_point  = DataPoint<float>(i*pow(10, 6), i*i);
-      quadratic_data[i] = data_point;
-      data_point  = DataPoint<float>(i*pow(10, 6), i*i+i);
-      function_data[i] = data_point;
-      data_point = DataPoint<float>(i*pow(10, 6), i*i - i);
+      data_point             = DataPoint<float>(i * pow(10, 6), i);
+      linear_data[i]         = data_point;
+      data_point             = DataPoint<float>(i * pow(10, 6), i * i);
+      quadratic_data[i]      = data_point;
+      data_point             = DataPoint<float>(i * pow(10, 6), i * i + i);
+      function_data[i]       = data_point;
+      data_point             = DataPoint<float>(i * pow(10, 6), i * i - i);
       difference_function[i] = data_point;
     }
   }
@@ -236,11 +235,11 @@ struct DifferentiatorProperty : public ::testing::Test {
 TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
 {
   for (int i = 0; i < 100; i++) {
-    float linear = diff_linear.update(linear_data[i]).value;
+    float linear    = diff_linear.update(linear_data[i]).value;
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
     float function  = diff_function.update(function_data[i]).value;
 
-    ASSERT_EQ(function, linear+quadratic)
+    ASSERT_EQ(function, linear + quadratic)
       << "The derivative should be the same as the sum of the two derivatives";
   }
 }
@@ -253,11 +252,11 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
 TEST_F(DifferentiatorProperty, differentiatorDifferenceOfDerivatives)
 {
   for (int i = 0; i < 100; i++) {
-    float linear = diff_linear.update(linear_data[i]).value;
+    float linear    = diff_linear.update(linear_data[i]).value;
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
     float function  = diff_function.update(difference_function[i]).value;
 
-    ASSERT_EQ(function, quadratic-linear)
+    ASSERT_EQ(function, quadratic - linear)
       << "The derivative should be the same as the difference of the two derivatives";
   }
 }
@@ -275,9 +274,9 @@ TEST(DifferentiatorChainRule, differentiatorChainRule)
 
   // Populates the array of datapoints with the output of functions
   for (int i = 0; i < 100; i++) {
-    data_point  = DataPoint<float>(i*1e6, pow(2*i + 1, 2));
+    data_point        = DataPoint<float>(i * 1e6, pow(2 * i + 1, 2));
     inner_function[i] = data_point;
-    data_point  = DataPoint<float>(i*1e6, 3 * inner_function[i].value);
+    data_point        = DataPoint<float>(i * 1e6, 3 * inner_function[i].value);
     outer_function[i] = data_point;
   }
 
@@ -286,7 +285,6 @@ TEST(DifferentiatorChainRule, differentiatorChainRule)
     float inner = diff_inner.update(inner_function[i]).value;
     float outer = diff_outer.update(outer_function[i]).value;
 
-    ASSERT_EQ(outer, (3 * inner))
-      << "Chain rule doesn't hold.";
+    ASSERT_EQ(outer, (3 * inner)) << "Chain rule doesn't hold.";
   }
 };

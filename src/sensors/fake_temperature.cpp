@@ -18,16 +18,17 @@
  *    limitations under the License.
  */
 
+#include "sensors/fake_temperature.hpp"
+
 #include <stdlib.h>
 
-#include "sensors/fake_temperature.hpp"
 #include "utils/timer.hpp"
 
 namespace hyped {
 namespace sensors {
 
-FakeTemperature::FakeTemperature(Logger& log, bool is_fail)
-      : data_(Data::getInstance()),
+FakeTemperature::FakeTemperature(Logger &log, bool is_fail)
+    : data_(Data::getInstance()),
       log_(log),
       failure_(300),
       success_(30),
@@ -54,8 +55,7 @@ void FakeTemperature::run()
     if (state == data::State::kAccelerating) {
       acc_start_time_ = utils::Timer::getTimeMicros();
       // Generate a random time for a failure
-      if (is_fail_)
-        failure_time_ = (rand() % 20 + 1) * 1000000;
+      if (is_fail_) failure_time_ = (rand() % 20 + 1) * 1000000;
       acc_started_ = true;
     }
   }
@@ -66,7 +66,7 @@ void FakeTemperature::checkFailure()
 {
   if (is_fail_ && failure_time_ != 0 && !failure_happened_) {
     if (utils::Timer::getTimeMicros() - acc_start_time_ >= failure_time_) {
-      temp_.temp = failure_;
+      temp_.temp        = failure_;
       failure_happened_ = true;
     }
   }
@@ -77,4 +77,5 @@ int FakeTemperature::getData()
   return temp_.temp;
 }
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped

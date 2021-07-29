@@ -26,12 +26,12 @@
 #include <string.h>
 
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
+#include "propulsion/controller_interface.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "propulsion/controller_interface.hpp"
 
 namespace hyped {
 namespace motor_control {
@@ -47,7 +47,7 @@ class FileReader {
    * @param message
    * @param len - length of messages array
    */
-  static bool readFileData(ControllerMessage messages[], int len, const char* filepath);
+  static bool readFileData(ControllerMessage messages[], int len, const char *filepath);
 
  private:
   /**
@@ -64,7 +64,8 @@ class FileReader {
    * @param message
    * @param len
    */
-  static void addData(std::string lineData[], uint8_t* message_data);
+  static void addData(std::string lineData[], uint8_t *message_data);
 };
-}}  // namespace hyped::motor_control
+}  // namespace motor_control
+}  // namespace hyped
 #endif  // PROPULSION_FILE_READER_HPP_

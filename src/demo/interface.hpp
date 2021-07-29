@@ -29,6 +29,7 @@ class DemoInterface {
   virtual void printYourName() = 0;
 };
 
-}}  // namespace hyped::demo
+}  // namespace demo
+}  // namespace hyped
 
 #endif  // DEMO_INTERFACE_HPP_

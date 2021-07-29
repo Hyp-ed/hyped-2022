@@ -26,7 +26,6 @@
 #include "utils/concurrent/thread.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "utils/concurrent/thread.hpp"
 
 namespace hyped {
 
@@ -42,7 +41,7 @@ class FakeStepper : public StepperInterface {
    * @brief Construct a new Stepper object
    * @param log, node id
    */
-  FakeStepper(Logger& log, uint8_t id);
+  FakeStepper(Logger &log, uint8_t id);
 
   /**
    * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
@@ -75,8 +74,8 @@ class FakeStepper : public StepperInterface {
   bool checkClamped() override;
 
  private:
-  utils::Logger& log_;
-  data::Data& data_;
+  utils::Logger &log_;
+  data::Data &data_;
   data::EmergencyBrakes em_brakes_data_;
   uint8_t brake_id_;
   uint8_t is_clamped_;

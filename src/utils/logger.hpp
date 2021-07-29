@@ -28,10 +28,9 @@ namespace utils {
 
 class Logger {
  public:
-  Logger()
-      : verbose_(false),
-        debug_(-1)
-  { /* EMPTY */ }
+  Logger() : verbose_(false), debug_(-1)
+  { /* EMPTY */
+  }
 
   /**
    * @brief Construct a new Logger object with preset debug levels
@@ -52,45 +51,46 @@ class Logger {
    * @param format - format string as in printf
    * @param ...    - arguments for the format string
    */
-  void INFO(const char* module, const char* format, ...);
+  void INFO(const char *module, const char *format, ...);
 
   /**
    * @brief Use to indicate error. Output goes to STDERR
    */
-  void ERR(const char* module, const char* format, ...);
+  void ERR(const char *module, const char *format, ...);
 
   /**
    * @brief Use for infrequent debug messages:
    * e.g. state transitions, successful initialisation
    * DBG is printed iff debug_ >= 0
    */
-  void DBG(const char* module, const char* format, ...);
+  void DBG(const char *module, const char *format, ...);
 
   /**
    * @brief Use for medium frequency debug messages
    * e.g. successful sensor reading, receiving command message from basestation
    * DBG is printed iff debug_ >= 1
    */
-  void DBG1(const char* module, const char* format, ...);
+  void DBG1(const char *module, const char *format, ...);
 
   /**
    * @brief Use for high frequency debug messages
    * e.g. CAN readings, Update of NAV data
    * DBG is printed iff debug_ >= 2
    */
-  void DBG2(const char* module, const char* format, ...);
+  void DBG2(const char *module, const char *format, ...);
 
   /**
    * @brief Use for high frequency debug messages, full debug with detailed output
    * e.g. actual data being received by CAN, each state transtition condition evaluation
    * DBG is printed iff debug_ >= 3
    */
-  void DBG3(const char* module, const char* format, ...);
+  void DBG3(const char *module, const char *format, ...);
 
  private:
   bool verbose_;
   int8_t debug_;
 };
 
-}}  // namespace hyped::utils
+}  // namespace utils
+}  // namespace hyped
 #endif  // UTILS_LOGGER_HPP_

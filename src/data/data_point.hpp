@@ -24,23 +24,21 @@
 namespace hyped {
 namespace data {
 
-template <typename T>
-class DataPoint
-{
+template<typename T>
+class DataPoint {
  public:
-  DataPoint()
-  {}
+  DataPoint() {}
 
   /*
    * Initialises this DataPoint with the specified timestamp and value.
    */
-  DataPoint(uint32_t timestamp, const T& value) : timestamp(timestamp), value(value)
-  {}
+  DataPoint(uint32_t timestamp, const T &value) : timestamp(timestamp), value(value) {}
 
   uint32_t timestamp;
   T value;
 };
 
-}}  // namespace hyped::data
+}  // namespace data
+}  // namespace hyped
 
 #endif  // DATA_DATA_POINT_HPP_

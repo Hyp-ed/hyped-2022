@@ -1,5 +1,7 @@
 #include <math.h>
+
 #include <cstdlib>
+
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
 
@@ -20,22 +22,19 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-namespace hyped
-{
-namespace utils
-{
-namespace math
-{
+namespace hyped {
+namespace utils {
+namespace math {
 
-  /**
+/**
  * @brief Helper method used to generate an array of three random integers.
  * each integer will be in the range -1000, 1000 (not inclusive)
  */
 std::array<int, 3> createRandomArrayForProperties()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0;i < 3;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 3; i++) {
+    output[i] = rand() % 1000;
   }
   return output;
 }
@@ -48,10 +47,10 @@ std::array<int, 3> createRandomArrayForProperties()
 std::array<int, 3> RandomNonZeroArrayForProperties()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0;i < 3;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 3; i++) {
+    output[i] = rand() % 1000;
     while (output[i] == 0) {
-      output[i] = rand()%1000;
+      output[i] = rand() % 1000;
     }
   }
   return output;
@@ -63,8 +62,7 @@ std::array<int, 3> RandomNonZeroArrayForProperties()
  * Associativity.
  * This tests will check if Associativity holds in multiplication and addition.
  */
-struct VectorAssociativity : public::testing::Test
-{
+struct VectorAssociativity : public ::testing::Test {
   const int dimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
@@ -74,9 +72,9 @@ struct VectorAssociativity : public::testing::Test
   void SetUp()
   {
     std::srand(time(0));
-    vector_one = Vector<int, 3>(createRandomArrayForProperties());
-    vector_two = Vector<int, 3>(createRandomArrayForProperties());
-    vector_three = Vector<int, 3>(createRandomArrayForProperties());
+    vector_one        = Vector<int, 3>(createRandomArrayForProperties());
+    vector_two        = Vector<int, 3>(createRandomArrayForProperties());
+    vector_three      = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
@@ -95,7 +93,7 @@ TEST_F(VectorAssociativity, isAdditionAssociative)
   vector_result_two += vector_two;
   vector_result_two += vector_three;
   vector_result_two += vector_one;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -106,9 +104,9 @@ TEST_F(VectorAssociativity, isAdditionAssociative)
  */
 TEST_F(VectorAssociativity, isAutoAdditionAssociative)
 {
-  vector_result_one = (vector_one+ vector_two) + vector_three;
-  vector_result_two = vector_one + (vector_two+vector_three);
-  for (int i = 0;i < dimension;i++) {
+  vector_result_one = (vector_one + vector_two) + vector_three;
+  vector_result_two = vector_one + (vector_two + vector_three);
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -125,7 +123,7 @@ TEST_F(VectorAssociativity, isMultiplicationAssociative)
   vector_result_two *= vector_two;
   vector_result_two *= vector_three;
   vector_result_two *= vector_one;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -138,7 +136,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
 {
   vector_result_one = (vector_one * vector_two) * vector_three;
   vector_result_two = vector_one * (vector_two * vector_three);
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -150,8 +148,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
  * This tests will check if Commutativity holds in multiplication and addition.
  * Also checks that substraction is anticommutative.
  */
-struct VectorCommutativity : public ::testing::Test
-{
+struct VectorCommutativity : public ::testing::Test {
   const int dimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
@@ -160,8 +157,8 @@ struct VectorCommutativity : public ::testing::Test
   void SetUp()
   {
     std::srand(time(0));
-    vector_one = Vector<int, 3>(createRandomArrayForProperties());
-    vector_two = Vector<int, 3>(createRandomArrayForProperties());
+    vector_one        = Vector<int, 3>(createRandomArrayForProperties());
+    vector_two        = Vector<int, 3>(createRandomArrayForProperties());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
@@ -177,7 +174,7 @@ TEST_F(VectorCommutativity, isAdditionCommutative)
   vector_result_one += vector_two;
   vector_result_two += vector_two;
   vector_result_two += vector_one;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -190,8 +187,8 @@ TEST_F(VectorCommutativity, isAutoAdditionCommutative)
 {
   vector_result_one = vector_two + vector_one;
   vector_result_two = vector_one + vector_two;
-  for (int i = 0;i < dimension;i++) {
-  ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
 
@@ -205,8 +202,8 @@ TEST_F(VectorCommutativity, isMultiplicationCommutative)
   vector_result_one *= vector_one;
   vector_result_two *= vector_one;
   vector_result_two *= vector_two;
-  for (int i = 0;i < dimension;i++) {
-  ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
 
@@ -218,8 +215,8 @@ TEST_F(VectorCommutativity, isAutoMultiplicationCommutative)
 {
   vector_result_one = vector_two * vector_one;
   vector_result_two = vector_one * vector_two;
-  for (int i = 0;i < dimension;i++) {
-  ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
 
@@ -233,7 +230,7 @@ TEST_F(VectorCommutativity, isSubstractionNotCommutative)
   vector_result_one -= vector_two;
   vector_result_two += vector_two;
   vector_result_two -= vector_one;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_result_two[i], -vector_result_one[i]);
   }
 }
@@ -246,8 +243,8 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
 {
   vector_result_one = vector_two - vector_one;
   vector_result_two = vector_one - vector_two;
-  for (int i = 0;i < dimension;i++) {
-  ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
 
@@ -256,8 +253,7 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
  * some porperties with the identity vectors (0,0,0) or (1,1,1) hold for the operations defined for
  * vectors
  */
-struct VectorIdentityOperations : public ::testing::Test
-{
+struct VectorIdentityOperations : public ::testing::Test {
   std::array<int, 3> values;
   const int dimension = 3;
   Vector<int, 3> identity_vector;
@@ -265,9 +261,9 @@ struct VectorIdentityOperations : public ::testing::Test
   void SetUp()
   {
     std::srand(time(0));
-    values = createRandomArrayForProperties();
+    values          = createRandomArrayForProperties();
     identity_vector = Vector<int, 3>();
-    vector = Vector<int, 3>(values);
+    vector          = Vector<int, 3>(values);
   }
 };
 
@@ -277,8 +273,8 @@ struct VectorIdentityOperations : public ::testing::Test
  */
 TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
 {
-  vector+=identity_vector;
-  for (int i = 0;i < dimension;i++) {
+  vector += identity_vector;
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], values[i]);
   }
 }
@@ -290,7 +286,7 @@ TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
 TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
 {
   Vector<int, 3> output = vector + identity_vector;
-  for (int i = 0; i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], output[i]);
   }
 }
@@ -304,11 +300,11 @@ TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
 TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
 {
   vector -= identity_vector;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], values[i]);
   }
   vector -= vector;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
@@ -321,11 +317,11 @@ TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
 TEST_F(VectorIdentityOperations, handlesAutoSubstractionIdentities)
 {
   Vector<int, 3> output = vector - identity_vector;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], values[i]);
   }
   output = vector - vector;
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], identity_vector[i]);
   }
 }
@@ -358,13 +354,13 @@ TEST_F(VectorIdentityOperations, handlesMultiplicationIdentities)
  */
 TEST_F(VectorIdentityOperations, handlesAutoMultiplicationIdentities)
 {
-  identity_vector = Vector<int, 3>(1);
+  identity_vector       = Vector<int, 3>(1);
   Vector<int, 3> output = vector * identity_vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], vector[i]);
   }
   identity_vector = Vector<int, 3>();
-  output = vector * identity_vector;
+  output          = vector * identity_vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], 0);
   }
@@ -398,17 +394,17 @@ TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
  */
 TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
 {
-  vector = Vector<int, 3>(RandomNonZeroArrayForProperties());
-  Vector<int, 3> output =  identity_vector / vector;
+  vector                = Vector<int, 3>(RandomNonZeroArrayForProperties());
+  Vector<int, 3> output = identity_vector / vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], identity_vector[i]);
   }
   identity_vector = Vector<int, 3>(1);
-  output =  vector/vector;
+  output          = vector / vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(output[i], identity_vector[i]);
   }
-  output =  vector/identity_vector;
+  output = vector / identity_vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], output[i]);
   }
@@ -434,9 +430,9 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
-  std::array<int, 3>values = RandomNonZeroArrayForProperties();
-  vector = Vector<int, 3>(values);
-  vector /=  identity_vector;
+  std::array<int, 3> values = RandomNonZeroArrayForProperties();
+  vector                    = Vector<int, 3>(values);
+  vector /= identity_vector;
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], values[i]);
   }
@@ -452,8 +448,8 @@ TEST_F(VectorIdentityOperations, handlesSqrtIdentities)
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
-  identity_vector = Vector <int, 3>(1);
-  vector = identity_vector.sqrt();
+  identity_vector = Vector<int, 3>(1);
+  vector          = identity_vector.sqrt();
   for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
@@ -468,7 +464,9 @@ TEST_F(VectorIdentityOperations, handlesNormIdentities)
   double norm = identity_vector.norm();
   ASSERT_EQ(norm, 0);
   identity_vector = Vector<int, 3>(1);
-  norm = identity_vector.norm();
+  norm            = identity_vector.norm();
   ASSERT_EQ(norm, std::sqrt(3));
 }
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped

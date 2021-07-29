@@ -21,22 +21,22 @@
 #ifndef TELEMETRY_RECVLOOP_HPP_
 #define TELEMETRY_RECVLOOP_HPP_
 
-#include "telemetry/main.hpp"
 #include "data/data.hpp"
+#include "telemetry/main.hpp"
 #include "utils/concurrent/thread.hpp"
 
 namespace hyped {
 
 namespace telemetry {
 
-class RecvLoop: public Thread {
-  public:
-    explicit RecvLoop(Logger &log, data::Data& data, Main* main_pointer);
-    void run() override;
+class RecvLoop : public Thread {
+ public:
+  explicit RecvLoop(Logger &log, data::Data &data, Main *main_pointer);
+  void run() override;
 
-  private:
-    Main& main_ref_;
-    data::Data& data_;
+ private:
+  Main &main_ref_;
+  data::Data &data_;
 };
 
 }  // namespace telemetry

@@ -24,8 +24,8 @@
 #include <cstdint>
 
 #include "data/data.hpp"
-#include "utils/logger.hpp"
 #include "sensors/interface.hpp"
+#include "utils/logger.hpp"
 
 namespace hyped {
 
@@ -33,7 +33,7 @@ using utils::Logger;
 
 namespace sensors {
 
-class Temperature: public TemperatureInterface {
+class Temperature : public TemperatureInterface {
  public:
   /**
    * @brief Construct a new Temperature object
@@ -41,7 +41,7 @@ class Temperature: public TemperatureInterface {
    * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Temperature(utils::Logger& log, int pin);
+  Temperature(utils::Logger &log, int pin);
   ~Temperature() {}
 
   /**
@@ -69,7 +69,7 @@ class Temperature: public TemperatureInterface {
    * @brief ADC pin
    */
   int pin_;
-  utils::Logger& log_;
+  utils::Logger &log_;
 
   /**
    * @brief int from data structs
@@ -77,6 +77,7 @@ class Temperature: public TemperatureInterface {
   data::TemperatureData temp_;
 };
 
-}}
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_TEMPERATURE_HPP_

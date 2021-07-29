@@ -16,6 +16,8 @@
  *    limitations under the License.
  */
 
+#include "state_machine/state.hpp"
+
 #include <fcntl.h>
 #include <stdlib.h>
 
@@ -26,7 +28,6 @@
 #include "data/data.hpp"
 #include "gtest/gtest.h"
 #include "randomiser.hpp"
-#include "state_machine/state.hpp"
 #include "state_machine/transitions.hpp"
 #include "utils/logger.hpp"
 
@@ -125,15 +126,9 @@ struct StateTest : public ::testing::Test {
   }
 
  protected:
-  void SetUp()
-  {
-    disableOutput();
-  }
+  void SetUp() { disableOutput(); }
 
-  void TearDown()
-  {
-    enableOutput();
-  }
+  void TearDown() { enableOutput(); }
 };
 
 //---------------------------------------------------------------------------

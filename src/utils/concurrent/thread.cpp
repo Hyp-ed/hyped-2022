@@ -30,38 +30,32 @@ namespace concurrent {
 
 namespace {
 
-void thread_entry_point(Thread* this_)
+void thread_entry_point(Thread *this_)
 {
   this_->run();
 }
 
-}   // namespace ::
+}  // namespace
 
-Thread::Thread(Logger& log)
-    : id_(-1),
-      thread_(0),
-      log_(log)
-{ /* EMPTY */ }
+Thread::Thread(Logger &log) : id_(-1), thread_(0), log_(log)
+{ /* EMPTY */
+}
 
-Thread::Thread(uint8_t id)
-    : id_(id),
-      thread_(0),
-      log_(System::getLogger())
-{ /* EMPTY */ }
+Thread::Thread(uint8_t id) : id_(id), thread_(0), log_(System::getLogger())
+{ /* EMPTY */
+}
 
-Thread::Thread()
-    : id_(-1),
-      thread_(0),
-      log_(System::getLogger())
-{ /* EMPTY */ }
+Thread::Thread() : id_(-1), thread_(0), log_(System::getLogger())
+{ /* EMPTY */
+}
 
-Thread::Thread(uint8_t id, Logger& log)
-    : id_(id),
-      thread_(0),
-      log_(log)
-{ /* EMPTY */ }
+Thread::Thread(uint8_t id, Logger &log) : id_(id), thread_(0), log_(log)
+{ /* EMPTY */
+}
 
-Thread::~Thread() { /* EMPTY */ }
+Thread::~Thread()
+{ /* EMPTY */
+}
 
 void Thread::start()
 {
@@ -85,7 +79,7 @@ void Thread::yield()
 
 void Thread::sleep(uint32_t ms)
 {
-  std::this_thread::sleep_for(std::chrono::microseconds(ms*1000));
+  std::this_thread::sleep_for(std::chrono::microseconds(ms * 1000));
 }
 
 void BusyThread::run()
@@ -93,7 +87,7 @@ void BusyThread::run()
   uint64_t i = 0;
   while (running_) {
     i++;
-    if (i%10000 == 0) {
+    if (i % 10000 == 0) {
       // log_.INFO("BUSY", "output\n");
     }
   }
@@ -104,5 +98,6 @@ BusyThread::~BusyThread()
   running_ = false;
 }
 
-}}}   // namespace hyped::utils::concurrent
-
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped

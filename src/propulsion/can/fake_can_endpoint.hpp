@@ -38,6 +38,7 @@ class FakeCanEndpoint : public Thread {
  private:
   CanProccesor *sender_;
 };
-}}  // namespace hyped::motor_control
+}  // namespace motor_control
+}  // namespace hyped
 
 #endif  // PROPULSION_CAN_FAKE_CAN_ENDPOINT_HPP_

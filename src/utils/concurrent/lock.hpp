@@ -21,12 +21,10 @@
 #ifndef UTILS_CONCURRENT_LOCK_HPP_
 #define UTILS_CONCURRENT_LOCK_HPP_
 
-
 #include <mutex>
 // lock, try_lock, unlock in mutex, unique_lock
 
 // condition_variable[_any] -> notify_[one/all], wait
-
 
 namespace hyped {
 namespace utils {
@@ -61,25 +59,20 @@ class Lock {
   void unlock();
 
  private:
-  std::mutex* mutex_;
+  std::mutex *mutex_;
 };
 
 class ScopedLock {
  public:
-  explicit ScopedLock(Lock* lock)
-    : lock_(lock)
-  {
-    lock_->lock();
-  }
-  ~ScopedLock()
-  {
-    lock_->unlock();
-  }
+  explicit ScopedLock(Lock *lock) : lock_(lock) { lock_->lock(); }
+  ~ScopedLock() { lock_->unlock(); }
+
  private:
-  Lock* lock_;
+  Lock *lock_;
 };
 
-}}}   // namespace hyped::utils::concurrent
-
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_CONCURRENT_LOCK_HPP_

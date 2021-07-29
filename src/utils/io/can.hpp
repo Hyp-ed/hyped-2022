@@ -43,23 +43,23 @@ namespace can {
 
 struct Frame {
   static constexpr uint32_t kExtendedMask = 0x80000000U;
-  uint32_t  id;
-  bool      extended;
-  uint8_t   len;
-  uint8_t   data[8];
+  uint32_t id;
+  bool extended;
+  uint8_t len;
+  uint8_t data[8];
 };
 
-}   // namespace can
+}  // namespace can
 
 class CanProccesor {
  public:
- /**
-  * @brief To be called by CAN receive side. Object processes received CAN
-  * message and updates its local data
-  *
-  * @param message received CAN message to be processed
-  */
-  virtual void processNewData(can::Frame& message) = 0;
+  /**
+   * @brief To be called by CAN receive side. Object processes received CAN
+   * message and updates its local data
+   *
+   * @param message received CAN message to be processed
+   */
+  virtual void processNewData(can::Frame &message) = 0;
 
   /**
    * @brief To be called by CAN receive side to find owner of receinve can::Frame
@@ -80,7 +80,7 @@ class CanProccesor {
  */
 class Can : public concurrent::Thread {
  public:
-  static Can& getInstance()
+  static Can &getInstance()
   {
     static Can can;
     return can;
@@ -92,12 +92,12 @@ class Can : public concurrent::Thread {
    * @param  frame data to be sent
    * @return 1     iff data sent successfully
    */
-  int send(const can::Frame& frame);
+  int send(const can::Frame &frame);
 
   /**
    * @brief Called by any Can-enabled device implementing CanProcessor interface
    */
-  void registerProcessor(CanProccesor* processor);
+  void registerProcessor(CanProccesor *processor);
 
   /**
    * @brief To be called for starting the receive thread
@@ -109,7 +109,7 @@ class Can : public concurrent::Thread {
    * @param  frame output pointer to data to be filled
    * @return 1     iff data received successfully
    */
-  int receive(can::Frame* frame);
+  int receive(can::Frame *frame);
 
   /**
    * @brief Process received message. Check whom does it belong to.
@@ -117,7 +117,7 @@ class Can : public concurrent::Thread {
    *
    * @param frame received CAN message
    */
-  void processNewData(can::Frame* frame);
+  void processNewData(can::Frame *frame);
 
   /**
    * Blocking read and demultiplex messages based on configured id spaces
@@ -128,12 +128,14 @@ class Can : public concurrent::Thread {
   ~Can();
 
  private:
-  int   socket_;
-  bool  running_;
-  std::vector<CanProccesor*>  processors_;
-  concurrent::Lock            socket_lock_;
+  int socket_;
+  bool running_;
+  std::vector<CanProccesor *> processors_;
+  concurrent::Lock socket_lock_;
 };
 
-}}}   // namespace hyped::utils::io
+}  // namespace io
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_IO_CAN_HPP_

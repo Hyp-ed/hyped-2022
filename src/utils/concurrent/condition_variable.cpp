@@ -46,10 +46,11 @@ void ConditionVariable::notifyAll()
   cond_var_->notify_all();
 }
 
-void ConditionVariable::wait(Lock* lock)
+void ConditionVariable::wait(Lock *lock)
 {
   cond_var_->wait(*lock->mutex_);
 }
 
-}}}   // hyped::utils::concurrent
-
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped

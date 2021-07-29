@@ -49,4 +49,6 @@ void Lock::unlock()
   return mutex_->unlock();
 }
 
-}}}   // namespace hyped::utils::concurrent
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped

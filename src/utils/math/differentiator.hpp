@@ -28,7 +28,7 @@ namespace math {
 
 using hyped::data::DataPoint;
 
-template <typename T>
+template<typename T>
 class Differentiator {
  public:
   Differentiator();
@@ -46,26 +46,31 @@ class Differentiator {
   bool initialised_;
 };
 
-template <typename T>
-Differentiator<T>::Differentiator() : prev_point_(0, T(0)), initialised_(false)
-{}
+template<typename T>
+Differentiator<T>::Differentiator() : prev_point_(0, T(0)),
+                                      initialised_(false)
+{
+}
 
-template <typename T>
+template<typename T>
 DataPoint<T> Differentiator<T>::update(DataPoint<T> point)
 {
   if (!initialised_) {
-    prev_point_ = point;
+    prev_point_  = point;
     initialised_ = true;
     return DataPoint<T>(point.timestamp, T(0));
   }
   // Assume timestamp in microseconds and convert to seconds
-  T gradient = (point.value - prev_point_.value) / ((point.timestamp - prev_point_.timestamp)/1e6);
+  T gradient
+    = (point.value - prev_point_.value) / ((point.timestamp - prev_point_.timestamp) / 1e6);
 
   prev_point_ = point;
 
   return DataPoint<T>(point.timestamp, gradient);
 }
 
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_MATH_DIFFERENTIATOR_HPP_

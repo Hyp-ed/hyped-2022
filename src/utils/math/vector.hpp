@@ -18,10 +18,9 @@
  *    limitations under the License.
  */
 
-#include <initializer_list>
-
 #include <array>
 #include <cmath>
+#include <initializer_list>
 
 #ifndef UTILS_MATH_VECTOR_HPP_
 #define UTILS_MATH_VECTOR_HPP_
@@ -30,10 +29,10 @@ namespace hyped {
 namespace utils {
 namespace math {
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 class Vector {
  public:
-  static_assert(dimension > 0,  "Dimension must be greater than zero.");
+  static_assert(dimension > 0, "Dimension must be greater than zero.");
 
   /**
    * @brief    Constructors for the class for a zero vector.
@@ -44,46 +43,46 @@ class Vector {
   /**
    * @brief    Constructors for the class for a particular vector.
    */
-  Vector(const std::array<T, dimension>& vector);
+  Vector(const std::array<T, dimension> &vector);
   explicit Vector(const std::initializer_list<T> elements);
 
   /**
    * @brief    Conversion from one vector type to another.
    */
-  template <typename U>
-  Vector(const Vector<U, dimension>& rhs);
+  template<typename U>
+  Vector(const Vector<U, dimension> &rhs);
 
   /**
    * @brief    For assigning values to entries in a vector.
    */
-  T& operator[] (int index);
+  T &operator[](int index);
 
   /**
    * @brief    For accessing entries in the vector.
    */
-  T operator[] (int index) const;
+  T operator[](int index) const;
 
   Vector<T, dimension> operator-() const;
-  Vector<T, dimension>& operator+=(const Vector<T, dimension>& rhs);
-  Vector<T, dimension>& operator-=(const Vector<T, dimension>& rhs);
+  Vector<T, dimension> &operator+=(const Vector<T, dimension> &rhs);
+  Vector<T, dimension> &operator-=(const Vector<T, dimension> &rhs);
 
   /**
    * @brief    Addition or subtraction of every element by a constant.
    */
-  Vector<T, dimension>& operator+=(const T rhs);
-  Vector<T, dimension>& operator-=(const T rhs);
+  Vector<T, dimension> &operator+=(const T rhs);
+  Vector<T, dimension> &operator-=(const T rhs);
 
   /**
    * @brief    Scalar multiplication/division of vectors.
    */
-  Vector<T, dimension>& operator*=(const T rhs);
-  Vector<T, dimension>& operator/=(const T rhs);
+  Vector<T, dimension> &operator*=(const T rhs);
+  Vector<T, dimension> &operator/=(const T rhs);
 
   /**
    * @brief    Element-wise multiplication and division of vectors.
    */
-  Vector<T, dimension>& operator*=(const Vector<T, dimension>& rhs);
-  Vector<T, dimension>& operator/=(const Vector<T, dimension>& rhs);
+  Vector<T, dimension> &operator*=(const Vector<T, dimension> &rhs);
+  Vector<T, dimension> &operator/=(const Vector<T, dimension> &rhs);
 
   /**
    * @brief    Calculates the magnitude of a vector.
@@ -106,134 +105,134 @@ class Vector {
   std::array<T, dimension> elements_;
 };
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 Vector<T, dimension>::Vector()
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] = 0;
 }
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 Vector<T, dimension>::Vector(const T element)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] = element;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>::Vector(const std::array<T, dimension>& vector)
+template<typename T, int dimension>
+Vector<T, dimension>::Vector(const std::array<T, dimension> &vector)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] = vector[i];
 }
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 Vector<T, dimension>::Vector(const std::initializer_list<T> elements)
 {
   for (int i = 0; i < dimension; i++)
-    elements_[i] = *(elements.begin()+i);
+    elements_[i] = *(elements.begin() + i);
 }
 
-template <typename T, int dimension>
-template <typename U>
-Vector<T, dimension>::Vector(const Vector<U, dimension>& rhs)
+template<typename T, int dimension>
+template<typename U>
+Vector<T, dimension>::Vector(const Vector<U, dimension> &rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] = T(rhs[i]);
 }
 
-template <typename T, int dimension>
-T& Vector<T, dimension>::operator[](int index)
+template<typename T, int dimension>
+T &Vector<T, dimension>::operator[](int index)
 {
   return elements_[index];
 }
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 T Vector<T, dimension>::operator[](int index) const
 {
   return elements_[index];
 }
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 Vector<T, dimension> Vector<T, dimension>::operator-() const
 {
   return (Vector<T, dimension>() - *this);
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator+=(const Vector<T, dimension>& rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator+=(const Vector<T, dimension> &rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] += rhs[i];
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator-=(const Vector<T, dimension>& rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator-=(const Vector<T, dimension> &rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] -= rhs[i];
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator+=(const T rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator+=(const T rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] += rhs;
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator-=(const T rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator-=(const T rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] -= rhs;
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator*=(const T rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator*=(const T rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] *= rhs;
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator*=(const Vector<T, dimension>& rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator*=(const Vector<T, dimension> &rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] *= rhs[i];
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator/=(const T rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator/=(const T rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] /= rhs;
   return *this;
 }
 
-template <typename T, int dimension>
-Vector<T, dimension>& Vector<T, dimension>::operator/=(const Vector<T, dimension>& rhs)
+template<typename T, int dimension>
+Vector<T, dimension> &Vector<T, dimension>::operator/=(const Vector<T, dimension> &rhs)
 {
   for (int i = 0; i < dimension; i++)
     elements_[i] /= rhs[i];
   return *this;
 }
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 double Vector<T, dimension>::norm()
 {
   double ans = 0;
   for (int i = 0; i < dimension; i++)
-    ans += elements_[i]*elements_[i];
+    ans += elements_[i] * elements_[i];
   return std::sqrt(ans);
 }
 
-template <typename T, int dimension>
+template<typename T, int dimension>
 Vector<T, dimension> Vector<T, dimension>::sqrt()
 {
   auto ans = *this;
@@ -242,8 +241,7 @@ Vector<T, dimension> Vector<T, dimension>::sqrt()
   return ans;
 }
 
-
-template <typename T, int dimension>
+template<typename T, int dimension>
 Vector<double, dimension> Vector<T, dimension>::toUnitVector()
 {
   Vector<double, dimension> ans(*this);
@@ -251,114 +249,115 @@ Vector<double, dimension> Vector<T, dimension>::toUnitVector()
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator+(const Vector<T1, dimension>& lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs[0]+rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator+(const Vector<T1, dimension> &lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs[0] + rhs[0]), dimension>
 {
-  Vector<decltype(lhs[0]+rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs[0] + rhs[0]), dimension> ans(lhs);
   ans += rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator+(const Vector<T1, dimension>& lhs,  const T2 rhs)
-    -> Vector<decltype(lhs[0]+rhs), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator+(const Vector<T1, dimension> &lhs, const T2 rhs)
+  -> Vector<decltype(lhs[0] + rhs), dimension>
 {
-  Vector<decltype(lhs[0]+rhs), dimension> ans(lhs);
+  Vector<decltype(lhs[0] + rhs), dimension> ans(lhs);
   ans += rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator+(const T1 lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs+rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator+(const T1 lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs + rhs[0]), dimension>
 {
-  Vector<decltype(lhs+rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs + rhs[0]), dimension> ans(lhs);
   ans += rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator-(const Vector<T1, dimension>& lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs[0]-rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator-(const Vector<T1, dimension> &lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs[0] - rhs[0]), dimension>
 {
-  Vector<decltype(lhs[0]-rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs[0] - rhs[0]), dimension> ans(lhs);
   ans -= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator-(const Vector<T1, dimension>& lhs,  const T2 rhs)
-    -> Vector<decltype(lhs[0]-rhs), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator-(const Vector<T1, dimension> &lhs, const T2 rhs)
+  -> Vector<decltype(lhs[0] - rhs), dimension>
 {
-  Vector<decltype(lhs[0]-rhs), dimension> ans(lhs);
+  Vector<decltype(lhs[0] - rhs), dimension> ans(lhs);
   ans -= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator-(const T1 lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs-rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator-(const T1 lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs - rhs[0]), dimension>
 {
-  Vector<decltype(lhs-rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs - rhs[0]), dimension> ans(lhs);
   ans -= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator*(const Vector<T1, dimension>& lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs[0]*rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator*(const Vector<T1, dimension> &lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs[0] * rhs[0]), dimension>
 {
-  Vector<decltype(lhs[0]*rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs[0] * rhs[0]), dimension> ans(lhs);
   ans *= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator*(const Vector<T1, dimension>& lhs,  const T2 rhs)
-    -> Vector<decltype(lhs[0]*rhs), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator*(const Vector<T1, dimension> &lhs, const T2 rhs)
+  -> Vector<decltype(lhs[0] * rhs), dimension>
 {
-  Vector<decltype(lhs[0]*rhs), dimension> ans(lhs);
+  Vector<decltype(lhs[0] * rhs), dimension> ans(lhs);
   ans *= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator*(const T1 lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs*rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator*(const T1 lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs * rhs[0]), dimension>
 {
-  Vector<decltype(lhs*rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs * rhs[0]), dimension> ans(lhs);
   ans *= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator/(const Vector<T1, dimension>& lhs,  const T2 rhs)
-    -> Vector<decltype(lhs[0]*rhs), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator/(const Vector<T1, dimension> &lhs, const T2 rhs)
+  -> Vector<decltype(lhs[0] * rhs), dimension>
 {
-  Vector<decltype(lhs[0]/rhs), dimension> ans(lhs);
+  Vector<decltype(lhs[0] / rhs), dimension> ans(lhs);
   ans /= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-auto operator/(const Vector<T1, dimension>& lhs,  const Vector<T2, dimension>& rhs)
-    -> Vector<decltype(lhs[0]*rhs[0]), dimension>
+template<typename T1, typename T2, int dimension>
+auto operator/(const Vector<T1, dimension> &lhs, const Vector<T2, dimension> &rhs)
+  -> Vector<decltype(lhs[0] * rhs[0]), dimension>
 {
-  Vector<decltype(lhs[0]/rhs[0]), dimension> ans(lhs);
+  Vector<decltype(lhs[0] / rhs[0]), dimension> ans(lhs);
   ans /= rhs;
   return ans;
 }
 
-template <typename T1,  typename T2,  int dimension>
-bool operator==(const Vector<T1, dimension>& lhs,  const Vector<T2, dimension>& rhs)
+template<typename T1, typename T2, int dimension>
+bool operator==(const Vector<T1, dimension> &lhs, const Vector<T2, dimension> &rhs)
 {
   for (int i = 0; i < dimension; i++)
-    if (lhs[i] != rhs[i])
-      return false;
+    if (lhs[i] != rhs[i]) return false;
   return true;
 }
 
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_MATH_VECTOR_HPP_

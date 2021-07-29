@@ -21,7 +21,7 @@
 #ifndef UTILS_CONCURRENT_CONDITION_VARIABLE_HPP_
 #define UTILS_CONCURRENT_CONDITION_VARIABLE_HPP_
 
-#define CV  condition_variable_any
+#define CV condition_variable_any
 
 #include <condition_variable>
 
@@ -54,12 +54,14 @@ class ConditionVariable {
    *                   upon calling this method and reacquired just before returning.
    *                   Note, the lock must be acquired by the caller before calling wait().
    */
-  void wait(Lock* lock);
+  void wait(Lock *lock);
 
  private:
-  std::CV* cond_var_;
+  std::CV *cond_var_;
 };
 
-}}}   // namespace hyped::utils::concurrent
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_CONCURRENT_CONDITION_VARIABLE_HPP_

@@ -18,25 +18,24 @@
 
 #include "propulsion/can/can_sender.hpp"
 
-namespace hyped
-{
-namespace motor_control
-{
-CanSender::CanSender(Logger &log, uint8_t node_id) : log_(log),
-                                                      node_id_(node_id),
-                                                      can_(Can::getInstance()),
-                                                      messageTimestamp(0)
+namespace hyped {
+namespace motor_control {
+CanSender::CanSender(Logger &log, uint8_t node_id)
+    : log_(log),
+      node_id_(node_id),
+      can_(Can::getInstance()),
+      messageTimestamp(0)
 {
   isSending = false;
   can_.start();
 }
 
-CanSender::CanSender(ControllerInterface* controller, uint8_t node_id, Logger& log)
-  : log_(log),
-    node_id_(node_id),
-    can_(Can::getInstance()),
-    controller_(controller),
-    messageTimestamp(0)
+CanSender::CanSender(ControllerInterface *controller, uint8_t node_id, Logger &log)
+    : log_(log),
+      node_id_(node_id),
+      can_(Can::getInstance()),
+      controller_(controller),
+      messageTimestamp(0)
 {
   isSending = false;
   can_.start();
@@ -86,9 +85,7 @@ void CanSender::processNewData(utils::io::can::Frame &message)
 bool CanSender::hasId(uint32_t id, bool extended)
 {
   for (uint32_t cobId : canIds) {
-    if (cobId + node_id_ == id) {
-      return true;
-    }
+    if (cobId + node_id_ == id) { return true; }
   }
 
   return false;

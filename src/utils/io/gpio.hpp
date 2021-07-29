@@ -16,11 +16,10 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 #ifndef UTILS_IO_GPIO_HPP_
 #define UTILS_IO_GPIO_HPP_
-
 
 #include <cstdint>
 #include <vector>
@@ -35,34 +34,31 @@ namespace io {
 
 namespace gpio {
 constexpr uint8_t kBankNum = 4;
-enum Direction {
-  kIn   = 0,
-  kOut  = 1
-};
-}   // namespace gpio
+enum Direction { kIn = 0, kOut = 1 };
+}  // namespace gpio
 
 class GPIO {
  public:
-    /**
-     * @brief to be called on when logger is not initialized
-     * will call on following constructor after initializing logger with getLogger()
-     *
-     * @param pin address on BBB
-     * @param direction to write into file system of gpio pin
-     */
+  /**
+   * @brief to be called on when logger is not initialized
+   * will call on following constructor after initializing logger with getLogger()
+   *
+   * @param pin address on BBB
+   * @param direction to write into file system of gpio pin
+   */
   GPIO(uint32_t pin, gpio::Direction direction);
-    /**
-     * @brief overload constructor with logger initialized for debugging purposes
-     *
-     * @param pin address on BBB
-     * @param direction to write into file system of gpio pin
-     * @param log
-     */
-  GPIO(uint32_t pin, gpio::Direction direction, Logger& log);
+  /**
+   * @brief overload constructor with logger initialized for debugging purposes
+   *
+   * @param pin address on BBB
+   * @param direction to write into file system of gpio pin
+   * @param log
+   */
+  GPIO(uint32_t pin, gpio::Direction direction, Logger &log);
 
-  void    set();     // set high
-  void    clear();   // set low
-  uint8_t read();    // read pin value
+  void set();      // set high
+  void clear();    // set low
+  uint8_t read();  // read pin value
 
   /**
    * @brief Block caller until value of gpio pin has changed
@@ -107,7 +103,7 @@ class GPIO {
    * @brief arary of size kBankNum, used in initialize() and attatchGPIO()
    *
    */
-  static void* base_mapping_[gpio::kBankNum];
+  static void *base_mapping_[gpio::kBankNum];
 
   /**
    * @brief vector of currently used (exported) pins
@@ -130,19 +126,21 @@ class GPIO {
    */
   void setupWait();
 
-  uint32_t        pin_;
+  uint32_t pin_;
   gpio::Direction direction_;
-  Logger&         log_;
+  Logger &log_;
 
-  volatile uint32_t* set_;        // set register
-  volatile uint32_t* clear_;      // clear register
-  volatile uint32_t* data_;       // data register
-  uint32_t           pin_mask_;   // mask for register access to this pin
-  int                fd_;         // file pointer to /sys/class/gpio/gpioXX/value
+  volatile uint32_t *set_;    // set register
+  volatile uint32_t *clear_;  // clear register
+  volatile uint32_t *data_;   // data register
+  uint32_t pin_mask_;         // mask for register access to this pin
+  int fd_;                    // file pointer to /sys/class/gpio/gpioXX/value
 
   NO_COPY_ASSIGN(GPIO);
 };
 
-}}}   // namespace hyped::utils::io
+}  // namespace io
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_IO_GPIO_HPP_

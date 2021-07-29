@@ -26,7 +26,6 @@
 #ifndef UTILS_IO_SPI_HPP_
 #define UTILS_IO_SPI_HPP_
 
-
 #include "utils/logger.hpp"
 #include "utils/utils.hpp"
 
@@ -40,14 +39,9 @@ struct SPI_CH;
 
 class SPI {
  public:
-  static SPI& getInstance();
+  static SPI &getInstance();
 
-  enum class Clock {
-    k1MHz,
-    k4MHz,
-    k16MHz,
-    k20MHz
-  };
+  enum class Clock { k1MHz, k4MHz, k16MHz, k20MHz };
 
   void setClock(Clock clk);
 
@@ -57,7 +51,7 @@ class SPI {
    * @param rx  - pointer to head of read  buffer
    * @param len - number of BYTES in each buffer
    */
-  void transfer(uint8_t* tx, uint8_t* rx, uint16_t len);
+  void transfer(uint8_t *tx, uint8_t *rx, uint16_t len);
 
   /**
    * @brief Get data from sensor, starting at some address.
@@ -65,7 +59,7 @@ class SPI {
    * @param rx    - pointer to head of read buffer
    * @param len   - number of BYTES to be read, i.e. size of the read buffer
    */
-  void read(uint8_t addr, uint8_t* rx, uint16_t len);
+  void read(uint8_t addr, uint8_t *rx, uint16_t len);
 
   /**
    * @brief Write data to sensor, starting at some address.
@@ -73,10 +67,10 @@ class SPI {
    * @param tx    - pointer to head of write buffer
    * @param len   - number of BYTES to be written, i.e. size of the write buffer
    */
-  void write(uint8_t addr, uint8_t* tx, uint16_t len);
+  void write(uint8_t addr, uint8_t *tx, uint16_t len);
 
  private:
-  explicit SPI(Logger& log);
+  explicit SPI(Logger &log);
   ~SPI();
   /**
    * @brief Fill in base_mapping_ with pointers to mmap-ed /dev/spidev1.0
@@ -85,16 +79,16 @@ class SPI {
   bool initialise();
 
  private:
-  int     spi_fd_;
-  SPI_HW* hw_;
-  SPI_CH* ch_;
-  Logger& log_;
+  int spi_fd_;
+  SPI_HW *hw_;
+  SPI_CH *ch_;
+  Logger &log_;
 
   NO_COPY_ASSIGN(SPI);
 };
 
-
-}}}   // namespace hyped::utils::io
-
+}  // namespace io
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_IO_SPI_HPP_

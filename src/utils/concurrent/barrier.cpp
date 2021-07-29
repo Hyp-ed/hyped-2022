@@ -20,17 +20,17 @@
 
 #include "utils/concurrent/barrier.hpp"
 
-
 namespace hyped {
 namespace utils {
 namespace concurrent {
 
-Barrier::Barrier(uint8_t required)
-    : required_(required),
-      calls_(0)
-{ /* EMPTY */ }
+Barrier::Barrier(uint8_t required) : required_(required), calls_(0)
+{ /* EMPTY */
+}
 
-Barrier::~Barrier() { /* EMPTY */ }
+Barrier::~Barrier()
+{ /* EMPTY */
+}
 
 void Barrier::wait()
 {
@@ -45,5 +45,6 @@ void Barrier::wait()
   }
 }
 
-}}}   // namespace hyped::utils::concurrent
-
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped

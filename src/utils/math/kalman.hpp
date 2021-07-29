@@ -33,7 +33,7 @@ namespace math {
  *
  * @param[in] T    This is the type of the data value that it should filter.
  */
-template <typename T>
+template<typename T>
 class Kalman {
  public:
   /**
@@ -66,7 +66,7 @@ class Kalman {
    *
    * @return    Returns the filtered value
    */
-  T filter(const T& input);
+  T filter(const T &input);
 
   /**
    * @brief    Get the Filtered object
@@ -83,25 +83,27 @@ class Kalman {
   T measurement_noise_covariance_;
 };
 
-template <typename T>
+template<typename T>
 Kalman<T>::Kalman()
     : kalman_gain_(),
       process_noise_(),
       filtered_value_(),
       estimation_error_covariance_(),
       measurement_noise_covariance_()
-{}
+{
+}
 
-template <typename T>
+template<typename T>
 Kalman<T>::Kalman(T input_value, T measurement_noise, T process_noise)
     : kalman_gain_(),
       process_noise_(process_noise),
       filtered_value_(input_value),
       estimation_error_covariance_(),
       measurement_noise_covariance_(measurement_noise)
-{}
+{
+}
 
-template <typename T>
+template<typename T>
 void Kalman<T>::configure(T input_value, T measurement_noise, T process_noise)
 {
   filtered_value_               = input_value;
@@ -109,24 +111,26 @@ void Kalman<T>::configure(T input_value, T measurement_noise, T process_noise)
   measurement_noise_covariance_ = measurement_noise;
 }
 
-template <typename T>
-T Kalman<T>::filter(const T& input)
+template<typename T>
+T Kalman<T>::filter(const T &input)
 {
   estimation_error_covariance_ += process_noise_;
-  kalman_gain_ = estimation_error_covariance_ /
-                (estimation_error_covariance_ + measurement_noise_covariance_);
+  kalman_gain_
+    = estimation_error_covariance_ / (estimation_error_covariance_ + measurement_noise_covariance_);
   filtered_value_ += kalman_gain_ * (input - filtered_value_);
   estimation_error_covariance_ = (1 - kalman_gain_) * estimation_error_covariance_;
 
   return filtered_value_;
 }
 
-template <typename T>
+template<typename T>
 T Kalman<T>::getFiltered()
 {
   return filtered_value_;
 }
 
-}}}  // hyped::util::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_MATH_KALMAN_HPP_

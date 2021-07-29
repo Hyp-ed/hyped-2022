@@ -16,18 +16,18 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 #include "utils/io/gpio.hpp"
 
-#include <poll.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <poll.h>
 #include <sys/mman.h>
+#include <unistd.h>
 //
-#include <iostream>
 #include <fstream>
+#include <iostream>
 //
 #include <cstdlib>
 #include <cstring>
@@ -40,42 +40,37 @@ namespace utils {
 namespace io {
 
 namespace gpio {
-constexpr const off_t bases[kBankNum] = {
-  0x44e07000,
-  0x4804c000,
-  0x481ac000,
-  0x481ae000
-};
-constexpr uint32_t kMmapSize = 0x1000;
+constexpr const off_t bases[kBankNum] = {0x44e07000, 0x4804c000, 0x481ac000, 0x481ae000};
+constexpr uint32_t kMmapSize          = 0x1000;
 
 // register offsets
 // constexpr uint32_t kOutputEnable  = 0x134;
-constexpr uint32_t kData          = 0x138;
-constexpr uint32_t kClear         = 0x190;
-constexpr uint32_t kSet           = 0x194;
+constexpr uint32_t kData  = 0x138;
+constexpr uint32_t kClear = 0x190;
+constexpr uint32_t kSet   = 0x194;
 
-#define GPIOFS 0             // used to swtich to file system method for set(), clear(), and read()
+#define GPIOFS 0  // used to swtich to file system method for set(), clear(), and read()
 
 // workaround to avoid conflict with GPIO::read()
 uint8_t readHelper(int fd)
 {
   char buf[2];
-  lseek(fd, 0, SEEK_SET);                      // reset file pointer
-  read(fd, buf, sizeof(buf));                  // actually consume new data, changes value in buffer
+  lseek(fd, 0, SEEK_SET);      // reset file pointer
+  read(fd, buf, sizeof(buf));  // actually consume new data, changes value in buffer
   return std::atoi(buf);
 }
 
 }  // namespace gpio
 
 bool GPIO::initialised_ = false;
-void* GPIO::base_mapping_[gpio::kBankNum];
-std::vector<uint32_t> GPIO::exported_pins;              // NOLINT [build/include_what_you_use]
+void *GPIO::base_mapping_[gpio::kBankNum];
+std::vector<uint32_t> GPIO::exported_pins;  // NOLINT [build/include_what_you_use]
 
-GPIO::GPIO(uint32_t pin, gpio::Direction direction)
-    : GPIO(pin, direction, System::getLogger())
-{ /* EMPTY, delegate to the other constructor */ }
+GPIO::GPIO(uint32_t pin, gpio::Direction direction) : GPIO(pin, direction, System::getLogger())
+{ /* EMPTY, delegate to the other constructor */
+}
 
-GPIO::GPIO(uint32_t pin, gpio::Direction direction, Logger& log)
+GPIO::GPIO(uint32_t pin, gpio::Direction direction, Logger &log)
     : pin_(pin),
       direction_(direction),
       log_(log),
@@ -84,7 +79,7 @@ GPIO::GPIO(uint32_t pin, gpio::Direction direction, Logger& log)
       data_(0),
       fd_(0)
 {
-  if (!initialised_)  initialise();
+  if (!initialised_) initialise();
 
   // check pin is not already allocated
   for (uint32_t pin : exported_pins) {
@@ -97,16 +92,16 @@ GPIO::GPIO(uint32_t pin, gpio::Direction direction, Logger& log)
 
   exportGPIO();
   attachGPIO();
-  if (direction == gpio::Direction::kOut) {              // sets pin value to 1 if direction is out
+  if (direction == gpio::Direction::kOut) {  // sets pin value to 1 if direction is out
     set();
   }
 }
 
 void GPIO::initialise()
 {
-  int   fd;                                              // file descriptor
+  int fd;  // file descriptor
   off_t offset;
-  void* base;
+  void *base;
   Logger log(false, -1);
 
   fd = open("/dev/mem", O_RDWR);
@@ -123,8 +118,7 @@ void GPIO::initialise()
         The length argument is kMmapSize
      * void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
      */
-    base = mmap(0, gpio::kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED,
-                fd, offset);
+    base = mmap(0, gpio::kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
     if (base == MAP_FAILED) {
       log.ERR("GPIO", "could not map bank %d", offset);
       return;
@@ -168,7 +162,7 @@ void GPIO::exportGPIO()
   log_.INFO("GPIO", "exporting %d", pin_);
 
   // let the kernel know we are using this pin
-  int      fd;
+  int fd;
   uint32_t len;
   fd = open("/sys/class/gpio/export", O_WRONLY);
   if (fd < 0) {
@@ -178,7 +172,7 @@ void GPIO::exportGPIO()
   snprintf(buf, sizeof(buf), "%d", pin_);
   len = write(fd, buf, strlen(buf) + 1);
   close(fd);
-  if (len != strlen(buf) +1) {
+  if (len != strlen(buf) + 1) {
     log_.INFO("GPIO", "could not export GPIO %d, might be already exported", pin_);
     // return;
   }
@@ -210,11 +204,11 @@ void GPIO::exportGPIO()
 
 void GPIO::attachGPIO()
 {
-  uint8_t bank;                                         // offset: GPIO_0,1,2,3
+  uint8_t bank;  // offset: GPIO_0,1,2,3
   uint8_t pin_id;
 
-  bank      = pin_/32;
-  pin_id    = pin_%32;
+  bank   = pin_ / 32;
+  pin_id = pin_ % 32;
   // corresponds to desired data of pin by indicating specific bit within byte of pin data
   pin_mask_ = 1 << pin_id;
   log_.DBG1("GPIO", "gpio %d resolved as bank,pin %d, %d", pin_, bank, pin_id);
@@ -227,12 +221,12 @@ void GPIO::attachGPIO()
   uint32_t base = reinterpret_cast<uint32_t>(base_mapping_[bank]);
 #endif
   if (direction_ == gpio::Direction::kIn) {
-    data_  = reinterpret_cast<volatile uint32_t*>(base + gpio::kData);
+    data_ = reinterpret_cast<volatile uint32_t *>(base + gpio::kData);
     setupWait();
   } else {
     setupWait();
-    set_   = reinterpret_cast<volatile uint32_t*>(base + gpio::kSet);
-    clear_ = reinterpret_cast<volatile uint32_t*>(base + gpio::kClear);
+    set_   = reinterpret_cast<volatile uint32_t *>(base + gpio::kSet);
+    clear_ = reinterpret_cast<volatile uint32_t *>(base + gpio::kClear);
   }
 }
 
@@ -267,14 +261,14 @@ void GPIO::setupWait()
 int8_t GPIO::wait()
 {
   pollfd fdset = {};
-  fdset.fd = fd_;
+  fdset.fd     = fd_;
   fdset.events = POLLPRI | POLLERR;
-  int rc = poll(&fdset, 1, -1);
+  int rc       = poll(&fdset, 1, -1);
   if (rc > 0) {
     if (fdset.revents & POLLPRI) {
       log_.DBG1("GPIO", "success Wait on gpio %d", pin_);
       gpio::readHelper(fd_);
-      return read();    // assume register access is faster than parsing data from value file
+      return read();  // assume register access is faster than parsing data from value file
     }
 
     if (fdset.revents & POLLERR) {
@@ -303,7 +297,7 @@ void GPIO::set()
 #if GPIOFS
   write(fd_, "1", 2);
 #else
-  *set_ = pin_mask_;
+  *set_         = pin_mask_;
   log_.DBG1("GPIO", "gpio %d set", pin_);
 #endif
 }
@@ -346,7 +340,9 @@ uint8_t GPIO::read()
   uint8_t val = *data_ & pin_mask_ ? 1 : 0;
   log_.DBG1("GPIO", "gpio %d read %d", pin_, val);
   return val;
-  #endif
+#endif
 }
 
-}}}   // namespace hyped::utils::io
+}  // namespace io
+}  // namespace utils
+}  // namespace hyped

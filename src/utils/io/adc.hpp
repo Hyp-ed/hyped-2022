@@ -24,8 +24,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "utils/utils.hpp"
 #include "utils/logger.hpp"
+#include "utils/utils.hpp"
 
 namespace hyped {
 namespace utils {
@@ -34,15 +34,15 @@ class Logger;
 namespace io {
 
 namespace adc {
-}   // namespace adc
+}  // namespace adc
 
 class ADC {
  public:
- /**
-  * @brief Construct a new ADC object when logger no initialised
-  *
-  * @param pin
-  */
+  /**
+   * @brief Construct a new ADC object when logger no initialised
+   *
+   * @param pin
+   */
   explicit ADC(uint32_t pin);
 
   /**
@@ -51,7 +51,7 @@ class ADC {
    * @param pin
    * @param log
    */
-  ADC(uint32_t pin, Logger& log);
+  ADC(uint32_t pin, Logger &log);
 
   /**
    * @brief reads AIN value from file system
@@ -61,10 +61,12 @@ class ADC {
   uint16_t read();
 
  private:
-  uint32_t      pin_;
-  Logger&       log_;
-  int           fd_;
+  uint32_t pin_;
+  Logger &log_;
+  int fd_;
 };
-}}}
+}  // namespace io
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_IO_ADC_HPP_

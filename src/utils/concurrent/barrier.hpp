@@ -23,8 +23,8 @@
 
 #include <cstdint>
 
-#include "utils/concurrent/lock.hpp"
 #include "utils/concurrent/condition_variable.hpp"
+#include "utils/concurrent/lock.hpp"
 
 namespace hyped {
 namespace utils {
@@ -41,10 +41,12 @@ class Barrier {
   uint8_t required_;
   uint8_t calls_;
 
-  Lock    lock_;
+  Lock lock_;
   ConditionVariable cv_;
 };
 
-}}}   // namespace hyped::utils::concurrent
+}  // namespace concurrent
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_CONCURRENT_BARRIER_HPP_

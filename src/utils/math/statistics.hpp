@@ -29,15 +29,15 @@ namespace hyped {
 namespace utils {
 namespace math {
 
-template <typename T>
+template<typename T>
 class Statistics {
  public:
   Statistics();
   virtual void update(T new_value) = 0;
-  T getSum() const {return sum_;}
-  T getMean() const {return mean_;}
-  T getVariance() const {return variance_;}
-  T getStdDev() const {return std::sqrt(variance_);}
+  T getSum() const { return sum_; }
+  T getMean() const { return mean_; }
+  T getVariance() const { return variance_; }
+  T getStdDev() const { return std::sqrt(variance_); }
 
  protected:
   T sum_;
@@ -45,9 +45,12 @@ class Statistics {
   T variance_;
 };
 
-template <typename T>
-Statistics<T>::Statistics() : sum_(0), mean_(0), variance_(0)
-{}
+template<typename T>
+Statistics<T>::Statistics() : sum_(0),
+                              mean_(0),
+                              variance_(0)
+{
+}
 
 /**
  * @brief Computes stats (mean, variance, etc.) of a set of numbers by consuming one number at a
@@ -57,7 +60,7 @@ Statistics<T>::Statistics() : sum_(0), mean_(0), variance_(0)
  *
  * @tparam T Underlying numeric type
  */
-template <typename T>
+template<typename T>
 class OnlineStatistics : public Statistics<T> {
  public:
   OnlineStatistics();
@@ -68,21 +71,21 @@ class OnlineStatistics : public Statistics<T> {
   T s_;  // sum of squared differences from mean
 };
 
-template <typename T>
-OnlineStatistics<T>::OnlineStatistics() : n_(0), s_(0)
-{}
+template<typename T>
+OnlineStatistics<T>::OnlineStatistics() : n_(0),
+                                          s_(0)
+{
+}
 
-template <typename T>
+template<typename T>
 void OnlineStatistics<T>::update(T new_value)
 {
   T delta = new_value - this->mean_;
   n_++;
   this->sum_ += new_value;
-  this->mean_ = this->sum_/n_;
+  this->mean_ = this->sum_ / n_;
   s_ += delta * (new_value - this->mean_);
-  if (n_ > 1) {
-    this->variance_ = s_ / (n_ - 1);
-    } 
+  if (n_ > 1) { this->variance_ = s_ / (n_ - 1); }
 }
 
 /**
@@ -91,7 +94,7 @@ void OnlineStatistics<T>::update(T new_value)
  *
  * @tparam T Underlying numeric type
  */
-template <typename T>
+template<typename T>
 class RollingStatistics : public Statistics<T> {
  public:
   explicit RollingStatistics(std::size_t window_size);
@@ -103,9 +106,10 @@ class RollingStatistics : public Statistics<T> {
   OnlineStatistics<T> online_;
 };
 
-template <typename T>
+template<typename T>
 RollingStatistics<T>::RollingStatistics(std::size_t window_size) : window_size_(window_size)
-{}
+{
+}
 
 /**
  * @brief Advances the window by one position, updating the outputs accordingly. Running time is
@@ -115,7 +119,7 @@ RollingStatistics<T>::RollingStatistics(std::size_t window_size) : window_size_(
  * @tparam T Underlying numeric type
  * @param new_value New value entering the window
  */
-template <typename T>
+template<typename T>
 void RollingStatistics<T>::update(T new_value)
 {
   if (window_.size() < window_size_) {
@@ -129,14 +133,16 @@ void RollingStatistics<T>::update(T new_value)
     this->sum_ = this->sum_ + new_value - window_.front();
     T new_mean = this->sum_ / window_size_;
     this->variance_ += (new_value - window_.front())
-                        * (new_value - new_mean + window_.front() - this->mean_)
-                        / (window_size_ - 1);
+                       * (new_value - new_mean + window_.front() - this->mean_)
+                       / (window_size_ - 1);
     this->mean_ = new_mean;
     window_.pop();
     window_.push(new_value);
   }
 }
 
-}}}  // namespace hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_MATH_STATISTICS_HPP_

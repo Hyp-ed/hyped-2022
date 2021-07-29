@@ -27,12 +27,13 @@ constexpr float KalmanFilter::kTrackMeasurementVar;
 constexpr float KalmanFilter::kElevatorMeasurementVar;
 constexpr float KalmanFilter::kStationaryMeasurementVar;
 
-KalmanFilter::KalmanFilter(unsigned int n/*=3*/, unsigned int m/*=1*/, unsigned int k/*=0*/)
-  : n_(n),
-    m_(m),
-    k_(k),
-    kalmanFilter_(KalmanMultivariate(n, m, k))
-{}
+KalmanFilter::KalmanFilter(unsigned int n /*=3*/, unsigned int m /*=1*/, unsigned int k /*=0*/)
+    : n_(n),
+      m_(m),
+      k_(k),
+      kalmanFilter_(KalmanMultivariate(n, m, k))
+{
+}
 
 void KalmanFilter::setup()
 {
@@ -43,10 +44,14 @@ void KalmanFilter::setup()
 
   // check system navigation run for R setup
   System &sys = System::getSystem();
-  MatrixXf R = MatrixXf::Zero(m_, m_);;
-  if (sys.official_run || sys.outside_run) R = createTrackMeasurementCovarianceMatrix();
-  else if (sys.elevator_run) R = createElevatorMeasurementCovarianceMatrix();
-  else if (sys.stationary_run) R = createStationaryMeasurementCovarianceMatrix();
+  MatrixXf R  = MatrixXf::Zero(m_, m_);
+  ;
+  if (sys.official_run || sys.outside_run)
+    R = createTrackMeasurementCovarianceMatrix();
+  else if (sys.elevator_run)
+    R = createElevatorMeasurementCovarianceMatrix();
+  else if (sys.stationary_run)
+    R = createStationaryMeasurementCovarianceMatrix();
 
   kalmanFilter_.setModels(A, Q, H, R);
 
@@ -100,23 +105,23 @@ const MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix()
 
 const MatrixXf KalmanFilter::createStateTransitionMatrix(double dt)
 {
-  MatrixXf A = MatrixXf::Zero(n_, n_);
+  MatrixXf A     = MatrixXf::Zero(n_, n_);
   double acc_ddt = 0.5 * dt * dt;
   //  number of values for each acc, vel, pos: usually 1 or 3
   unsigned int n_val = n_ / 3;
 
   for (unsigned int i = 0; i < n_val; i++) {
-      // compute acc rows
-      A(i, i) = 1.;
+    // compute acc rows
+    A(i, i) = 1.;
 
-      // compute vel rows
-      A(i + n_val, i) = dt;
-      A(i + n_val, i + n_val) = 1.;
+    // compute vel rows
+    A(i + n_val, i)         = dt;
+    A(i + n_val, i + n_val) = 1.;
 
-      // compute pos rows
-      A(i + 2 * n_val, i) = acc_ddt;
-      A(i + 2 * n_val, i + n_val) = dt;
-      A(i + 2 * n_val, i + 2 * n_val) = 1.;
+    // compute pos rows
+    A(i + 2 * n_val, i)             = acc_ddt;
+    A(i + 2 * n_val, i + n_val)     = dt;
+    A(i + 2 * n_val, i + 2 * n_val) = 1.;
   }
   A(0, 0) = 1.0;
 
@@ -140,8 +145,8 @@ const MatrixXf KalmanFilter::createStateTransitionCovarianceMatrix()
 
 const MatrixXf KalmanFilter::createTrackMeasurementCovarianceMatrix()
 {
-    MatrixXf R = MatrixXf::Constant(m_, m_, kTrackMeasurementVar);
-    return R;
+  MatrixXf R = MatrixXf::Constant(m_, m_, kTrackMeasurementVar);
+  return R;
 }
 const MatrixXf KalmanFilter::createElevatorMeasurementCovarianceMatrix()
 {
@@ -158,15 +163,16 @@ const MatrixXf KalmanFilter::createStationaryMeasurementCovarianceMatrix()
 const nav_t KalmanFilter::getEstimate()
 {
   VectorXf x = kalmanFilter_.getStateEstimate();
-  nav_t est = x(0);
+  nav_t est  = x(0);
   return est;
 }
 
 const nav_t KalmanFilter::getEstimateVariance()
 {
   MatrixXf P = kalmanFilter_.getStateCovariance();
-  nav_t var = P(0, 0);
+  nav_t var  = P(0, 0);
   return var;
 }
 
-}}  // namespace hyped navigation
+}  // namespace navigation
+}  // namespace hyped

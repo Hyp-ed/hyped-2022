@@ -16,18 +16,15 @@
  *    limitations under the License.
  */
 #include <math.h>
+
 #include <cstdlib>
+
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
 
-
-
-namespace hyped
-{
-namespace utils
-{
-namespace math
-{
+namespace hyped {
+namespace utils {
+namespace math {
 
 /**
  * @brief Helper method used to generate an array of three random integers.
@@ -36,8 +33,8 @@ namespace math
 std::array<int, 3> createRandomArrayForBasic()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0;i < 3;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 3; i++) {
+    output[i] = rand() % 1000;
   }
   return output;
 }
@@ -48,21 +45,20 @@ std::array<int, 3> createRandomArrayForBasic()
  * This tests will check if that basic operations with constants are performed the way  they should.
  * However, they do not test properties.
  */
-struct OperationsByConstant : public::testing::Test
-{
+struct OperationsByConstant : public ::testing::Test {
   const int dimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
   Vector<int, 3> vector_three;
   Vector<int, 3> vector_result_one;
   Vector<int, 3> vector_result_two;
-  int kValue = rand()%1000;
+  int kValue = rand() % 1000;
   void SetUp()
   {
     std::srand(time(0));
-    vector_one = Vector<int, 3>(createRandomArrayForBasic());
-    vector_two = Vector<int, 3>(createRandomArrayForBasic());
-    vector_three = Vector<int, 3>(createRandomArrayForBasic());
+    vector_one        = Vector<int, 3>(createRandomArrayForBasic());
+    vector_two        = Vector<int, 3>(createRandomArrayForBasic());
+    vector_three      = Vector<int, 3>(createRandomArrayForBasic());
     vector_result_one = Vector<int, 3>();
     vector_result_two = Vector<int, 3>();
   }
@@ -197,7 +193,7 @@ TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
   }
   vector_result_one = vector_one / kValue;
   for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
+    ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i] / kValue));
   }
 }
 
@@ -222,7 +218,9 @@ TEST_F(OperationsByConstant, handlesDivisionWithConstant)
   vector_result_one = vector_one;
   vector_result_one /= kValue;
   for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i]/ kValue));
+    ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i] / kValue));
   }
 }
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped

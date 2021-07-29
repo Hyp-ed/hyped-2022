@@ -21,32 +21,34 @@
 #include "data/data.hpp"
 #include "navigation/navigation.hpp"
 #include "utils/concurrent/thread.hpp"
-#include "utils/system.hpp"
 #include "utils/logger.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
 using data::Data;
 using data::State;
-using hyped::data::StateMachine;
 using hyped::data::ModuleStatus;
-using utils::concurrent::Thread;
-using utils::System;
+using hyped::data::StateMachine;
 using utils::Logger;
+using utils::System;
+using utils::concurrent::Thread;
 
 namespace navigation {
 
-class Main: public Thread {
-  public:
-    explicit Main(uint8_t id, Logger& log);
-    void run() override;
-    bool isCalibrated();
-  private:
-    Logger& log_;
-    System& sys_;
-    Navigation nav_;
+class Main : public Thread {
+ public:
+  explicit Main(uint8_t id, Logger &log);
+  void run() override;
+  bool isCalibrated();
+
+ private:
+  Logger &log_;
+  System &sys_;
+  Navigation nav_;
 };
 
-}}  // namespace hyped::navigation
+}  // namespace navigation
+}  // namespace hyped
 
 #endif  // NAVIGATION_MAIN_HPP_

@@ -18,29 +18,29 @@
  *    limitations under the License.
  */
 
+#include "sensors/temperature.hpp"
+
 #include <stdio.h>
 
-#include "sensors/temperature.hpp"
 #include "utils/io/adc.hpp"
 
 namespace hyped {
 
 using data::Data;
 using data::TemperatureData;
-using utils::io::ADC;
 using hyped::utils::Logger;
+using utils::io::ADC;
 
 namespace sensors {
 
-Temperature::Temperature(utils::Logger& log, int pin)
-     : pin_(pin),
-       log_(log)
-{}
+Temperature::Temperature(utils::Logger &log, int pin) : pin_(pin), log_(log)
+{
+}
 
 void Temperature::run()
 {
   ADC thepin(pin_);
-  temp_.temp = 0;
+  temp_.temp         = 0;
   uint16_t raw_value = thepin.read();
   log_.DBG3("TEMPERATURE", "Raw Data: %d", raw_value);
   temp_.temp = scaleData(raw_value);
@@ -52,7 +52,7 @@ int Temperature::scaleData(uint16_t raw_value)
 {
   // convert to degrees C
   double temp = static_cast<double>(raw_value) / 4095;
-  temp = (temp*175) - 50;
+  temp        = (temp * 175) - 50;
   return static_cast<int>(temp);
 }
 
@@ -60,4 +60,5 @@ int Temperature::getData()
 {
   return temp_.temp;
 }
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped

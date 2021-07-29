@@ -23,21 +23,23 @@
 namespace hyped {
 namespace embrakes {
 
-FakeStepper::FakeStepper(Logger& log, uint8_t id)
+FakeStepper::FakeStepper(Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
       em_brakes_data_(data_.getEmergencyBrakesData()),
       brake_id_(id),
       is_clamped_(true),
-      fake_button_(false) {}
+      fake_button_(false)
+{
+}
 
 void FakeStepper::checkHome()
 {
-  if (fake_button_ && !em_brakes_data_.brakes_retracted[brake_id_-1]) {
-    em_brakes_data_.brakes_retracted[brake_id_-1] = true;
+  if (fake_button_ && !em_brakes_data_.brakes_retracted[brake_id_ - 1]) {
+    em_brakes_data_.brakes_retracted[brake_id_ - 1] = true;
     data_.setEmergencyBrakesData(em_brakes_data_);
-  } else if (!fake_button_ && em_brakes_data_.brakes_retracted[brake_id_-1]) {
-    em_brakes_data_.brakes_retracted[brake_id_-1] = false;
+  } else if (!fake_button_ && em_brakes_data_.brakes_retracted[brake_id_ - 1]) {
+    em_brakes_data_.brakes_retracted[brake_id_ - 1] = false;
     data_.setEmergencyBrakesData(em_brakes_data_);
   }
 }
@@ -46,14 +48,14 @@ void FakeStepper::sendRetract()
 {
   log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
   fake_button_ = true;  // false = brakes are retracted
-  is_clamped_ = false;
+  is_clamped_  = false;
 }
 
 void FakeStepper::sendClamp()
 {
   log_.INFO("Fake Stepper", "Sending a engage message to brake %i", brake_id_);
   fake_button_ = false;  // false = brakes are clamped
-  is_clamped_ = true;
+  is_clamped_  = true;
 }
 
 void FakeStepper::checkAccFailure()
@@ -76,6 +78,9 @@ void FakeStepper::checkBrakingFailure()
   return;
 }
 
-bool FakeStepper::checkClamped() { return is_clamped_; }
+bool FakeStepper::checkClamped()
+{
+  return is_clamped_;
+}
 }  // namespace embrakes
 }  // namespace hyped

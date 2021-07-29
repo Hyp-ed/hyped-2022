@@ -22,22 +22,23 @@
 namespace hyped {
 namespace motor_control {
 
-FakeController::FakeController(Logger& log, uint8_t id, bool isFaulty)
-  : log_(log),
-    data_(data::Data::getInstance()),
-    motor_data_(data_.getMotorData()),
-    id_(id),
-    isFaulty_(isFaulty),
-    critical_failure_(false),
-    actual_velocity_(0),
-    start_time_(0),
-    timer_started_(false),
-    motor_temp_(60)
+FakeController::FakeController(Logger &log, uint8_t id, bool isFaulty)
+    : log_(log),
+      data_(data::Data::getInstance()),
+      motor_data_(data_.getMotorData()),
+      id_(id),
+      isFaulty_(isFaulty),
+      critical_failure_(false),
+      actual_velocity_(0),
+      start_time_(0),
+      timer_started_(false),
+      motor_temp_(60)
 {
 }
 
 void FakeController::registerController()
-{/*EMPTY*/}
+{ /*EMPTY*/
+}
 
 void FakeController::configure()
 {
@@ -46,9 +47,9 @@ void FakeController::configure()
 
 void FakeController::startTimer()
 {
-  start_time_ = Timer::getTimeMicros();
+  start_time_    = Timer::getTimeMicros();
   timer_started_ = true;
-  fail_time_ = std::rand() % 20000000 + 1000000;
+  fail_time_     = std::rand() % 20000000 + 1000000;
 }
 
 void FakeController::enterOperational()
@@ -62,7 +63,7 @@ void FakeController::enterPreOperational()
   if (state_ != kSwitchOnDisabled) {
     log_.DBG1("MOTOR", "Controller %d: Shutting down motor", id_);
   }
-  state_ = kSwitchOnDisabled;
+  state_           = kSwitchOnDisabled;
   actual_velocity_ = 0;
 }
 
@@ -73,15 +74,14 @@ void FakeController::checkState()
 
 void FakeController::sendTargetVelocity(int32_t target_velocity)
 {
-  if (!timer_started_) {
-    startTimer();
-  }
+  if (!timer_started_) { startTimer(); }
   log_.DBG2("MOTOR", "Controller %d: Updating target velocity to %d", id_, target_velocity);
   actual_velocity_ = target_velocity;
 }
 
 void FakeController::updateActualVelocity()
-{/*EMPTY*/}
+{ /*EMPTY*/
+}
 
 int32_t FakeController::getVelocity()
 {
@@ -120,4 +120,5 @@ uint8_t FakeController::getMotorTemp()
 {
   return motor_temp_;
 }
-}}  // namespace hyped::motor_control
+}  // namespace motor_control
+}  // namespace hyped

@@ -18,26 +18,25 @@
  *    limitations under the License.
  */
 
+#include "writer.hpp"
 
 #include <chrono>
 #include <cstdint>
 #include <string>
 
-#include "writer.hpp"
 #include "data/data.hpp"
 
 namespace hyped {
 namespace telemetry {
 
-
 // The current time in milliseconds that will be used later
 void Writer::packTime()
 {
   rjwriter_.Key("time");
-  rjwriter_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>
-  (std::chrono::system_clock::now().time_since_epoch()).count());
+  rjwriter_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>(
+                     std::chrono::system_clock::now().time_since_epoch())
+                     .count());
 }
-
 
 // additional data points that are displayed in the GUI data section
 // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
@@ -60,7 +59,7 @@ void Writer::packCrucialData()
   rjwriter_.Key("crucial_data");
   rjwriter_.StartArray();
 
-  data::Navigation nav_data = data_.getNavigationData();
+  data::Navigation nav_data  = data_.getNavigationData();
   data::StateMachine sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
@@ -82,12 +81,11 @@ void Writer::packStatusData()
   rjwriter_.EndArray();
 }
 
-Writer::Writer(data::Data& data)
-  : rjwriter_(sb_),
-    data_ {data}
-{}
+Writer::Writer(data::Data &data) : rjwriter_(sb_), data_{data}
+{
+}
 
-void Writer::startList(const char* name)
+void Writer::startList(const char *name)
 {
   rjwriter_.StartObject();
   rjwriter_.Key("name");
@@ -102,7 +100,7 @@ void Writer::endList()
   rjwriter_.EndObject();
 }
 
-void Writer::add(const char* name, int min, int max, const char* unit, int value)
+void Writer::add(const char *name, int min, int max, const char *unit, int value)
 {
   rjwriter_.StartObject();
   rjwriter_.Key("name");
@@ -118,7 +116,7 @@ void Writer::add(const char* name, int min, int max, const char* unit, int value
   rjwriter_.EndObject();
 }
 
-void Writer::add(const char* name, float min, float max, const char* unit, float value)
+void Writer::add(const char *name, float min, float max, const char *unit, float value)
 {
   rjwriter_.StartObject();
   rjwriter_.Key("name");
@@ -134,7 +132,7 @@ void Writer::add(const char* name, float min, float max, const char* unit, float
   rjwriter_.EndObject();
 }
 
-void Writer::add(const char* name, bool value)
+void Writer::add(const char *name, bool value)
 {
   rjwriter_.StartObject();
   rjwriter_.Key("name");
@@ -144,7 +142,7 @@ void Writer::add(const char* name, bool value)
   rjwriter_.EndObject();
 }
 
-void Writer::add(const char* name, data::State value)
+void Writer::add(const char *name, data::State value)
 {
   rjwriter_.StartObject();
   rjwriter_.Key("name");
@@ -154,7 +152,7 @@ void Writer::add(const char* name, data::State value)
   rjwriter_.EndObject();
 }
 
-void Writer::add(const char* name, data::ModuleStatus value)
+void Writer::add(const char *name, data::ModuleStatus value)
 {
   rjwriter_.StartObject();
   rjwriter_.Key("name");
@@ -164,7 +162,7 @@ void Writer::add(const char* name, data::ModuleStatus value)
   rjwriter_.EndObject();
 }
 
-const char* Writer::convertStateMachineState(data::State state)
+const char *Writer::convertStateMachineState(data::State state)
 {
   switch (state) {
     case data::State::kInvalid:
@@ -189,10 +187,10 @@ const char* Writer::convertStateMachineState(data::State state)
       return "NOMINAL_BRAKING";
     default:
       return "";
-    }
+  }
 }
 
-const char* Writer::convertModuleStatus(data::ModuleStatus module_status)
+const char *Writer::convertModuleStatus(data::ModuleStatus module_status)
 {
   switch (module_status) {
     case data::ModuleStatus::kStart:

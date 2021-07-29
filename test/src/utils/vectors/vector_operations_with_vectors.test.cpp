@@ -1,9 +1,11 @@
 #include <math.h>
+
 #include <cstdlib>
-#include "gtest/gtest.h"
-#include "utils/math/vector.hpp"
-#include "math.h"
+
 #include "ctime"
+#include "gtest/gtest.h"
+#include "math.h"
+#include "utils/math/vector.hpp"
 /*
  * Author: Pablo Morandé
  * Organisation: HYPED
@@ -21,22 +23,19 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-namespace hyped
-{
-namespace utils
-{
-namespace math
-{
+namespace hyped {
+namespace utils {
+namespace math {
 
-  /**
+/**
  * @brief Helper method used to generate an array of three random integers.
  * each integer will be in the range -1000, 1000 (not inclusive)
  */
 std::array<int, 3> createRandomArrayForOperations()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0;i < 3;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 3; i++) {
+    output[i] = rand() % 1000;
   }
   return output;
 }
@@ -49,10 +48,10 @@ std::array<int, 3> createRandomArrayForOperations()
 std::array<int, 3> RandomNonZeroArrayForOperations()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0;i < 3;i++) {
-    output[i] = rand()%1000;
+  for (int i = 0; i < 3; i++) {
+    output[i] = rand() % 1000;
     while (output[i] == 0) {
-      output[i] = rand()%1000;
+      output[i] = rand() % 1000;
     }
   }
   return output;
@@ -64,8 +63,7 @@ std::array<int, 3> RandomNonZeroArrayForOperations()
  * This tests will check if that basic operations are performed the way that they should. However,
  * they do not test properties.
  */
-struct OperationsTest : public::testing::Test
-{
+struct OperationsTest : public ::testing::Test {
   const int dimension = 3;
   std::array<int, 3> array_one;
   std::array<int, 3> array_two;
@@ -74,8 +72,8 @@ struct OperationsTest : public::testing::Test
   void SetUp()
   {
     std::srand(time(0));
-    array_one = createRandomArrayForOperations();
-    array_two = RandomNonZeroArrayForOperations();
+    array_one  = createRandomArrayForOperations();
+    array_two  = RandomNonZeroArrayForOperations();
     vector_one = Vector<int, 3>(array_one);
     vector_two = Vector<int, 3>(array_two);
   }
@@ -87,12 +85,12 @@ struct OperationsTest : public::testing::Test
  */
 TEST_F(OperationsTest, allowsAccessAndModification)
 {
-  const int element = 10;
+  const int element     = 10;
   const int new_element = 11;
-  vector_one = Vector<int, 3>(element);
-  float norm_one = vector_one.norm();
-  vector_one[0] = new_element;
-  float norm_new = vector_one.norm();
+  vector_one            = Vector<int, 3>(element);
+  float norm_one        = vector_one.norm();
+  vector_one[0]         = new_element;
+  float norm_new        = vector_one.norm();
   ASSERT_NE(norm_one, norm_new);
   ASSERT_NE(vector_one[0], 10);
   ASSERT_EQ(vector_one[0], 11);
@@ -107,9 +105,9 @@ TEST_F(OperationsTest, allowsAccessAndModification)
 
 TEST_F(OperationsTest, allowsAddition)
 {
-  vector_one+=vector_two;
-  for (int i = 0;i <dimension;i++) {
-    ASSERT_EQ(vector_one[i], vector_two[i]+array_one[i]);
+  vector_one += vector_two;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
   }
 }
 
@@ -121,7 +119,7 @@ TEST_F(OperationsTest, allowsAddition)
 TEST_F(OperationsTest, allowsAutoAddition)
 {
   vector_one = vector_one + vector_two;
-  for (int i = 0;i <dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
   }
 }
@@ -134,8 +132,8 @@ TEST_F(OperationsTest, allowsAutoAddition)
  */
 TEST_F(OperationsTest, allowsSubstraction)
 {
-  vector_one-=vector_two;
-  for (int i = 0;i <dimension;i++) {
+  vector_one -= vector_two;
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
@@ -149,7 +147,7 @@ TEST_F(OperationsTest, allowsSubstraction)
 TEST_F(OperationsTest, allowsAutoSubstraction)
 {
   vector_one = vector_one - vector_two;
-  for (int i = 0;i <dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
@@ -162,9 +160,9 @@ TEST_F(OperationsTest, allowsAutoSubstraction)
  */
 TEST_F(OperationsTest, allowsMultiplication)
 {
-  vector_one*=vector_two;
-  for (int i = 0;i <dimension;i++) {
-    ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
+  vector_one *= vector_two;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i] * array_one[i]);
   }
 }
 
@@ -177,8 +175,8 @@ TEST_F(OperationsTest, allowsMultiplication)
 TEST_F(OperationsTest, allowsAutoMultiplication)
 {
   vector_one = vector_one * vector_two;
-  for (int i = 0;i <dimension;i++) {
-    ASSERT_EQ(vector_one[i], vector_two[i]*array_one[i]);
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_one[i], vector_two[i] * array_one[i]);
   }
 }
 
@@ -191,7 +189,7 @@ TEST_F(OperationsTest, allowsAutoMultiplication)
 TEST_F(OperationsTest, allowsAutoDivision)
 {
   vector_one = vector_one / vector_two;
-  for (int i = 0;i <dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
   }
 }
@@ -204,9 +202,9 @@ TEST_F(OperationsTest, allowsAutoDivision)
  */
 TEST_F(OperationsTest, allowsDivision)
 {
-  vector_one/=vector_two;
-  for (int i = 0;i <dimension;i++) {
-    ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i]/vector_two[i]));
+  vector_one /= vector_two;
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
   }
 }
 
@@ -226,7 +224,7 @@ TEST_F(OperationsTest, allowsSqrt)
  */
 TEST_F(OperationsTest, allowsNorm)
 {
-  double norm = vector_one.norm();
+  double norm   = vector_one.norm();
   double result = 0;
   for (int i = 0; i < dimension; i++) {
     result += vector_one[i] * vector_one[i];
@@ -242,24 +240,23 @@ TEST_F(OperationsTest, allowsNorm)
 TEST_F(OperationsTest, allowsToUnitVector)
 {
   Vector<int, 3> result_one = vector_one.toUnitVector();
-  double norm = vector_one.norm();
+  double norm               = vector_one.norm();
   for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(result_one[i], static_cast<int>(vector_one[i]/norm));
+    ASSERT_EQ(result_one[i], static_cast<int>(vector_one[i] / norm));
   }
 }
 
 /**
  * @brief Struct used to set up all the variables used in the test the equality operation of vectors
  */
-struct EqualityOperation: public :: testing::Test
-{
+struct EqualityOperation : public ::testing::Test {
   const int dimension = 3;
   std::array<int, 3> values;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
   void SetUp()
   {
-    values = createRandomArrayForOperations();
+    values     = createRandomArrayForOperations();
     vector_one = Vector<int, 3>(values);
     vector_two = Vector<int, 3>(values);
   }
@@ -272,7 +269,7 @@ struct EqualityOperation: public :: testing::Test
  */
 TEST_F(EqualityOperation, handlesEqualityIdentity)
 {
-  Vector<int, 3> identiy = Vector<int, 3>();
+  Vector<int, 3> identiy    = Vector<int, 3>();
   Vector<int, 3> vector_two = vector_one - identiy;
   ASSERT_TRUE(vector_one == vector_two);
   vector_two = vector_one - vector_one;
@@ -298,4 +295,6 @@ TEST_F(EqualityOperation, handlesSymmetry)
   ASSERT_TRUE(vector_one == vector_two);
   ASSERT_TRUE(vector_two == vector_one);
 }
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped

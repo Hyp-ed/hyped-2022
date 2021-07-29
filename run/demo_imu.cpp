@@ -18,11 +18,11 @@
  *    limitations under the License.
  */
 
+#include "data/data.hpp"
 #include "sensors/imu_manager.hpp"
+#include "utils/concurrent/thread.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "data/data.hpp"
 
 using hyped::utils::Logger;
 using hyped::utils::concurrent::Thread;
@@ -31,17 +31,17 @@ using hyped::data::Sensors;
 using hyped::sensors::ImuManager;
 using hyped::utils::System;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
   hyped::utils::System::parseArgs(argc, argv);
-  Logger& log = hyped::utils::System::getLogger();
-  Data& data = Data::getInstance();
+  Logger &log = hyped::utils::System::getLogger();
+  Data &data  = Data::getInstance();
 
   DataPoint<array<ImuData, Sensors::kNumImus>> data_array_;
   ImuManager imu(log);
 
-  StateMachine state_machine = data.getStateMachineData();
-  state_machine.current_state = State::kAccelerating;   // change state for different accel values
+  StateMachine state_machine  = data.getStateMachineData();
+  state_machine.current_state = State::kAccelerating;  // change state for different accel values
   data.setStateMachineData(state_machine);
 
   imu.start();
@@ -50,10 +50,8 @@ int main(int argc, char* argv[])
     data_array_ = data.getSensorsImuData();
     for (int j = 0; j < 1; j++) {
       log.INFO("TEST-ImuManager", "accelerometer readings %d: %f m/s^2, y: %f m/s^2, z: %f m/s^2",
-                j,
-                data_array_.value[j].acc[0],
-                data_array_.value[j].acc[1],
-                data_array_.value[j].acc[2]);
+               j, data_array_.value[j].acc[0], data_array_.value[j].acc[1],
+               data_array_.value[j].acc[2]);
     }
     Thread::sleep(100);
   }

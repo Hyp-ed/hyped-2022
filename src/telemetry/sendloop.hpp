@@ -22,31 +22,33 @@
 #define TELEMETRY_SENDLOOP_HPP_
 
 #include <rapidjson/writer.h>
+
 #include <string>
-#include "telemetry/main.hpp"
+
 #include "data/data.hpp"
+#include "telemetry/main.hpp"
 #include "utils/concurrent/thread.hpp"
 
-using rapidjson::Writer;
 using rapidjson::StringBuffer;
+using rapidjson::Writer;
 
 namespace hyped {
 
-using utils::concurrent::Thread;
 using utils::Logger;
+using utils::concurrent::Thread;
 
 namespace telemetry {
 
-class SendLoop: public Thread {
-  public:
-    explicit SendLoop(Logger &log, data::Data& data, Main* main_pointer);
-    void run() override;
+class SendLoop : public Thread {
+ public:
+  explicit SendLoop(Logger &log, data::Data &data, Main *main_pointer);
+  void run() override;
 
-  private:
-    std::string convertStateMachineState(data::State state);
-    std::string convertModuleStatus(data::ModuleStatus module_status);
-    Main&                   main_ref_;
-    data::Data&             data_;
+ private:
+  std::string convertStateMachineState(data::State state);
+  std::string convertModuleStatus(data::ModuleStatus module_status);
+  Main &main_ref_;
+  data::Data &data_;
 };
 
 }  // namespace telemetry

@@ -28,26 +28,27 @@
 
 #include <cstdlib>
 #include <vector>
-#include "utils/system.hpp"
-#include "utils/logger.hpp"
+
 #include "propulsion/controller.hpp"
+#include "utils/logger.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
 using std::vector;
 
-using utils::Logger;
 using motor_control::Controller;
+using utils::Logger;
 
 namespace motor_control {
 
 class RPM_Regulator {
  public:
   /*
-  * @brief Construct a new rpm regulator object
-  * @param log
-  */
-  explicit RPM_Regulator(Logger& log);
+   * @brief Construct a new rpm regulator object
+   * @param log
+   */
+  explicit RPM_Regulator(Logger &log);
   /**
    * @brief Calculate the optimal rpm based on criteria from all the motors
    *        as well optimal values produced by simulations.
@@ -58,8 +59,8 @@ class RPM_Regulator {
    * @param act_temp - max temperature out of all the motors
    * @return int32_t - the optimal rpm which the motors should be set to.
    */
-  int32_t calculateRPM(int32_t act_velocity, int32_t act_rpm,
-                      int32_t act_current, int32_t act_temp);
+  int32_t calculateRPM(int32_t act_velocity, int32_t act_rpm, int32_t act_current,
+                       int32_t act_temp);
 
   /**
    * @brief Get the Failure boolean
@@ -87,10 +88,11 @@ class RPM_Regulator {
    */
   int32_t step(int32_t opt_rpm, bool direction);
 
-  Logger& log_;
+  Logger &log_;
   int32_t current_index;
   bool failure;
 };
 
-}}  // namespace hyped::motor_control
+}  // namespace motor_control
+}  // namespace hyped
 #endif  // PROPULSION_RPM_REGULATOR_HPP_

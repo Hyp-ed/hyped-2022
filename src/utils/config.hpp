@@ -28,6 +28,7 @@
 
 #include <string>
 #include <vector>
+
 #include "data/data.hpp"
 #include "utils/interfaces.hpp"
 
@@ -52,25 +53,22 @@ struct ModuleEntry;
  * module, see DECLARE_PARSE.
  * Later, in .cpp file, it is used to define module map entries, see MAP_ENTRY.
  */
-#define MODULE_LIST(V)  \
-  V(NoModule)           \
-  V(Navigation)         \
-  V(StateMachine)       \
-  V(Telemetry)          \
-  V(Embrakes)           \
-  V(Sensors)            \
-  V(MotorControl)       \
+#define MODULE_LIST(V)                                                                             \
+  V(NoModule)                                                                                      \
+  V(Navigation)                                                                                    \
+  V(StateMachine)                                                                                  \
+  V(Telemetry)                                                                                     \
+  V(Embrakes)                                                                                      \
+  V(Sensors)                                                                                       \
+  V(MotorControl)                                                                                  \
   V(InterfaceFactory)
 
-#define CREATE_ENUM(module) \
-  k##module,
+#define CREATE_ENUM(module) k##module,
 
-enum  Submodule {
-  MODULE_LIST(CREATE_ENUM)
-};
+enum Submodule { MODULE_LIST(CREATE_ENUM) };
 
 class Config {
-  friend System;    // ensure System can access our private parts
+  friend System;  // ensure System can access our private parts
   friend ModuleEntry;
 
  public:
@@ -107,30 +105,30 @@ class Config {
   } motor_control;
 
   struct InterfaceFactory {
-  // Module used in this context refers to the namespace containing the interface.
-#define CREATOR_FUNCTION_POINTERS(module, interface) \
-  module::interface* (*get##interface##Instance)();
-  INTERFACE_LIST(CREATOR_FUNCTION_POINTERS)
+    // Module used in this context refers to the namespace containing the interface.
+#define CREATOR_FUNCTION_POINTERS(module, interface)                                               \
+  module::interface *(*get##interface##Instance)();
+    INTERFACE_LIST(CREATOR_FUNCTION_POINTERS)
   } interfaceFactory;
 
-#define DECLARE_PARSE(module) \
-  void parse##module(char* line);
+#define DECLARE_PARSE(module) void parse##module(char *line);
 
   MODULE_LIST(DECLARE_PARSE)
 
  private:
-  explicit Config(char* config_file);
+  explicit Config(char *config_file);
   Config();
-  explicit Config(Config const&) = delete;
-  Config& operator=(Config const&) = delete;
+  explicit Config(Config const &) = delete;
+  Config &operator=(Config const &) = delete;
   ~Config();
 
-  void readFile(char* config_file);   // recursively called for nested configs
+  void readFile(char *config_file);  // recursively called for nested configs
 
-  std::vector<char*> config_files_;
-  Logger& log_;
+  std::vector<char *> config_files_;
+  Logger &log_;
 };
 
-}}  // namespace hyped::utils
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_CONFIG_HPP_

@@ -18,8 +18,9 @@
  *    limitations under the License.
  */
 
-#include <string>
 #include "telemetry/recvloop.hpp"
+
+#include <string>
 
 namespace hyped {
 
@@ -27,10 +28,10 @@ using data::ModuleStatus;
 
 namespace telemetry {
 
-RecvLoop::RecvLoop(Logger &log, data::Data& data, Main* main_pointer)
-  : Thread {log},
-    main_ref_ {*main_pointer},
-    data_ {data}
+RecvLoop::RecvLoop(Logger &log, data::Data &data, Main *main_pointer)
+    : Thread{log},
+      main_ref_{*main_pointer},
+      data_{data}
 {
   log_.DBG("Telemetry", "Telemetry RecvLoop thread object created");
 }
@@ -45,8 +46,7 @@ void RecvLoop::run()
   while (true) {
     try {
       message = main_ref_.client_.receiveData();
-    }
-    catch (std::exception& e) {
+    } catch (std::exception &e) {
       log_.ERR("Telemetry", "%s", e.what());
 
       telem_data_struct.module_status = ModuleStatus::kCriticalFailure;

@@ -16,67 +16,68 @@
  *  limitations under the License.
  */
 
-#include <iostream>
-
 #include "navigation/main.hpp"
+
+#include <iostream>
 
 namespace hyped {
 namespace navigation {
 
-  Main::Main(uint8_t id, Logger& log)
+Main::Main(uint8_t id, Logger &log)
     : Thread(id, log),
       log_(log),
       sys_(System::getSystem()),
-      nav_(log, sys_.axis) {}
+      nav_(log, sys_.axis)
+{
+}
 
-  void Main::run()
-  {
-    log_.INFO("NAV", "Axis: %d", sys_.axis);
-    log_.INFO("NAV", "Navigation waiting for calibration");
+void Main::run()
+{
+  log_.INFO("NAV", "Axis: %d", sys_.axis);
+  log_.INFO("NAV", "Navigation waiting for calibration");
 
-    Data& data = Data::getInstance();
-    bool navigation_complete = false;
+  Data &data               = Data::getInstance();
+  bool navigation_complete = false;
 
-    if (!sys_.official_run) nav_.disableKeyenceUsage();
-    if (sys_.fake_keyence) nav_.setKeyenceFake();
-    if (sys_.enable_nav_write) nav_.logWrite();
+  if (!sys_.official_run) nav_.disableKeyenceUsage();
+  if (sys_.fake_keyence) nav_.setKeyenceFake();
+  if (sys_.enable_nav_write) nav_.logWrite();
 
-    // Setting module status for STM transition
-    data::Navigation nav_data = data.getNavigationData();
-    nav_data.module_status = ModuleStatus::kInit;
-    data.setNavigationData(nav_data);
+  // Setting module status for STM transition
+  data::Navigation nav_data = data.getNavigationData();
+  nav_data.module_status    = ModuleStatus::kInit;
+  data.setNavigationData(nav_data);
 
-    // wait for calibration state for calibration
-    while (sys_.running_ && !navigation_complete) {
-      State current_state = data.getStateMachineData().current_state;
+  // wait for calibration state for calibration
+  while (sys_.running_ && !navigation_complete) {
+    State current_state = data.getStateMachineData().current_state;
 
-      switch (current_state) {
-        case State::kIdle :
-        case State::kReady :
-          break;
+    switch (current_state) {
+      case State::kIdle:
+      case State::kReady:
+        break;
 
-        case State::kCalibrating :
-          if (nav_.getModuleStatus() == ModuleStatus::kInit) {
-            nav_.calibrateGravity();
-          }
-          break;
+      case State::kCalibrating:
+        if (nav_.getModuleStatus() == ModuleStatus::kInit) { nav_.calibrateGravity(); }
+        break;
 
-        case State::kAccelerating :
-           if (!nav_.getHasInit()) {
-             nav_.initTimestamps();
-             nav_.setHasInit();
-           }
+      case State::kAccelerating:
+        if (!nav_.getHasInit()) {
+          nav_.initTimestamps();
+          nav_.setHasInit();
+        }
 
-        case State::kNominalBraking :
-        case State::kCruising :
-        case State::kEmergencyBraking :
-          nav_.navigate();
-          break;
+      case State::kNominalBraking:
+      case State::kCruising:
+      case State::kEmergencyBraking:
+        nav_.navigate();
+        break;
 
-        default :
-          navigation_complete = true;
-          break;
-      }
+      default:
+        navigation_complete = true;
+        break;
     }
   }
-}}  // namespace hyped::navigation
+}
+}  // namespace navigation
+}  // namespace hyped

@@ -18,17 +18,19 @@
  *    limitations under the License.
  */
 
-#include <string>
 #include "sendloop.hpp"
+
+#include <string>
+
 #include "writer.hpp"
 
 namespace hyped {
 namespace telemetry {
 
-SendLoop::SendLoop(Logger& log, data::Data& data, Main* main_pointer)
-  : Thread {log},
-    main_ref_ {*main_pointer},
-    data_ {data}
+SendLoop::SendLoop(Logger &log, data::Data &data, Main *main_pointer)
+    : Thread{log},
+      main_ref_{*main_pointer},
+      data_{data}
 {
   log_.DBG("Telemetry", "Telemetry SendLoop thread object created");
 }
@@ -50,7 +52,7 @@ void SendLoop::run()
     if (!main_ref_.client_.sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");
       data::Telemetry telem_data_struct = data_.getTelemetryData();
-      telem_data_struct.module_status = data::ModuleStatus::kCriticalFailure;
+      telem_data_struct.module_status   = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telem_data_struct);
 
       break;

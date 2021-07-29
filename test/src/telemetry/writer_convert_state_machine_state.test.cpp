@@ -18,9 +18,9 @@
 
 #include <string>
 
+#include "data/data.hpp"
 #include "gtest/gtest.h"
 #include "telemetry/writer.hpp"
-#include "data/data.hpp"
 
 using namespace hyped::telemetry;
 using namespace hyped::data;
@@ -30,16 +30,16 @@ using namespace hyped::data;
  */
 struct WriterConvertStateMachineState : public ::testing::Test {
   // ---- Error messages -------
-  const std::string idle_state_error = "Should convert Idle state.";
-  const std::string calibrating_state_error = "Should convert Calibrating state.";
-  const std::string ready_state_error = "Should convert Ready state.";
-  const std::string accelerating_state_error = "Should convert Accelerating state.";
-  const std::string cruising_state_error = "Should convert Cruising state.";
-  const std::string nominal_braking_state_error = "Should convert Nominal Braking state.";
+  const std::string idle_state_error              = "Should convert Idle state.";
+  const std::string calibrating_state_error       = "Should convert Calibrating state.";
+  const std::string ready_state_error             = "Should convert Ready state.";
+  const std::string accelerating_state_error      = "Should convert Accelerating state.";
+  const std::string cruising_state_error          = "Should convert Cruising state.";
+  const std::string nominal_braking_state_error   = "Should convert Nominal Braking state.";
   const std::string emergency_braking_state_error = "Should convert Emergency Braking state.";
-  const std::string failure_stopped_state_error = "Should convert Failure Stopped state.";
-  const std::string finished_state_error = "Should convert Finished state.";
-  const std::string invalid_state_error = "Should convert Invalid state.";
+  const std::string failure_stopped_state_error   = "Should convert Failure Stopped state.";
+  const std::string finished_state_error          = "Should convert Finished state.";
+  const std::string invalid_state_error           = "Should convert Invalid state.";
 
  protected:
   void SetUp() {}

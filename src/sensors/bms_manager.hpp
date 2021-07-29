@@ -26,27 +26,26 @@
 #include <cstdint>
 
 #include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
-
 #include "sensors/interface.hpp"
+#include "utils/concurrent/thread.hpp"
 #include "utils/system.hpp"
 
 namespace hyped {
 
+using hyped::data::BatteryData;
 using utils::Logger;
 using utils::concurrent::Thread;
-using hyped::data::BatteryData;
 
 namespace sensors {
 
-class BmsManager: public Thread  {
+class BmsManager : public Thread {
  public:
-  explicit BmsManager(Logger& log);
-  void run()                override;
+  explicit BmsManager(Logger &log);
+  void run() override;
 
  private:
-  BMSInterface*   bms_[data::Batteries::kNumLPBatteries+data::Batteries::kNumHPBatteries];
-  utils::System&  sys_;
+  BMSInterface *bms_[data::Batteries::kNumLPBatteries + data::Batteries::kNumHPBatteries];
+  utils::System &sys_;
 
   /**
    * @brief check IMD and set GPIOs accordingly
@@ -56,7 +55,7 @@ class BmsManager: public Thread  {
   /**
    * @brief needs to be references because run() passes directly to data struct
    */
-  data::Data&     data_;
+  data::Data &data_;
 
   /**
    * @brief holds LP BatteryData, HP BatteryData, and module_status
@@ -80,6 +79,7 @@ class BmsManager: public Thread  {
   bool batteriesInRange();
 };
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_BMS_MANAGER_HPP_

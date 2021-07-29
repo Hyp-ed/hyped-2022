@@ -20,20 +20,20 @@
  *
  */
 
-#include "utils/system.hpp"
-#include "utils/config.hpp"
-#include "sensors/interface.hpp"
 #include "demo/interface.hpp"
+#include "sensors/interface.hpp"
+#include "utils/config.hpp"
+#include "utils/system.hpp"
 using namespace hyped;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
   utils::System::parseArgs(argc, argv);
-  utils::System& sys = utils::System::getSystem();
+  utils::System &sys = utils::System::getSystem();
 
-  sensors::ImuInterface* imu = sys.config->interfaceFactory.getImuInterfaceInstance();
+  sensors::ImuInterface *imu = sys.config->interfaceFactory.getImuInterfaceInstance();
 
-  demo::DemoInterface* demo = sys.config->interfaceFactory.getDemoInterfaceInstance();
+  demo::DemoInterface *demo = sys.config->interfaceFactory.getDemoInterfaceInstance();
   demo->printYourName();
 
   return 0;

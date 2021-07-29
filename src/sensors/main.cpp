@@ -19,34 +19,36 @@
  */
 
 #include "sensors/main.hpp"
-#include "sensors/gpio_counter.hpp"
-#include "sensors/temperature.hpp"
+
 #include "sensors/fake_gpio_counter.hpp"
 #include "sensors/fake_temperature.hpp"
+#include "sensors/gpio_counter.hpp"
+#include "sensors/temperature.hpp"
 #include "utils/config.hpp"
 
 namespace hyped {
 
-using hyped::utils::concurrent::Thread;
-using utils::System;
 using data::Data;
 using data::Sensors;
 using data::StripeCounter;
+using hyped::utils::concurrent::Thread;
+using utils::System;
 
 namespace sensors {
 
-Main::Main(uint8_t id, utils::Logger& log)
-  : Thread(id, log),
-    data_(data::Data::getInstance()),
-    sys_(utils::System::getSystem()),
-    log_(log),
-    pins_ {static_cast<uint8_t>(sys_.config->sensors.keyence_l), static_cast<uint8_t>(sys_.config->sensors.keyence_r)}, // NOLINT
-    imu_manager_(new ImuManager(log)),
-    battery_manager_(new BmsManager(log))
+Main::Main(uint8_t id, utils::Logger &log)
+    : Thread(id, log),
+      data_(data::Data::getInstance()),
+      sys_(utils::System::getSystem()),
+      log_(log),
+      pins_{static_cast<uint8_t>(sys_.config->sensors.keyence_l),
+            static_cast<uint8_t>(sys_.config->sensors.keyence_r)},  // NOLINT
+      imu_manager_(new ImuManager(log)),
+      battery_manager_(new BmsManager(log))
 {
   if (!(sys_.fake_keyence || sys_.fake_keyence_fail)) {
     for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      GpioCounter* keyence = new GpioCounter(log_, pins_[i]);
+      GpioCounter *keyence = new GpioCounter(log_, pins_[i]);
       keyence->start();
       keyences_[i] = keyence;
     }
@@ -70,7 +72,7 @@ Main::Main(uint8_t id, utils::Logger& log)
   }
 
   // kReady for SM transition
-  sensors_ = data_.getSensorsData();
+  sensors_               = data_.getSensorsData();
   sensors_.module_status = data::ModuleStatus::kReady;
   data_.setSensorsData(sensors_);
   log_.INFO("Sensors", "Sensors have been initialised");
@@ -78,7 +80,7 @@ Main::Main(uint8_t id, utils::Logger& log)
 
 bool Main::keyencesUpdated()
 {
-  for (int i = 0; i < data::Sensors::kNumKeyence; i ++) {
+  for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
     if (prev_keyence_stripe_count_arr_[i].count.value != keyence_stripe_counter_arr_[i].count.value)
       return true;
   }
@@ -87,7 +89,7 @@ bool Main::keyencesUpdated()
 
 void Main::checkTemperature()
 {
-  temperature_->run();               // not a thread
+  temperature_->run();  // not a thread
   data_.setTemperature(temperature_->getData());
   if (data_.getTemperature() > 85 && !log_error_) {
     log_.INFO("Sensors", "PCB temperature is getting a wee high...sorry Cheng");
@@ -119,7 +121,7 @@ void Main::run()
     }
     Thread::sleep(10);  // Sleep for 10ms
     temp_count++;
-    if (temp_count % 20 == 0) {       // check every 20 cycles of main
+    if (temp_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
       // So that temp_count does not get huge
       temp_count = 0;
@@ -129,4 +131,5 @@ void Main::run()
   imu_manager_->join();
   battery_manager_->join();
 }
-}}
+}  // namespace sensors
+}  // namespace hyped

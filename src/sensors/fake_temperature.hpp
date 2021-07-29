@@ -23,17 +23,17 @@
 
 #include <string>
 
-#include "utils/logger.hpp"
 #include "sensors/interface.hpp"
+#include "utils/logger.hpp"
 
 namespace hyped {
 
-using utils::Logger;
 using data::Data;
+using utils::Logger;
 
 namespace sensors {
 
-class FakeTemperature: public TemperatureInterface {
+class FakeTemperature : public TemperatureInterface {
  public:
   /**
    * @brief Construct a new Fake Temperature object
@@ -41,7 +41,7 @@ class FakeTemperature: public TemperatureInterface {
    * @param log
    * @param is_fail
    */
-  FakeTemperature(Logger& log, bool is_fail);
+  FakeTemperature(Logger &log, bool is_fail);
 
   /**
    * @brief returns int representation
@@ -56,8 +56,8 @@ class FakeTemperature: public TemperatureInterface {
   void run() override;
 
  private:
-  Data& data_;
-  utils::Logger& log_;
+  Data &data_;
+  utils::Logger &log_;
 
   /**
    * @brief dependent on is_fail_, set to fail value
@@ -76,6 +76,7 @@ class FakeTemperature: public TemperatureInterface {
   uint64_t failure_time_;
   bool failure_happened_;
 };
-}}    // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_FAKE_TEMPERATURE_HPP_

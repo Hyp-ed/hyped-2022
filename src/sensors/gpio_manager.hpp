@@ -27,15 +27,14 @@
 
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
-
-#include "utils/system.hpp"
 #include "utils/config.hpp"
 #include "utils/io/gpio.hpp"
+#include "utils/system.hpp"
 
 namespace hyped {
 
-using utils::Logger;
 using data::Data;
+using utils::Logger;
 using utils::concurrent::Thread;
 using utils::io::GPIO;
 
@@ -48,9 +47,9 @@ namespace sensors {
  * check data directly from data.hpp.g
  */
 
-class GpioManager : public Thread  {
+class GpioManager : public Thread {
  public:
-  explicit GpioManager(Logger& log);
+  explicit GpioManager(Logger &log);
   void run() override;
 
  private:
@@ -58,18 +57,18 @@ class GpioManager : public Thread  {
 
   void setHP();
 
-  utils::System&  sys_;
-  data::Data&     data_;
+  utils::System &sys_;
+  data::Data &data_;
   /**
    * @brief master switch to keep pod on, signal held high at startup
    */
-  GPIO* master_;
+  GPIO *master_;
 
   /**
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<GPIO*> hp_ssr_;
+  std::vector<GPIO *> hp_ssr_;
 
   /**
    * @brief stores the previous state when switch statement checks state machine
@@ -84,6 +83,7 @@ class GpioManager : public Thread  {
   data::ModuleStatus previous_battery_status_;
 };
 
-}}  // namespace hyped::sensors
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_GPIO_MANAGER_HPP_

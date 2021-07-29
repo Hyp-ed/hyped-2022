@@ -24,54 +24,54 @@
 #include <vector>
 
 #include "sensors/interface.hpp"
-#include "utils/logger.hpp"
-#include "utils/io/spi.hpp"
 #include "utils/io/gpio.hpp"
+#include "utils/io/spi.hpp"
+#include "utils/logger.hpp"
 
 namespace hyped {
 
+using data::NavigationVector;
 using hyped::utils::io::SPI;
 using utils::Logger;
 using utils::io::GPIO;
-using data::NavigationVector;
 
 namespace sensors {
 
 class Imu : public ImuInterface {
  public:
-  Imu(Logger& log, uint32_t pin, bool is_fifo);
+  Imu(Logger &log, uint32_t pin, bool is_fifo);
   ~Imu();
   /*
    *  @brief Returns if the sensor is online
    *
    *  @return true if the sensor is online
    */
-  bool isOnline() override {
-    return whoAmI();
-  }
+  bool isOnline() override { return whoAmI(); }
   /*
    *  @brief Get the Imu data and update the pointer
    */
-  void getData(ImuData* data) override;
+  void getData(ImuData *data) override;
 
   /**
-   * @brief calculates number of bytes in FIFO and reads number of full sets (6 bytes) into vector of ImuData
-   * See data.hpp for ImuData struct
+   * @brief calculates number of bytes in FIFO and reads number of full sets (6 bytes) into vector
+   * of ImuData See data.hpp for ImuData struct
    *
    * @param data ImuData vector to read number of full sets into
    * @return 0 if empty
    */
-  int readFifo(ImuData* data);
+  int readFifo(ImuData *data);
 
  private:
   /*
-   *  @brief Sets the range for the accelerometer by writing to the IMU given the write register address
+   *  @brief Sets the range for the accelerometer by writing to the IMU given the write register
+   * address
    */
   void setAcclScale();
   void init();
 
   /**
-   * @brief Resets and enables fifo after sleeping 500 ms, frame size is set to 6 for xyz acceleration
+   * @brief Resets and enables fifo after sleeping 500 ms, frame size is set to 6 for xyz
+   * acceleration
    */
   void enableFifo();
 
@@ -121,19 +121,19 @@ class Imu : public ImuInterface {
   void readBytes(uint8_t read_reg, uint8_t *read_buff, uint8_t length);
 
  private:
-  SPI&    spi_;
-  Logger& log_;
-  GPIO    gpio_;
+  SPI &spi_;
+  Logger &log_;
+  GPIO gpio_;
   uint32_t pin_;
   bool is_fifo_;
-  double  acc_divider_;
-  bool    is_online_;
+  double acc_divider_;
+  bool is_online_;
   uint8_t user_bank_;
   static const uint64_t time_start;
-  size_t kFrameSize_;               // initialised as 6 in enableFifo()
+  size_t kFrameSize_;  // initialised as 6 in enableFifo()
 };
 
-}}  // namespace hyped::sensors
-
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_IMU_HPP_

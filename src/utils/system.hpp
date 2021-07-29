@@ -38,9 +38,9 @@ class Config;
 
 class System {
  public:
-  static void parseArgs(int argc, char* argv[]);
-  static System& getSystem();
-  static Logger& getLogger();
+  static void parseArgs(int argc, char *argv[]);
+  static System &getSystem();
+  static Logger &getLogger();
 
   /**
    * Register custom signal handler for CTRL+C to make system exit gracefully
@@ -106,11 +106,11 @@ class System {
   Barrier navigation_motors_sync_ = Barrier(2);
   bool running_;
 
-  char    config_file[250];
-  Config* config;
+  char config_file[250];
+  Config *config;
 
  private:
-  Logger* log_;
+  Logger *log_;
   System() = delete;
 
   /**
@@ -119,14 +119,15 @@ class System {
    * @param argc argument count
    * @param argv argument array
    */
-  System(int argc, char* argv[]);
+  System(int argc, char *argv[]);
   ~System();
-  static System* system_;
+  static System *system_;
 
   // macro to help implemet singleton
   NO_COPY_ASSIGN(System);
 };
 
-}}  // namespace hyped::utils
+}  // namespace utils
+}  // namespace hyped
 
 #endif  // UTILS_SYSTEM_HPP_

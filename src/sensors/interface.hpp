@@ -22,15 +22,16 @@
 #define SENSORS_INTERFACE_HPP_
 
 #include <string>
+
 #include "data/data.hpp"
 
 namespace hyped {
 
+using data::BatteryData;
 using data::ImuData;
+using data::NavigationVector;
 using data::StripeCounter;
 using data::TemperatureData;
-using data::NavigationVector;
-using data::BatteryData;
 
 namespace sensors {
 
@@ -43,31 +44,31 @@ class SensorInterface {
   virtual bool isOnline() = 0;
 };
 
-class ImuInterface: public SensorInterface {
+class ImuInterface : public SensorInterface {
  public:
   /**
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
-  virtual void getData(ImuData* imu) = 0;
+  virtual void getData(ImuData *imu) = 0;
 };
 
-class GpioInterface: public SensorInterface {
+class GpioInterface : public SensorInterface {
  public:
   /**
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
    */
-  virtual void getData(StripeCounter* stripe_counter) = 0;
+  virtual void getData(StripeCounter *stripe_counter) = 0;
 };
 
-class BMSInterface: public SensorInterface {
+class BMSInterface : public SensorInterface {
  public:
   /**
    * @brief Get Battery data
    * @param battery - output pointer to be filled by this sensor
    */
-  virtual void getData(BatteryData* battery) = 0;
+  virtual void getData(BatteryData *battery) = 0;
 };
 
 class TemperatureInterface {
@@ -83,7 +84,7 @@ class TemperatureInterface {
    */
   virtual int getData() = 0;
 };
-}}  // namespace hyped::sensors
-
+}  // namespace sensors
+}  // namespace hyped
 
 #endif  // SENSORS_INTERFACE_HPP_

@@ -22,29 +22,29 @@
 
 #include "data/data.hpp"
 #include "navigation/main_log.hpp"
+#include "sensors/fake_gpio_counter.hpp"
 #include "sensors/imu_manager.hpp"
 #include "sensors/main.hpp"
-#include "sensors/fake_gpio_counter.hpp"
 #include "utils/concurrent/thread.hpp"
-#include "utils/system.hpp"
 #include "utils/logger.hpp"
+#include "utils/system.hpp"
 
 using hyped::data::Data;
-using hyped::data::State;
-using hyped::data::StateMachine;
 using hyped::data::ModuleStatus;
 using hyped::data::Sensors;
+using hyped::data::State;
+using hyped::data::StateMachine;
 using hyped::navigation::MainLog;
-using hyped::utils::concurrent::Thread;
-using hyped::utils::System;
 using hyped::utils::Logger;
+using hyped::utils::System;
+using hyped::utils::concurrent::Thread;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
   System::parseArgs(argc, argv);
-  System &sys = System::getSystem();
-  static Data& data = Data::getInstance();
-  Logger* log_nav = new Logger(sys.verbose_nav, sys.debug_nav);
+  System &sys       = System::getSystem();
+  static Data &data = Data::getInstance();
+  Logger *log_nav   = new Logger(sys.verbose_nav, sys.debug_nav);
 
   // Keyence must be disabled
   sys.official_run = false;
@@ -56,20 +56,20 @@ int main(int argc, char* argv[])
   }
 
   // use all fake sensors
-  sys.fake_imu = 1;
-  sys.fake_batteries = 1;
+  sys.fake_imu         = 1;
+  sys.fake_batteries   = 1;
   sys.fake_temperature = 1;
-  sys.fake_embrakes = 1;
-  sys.fake_motors = 1;
+  sys.fake_embrakes    = 1;
+  sys.fake_motors      = 1;
 
   // Initialise sensors
-  hyped::sensors::Main* sensors_main = new hyped::sensors::Main(1, *log_nav);
+  hyped::sensors::Main *sensors_main = new hyped::sensors::Main(1, *log_nav);
   sensors_main->start();
-  MainLog* main = new MainLog(2, *log_nav);
+  MainLog *main = new MainLog(2, *log_nav);
   main->start();
 
   log_nav->INFO("MAIN", "Set state to CALIBRATING");
-  StateMachine state_machine = data.getStateMachineData();
+  StateMachine state_machine  = data.getStateMachineData();
   state_machine.current_state = State::kCalibrating;
   data.setStateMachineData(state_machine);
 

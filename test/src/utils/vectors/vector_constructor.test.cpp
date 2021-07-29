@@ -1,5 +1,7 @@
 #include <math.h>
+
 #include <cstdlib>
+
 #include "gtest/gtest.h"
 #include "utils/math/vector.hpp"
 /*
@@ -19,12 +21,9 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-namespace hyped
-{
-namespace utils
-{
-namespace math
-{
+namespace hyped {
+namespace utils {
+namespace math {
 
 /**
  * @brief Test used to verify that the current implementation of the class vector handles the zero
@@ -32,10 +31,10 @@ namespace math
  */
 TEST(ConstructorTest, handlesZeroArgumentConstructor)
 {
-  const int dimension = 3;
+  const int dimension            = 3;
   Vector<int, dimension> example = Vector<int, dimension>();
   ASSERT_EQ(0, example.norm());
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(0, example[i]);
   }
 }
@@ -47,10 +46,10 @@ TEST(ConstructorTest, handlesZeroArgumentConstructor)
  */
 TEST(ConstructorTest, handlesConstantConstructor)
 {
-  const int element = 2;
-  const int dimension = 3;
+  const int element              = 2;
+  const int dimension            = 3;
   Vector<int, dimension> example = Vector<int, dimension>(element);
-  ASSERT_EQ(element*std::pow(dimension, 0.5), example.norm());
+  ASSERT_EQ(element * std::pow(dimension, 0.5), example.norm());
 }
 
 /**
@@ -60,11 +59,11 @@ TEST(ConstructorTest, handlesConstantConstructor)
  */
 TEST(ConstructorTest, handlesArrayContructor)
 {
-  const int dimension = 3;
-  std::array<int, dimension> array =std::array<int, dimension>();
+  const int dimension              = 3;
+  std::array<int, dimension> array = std::array<int, dimension>();
   array.fill(10);
   Vector<int, dimension> vector = Vector<int, dimension>(array);
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(array[i], vector[i]);
   }
 }
@@ -77,10 +76,10 @@ TEST(ConstructorTest, handlesArrayContructor)
  */
 TEST(ConstructorTest, handlesArrayContructorEmptyListTest)
 {
-  const int dimension = 3;
-  std::array<int, dimension> array =std::array<int, dimension>();
-  Vector<int, dimension> vector = Vector<int, dimension>(array);
-  for (int i = 0;i < dimension;i++) {
+  const int dimension              = 3;
+  std::array<int, dimension> array = std::array<int, dimension>();
+  Vector<int, dimension> vector    = Vector<int, dimension>(array);
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(array[i], vector[i]);
     ASSERT_EQ(0, vector[i]);
   }
@@ -93,11 +92,11 @@ TEST(ConstructorTest, handlesArrayContructorEmptyListTest)
  */
 TEST(ConstructorTest, handlesListConstructor)
 {
-  const int dimension = 3;
+  const int dimension             = 3;
   std::initializer_list<int> list = std::initializer_list<int>({1, 2, 3});
-  Vector<int, dimension> vector = Vector<int, dimension>(list);
-  for (int i = 0;i < dimension;i++) {
-    ASSERT_EQ(*(list.begin()+i), vector[i]);
+  Vector<int, dimension> vector   = Vector<int, dimension>(list);
+  for (int i = 0; i < dimension; i++) {
+    ASSERT_EQ(*(list.begin() + i), vector[i]);
   }
 }
 
@@ -111,15 +110,17 @@ TEST(ConstructorTest, handlesDifferentTypeVector)
 {
   const int dimension = 3;
 
-  std::array<float, dimension> array_one =std::array<float, dimension>();
+  std::array<float, dimension> array_one = std::array<float, dimension>();
   array_one.fill(10.1);
-  Vector<float, dimension> vector_one = Vector<float, dimension>(array_one);
-  std::array<int, dimension> array_two =std::array<int, dimension>();
+  Vector<float, dimension> vector_one  = Vector<float, dimension>(array_one);
+  std::array<int, dimension> array_two = std::array<int, dimension>();
   array_two.fill(static_cast<int>(10.1));
   Vector<int, dimension> vector_two = Vector<int, dimension>(vector_one);
 
-  for (int i = 0;i < dimension;i++) {
+  for (int i = 0; i < dimension; i++) {
     ASSERT_EQ(array_two[i], vector_two[i]);
   }
 }
-}}}  // hyped::utils::math
+}  // namespace math
+}  // namespace utils
+}  // namespace hyped

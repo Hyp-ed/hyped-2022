@@ -19,25 +19,27 @@
  */
 
 #include "utils/config.hpp"
+
 #include <cstdio>
 #include <cstring>
+#include <sstream>
 #include <string>  // redundant includes to make linter stop complaining
 #include <vector>
-#include <sstream>
+
+#include "utils/interface_factory.hpp"
 #include "utils/logger.hpp"
 #include "utils/system.hpp"
-#include "utils/interface_factory.hpp"
 
 namespace hyped {
 namespace utils {
 
-#define BUFFER_SIZE 250   // max length of a line in the confix file in characters
+#define BUFFER_SIZE 250  // max length of a line in the confix file in characters
 
-typedef void (Config::* Parser) (char* line);
+typedef void (Config::*Parser)(char *line);
 struct ModuleEntry {
   Submodule label;
-  char      name[20];   // no module name should exceed 20 characters
-  Parser    parse;
+  char name[20];  // no module name should exceed 20 characters
+  Parser parse;
 };
 
 /**
@@ -49,19 +51,16 @@ struct ModuleEntry {
  * Column 1: A readable name as it appears in the configuration file
  * Column 2: An address of a Config:: member function that performs the line parsing.
  */
-#define MAP_ENTRY(module) \
-  {k##module , #module, &Config::parse##module},
+#define MAP_ENTRY(module) {k##module, #module, &Config::parse##module},
 
-ModuleEntry module_map[] = {
-  MODULE_LIST(MAP_ENTRY)
-};
+ModuleEntry module_map[] = {MODULE_LIST(MAP_ENTRY)};
 
-void Config::parseNoModule(char* line)
+void Config::parseNoModule(char *line)
 {
   // does nothing
 }
 
-void Config::parseSensors(char* line)
+void Config::parseSensors(char *line)
 {
   // EXAMPLE line parsing:
   // "char* strtok(line, delimiters)" splits the input line into parts using
@@ -75,85 +74,69 @@ void Config::parseSensors(char* line)
   // After this, the value can be converted from string to bool/int/string and
   // stored in the corresponding configuration field
 
-  char* token = strtok(line, " ");
+  char *token = strtok(line, " ");
 
   if (strcmp(token, "ChipSelect") == 0) {
     for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        sensors.chip_select[i] = atoi(value);
-      }
+      char *value = strtok(NULL, ",");
+      if (value) { sensors.chip_select[i] = atoi(value); }
     }
   }
 
   if (strcmp(token, "KeyenceL") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.keyence_l = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { sensors.keyence_l = atoi(value); }
   }
 
   if (strcmp(token, "KeyenceR") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.keyence_r = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { sensors.keyence_r = atoi(value); }
   }
 
   if (strcmp(token, "Thermistor") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.thermistor = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { sensors.thermistor = atoi(value); }
   }
 
   if (strcmp(token, "Master") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.master = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { sensors.master = atoi(value); }
   }
 
   if (strcmp(token, "HPShutoff") == 0) {
     for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        sensors.hp_shutoff.push_back(atoi(value));
-      }
+      char *value = strtok(NULL, ",");
+      if (value) { sensors.hp_shutoff.push_back(atoi(value)); }
     }
   }
 
   if (strcmp(token, "CheckTime") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      sensors.checktime = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { sensors.checktime = atoi(value); }
   }
 }
 
-void Config::parseNavigation(char* line)
+void Config::parseNavigation(char *line)
 {
   printf("nav %s\n", line);
 }
 
-void Config::parseStateMachine(char* line)
+void Config::parseStateMachine(char *line)
 {
-  char* token = strtok(line, " ");
+  char *token = strtok(line, " ");
   if (strcmp(token, "Timeout") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      statemachine.timeout = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { statemachine.timeout = atoi(value); }
   }
 }
 
-void Config::parseTelemetry(char* line)
+void Config::parseTelemetry(char *line)
 {
   // just in case we get handed a null pointer
   if (!line) return;
 
   // convert char* line to c++ style string
-  std::string cpp_line {line};
+  std::string cpp_line{line};
 
   std::istringstream iss(cpp_line);
   std::vector<std::string> tokens;
@@ -169,87 +152,83 @@ void Config::parseTelemetry(char* line)
   }
 }
 
-void Config::parseEmbrakes(char* line)
+void Config::parseEmbrakes(char *line)
 {
-  char* token = strtok(line, " ");
+  char *token = strtok(line, " ");
 
   if (strcmp(token, "Command") == 0) {
     for (int i = 0; i < 2; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        embrakes.command[i] = atoi(value);
-      }
+      char *value = strtok(NULL, ",");
+      if (value) { embrakes.command[i] = atoi(value); }
     }
   }
   if (strcmp(token, "Button") == 0) {
     for (int i = 0; i < 4; i++) {
-      char* value = strtok(NULL, ",");
-      if (value) {
-        embrakes.button[i] = atoi(value);
-      }
+      char *value = strtok(NULL, ",");
+      if (value) { embrakes.button[i] = atoi(value); }
     }
   }
 }
 
-void Config::parseMotorControl(char* line)
+void Config::parseMotorControl(char *line)
 {
-  char* token = strtok(line, " ");
+  char *token = strtok(line, " ");
   if (strcmp(token, "isFaulty") == 0) {
-    char* value = strtok(NULL, " ");
-    if (value) {
-      motor_control.isFaulty = atoi(value);
-    }
+    char *value = strtok(NULL, " ");
+    if (value) { motor_control.isFaulty = atoi(value); }
   }
 }
 
 // if there is no creator configured to an interface, we use this one to prevent calling
 // a null pointer function
 template<class T>
-T* createDefault()
+T *createDefault()
 {
   printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
   return nullptr;
 }
 
-void Config::parseInterfaceFactory(char* line)
+void Config::parseInterfaceFactory(char *line)
 {
   // parse into key value pair, validate input line
-  char* key   = strtok(line, " ");
-  char* value = strtok(NULL, " ");
+  char *key   = strtok(line, " ");
+  char *value = strtok(NULL, " ");
   if (!key || !value) {
     log_.ERR("CONFIG",
-            "lines for InterfaceFactory submodule must have format \"interface implementation\"");
+             "lines for InterfaceFactory submodule must have format \"interface implementation\"");
     return;
   }
 
   // if the implementation is not registered with the interface factory, we use the default
   // creator function
-#define PARSE_FACTORY(module, interface)                                            \
-  if (strcmp(key, #interface) == 0) {                                               \
-    auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);            \
-    interfaceFactory.get##interface##Instance = creator ? creator :  \
-      createDefault<module::interface>;  \
-    return;                                                                         \
+#define PARSE_FACTORY(module, interface)                                                           \
+  if (strcmp(key, #interface) == 0) {                                                              \
+    auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);                  \
+    interfaceFactory.get##interface##Instance                                                      \
+      = creator ? creator : createDefault<module::interface>;                                      \
+    return;                                                                                        \
   }
   INTERFACE_LIST(PARSE_FACTORY)
 
   // if we get here, the interface is probably not listed in INTERFACE_LIST
-  log_.ERR("CONFIG", "Factory interface \"%s\" is not registered, you need to list it in "
-                     "INTERFACE_LIST in 'src/utils/interfaces.hpp'", key);
+  log_.ERR("CONFIG",
+           "Factory interface \"%s\" is not registered, you need to list it in "
+           "INTERFACE_LIST in 'src/utils/interfaces.hpp'",
+           key);
 }
 
-constexpr char config_dir_name[] = "configurations/";
+constexpr char config_dir_name[]    = "configurations/";
 constexpr auto config_dir_name_size = sizeof(config_dir_name);
-void Config::readFile(char* config_file)
+void Config::readFile(char *config_file)
 {
   static_assert(config_dir_name_size < BUFFER_SIZE, "configuration directory name is too long");
   char file_name[BUFFER_SIZE];
   std::snprintf(file_name, config_dir_name_size, config_dir_name);
-  std::snprintf(file_name+config_dir_name_size-1,         // account for dir_name
-                sizeof(file_name)-config_dir_name_size,   // calculate remaining buffer space
-                "%s", config_file);                       // provide string value to be appended
+  std::snprintf(file_name + config_dir_name_size - 1,      // account for dir_name
+                sizeof(file_name) - config_dir_name_size,  // calculate remaining buffer space
+                "%s", config_file);                        // provide string value to be appended
   // load config file, parse it into data structure
-  FILE* file = fopen(file_name, "r");
+  FILE *file = fopen(file_name, "r");
   if (!file) {
     log_.ERR("CONFIG", "no configuration file %s found, exiting", file_name);
     return;
@@ -259,11 +238,11 @@ void Config::readFile(char* config_file)
 
   // allocate line buffer, read and parse file line by line
   char line[BUFFER_SIZE];
-  ModuleEntry* current_module = &module_map[0];
+  ModuleEntry *current_module = &module_map[0];
 
   while (fgets(line, sizeof(line), file) != NULL) {
     // remove new line character
-    for (char& value : line) {
+    for (char &value : line) {
       if (value == '\n') value = '\0';
     }
 
@@ -275,18 +254,17 @@ void Config::readFile(char* config_file)
       case '\0':  // empty line
         continue;
       case '>': {
-        ModuleEntry* prev_module = current_module;
-        for (ModuleEntry& entry : module_map) {
-          if (strncmp(entry.name, line+2, BUFFER_SIZE) == 0) {
+        ModuleEntry *prev_module = current_module;
+        for (ModuleEntry &entry : module_map) {
+          if (strncmp(entry.name, line + 2, BUFFER_SIZE) == 0) {
             current_module = &entry;
             break;
           }
         }
 
         if (prev_module == current_module) {
-          log_.ERR("CONFIG", "module name \"%s\" not found, keeping to module \"%s\""
-                  , line+1
-                  , current_module->name);
+          log_.ERR("CONFIG", "module name \"%s\" not found, keeping to module \"%s\"", line + 1,
+                   current_module->name);
         } else {
           log_.DBG("CONFIG", "changing module to \"%s\"", current_module->name);
         }
@@ -295,9 +273,9 @@ void Config::readFile(char* config_file)
       }
       case '$': {
         // check if config_file already in config_files_
-        char* new_config_file = line + 2;
-        bool duplicate = false;
-        for (char* file : config_files_) {
+        char *new_config_file = line + 2;
+        bool duplicate        = false;
+        for (char *file : config_files_) {
           if (std::strcmp(file, new_config_file) == 0) {
             duplicate = true;
             break;
@@ -309,19 +287,19 @@ void Config::readFile(char* config_file)
         }
 
         config_files_.push_back(new_config_file);
-        log_.DBG("CONFIG", "Stepping into %s, reseting module to \"%s\"",
-                            new_config_file, current_module->name);
+        log_.DBG("CONFIG", "Stepping into %s, reseting module to \"%s\"", new_config_file,
+                 current_module->name);
         current_module = &module_map[0];
         readFile(new_config_file);
         current_module = &module_map[0];
-        log_.DBG("CONFIG", "Returning into %s, reseting module to \"%s\"",
-                            config_file, current_module->name);
+        log_.DBG("CONFIG", "Returning into %s, reseting module to \"%s\"", config_file,
+                 current_module->name);
         config_files_.pop_back();
         break;
       }
       default: {
         // dispatch to line parser
-        (this->*(current_module->parse)) (line);
+        (this->*(current_module->parse))(line);
       }
     }
   }
@@ -329,10 +307,9 @@ void Config::readFile(char* config_file)
   fclose(file);
 }
 
-Config::Config(char* config_file)
-    : log_(System::getLogger())
+Config::Config(char *config_file) : log_(System::getLogger())
 {
-#define INIT_CREATOR(module, interface) \
+#define INIT_CREATOR(module, interface)                                                            \
   interfaceFactory.get##interface##Instance = createDefault<module::interface>;
   INTERFACE_LIST(INIT_CREATOR)
 
@@ -341,4 +318,5 @@ Config::Config(char* config_file)
   config_files_.pop_back();
 }
 
-}}  // namespace hyped::utils
+}  // namespace utils
+}  // namespace hyped

@@ -30,20 +30,17 @@ class Implementation1 : public DemoInterface {
  public:
   Implementation1() {}
 
-  void printYourName() override
-  {
-    printf("hello, my name is Implementation1\n");
-  }
+  void printYourName() override { printf("hello, my name is Implementation1\n"); }
 };
 
 namespace {
-DemoInterface* createImplementation1()
+DemoInterface *createImplementation1()
 {
   return new Implementation1();
 }
-bool reg_impl = utils::InterfaceFactory<DemoInterface>
-                ::registerCreator("Implementation1", createImplementation1);
-}
+bool reg_impl = utils::InterfaceFactory<DemoInterface>::registerCreator("Implementation1",
+                                                                        createImplementation1);
+}  // namespace
 
-
-}}  // namespace hyped::demo
+}  // namespace demo
+}  // namespace hyped

@@ -24,24 +24,23 @@
 
 #include <atomic>
 
+#include "data/data.hpp"
+#include "propulsion/can/can_sender.hpp"
 #include "propulsion/controller_interface.hpp"
 #include "propulsion/file_reader.hpp"
-#include "propulsion/can/can_sender.hpp"
-#include "data/data.hpp"
-#include "utils/timer.hpp"
-#include "utils/logger.hpp"
-#include "utils/io/can.hpp"
-#include "utils/system.hpp"
 #include "utils/concurrent/thread.hpp"
-
+#include "utils/io/can.hpp"
+#include "utils/logger.hpp"
+#include "utils/system.hpp"
+#include "utils/timer.hpp"
 
 namespace hyped {
 
 using std::atomic;
 
+using utils::Logger;
 using utils::concurrent::Thread;
 using utils::io::can::Frame;
-using utils::Logger;
 
 namespace motor_control {
 
@@ -52,7 +51,7 @@ class Controller : public ControllerInterface {
    * @param log
    * @param id
    */
-  Controller(Logger& log, uint8_t id);
+  Controller(Logger &log, uint8_t id);
   /**
    * @brief Registers controller to recieve and transmit CAN messages.
    */
@@ -148,7 +147,7 @@ class Controller : public ControllerInterface {
    * @brief to be called by processNewData if Emergency message is detected.
    * @param message CAN message to process
    */
-  void processEmergencyMessage(utils::io::can::Frame& message) override;
+  void processEmergencyMessage(utils::io::can::Frame &message) override;
   /**
    * @brief Parses error message to find the problem
    * @param error_message
@@ -158,19 +157,19 @@ class Controller : public ControllerInterface {
    * @brief Called by processNewData if SDO message is detected
    * @param message
    */
-  void processSdoMessage(utils::io::can::Frame& message) override;
+  void processSdoMessage(utils::io::can::Frame &message) override;
   /**
    * @brief Called by processNewData if NMT message is detected
    * @param message
    */
-  void processNmtMessage(utils::io::can::Frame& message) override;
+  void processNmtMessage(utils::io::can::Frame &message) override;
   /*
    * @brief { Sends state transition message to controller, leaving sufficient time for
    *          controller to change state. If state does not change, throw critical failure }
    *
    * @param[in] { CAN message to be sent, Controller state requested}
    */
-  void requestStateTransition(utils::io::can::Frame& message, ControllerState state) override;
+  void requestStateTransition(utils::io::can::Frame &message, ControllerState state) override;
   /**
    * @brief Sets the mode of operation to the auto align motor positon mode.
    *        The motor should spin briefly in both directions. This is a testing state and the
@@ -189,43 +188,43 @@ class Controller : public ControllerInterface {
   /*
    * @brief Sends a CAN frame but waits for a reply
    */
-  void sendSdoMessage(utils::io::can::Frame& message);
+  void sendSdoMessage(utils::io::can::Frame &message);
   /**
    * @brief set critical failure flag to true and write failure to data structure.
    */
   void throwCriticalFailure();
 
-  Logger&                   log_;
-  data::Data&               data_;
-  data::Motors              motor_data_;
-  atomic<ControllerState>   state_;
-  uint8_t                   node_id_;
-  atomic<bool>              critical_failure_;
-  atomic<int32_t>           actual_velocity_;
-  atomic<int16_t>           actual_torque_;
-  atomic<uint8_t>           motor_temperature_;
-  atomic<uint8_t>           controller_temperature_;
-  CanSender                 sender;
-  Frame             sdo_message_;
-  Frame             nmt_message_;
+  Logger &log_;
+  data::Data &data_;
+  data::Motors motor_data_;
+  atomic<ControllerState> state_;
+  uint8_t node_id_;
+  atomic<bool> critical_failure_;
+  atomic<int32_t> actual_velocity_;
+  atomic<int16_t> actual_torque_;
+  atomic<uint8_t> motor_temperature_;
+  atomic<uint8_t> controller_temperature_;
+  CanSender sender;
+  Frame sdo_message_;
+  Frame nmt_message_;
 
   // Network management CAN commands:
-  const uint8_t     kNmtOperational        = 0x01;
+  const uint8_t kNmtOperational = 0x01;
 
   // Paths to the different files of message data.
-  const char* kConfigMsgFile = "data/in/controllerConfigFiles/configure.txt";
-  const char* kEnterOpMsgFile = "data/in/controllerConfigFiles/enter_operational.txt";
-  const char* kEnterPreOpMsgFile = "data/in/controllerConfigFiles/enter_preOperational.txt";
-  const char* kCheckStateMsgFile = "data/in/controllerConfigFiles/check_state.txt";
-  const char* kSendTargetVelMsgFile = "data/in/controllerConfigFiles/send_target_velocity.txt";
-  const char* kSendTargetTorqMsgFile = "data/in/controllerConfigFiles/send_target_torque.txt";
-  const char* kUpdateActualVelMsgFile = "data/in/controllerConfigFiles/update_actual_velocity.txt";
-  const char* kUpdateActualTorqMsgFile = "data/in/controllerConfigFiles/update_actual_torque.txt";
-  const char* kQuickStopMsgFile = "data/in/controllerConfigFiles/quick_stop.txt";
-  const char* kHealthCheckMsgFile = "data/in/controllerConfigFiles/health_check.txt";
-  const char* kUpdateMotorTempFile = "data/in/controllerConfigFiles/update_motor_temp.txt";
-  const char* kUpdateContrTempFile = "data/in/controllerConfigFiles/update_contr_temp.txt";
-  const char* kAutoAlignMsgFile = "data/in/controllerConfigFiles/auto_align.txt";
+  const char *kConfigMsgFile           = "data/in/controllerConfigFiles/configure.txt";
+  const char *kEnterOpMsgFile          = "data/in/controllerConfigFiles/enter_operational.txt";
+  const char *kEnterPreOpMsgFile       = "data/in/controllerConfigFiles/enter_preOperational.txt";
+  const char *kCheckStateMsgFile       = "data/in/controllerConfigFiles/check_state.txt";
+  const char *kSendTargetVelMsgFile    = "data/in/controllerConfigFiles/send_target_velocity.txt";
+  const char *kSendTargetTorqMsgFile   = "data/in/controllerConfigFiles/send_target_torque.txt";
+  const char *kUpdateActualVelMsgFile  = "data/in/controllerConfigFiles/update_actual_velocity.txt";
+  const char *kUpdateActualTorqMsgFile = "data/in/controllerConfigFiles/update_actual_torque.txt";
+  const char *kQuickStopMsgFile        = "data/in/controllerConfigFiles/quick_stop.txt";
+  const char *kHealthCheckMsgFile      = "data/in/controllerConfigFiles/health_check.txt";
+  const char *kUpdateMotorTempFile     = "data/in/controllerConfigFiles/update_motor_temp.txt";
+  const char *kUpdateContrTempFile     = "data/in/controllerConfigFiles/update_contr_temp.txt";
+  const char *kAutoAlignMsgFile        = "data/in/controllerConfigFiles/auto_align.txt";
 
  public:
   // Arrays of messages sent to controller (see config files for details about message contents)
@@ -243,6 +242,7 @@ class Controller : public ControllerInterface {
   ControllerMessage updateContrTempMsg[1];
   ControllerMessage autoAlignMsg[1];
 };
-}}  // namespace hyped::motor_control
+}  // namespace motor_control
+}  // namespace hyped
 
 #endif  // PROPULSION_CONTROLLER_HPP_

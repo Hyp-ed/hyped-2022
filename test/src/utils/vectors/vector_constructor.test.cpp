@@ -92,11 +92,10 @@ TEST(ConstructorTest, handlesArrayContructorEmptyListTest)
  */
 TEST(ConstructorTest, handlesListConstructor)
 {
-  const int dimension             = 3;
-  std::initializer_list<int> list = std::initializer_list<int>({1, 2, 3});
-  Vector<int, dimension> vector   = Vector<int, dimension>(list);
+  const int dimension           = 3;
+  Vector<int, dimension> vector = Vector<int, dimension>({-4, 29, 62});
   for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(*(list.begin() + i), vector[i]);
+    ASSERT_EQ(i * 33 - 4, vector[i]);
   }
 }
 

@@ -16,6 +16,7 @@ add_compile_definitions(LINUX)
 
 include(${CMAKE_SOURCE_DIR}/lib/rapidjson.cmake)
 include(${CMAKE_SOURCE_DIR}/lib/eigen.cmake)
+include(${CMAKE_SOURCE_DIR}/lib/gtest.cmake)
 
 set(project hyped)
 project(${project})
@@ -23,6 +24,7 @@ project(${project})
 include_directories(
     ${RAPIDJSON_INCLUDE_DIR}
     ${EIGEN_INCLUDE_DIR}
+    ${GTEST_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/src
 )
 
@@ -34,6 +36,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
+add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 set(target "hyped")
 add_executable(${target} ${CMAKE_SOURCE_DIR}/run/main.cpp)

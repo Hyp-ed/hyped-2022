@@ -17,7 +17,7 @@
  *    limitations under the License.
 
  */
-#pragma oncd
+#pragma once
 
 #include <Eigen/Dense>
 

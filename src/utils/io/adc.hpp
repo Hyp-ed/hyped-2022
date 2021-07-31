@@ -22,10 +22,9 @@
 #define UTILS_IO_ADC_HPP_
 
 #include <cstdint>
+#include <utils/logger.hpp>
+#include <utils/utils.hpp>
 #include <vector>
-
-#include "utils/logger.hpp"
-#include "utils/utils.hpp"
 
 namespace hyped {
 namespace utils {

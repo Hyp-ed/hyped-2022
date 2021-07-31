@@ -22,12 +22,11 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
-
-#include "data/data.hpp"
-#include "data/data_point.hpp"
-#include "utils/logger.hpp"
-#include "utils/math/statistics.hpp"
-#include "utils/timer.hpp"
+#include <data/data.hpp>
+#include <data/data_point.hpp>
+#include <utils/logger.hpp>
+#include <utils/math/statistics.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 

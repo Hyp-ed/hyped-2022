@@ -22,11 +22,11 @@
 #define SENSORS_GPIO_COUNTER_HPP_
 
 #include <cstdint>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
-#include "sensors/interface.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

@@ -27,11 +27,11 @@
 #define MAX_CURRENT 1500  // mA
 
 #include <cstdlib>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 #include <vector>
 
-#include "propulsion/controller.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "controller.hpp"
 
 namespace hyped {
 

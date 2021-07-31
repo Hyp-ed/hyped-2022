@@ -23,9 +23,10 @@
 #ifndef STATE_MACHINE_TRANSITIONS_HPP_
 #define STATE_MACHINE_TRANSITIONS_HPP_
 
-#include "data/data.hpp"
-#include "state_machine/state.hpp"
-#include "utils/logger.hpp"
+#include <data/data.hpp>
+#include <utils/logger.hpp>
+
+#include "state.hpp"
 
 namespace hyped {
 

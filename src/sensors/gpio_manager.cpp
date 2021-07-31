@@ -18,10 +18,10 @@
  *    limitations under the License.
  */
 
-#include "sensors/gpio_manager.hpp"
+#include "gpio_manager.hpp"
 
-#include "utils/config.hpp"
-#include "utils/timer.hpp"
+#include <utils/config.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 namespace sensors {

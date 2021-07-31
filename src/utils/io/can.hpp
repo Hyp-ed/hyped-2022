@@ -29,11 +29,10 @@
 #define UTILS_IO_CAN_HPP_
 
 #include <cstdint>
+#include <utils/concurrent/lock.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/utils.hpp>
 #include <vector>
-
-#include "utils/concurrent/lock.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/utils.hpp"
 
 namespace hyped {
 namespace utils {

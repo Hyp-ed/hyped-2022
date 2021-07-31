@@ -21,12 +21,12 @@
 #ifndef SENSORS_IMU_HPP_
 #define SENSORS_IMU_HPP_
 
+#include <utils/io/gpio.hpp>
+#include <utils/io/spi.hpp>
+#include <utils/logger.hpp>
 #include <vector>
 
-#include "sensors/interface.hpp"
-#include "utils/io/gpio.hpp"
-#include "utils/io/spi.hpp"
-#include "utils/logger.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

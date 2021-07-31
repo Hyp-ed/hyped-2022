@@ -18,13 +18,13 @@
  *    limitations under the License.
  */
 
-#include "sensors/main.hpp"
+#include "main.hpp"
 
-#include "sensors/fake_gpio_counter.hpp"
-#include "sensors/fake_temperature.hpp"
-#include "sensors/gpio_counter.hpp"
-#include "sensors/temperature.hpp"
-#include "utils/config.hpp"
+#include <sensors/fake_gpio_counter.hpp>
+#include <sensors/fake_temperature.hpp>
+#include <sensors/gpio_counter.hpp>
+#include <sensors/temperature.hpp>
+#include <utils/config.hpp>
 
 namespace hyped {
 

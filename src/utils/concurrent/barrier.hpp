@@ -23,8 +23,8 @@
 
 #include <cstdint>
 
-#include "utils/concurrent/condition_variable.hpp"
-#include "utils/concurrent/lock.hpp"
+#include "condition_variable.hpp"
+#include "lock.hpp"
 
 namespace hyped {
 namespace utils {

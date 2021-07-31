@@ -19,15 +19,16 @@
 #ifndef PROPULSION_STATE_PROCESSOR_HPP_
 #define PROPULSION_STATE_PROCESSOR_HPP_
 
-#include "data/data.hpp"
-#include "propulsion/RPM_regulator.hpp"
-#include "propulsion/controller.hpp"
-#include "propulsion/controller_interface.hpp"
-#include "propulsion/fake_controller.hpp"
-#include "propulsion/state_processor_interface.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
+#include <data/data.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
+
+#include "RPM_regulator.hpp"
+#include "controller.hpp"
+#include "controller_interface.hpp"
+#include "fake_controller.hpp"
+#include "state_processor_interface.hpp"
 
 namespace hyped {
 

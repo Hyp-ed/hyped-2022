@@ -18,12 +18,12 @@
  *    limitations under the License.
  */
 
-#include "sensors/gpio_counter.hpp"
+#include "gpio_counter.hpp"
 
 #include <stdio.h>
 
-#include "utils/io/gpio.hpp"
-#include "utils/timer.hpp"
+#include <utils/io/gpio.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 

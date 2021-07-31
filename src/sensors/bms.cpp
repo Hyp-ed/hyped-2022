@@ -18,10 +18,10 @@
  *    limitations under the License.
  */
 
-#include "sensors/bms.hpp"
+#include "bms.hpp"
 
-#include "utils/logger.hpp"
-#include "utils/timer.hpp"
+#include <utils/logger.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 

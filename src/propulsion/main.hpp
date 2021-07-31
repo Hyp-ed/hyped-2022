@@ -19,13 +19,13 @@
 #ifndef PROPULSION_MAIN_HPP_
 #define PROPULSION_MAIN_HPP_
 
-#include "utils/concurrent/barrier.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
-// #include "propulsion/can/can_sender.hpp"
-#include "data/data.hpp"
+#include <data/data.hpp>
+#include <utils/concurrent/barrier.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
+
 #include "state_processor.hpp"
 
 namespace hyped {

@@ -19,7 +19,7 @@
  *    limitations under the License.
  */
 
-#include "propulsion/RPM_regulator.hpp"
+#include "RPM_regulator.hpp"
 
 #include <vector>
 

@@ -16,7 +16,7 @@
  *  limitations under the License.
  */
 
-#include "navigation/main.hpp"
+#include "main.hpp"
 
 #include <iostream>
 

@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-#include "utils/utils.hpp"
+#include "utils.hpp"
 
 namespace hyped {
 namespace utils {

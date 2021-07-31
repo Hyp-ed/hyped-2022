@@ -19,7 +19,7 @@
 #ifndef PROPULSION_CAN_SENDER_INTERFACE_HPP_
 #define PROPULSION_CAN_SENDER_INTERFACE_HPP_
 
-#include "utils/io/can.hpp"
+#include <utils/io/can.hpp>
 
 namespace hyped {
 

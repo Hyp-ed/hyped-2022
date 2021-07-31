@@ -23,9 +23,9 @@
 #include <cstdint>
 #include <vector>
 
-#include "data/data_point.hpp"
-#include "utils/concurrent/lock.hpp"
-#include "utils/math/vector.hpp"
+#include "data_point.hpp"
+#include <utils/concurrent/lock.hpp>
+#include <utils/math/vector.hpp>
 
 using std::array;
 using std::vector;

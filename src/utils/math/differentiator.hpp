@@ -17,7 +17,7 @@
  *    limitations under the License.
  */
 
-#include "data/data_point.hpp"
+#include <data/data_point.hpp>
 
 #ifndef UTILS_MATH_DIFFERENTIATOR_HPP_
 #define UTILS_MATH_DIFFERENTIATOR_HPP_

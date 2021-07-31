@@ -17,14 +17,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include "sensors/imu.hpp"
+#include "imu.hpp"
 
 #include <algorithm>
+#include <utils/concurrent/thread.hpp>
+#include <utils/interface_factory.hpp>
+#include <utils/math/statistics.hpp>
 #include <vector>
-
-#include "utils/concurrent/thread.hpp"
-#include "utils/interface_factory.hpp"
-#include "utils/math/statistics.hpp"
 
 // user bank addresse
 constexpr uint8_t kRegBankSel = 0x7F;

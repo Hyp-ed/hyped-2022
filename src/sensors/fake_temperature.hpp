@@ -22,9 +22,9 @@
 #define SENSORS_FAKE_TEMPERATURE_HPP_
 
 #include <string>
+#include <utils/logger.hpp>
 
-#include "sensors/interface.hpp"
-#include "utils/logger.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

@@ -22,9 +22,8 @@
 
 #include <chrono>
 #include <cstdint>
+#include <data/data.hpp>
 #include <string>
-
-#include "data/data.hpp"
 
 namespace hyped {
 namespace telemetry {

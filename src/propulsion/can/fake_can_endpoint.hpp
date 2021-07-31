@@ -19,8 +19,8 @@
 #ifndef PROPULSION_CAN_FAKE_CAN_ENDPOINT_HPP_
 #define PROPULSION_CAN_FAKE_CAN_ENDPOINT_HPP_
 
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/can.hpp"
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/can.hpp>
 
 namespace hyped {
 

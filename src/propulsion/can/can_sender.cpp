@@ -16,7 +16,7 @@
  *    limitations under the License.
  */
 
-#include "propulsion/can/can_sender.hpp"
+#include "can_sender.hpp"
 
 namespace hyped {
 namespace motor_control {

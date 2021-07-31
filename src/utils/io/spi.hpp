@@ -26,8 +26,8 @@
 #ifndef UTILS_IO_SPI_HPP_
 #define UTILS_IO_SPI_HPP_
 
-#include "utils/logger.hpp"
-#include "utils/utils.hpp"
+#include <utils/logger.hpp>
+#include <utils/utils.hpp>
 
 namespace hyped {
 namespace utils {

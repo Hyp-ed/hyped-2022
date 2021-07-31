@@ -19,12 +19,13 @@
 #ifndef EMBRAKES_STEPPER_HPP_
 #define EMBRAKES_STEPPER_HPP_
 
-#include "data/data.hpp"
-#include "embrakes/interface.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/gpio.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/gpio.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+
+#include "interface.hpp"
 
 namespace hyped {
 

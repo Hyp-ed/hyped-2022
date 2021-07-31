@@ -26,13 +26,13 @@
 #define SENSORS_BMS_HPP_
 
 #include <cstdint>
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/can.hpp>
+#include <utils/system.hpp>
+#include <utils/utils.hpp>
 #include <vector>
 
-#include "sensors/interface.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/can.hpp"
-#include "utils/system.hpp"
-#include "utils/utils.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

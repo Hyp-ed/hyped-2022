@@ -23,11 +23,11 @@
 
 #include <rapidjson/writer.h>
 
+#include <data/data.hpp>
 #include <string>
+#include <utils/concurrent/thread.hpp>
 
-#include "data/data.hpp"
-#include "telemetry/main.hpp"
-#include "utils/concurrent/thread.hpp"
+#include "main.hpp"
 
 using rapidjson::StringBuffer;
 using rapidjson::Writer;

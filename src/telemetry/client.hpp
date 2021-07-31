@@ -23,8 +23,8 @@
 
 #include <string>
 
-#include "utils/config.hpp"
-#include "utils/logger.hpp"
+#include <utils/config.hpp>
+#include <utils/logger.hpp>
 
 namespace hyped {
 

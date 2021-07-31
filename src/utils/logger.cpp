@@ -26,8 +26,7 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-
-#include "utils/concurrent/lock.hpp"
+#include <utils/concurrent/lock.hpp>
 
 namespace hyped {
 namespace utils {

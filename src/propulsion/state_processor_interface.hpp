@@ -19,8 +19,8 @@
 #ifndef PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_
 #define PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_
 
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped {
 

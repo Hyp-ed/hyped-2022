@@ -22,10 +22,10 @@
 #define SENSORS_FAKE_BATTERIES_HPP_
 
 #include <string>
+#include <utils/concurrent/thread.hpp>
 #include <vector>
 
-#include "sensors/interface.hpp"
-#include "utils/concurrent/thread.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

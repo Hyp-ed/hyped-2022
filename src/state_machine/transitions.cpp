@@ -19,9 +19,9 @@
  *    limitations under the License.
  */
 
-#include "state_machine/transitions.hpp"
+#include "transitions.hpp"
 
-#include "state_machine/messages.hpp"
+#include "messages.hpp"
 
 namespace hyped {
 

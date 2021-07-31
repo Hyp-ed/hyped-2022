@@ -23,13 +23,14 @@
 #ifndef STATE_MACHINE_STATE_HPP_
 #define STATE_MACHINE_STATE_HPP_
 
-#include "data/data.hpp"
-#include "state_machine/main.hpp"
-#include "state_machine/messages.hpp"
-#include "state_machine/transitions.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
+#include <data/data.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
+
+#include "main.hpp"
+#include "messages.hpp"
+#include "transitions.hpp"
 
 namespace hyped {
 

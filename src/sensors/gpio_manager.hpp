@@ -23,13 +23,12 @@
 #define SENSORS_GPIO_MANAGER_HPP_
 
 #include <cstdint>
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/config.hpp>
+#include <utils/io/gpio.hpp>
+#include <utils/system.hpp>
 #include <vector>
-
-#include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/config.hpp"
-#include "utils/io/gpio.hpp"
-#include "utils/system.hpp"
 
 namespace hyped {
 

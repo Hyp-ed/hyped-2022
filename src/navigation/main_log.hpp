@@ -21,17 +21,17 @@
 #include <stdio.h>
 
 #include <cstdio>
+#include <data/data.hpp>
+#include <data/data_point.hpp>
 #include <fstream>
+#include <sensors/imu.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/math/statistics.hpp>
+#include <utils/system.hpp>
 
-#include "data/data.hpp"
-#include "data/data_point.hpp"
-#include "navigation/imu_data_logger.hpp"
-#include "navigation/navigation.hpp"
-#include "sensors/imu.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/math/statistics.hpp"
-#include "utils/system.hpp"
+#include "imu_data_logger.hpp"
+#include "navigation.hpp"
 
 namespace hyped {
 

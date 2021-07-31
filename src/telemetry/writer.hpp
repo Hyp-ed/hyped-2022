@@ -25,9 +25,8 @@
 
 #include <rapidjson/writer.h>
 
+#include <data/data.hpp>
 #include <string>
-
-#include "data/data.hpp"
 
 namespace hyped {
 namespace telemetry {

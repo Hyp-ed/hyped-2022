@@ -22,7 +22,7 @@
 #define TELEMETRY_RECVLOOP_HPP_
 
 #include "data/data.hpp"
-#include "telemetry/main.hpp"
+#include "main.hpp"
 #include "utils/concurrent/thread.hpp"
 
 namespace hyped {

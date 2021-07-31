@@ -22,10 +22,10 @@
 #define UTILS_SYSTEM_HPP_
 
 #include <cstdint>
+#include <utils/concurrent/barrier.hpp>
 
-#include "utils/concurrent/barrier.hpp"
-#include "utils/logger.hpp"
-#include "utils/utils.hpp"
+#include "logger.hpp"
+#include "utils.hpp"
 
 namespace hyped {
 

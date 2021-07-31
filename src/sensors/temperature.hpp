@@ -22,10 +22,10 @@
 #define SENSORS_TEMPERATURE_HPP_
 
 #include <cstdint>
+#include <data/data.hpp>
+#include <utils/logger.hpp>
 
-#include "data/data.hpp"
-#include "sensors/interface.hpp"
-#include "utils/logger.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

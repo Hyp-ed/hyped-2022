@@ -18,11 +18,12 @@
 #ifndef NAVIGATION_MAIN_HPP_
 #define NAVIGATION_MAIN_HPP_
 
-#include "data/data.hpp"
-#include "navigation/navigation.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+
+#include "navigation.hpp"
 
 namespace hyped {
 

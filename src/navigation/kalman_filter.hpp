@@ -20,11 +20,10 @@
 #define NAVIGATION_KALMAN_FILTER_HPP_
 
 #include <Eigen/Dense>
+#include <data/data.hpp>
 #include <random>
-
-#include "data/data.hpp"
-#include "utils/math/kalman_multivariate.hpp"
-#include "utils/system.hpp"
+#include <utils/math/kalman_multivariate.hpp>
+#include <utils/system.hpp>
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;

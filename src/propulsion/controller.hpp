@@ -23,16 +23,16 @@
 #define PROPULSION_CONTROLLER_HPP_
 
 #include <atomic>
+#include <data/data.hpp>
+#include <propulsion/can/can_sender.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/can.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
 
-#include "data/data.hpp"
-#include "propulsion/can/can_sender.hpp"
-#include "propulsion/controller_interface.hpp"
-#include "propulsion/file_reader.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/can.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
+#include "controller_interface.hpp"
+#include "file_reader.hpp"
 
 namespace hyped {
 

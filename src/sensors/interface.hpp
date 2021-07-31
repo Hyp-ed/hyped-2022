@@ -21,9 +21,8 @@
 #ifndef SENSORS_INTERFACE_HPP_
 #define SENSORS_INTERFACE_HPP_
 
+#include <data/data.hpp>
 #include <string>
-
-#include "data/data.hpp"
 
 namespace hyped {
 

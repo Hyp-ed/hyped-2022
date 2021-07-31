@@ -16,7 +16,7 @@
  *    limitations under the License.
  */
 
-#include "embrakes/stepper.hpp"
+#include "stepper.hpp"
 
 namespace hyped {
 namespace embrakes {

@@ -16,7 +16,7 @@
  *    limitations under the License.
  */
 
-#include "navigation/stripe_handler.hpp"
+#include "stripe_handler.hpp"
 
 #include <algorithm>
 

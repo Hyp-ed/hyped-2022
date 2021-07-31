@@ -21,10 +21,10 @@
 #define SENSORS_FAKE_IMU_HPP_
 
 #include <string>
+#include <utils/logger.hpp>
 #include <vector>
 
-#include "sensors/interface.hpp"
-#include "utils/logger.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

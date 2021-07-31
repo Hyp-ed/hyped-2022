@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "utils/concurrent/barrier.hpp"
+#include "barrier.hpp"
 
 namespace hyped {
 namespace utils {

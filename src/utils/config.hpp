@@ -26,11 +26,11 @@
 #ifndef UTILS_CONFIG_HPP_
 #define UTILS_CONFIG_HPP_
 
+#include <data/data.hpp>
 #include <string>
 #include <vector>
 
-#include "data/data.hpp"
-#include "utils/interfaces.hpp"
+#include "interfaces.hpp"
 
 namespace hyped {
 namespace utils {

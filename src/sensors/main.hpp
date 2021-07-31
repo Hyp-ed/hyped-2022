@@ -25,11 +25,11 @@
 #define SENSORS_MAIN_HPP_
 
 #include <cstdint>
+#include <utils/system.hpp>
 
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
-#include "sensors/interface.hpp"
-#include "utils/system.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 

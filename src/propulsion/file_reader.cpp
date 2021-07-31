@@ -22,7 +22,7 @@
  * TODO(Iain): reimplement to recieve a path to a file and then iterate through all the
  *             messages to initialise them.
  */
-#include "propulsion/file_reader.hpp"
+#include "file_reader.hpp"
 
 #include <string>
 #include <vector>

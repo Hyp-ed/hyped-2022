@@ -27,11 +27,11 @@
 
 #include <sstream>
 #include <string>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 #include <vector>
 
-#include "propulsion/controller_interface.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "controller_interface.hpp"
 
 namespace hyped {
 namespace motor_control {

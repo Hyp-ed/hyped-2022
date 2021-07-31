@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "utils/io/gpio.hpp"
+#include "gpio.hpp"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -31,9 +31,8 @@
 //
 #include <cstdlib>
 #include <cstring>
-
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped {
 namespace utils {

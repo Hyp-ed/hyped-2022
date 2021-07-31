@@ -32,8 +32,8 @@
 #include <map>
 #include <string>
 
-#include "utils/interfaces.hpp"
-#include "utils/logger.hpp"
+#include "interfaces.hpp"
+#include "logger.hpp"
 
 using std::string;
 

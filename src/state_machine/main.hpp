@@ -24,11 +24,11 @@
 #define STATE_MACHINE_MAIN_HPP_
 
 #include <cstdint>
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/system.hpp>
 
-#include "data/data.hpp"
-#include "state_machine/state.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/system.hpp"
+#include "state.hpp"
 
 namespace hyped {
 

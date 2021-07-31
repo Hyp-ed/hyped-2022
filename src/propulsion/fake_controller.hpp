@@ -22,11 +22,12 @@
 #ifndef PROPULSION_FAKE_CONTROLLER_HPP_
 #define PROPULSION_FAKE_CONTROLLER_HPP_
 
-#include "data/data.hpp"
-#include "propulsion/controller_interface.hpp"
-#include "utils/io/can.hpp"
-#include "utils/logger.hpp"
-#include "utils/timer.hpp"
+#include <data/data.hpp>
+#include <utils/io/can.hpp>
+#include <utils/logger.hpp>
+#include <utils/timer.hpp>
+
+#include "controller_interface.hpp"
 
 namespace hyped {
 namespace utils {

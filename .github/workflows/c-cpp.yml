@@ -10,8 +10,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Compile and Test
-      run: make test lintall
+    - name: CMake
+      run: cmake -S . -B build
+    - name: Build all
+      run: cmake --build build
+    - name: Run tests
+      run: ./build/test/hyped_test
     - name: Install LCOV
       run: | 
         cd ..

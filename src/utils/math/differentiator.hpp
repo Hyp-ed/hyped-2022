@@ -16,11 +16,9 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
 #include <data/data_point.hpp>
-
-#ifndef UTILS_MATH_DIFFERENTIATOR_HPP_
-#define UTILS_MATH_DIFFERENTIATOR_HPP_
 
 namespace hyped {
 namespace utils {
@@ -72,5 +70,3 @@ DataPoint<T> Differentiator<T>::update(DataPoint<T> point)
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_DIFFERENTIATOR_HPP_

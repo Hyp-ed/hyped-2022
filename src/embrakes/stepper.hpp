@@ -16,8 +16,7 @@
  *    limitations under the License.
  */
 
-#ifndef EMBRAKES_STEPPER_HPP_
-#define EMBRAKES_STEPPER_HPP_
+#pragma once
 
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
@@ -85,5 +84,3 @@ class Stepper : public StepperInterface {
 
 }  // namespace embrakes
 }  // namespace hyped
-
-#endif  // EMBRAKES_STEPPER_HPP_

@@ -17,9 +17,7 @@
  *    limitations under the License.
 
  */
-
-#ifndef UTILS_MATH_KALMAN_MULTIVARIATE_HPP_
-#define UTILS_MATH_KALMAN_MULTIVARIATE_HPP_
+#pragma oncd
 
 #include <Eigen/Dense>
 
@@ -183,5 +181,3 @@ class KalmanMultivariate {
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_KALMAN_MULTIVARIATE_HPP_

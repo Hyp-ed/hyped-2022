@@ -20,8 +20,7 @@
  *    limitations under the License.
  */
 
-#ifndef STATE_MACHINE_MAIN_HPP_
-#define STATE_MACHINE_MAIN_HPP_
+#pragma once
 
 #include <cstdint>
 #include <data/data.hpp>
@@ -57,5 +56,3 @@ class Main : public Thread {
 
 }  // namespace state_machine
 }  // namespace hyped
-
-#endif  // STATE_MACHINE_MAIN_HPP_

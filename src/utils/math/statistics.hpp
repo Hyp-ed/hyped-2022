@@ -16,9 +16,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_MATH_STATISTICS_HPP_
-#define UTILS_MATH_STATISTICS_HPP_
+#pragma once
 
 #include <cassert>
 #include <cmath>
@@ -144,5 +142,3 @@ void RollingStatistics<T>::update(T new_value)
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_STATISTICS_HPP_

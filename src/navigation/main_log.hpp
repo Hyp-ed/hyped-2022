@@ -15,8 +15,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#ifndef NAVIGATION_MAIN_LOG_HPP_
-#define NAVIGATION_MAIN_LOG_HPP_
+#pragma once
 
 #include <stdio.h>
 
@@ -69,5 +68,3 @@ class MainLog : public Thread {
 
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_MAIN_LOG_HPP_

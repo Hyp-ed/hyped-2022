@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_IO_ADC_HPP_
-#define UTILS_IO_ADC_HPP_
+#pragma once
 
 #include <cstdint>
 #include <utils/logger.hpp>
@@ -67,5 +65,3 @@ class ADC {
 }  // namespace io
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_IO_ADC_HPP_

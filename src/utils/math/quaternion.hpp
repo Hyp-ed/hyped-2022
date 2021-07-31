@@ -18,9 +18,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_MATH_QUATERNION_HPP_
-#define UTILS_MATH_QUATERNION_HPP_
+#pragma once
 
 #include <array>
 #include <cmath>
@@ -359,5 +357,3 @@ Vector<T, 4> Quaternion<T>::get_elements() const
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_QUATERNION_HPP_

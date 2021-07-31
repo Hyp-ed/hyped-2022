@@ -16,14 +16,11 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
 // TODO(Uday): Decide the process noise value
 
 #include <utils/math/vector.hpp>
-
-#ifndef UTILS_MATH_KALMAN_HPP_
-#define UTILS_MATH_KALMAN_HPP_
-
 namespace hyped {
 namespace utils {
 namespace math {
@@ -132,5 +129,3 @@ T Kalman<T>::getFiltered()
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_KALMAN_HPP_

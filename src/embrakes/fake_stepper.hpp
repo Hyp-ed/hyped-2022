@@ -18,8 +18,7 @@
  * the License.
  */
 
-#ifndef EMBRAKES_FAKE_STEPPER_HPP_
-#define EMBRAKES_FAKE_STEPPER_HPP_
+#pragma once
 
 #include <data/data.hpp>
 #include "interface.hpp"
@@ -84,5 +83,3 @@ class FakeStepper : public StepperInterface {
 
 }  // namespace embrakes
 }  // namespace hyped
-
-#endif  // EMBRAKES_FAKE_STEPPER_HPP_

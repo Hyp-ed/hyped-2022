@@ -20,9 +20,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_MAIN_HPP_
-#define SENSORS_MAIN_HPP_
+#pragma once
 
 #include <cstdint>
 #include <utils/system.hpp>
@@ -97,5 +95,3 @@ class Main : public Thread {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_MAIN_HPP_

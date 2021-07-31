@@ -18,9 +18,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_CONTROLLER_HPP_
-#define PROPULSION_CONTROLLER_HPP_
+#pragma once
 
 #include <atomic>
 #include <data/data.hpp>
@@ -244,5 +242,3 @@ class Controller : public ControllerInterface {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_CONTROLLER_HPP_

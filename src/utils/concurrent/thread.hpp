@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_CONCURRENT_THREAD_HPP_
-#define UTILS_CONCURRENT_THREAD_HPP_
+#pragma once
 
 #include <cstdint>
 #include <thread>
@@ -77,5 +75,3 @@ class BusyThread : public Thread {
 }  // namespace concurrent
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_CONCURRENT_THREAD_HPP_

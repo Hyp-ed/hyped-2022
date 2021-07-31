@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_UTILS_HPP_
-#define UTILS_UTILS_HPP_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,5 +49,3 @@ class StaticAssert<true> {
 
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_UTILS_HPP_

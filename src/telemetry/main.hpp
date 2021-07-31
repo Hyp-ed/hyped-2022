@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef TELEMETRY_MAIN_HPP_
-#define TELEMETRY_MAIN_HPP_
+#pragma once
 
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
@@ -47,5 +45,3 @@ class Main : public Thread {
 
 }  // namespace telemetry
 }  // namespace hyped
-
-#endif  // TELEMETRY_MAIN_HPP_

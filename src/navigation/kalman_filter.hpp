@@ -15,9 +15,7 @@
  *  either express or implied. See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-#ifndef NAVIGATION_KALMAN_FILTER_HPP_
-#define NAVIGATION_KALMAN_FILTER_HPP_
+#pragma once
 
 #include <Eigen/Dense>
 #include <data/data.hpp>
@@ -81,5 +79,3 @@ class KalmanFilter {
 };
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_KALMAN_FILTER_HPP_

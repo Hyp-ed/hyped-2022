@@ -15,9 +15,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_CAN_CAN_SENDER_HPP_
-#define PROPULSION_CAN_CAN_SENDER_HPP_
+#pragma once
 
 #include <atomic>
 #include <iostream>
@@ -92,5 +90,3 @@ class CanSender : public CanProccesor, public SenderInterface {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_CAN_CAN_SENDER_HPP_

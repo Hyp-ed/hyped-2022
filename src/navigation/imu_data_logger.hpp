@@ -15,9 +15,7 @@
  *  either express or implied. See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-#ifndef NAVIGATION_IMU_DATA_LOGGER_HPP_
-#define NAVIGATION_IMU_DATA_LOGGER_HPP_
+#pragma once
 
 #include <unistd.h>
 
@@ -52,5 +50,3 @@ class ImuDataLogger {
 };
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_IMU_DATA_LOGGER_HPP_

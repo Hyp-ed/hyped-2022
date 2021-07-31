@@ -17,8 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#ifndef SENSORS_FAKE_IMU_HPP_
-#define SENSORS_FAKE_IMU_HPP_
+#pragma once
 
 #include <string>
 #include <utils/logger.hpp>
@@ -182,5 +181,3 @@ class FakeImuFromFile : public ImuInterface {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_FAKE_IMU_HPP_

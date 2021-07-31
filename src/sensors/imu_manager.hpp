@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_IMU_MANAGER_HPP_
-#define SENSORS_IMU_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
 #include <data/data.hpp>
@@ -72,5 +70,3 @@ class ImuManager : public Thread {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_IMU_MANAGER_HPP_

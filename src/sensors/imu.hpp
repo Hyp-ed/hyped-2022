@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_IMU_HPP_
-#define SENSORS_IMU_HPP_
+#pragma once
 
 #include <utils/io/gpio.hpp>
 #include <utils/io/spi.hpp>
@@ -135,5 +133,3 @@ class Imu : public ImuInterface {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_IMU_HPP_

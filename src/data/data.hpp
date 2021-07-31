@@ -16,8 +16,7 @@
  *    limitations under the License.
  */
 
-#ifndef DATA_DATA_HPP_
-#define DATA_DATA_HPP_
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -337,5 +336,3 @@ class Data {
 
 }  // namespace data
 }  // namespace hyped
-
-#endif  // DATA_DATA_HPP_

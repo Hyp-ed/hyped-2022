@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef TELEMETRY_CLIENT_HPP_
-#define TELEMETRY_CLIENT_HPP_
+#pragma once
 
 #include <string>
 
@@ -52,5 +50,3 @@ class Client {
 
 }  // namespace telemetry
 }  // namespace hyped
-
-#endif  // TELEMETRY_CLIENT_HPP_

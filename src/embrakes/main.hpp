@@ -16,8 +16,7 @@
  *    limitations under the License.
  */
 
-#ifndef EMBRAKES_MAIN_HPP_
-#define EMBRAKES_MAIN_HPP_
+#pragma once
 
 #include <data/data.hpp>
 #include <embrakes/stepper.hpp>
@@ -70,5 +69,3 @@ class Main : public Thread {
 
 }  // namespace embrakes
 }  // namespace hyped
-
-#endif  // EMBRAKES_MAIN_HPP_

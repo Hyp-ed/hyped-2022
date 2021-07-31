@@ -15,9 +15,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_MAIN_HPP_
-#define PROPULSION_MAIN_HPP_
+#pragma once
 
 #include <data/data.hpp>
 #include <utils/concurrent/barrier.hpp>
@@ -68,5 +66,3 @@ class Main : public Thread {
 
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_MAIN_HPP_

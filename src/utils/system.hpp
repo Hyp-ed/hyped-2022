@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_SYSTEM_HPP_
-#define UTILS_SYSTEM_HPP_
+#pragma once
 
 #include <cstdint>
 #include <utils/concurrent/barrier.hpp>
@@ -129,5 +127,3 @@ class System {
 
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_SYSTEM_HPP_

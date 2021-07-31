@@ -15,9 +15,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef NAVIGATION_STRIPE_HANDLER_HPP_
-#define NAVIGATION_STRIPE_HANDLER_HPP_
+#pragma once
 
 #include <array>
 #include <cmath>
@@ -138,4 +136,3 @@ class StripeHandler {
 };
 }  // namespace navigation
 }  // namespace hyped
-#endif  // NAVIGATION_STRIPE_HANDLER_HPP_

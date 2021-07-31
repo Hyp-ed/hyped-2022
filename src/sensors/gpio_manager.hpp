@@ -18,9 +18,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_GPIO_MANAGER_HPP_
-#define SENSORS_GPIO_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
 #include <data/data.hpp>
@@ -84,5 +82,3 @@ class GpioManager : public Thread {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_GPIO_MANAGER_HPP_

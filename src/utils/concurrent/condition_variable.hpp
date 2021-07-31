@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_CONCURRENT_CONDITION_VARIABLE_HPP_
-#define UTILS_CONCURRENT_CONDITION_VARIABLE_HPP_
+#pragma once
 
 #define CV condition_variable_any
 
@@ -63,5 +61,3 @@ class ConditionVariable {
 }  // namespace concurrent
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_CONCURRENT_CONDITION_VARIABLE_HPP_

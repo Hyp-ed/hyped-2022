@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_FAKE_TEMPERATURE_HPP_
-#define SENSORS_FAKE_TEMPERATURE_HPP_
+#pragma once
 
 #include <string>
 #include <utils/logger.hpp>
@@ -78,5 +76,3 @@ class FakeTemperature : public TemperatureInterface {
 };
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_FAKE_TEMPERATURE_HPP_

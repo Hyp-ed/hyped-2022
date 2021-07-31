@@ -15,9 +15,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef NAVIGATION_NAVIGATION_HPP_
-#define NAVIGATION_NAVIGATION_HPP_
+#pragma once
 
 #include <math.h>
 
@@ -279,5 +277,3 @@ class Navigation {
 
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_NAVIGATION_HPP_

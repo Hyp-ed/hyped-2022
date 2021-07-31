@@ -15,9 +15,7 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_
-#define PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_
+#pragma once
 
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
@@ -103,5 +101,3 @@ class StateProcessorInterface {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_

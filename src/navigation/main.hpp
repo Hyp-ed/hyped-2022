@@ -50,4 +50,3 @@ class Main : public Thread {
 
 }  // namespace navigation
 }  // namespace hyped
-

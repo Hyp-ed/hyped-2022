@@ -1,5 +1,45 @@
 cmake_minimum_required(VERSION 3.21.0 FATAL_ERROR)
 
+# -------------------------------------------------- #
+# CLANG FORMAT                                       #
+# -------------------------------------------------- #
+
+# Creates a function clang_format that can be used to
+# force formatting of source files before compilation.
+function(clang_format target, code, headers)
+    add_custom_command(
+        OUTPUT "${target}-format-cmd"
+        COMMAND clang-format -i -style=file ${code} ${headers}
+    )
+    add_custom_target("${target}-format" DEPENDS "${target}-format-cmd")
+    add_dependencies(${target} "${target}-format")
+endfunction()
+
+# -------------------------------------------------- #
+# LIB HELPER                                         #
+# -------------------------------------------------- #
+
+# List of all libraries for linking purposes
+set(ALL_LIBS "data;embrakes;navigation;propulsion;propulsion_can;sensors;state_machine;telemetry;utils;utils_concurrent;utils_io;utils_math")
+function(make_lib target, include_path)
+    file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
+    file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+    add_library(${target} STATIC ${headers} ${code})
+    target_include_directories(${target}
+        INTERFACE ${include_path}
+    )
+    set(link_libs ${ALL_LIBS})
+    list(REMOVE_ITEM link_libs "${target}")
+    message("${link_libs}")
+    target_link_libraries(${target} ${link_libs}) 
+    clang_format(${target} ${code} ${headers})
+endfunction()
+
+
+# -------------------------------------------------- #
+# CONFIGURE CLANG                                    #
+# -------------------------------------------------- #
+
 set_source_files_properties(arch PROPERTIES GENERATED true)
 add_custom_command (
     OUTPUT arch

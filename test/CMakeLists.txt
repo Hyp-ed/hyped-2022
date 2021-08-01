@@ -21,6 +21,5 @@ target_link_libraries(${test_target}
     utils_concurrent
     utils_io
     utils_math
-
     gtest
 )

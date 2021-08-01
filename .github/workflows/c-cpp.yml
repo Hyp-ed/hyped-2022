@@ -13,7 +13,7 @@ jobs:
     - name: CMake
       run: cmake -S . -B build
     - name: Build all
-      run: cmake --build build
+      run: cmake --build build -j2
     - name: Run tests
       run: ./build/test/hyped_test
     - name: Install LCOV

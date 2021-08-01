@@ -21,10 +21,11 @@
 #pragma once
 
 #include <data/data.hpp>
-#include "interface.hpp"
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
+
+#include "interface.hpp"
 
 namespace hyped {
 

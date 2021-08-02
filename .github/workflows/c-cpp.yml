@@ -8,12 +8,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-        version: "12.0"
+    #steps:
+    #- uses: actions/checkout@v2
+    #- name: Install LLVM and Clang
+    #  uses: KyleMayes/install-llvm-action@v1
+    #  with:
+    #    version: "12.0"
     - name: CMake
       run: cmake -S . -B build
     - name: Build executable and test binary

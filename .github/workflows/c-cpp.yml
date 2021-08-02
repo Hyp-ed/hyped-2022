@@ -14,23 +14,17 @@ jobs:
       run: cmake -S . -B build
     - name: Build executable and test binary
       run: cmake --build build --target hyped_test -j10
-<<<<<<< HEAD
     - name: Cache LLVM and Clang
       id: cache-llvm
       uses: actions/cache@v2
       with:
         path: ./llvm
         key: llvm-11.0
-=======
->>>>>>> 1764fdc5f407ff6fa395ca2997b80089d7893fbb
     - name: Install LLVM
       uses: KyleMayes/install-llvm-action@v1
       with:
         version: "11.0"
-<<<<<<< HEAD
         cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-=======
->>>>>>> 1764fdc5f407ff6fa395ca2997b80089d7893fbb
     - name: Install LCOV
       run: | 
         cd ..

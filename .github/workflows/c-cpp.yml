@@ -14,18 +14,14 @@ jobs:
       run: cmake -S . -B build
     - name: Build executable and test binary
       run: cmake --build build --target hyped_test -j10
-    - name: Install LCOV
-      run: | 
-        cd ..
-        git clone https://github.com/linux-test-project/lcov.git
-        cd lcov
-        sudo make install
-    - name: Install LLVM and Clang
+    - name: Install LLVM
       uses: KyleMayes/install-llvm-action@v1
       with:
         version: "10.0"
     - name: Run tests and generate coverage
-      run: cmake --build build --target llvm-cov
+      run: | 
+        rm -rf $LLVM_PATH/bin/clang++
+        cmake --build build --target llvm-cov
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

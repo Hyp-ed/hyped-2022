@@ -40,7 +40,7 @@ jobs:
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./build/test/coverage/hyped.covdata # optional
+        files: ./build/test/coverage/hyped_test.covdata # optional
         name: Codecov-umbrella # optional
         fail_ci_if_error: false
         verbose: true # optional (default = false)

@@ -12,23 +12,36 @@ jobs:
     - uses: actions/checkout@v2
     - name: CMake
       run: cmake -S . -B build
-    - name: Build all
-      run: cmake --build build -j2
-    - name: Run tests
-      run: ./build/test/hyped_test
+    - name: Build executable and test binary
+      run: cmake --build build --target hyped_test -j10
+    - name: Cache LLVM and Clang
+      id: cache-llvm
+      uses: actions/cache@v2
+      with:
+        path: ./llvm
+        key: llvm-11.0
+    - name: Install LLVM
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: "11.0"
+        cached: ${{ steps.cache-llvm.outputs.cache-hit }}
     - name: Install LCOV
       run: | 
         cd ..
         git clone https://github.com/linux-test-project/lcov.git
         cd lcov
         sudo make install
-    - name: Get Coverage
-      run: make coverage
+    - name: Run tests and generate coverage
+      run: | 
+        rm -rf $LLVM_PATH/bin/clang++
+        cmake --build build --target llvm-cov
+    - name: List all files
+      run: find
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./test/coverage/covdata/hyped.covdata # optional
+        files: ./build/test/coverage/hyped_test.covdata # optional
         name: Codecov-umbrella # optional
-        fail_ci_if_error: true # optional (default = false)
+        fail_ci_if_error: false
         verbose: true # optional (default = false)
     

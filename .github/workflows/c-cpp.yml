@@ -18,6 +18,12 @@ jobs:
       uses: KyleMayes/install-llvm-action@v1
       with:
         version: "11.0"
+    - name: Install LCOV
+      run: | 
+        cd ..
+        git clone https://github.com/linux-test-project/lcov.git
+        cd lcov
+        sudo make install
     - name: Run tests and generate coverage
       run: | 
         rm -rf $LLVM_PATH/bin/clang++

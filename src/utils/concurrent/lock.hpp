@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_CONCURRENT_LOCK_HPP_
-#define UTILS_CONCURRENT_LOCK_HPP_
+#pragma once
 
 #include <mutex>
 // lock, try_lock, unlock in mutex, unique_lock
@@ -74,5 +72,3 @@ class ScopedLock {
 }  // namespace concurrent
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_CONCURRENT_LOCK_HPP_

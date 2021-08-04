@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-#include "data/data.hpp"
+#include "data.hpp"
 
 namespace hyped {
 

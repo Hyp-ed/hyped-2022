@@ -17,16 +17,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_GPIO_COUNTER_HPP_
-#define SENSORS_GPIO_COUNTER_HPP_
+#pragma once
 
 #include <cstdint>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
-#include "sensors/interface.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 
@@ -52,5 +50,3 @@ class GpioCounter : public GpioInterface, public Thread {  // interface.hpp
 };
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_GPIO_COUNTER_HPP_

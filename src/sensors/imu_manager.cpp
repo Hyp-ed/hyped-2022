@@ -18,12 +18,12 @@
  *    limitations under the License.
  */
 
-#include "sensors/imu_manager.hpp"
+#include "imu_manager.hpp"
 
-#include "sensors/fake_imu.hpp"
-#include "sensors/imu.hpp"
-#include "utils/config.hpp"
-#include "utils/timer.hpp"
+#include <sensors/fake_imu.hpp>
+#include <sensors/imu.hpp>
+#include <utils/config.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 

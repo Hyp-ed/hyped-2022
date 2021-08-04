@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "utils/io/can.hpp"
+#include "can.hpp"
 
 #include <net/if.h>
 #include <stdio.h>

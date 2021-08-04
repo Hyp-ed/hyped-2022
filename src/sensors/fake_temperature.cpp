@@ -18,11 +18,11 @@
  *    limitations under the License.
  */
 
-#include "sensors/fake_temperature.hpp"
+#include "fake_temperature.hpp"
 
 #include <stdlib.h>
 
-#include "utils/timer.hpp"
+#include <utils/timer.hpp>
 
 namespace hyped {
 namespace sensors {

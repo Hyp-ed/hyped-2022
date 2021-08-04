@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "utils/config.hpp"
+#include "config.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -26,9 +26,9 @@
 #include <string>  // redundant includes to make linter stop complaining
 #include <vector>
 
-#include "utils/interface_factory.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "interface_factory.hpp"
+#include "logger.hpp"
+#include "system.hpp"
 
 namespace hyped {
 namespace utils {

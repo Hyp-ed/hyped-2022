@@ -17,15 +17,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_TEMPERATURE_HPP_
-#define SENSORS_TEMPERATURE_HPP_
+#pragma once
 
 #include <cstdint>
+#include <data/data.hpp>
+#include <utils/logger.hpp>
 
-#include "data/data.hpp"
-#include "sensors/interface.hpp"
-#include "utils/logger.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 
@@ -79,5 +77,3 @@ class Temperature : public TemperatureInterface {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_TEMPERATURE_HPP_

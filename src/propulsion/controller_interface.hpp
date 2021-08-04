@@ -15,13 +15,11 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_CONTROLLER_INTERFACE_HPP_
-#define PROPULSION_CONTROLLER_INTERFACE_HPP_
+#pragma once
 
 #include <stdint.h>
 
-#include "utils/io/can.hpp"
+#include <utils/io/can.hpp>
 
 using hyped::utils::io::can::Frame;
 
@@ -69,5 +67,3 @@ class ControllerInterface {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_CONTROLLER_INTERFACE_HPP_

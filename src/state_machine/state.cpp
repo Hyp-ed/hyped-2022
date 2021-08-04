@@ -19,7 +19,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include "state_machine/state.hpp"
+#include "state.hpp"
 
 namespace hyped {
 
@@ -244,7 +244,7 @@ Off Off::instance_;
 
 State *Off::checkTransition(Logger &log)
 {
-  log.ERR("STM", Messages::kTransitionFromOffLog);
+  log.ERR("STM", "tried to transition from Off state");
   return nullptr;
 }
 

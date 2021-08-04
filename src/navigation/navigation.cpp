@@ -15,12 +15,11 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include "navigation/navigation.hpp"
+#include "navigation.hpp"
 
 #include <algorithm>
-
-#include "utils/concurrent/thread.hpp"
-#include "utils/timer.hpp"
+#include <utils/concurrent/thread.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 

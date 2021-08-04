@@ -15,12 +15,10 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_
-#define PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_
-
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped {
 
@@ -103,5 +101,3 @@ class StateProcessorInterface {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_STATE_PROCESSOR_INTERFACE_HPP_

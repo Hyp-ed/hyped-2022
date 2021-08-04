@@ -21,18 +21,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_BMS_HPP_
-#define SENSORS_BMS_HPP_
+#pragma once
 
 #include <cstdint>
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/can.hpp>
+#include <utils/system.hpp>
+#include <utils/utils.hpp>
 #include <vector>
 
-#include "sensors/interface.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/can.hpp"
-#include "utils/system.hpp"
-#include "utils/utils.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 
@@ -194,5 +192,3 @@ class BMSHP : public CanProccesor, public BMSInterface {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_BMS_HPP_

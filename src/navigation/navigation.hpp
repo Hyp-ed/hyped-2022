@@ -15,24 +15,22 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef NAVIGATION_NAVIGATION_HPP_
-#define NAVIGATION_NAVIGATION_HPP_
+#pragma once
 
 #include <math.h>
 
 #include <array>
 #include <cstdint>
+#include <data/data.hpp>
+#include <data/data_point.hpp>
 #include <fstream>
+#include <sensors/imu.hpp>
+#include <utils/logger.hpp>
+#include <utils/math/integrator.hpp>
+#include <utils/math/statistics.hpp>
 
-#include "data/data.hpp"
-#include "data/data_point.hpp"
-#include "navigation/kalman_filter.hpp"
-#include "navigation/stripe_handler.hpp"
-#include "sensors/imu.hpp"
-#include "utils/logger.hpp"
-#include "utils/math/integrator.hpp"
-#include "utils/math/statistics.hpp"
+#include "kalman_filter.hpp"
+#include "stripe_handler.hpp"
 
 namespace hyped {
 
@@ -279,5 +277,3 @@ class Navigation {
 
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_NAVIGATION_HPP_

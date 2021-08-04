@@ -23,14 +23,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#ifndef UTILS_CONFIG_HPP_
-#define UTILS_CONFIG_HPP_
+#pragma once
 
+#include <data/data.hpp>
 #include <string>
 #include <vector>
 
-#include "data/data.hpp"
-#include "utils/interfaces.hpp"
+#include "interfaces.hpp"
 
 namespace hyped {
 namespace utils {
@@ -130,5 +129,3 @@ class Config {
 
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_CONFIG_HPP_

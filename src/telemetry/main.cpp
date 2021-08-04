@@ -18,11 +18,12 @@
  *    limitations under the License.
  */
 
-#include "telemetry/main.hpp"
+#include "main.hpp"
 
-#include "telemetry/recvloop.hpp"
-#include "telemetry/sendloop.hpp"
-#include "utils/system.hpp"
+#include <utils/system.hpp>
+
+#include "recvloop.hpp"
+#include "sendloop.hpp"
 
 namespace hyped {
 

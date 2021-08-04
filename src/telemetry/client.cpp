@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "telemetry/client.hpp"
+#include "client.hpp"
 
 #include <netdb.h>
 #include <sys/socket.h>
@@ -27,8 +27,7 @@
 
 #include <cstring>
 #include <string>
-
-#include "utils/system.hpp"
+#include <utils/system.hpp>
 
 namespace hyped {
 namespace telemetry {

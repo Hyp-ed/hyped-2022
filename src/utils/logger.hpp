@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_LOGGER_HPP_
-#define UTILS_LOGGER_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -93,4 +91,3 @@ class Logger {
 
 }  // namespace utils
 }  // namespace hyped
-#endif  // UTILS_LOGGER_HPP_

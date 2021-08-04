@@ -18,11 +18,10 @@
  *    limitations under the License.
  */
 
-#include "utils/concurrent/thread.hpp"
+#include "thread.hpp"
 
 #include <chrono>
-
-#include "utils/system.hpp"
+#include <utils/system.hpp>
 
 namespace hyped {
 namespace utils {

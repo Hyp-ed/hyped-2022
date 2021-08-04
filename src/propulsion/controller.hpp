@@ -18,21 +18,19 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_CONTROLLER_HPP_
-#define PROPULSION_CONTROLLER_HPP_
+#pragma once
 
 #include <atomic>
+#include <data/data.hpp>
+#include <propulsion/can/can_sender.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/can.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
 
-#include "data/data.hpp"
-#include "propulsion/can/can_sender.hpp"
-#include "propulsion/controller_interface.hpp"
-#include "propulsion/file_reader.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/can.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
+#include "controller_interface.hpp"
+#include "file_reader.hpp"
 
 namespace hyped {
 
@@ -244,5 +242,3 @@ class Controller : public ControllerInterface {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_CONTROLLER_HPP_

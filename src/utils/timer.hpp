@@ -17,13 +17,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_TIMER_HPP_
-#define UTILS_TIMER_HPP_
+#pragma once
 
 #include <stdint.h>
 
-#include "utils/utils.hpp"
+#include "utils.hpp"
 
 namespace hyped {
 namespace utils {
@@ -63,5 +61,3 @@ class ScopedTimer {
 
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_TIMER_HPP_

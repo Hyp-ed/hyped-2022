@@ -16,8 +16,7 @@
  *    limitations under the License.
  */
 
-#ifndef DATA_DATA_POINT_HPP_
-#define DATA_DATA_POINT_HPP_
+#pragma once
 
 #include <cstdint>
 
@@ -40,5 +39,3 @@ class DataPoint {
 
 }  // namespace data
 }  // namespace hyped
-
-#endif  // DATA_DATA_POINT_HPP_

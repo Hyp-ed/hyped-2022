@@ -16,16 +16,15 @@
  *    limitations under the License.
  */
 
-#ifndef DATA_DATA_HPP_
-#define DATA_DATA_HPP_
+#pragma once
 
 #include <array>
 #include <cstdint>
+#include <utils/concurrent/lock.hpp>
+#include <utils/math/vector.hpp>
 #include <vector>
 
-#include "data/data_point.hpp"
-#include "utils/concurrent/lock.hpp"
-#include "utils/math/vector.hpp"
+#include "data_point.hpp"
 
 using std::array;
 using std::vector;
@@ -337,5 +336,3 @@ class Data {
 
 }  // namespace data
 }  // namespace hyped
-
-#endif  // DATA_DATA_HPP_

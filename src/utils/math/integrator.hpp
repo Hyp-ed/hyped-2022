@@ -16,11 +16,9 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#include "data/data_point.hpp"
-
-#ifndef UTILS_MATH_INTEGRATOR_HPP_
-#define UTILS_MATH_INTEGRATOR_HPP_
+#include <data/data_point.hpp>
 
 namespace hyped {
 namespace utils {
@@ -89,5 +87,3 @@ DataPoint<T> Integrator<T>::update(const DataPoint<T> &point)
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_INTEGRATOR_HPP_

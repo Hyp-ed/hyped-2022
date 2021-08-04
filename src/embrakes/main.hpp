@@ -16,15 +16,15 @@
  *    limitations under the License.
  */
 
-#ifndef EMBRAKES_MAIN_HPP_
-#define EMBRAKES_MAIN_HPP_
+#pragma once
 
-#include "data/data.hpp"
-#include "embrakes/fake_stepper.hpp"
-#include "embrakes/stepper.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <data/data.hpp>
+#include <embrakes/stepper.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+
+#include "fake_stepper.hpp"
 
 namespace hyped {
 
@@ -69,5 +69,3 @@ class Main : public Thread {
 
 }  // namespace embrakes
 }  // namespace hyped
-
-#endif  // EMBRAKES_MAIN_HPP_

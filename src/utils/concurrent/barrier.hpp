@@ -17,14 +17,12 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_CONCURRENT_BARRIER_HPP_
-#define UTILS_CONCURRENT_BARRIER_HPP_
+#pragma once
 
 #include <cstdint>
 
-#include "utils/concurrent/condition_variable.hpp"
-#include "utils/concurrent/lock.hpp"
+#include "condition_variable.hpp"
+#include "lock.hpp"
 
 namespace hyped {
 namespace utils {
@@ -48,5 +46,3 @@ class Barrier {
 }  // namespace concurrent
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_CONCURRENT_BARRIER_HPP_

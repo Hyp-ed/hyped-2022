@@ -1,5 +1,6 @@
 # binaries
 bin
+build
 
 # Executables
 *.exe
@@ -38,12 +39,6 @@ binmain.o
 *.ipch.icloud
 .ccls
 .ccls-cache
-
-# Navigation
-src/navigation/testing
-# libraries
-lib/Eigen
-lib/rapidjson
 
 # mac crosscompiler
 mac-crosscompiler

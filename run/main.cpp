@@ -25,14 +25,14 @@
 #include <fstream>
 #include <string>
 
-#include "embrakes/main.hpp"
-#include "propulsion/main.hpp"
-#include "sensors/main.hpp"
-#include "state_machine/main.hpp"
-#include "telemetry/main.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <embrakes/main.hpp>
+#include <propulsion/main.hpp>
+#include <sensors/main.hpp>
+#include <state_machine/main.hpp>
+#include <telemetry/main.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 using hyped::utils::Logger;
 using hyped::utils::System;

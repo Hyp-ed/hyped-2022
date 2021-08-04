@@ -20,12 +20,13 @@
  *    limitations under the License.
  */
 
-#include "sensors/bms_manager.hpp"
+#include "bms_manager.hpp"
 
-#include "sensors/bms.hpp"
-#include "sensors/fake_batteries.hpp"
-#include "utils/config.hpp"
-#include "utils/timer.hpp"
+#include <utils/config.hpp>
+#include <utils/timer.hpp>
+
+#include "bms.hpp"
+#include "fake_batteries.hpp"
 
 namespace hyped {
 namespace sensors {

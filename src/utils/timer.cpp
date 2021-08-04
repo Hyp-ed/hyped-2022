@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "utils/timer.hpp"
+#include "timer.hpp"
 
 #include <sys/time.h>
 

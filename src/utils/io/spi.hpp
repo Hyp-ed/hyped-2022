@@ -22,12 +22,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef UTILS_IO_SPI_HPP_
-#define UTILS_IO_SPI_HPP_
-
-#include "utils/logger.hpp"
-#include "utils/utils.hpp"
+#include <utils/logger.hpp>
+#include <utils/utils.hpp>
 
 namespace hyped {
 namespace utils {
@@ -90,5 +88,3 @@ class SPI {
 }  // namespace io
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_IO_SPI_HPP_

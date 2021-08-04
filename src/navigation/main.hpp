@@ -15,14 +15,14 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#ifndef NAVIGATION_MAIN_HPP_
-#define NAVIGATION_MAIN_HPP_
+#pragma once
 
-#include "data/data.hpp"
-#include "navigation/navigation.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+
+#include "navigation.hpp"
 
 namespace hyped {
 
@@ -50,5 +50,3 @@ class Main : public Thread {
 
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_MAIN_HPP_

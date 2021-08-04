@@ -15,17 +15,15 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef PROPULSION_MAIN_HPP_
-#define PROPULSION_MAIN_HPP_
+#include <data/data.hpp>
+#include <utils/concurrent/barrier.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
 
-#include "utils/concurrent/barrier.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
-// #include "propulsion/can/can_sender.hpp"
-#include "data/data.hpp"
 #include "state_processor.hpp"
 
 namespace hyped {
@@ -68,5 +66,3 @@ class Main : public Thread {
 
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_MAIN_HPP_

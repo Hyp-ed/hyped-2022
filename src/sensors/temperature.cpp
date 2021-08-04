@@ -18,11 +18,11 @@
  *    limitations under the License.
  */
 
-#include "sensors/temperature.hpp"
+#include "temperature.hpp"
 
 #include <stdio.h>
 
-#include "utils/io/adc.hpp"
+#include <utils/io/adc.hpp>
 
 namespace hyped {
 

@@ -16,11 +16,10 @@
  *    limitations under the License.
  */
 
-#ifndef PROPULSION_CAN_FAKE_CAN_ENDPOINT_HPP_
-#define PROPULSION_CAN_FAKE_CAN_ENDPOINT_HPP_
+#pragma once
 
-#include "utils/concurrent/thread.hpp"
-#include "utils/io/can.hpp"
+#include <utils/concurrent/thread.hpp>
+#include <utils/io/can.hpp>
 
 namespace hyped {
 
@@ -40,5 +39,3 @@ class FakeCanEndpoint : public Thread {
 };
 }  // namespace motor_control
 }  // namespace hyped
-
-#endif  // PROPULSION_CAN_FAKE_CAN_ENDPOINT_HPP_

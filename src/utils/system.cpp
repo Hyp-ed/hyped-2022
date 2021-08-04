@@ -18,17 +18,16 @@
  *    limitations under the License.
  */
 
-#include "utils/system.hpp"
+#include "system.hpp"
 
-#include <stdlib.h>
-// #include <unistd.h>
 #include <getopt.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <csignal>
 #include <cstring>
 
-#include "utils/config.hpp"
+#include "config.hpp"
 
 #define DEFAULT_CONFIG "config.txt"
 

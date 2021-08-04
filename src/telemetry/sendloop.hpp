@@ -17,17 +17,15 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef TELEMETRY_SENDLOOP_HPP_
-#define TELEMETRY_SENDLOOP_HPP_
+#pragma once
 
 #include <rapidjson/writer.h>
 
+#include <data/data.hpp>
 #include <string>
+#include <utils/concurrent/thread.hpp>
 
-#include "data/data.hpp"
-#include "telemetry/main.hpp"
-#include "utils/concurrent/thread.hpp"
+#include "main.hpp"
 
 using rapidjson::StringBuffer;
 using rapidjson::Writer;
@@ -53,5 +51,3 @@ class SendLoop : public Thread {
 
 }  // namespace telemetry
 }  // namespace hyped
-
-#endif  // TELEMETRY_SENDLOOP_HPP_

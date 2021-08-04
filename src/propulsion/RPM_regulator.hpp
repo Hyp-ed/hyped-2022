@@ -18,20 +18,18 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_RPM_REGULATOR_HPP_
-#define PROPULSION_RPM_REGULATOR_HPP_
+#pragma once
 
 #define MAX_RPM 6000
 #define MAX_TEMP 150
 #define MAX_CURRENT 1500  // mA
 
 #include <cstdlib>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 #include <vector>
 
-#include "propulsion/controller.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "controller.hpp"
 
 namespace hyped {
 
@@ -95,4 +93,3 @@ class RPM_Regulator {
 
 }  // namespace motor_control
 }  // namespace hyped
-#endif  // PROPULSION_RPM_REGULATOR_HPP_

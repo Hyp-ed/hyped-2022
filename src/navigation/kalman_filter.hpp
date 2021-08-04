@@ -15,16 +15,13 @@
  *  either express or implied. See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-#ifndef NAVIGATION_KALMAN_FILTER_HPP_
-#define NAVIGATION_KALMAN_FILTER_HPP_
+#pragma once
 
 #include <Eigen/Dense>
+#include <data/data.hpp>
 #include <random>
-
-#include "data/data.hpp"
-#include "utils/math/kalman_multivariate.hpp"
-#include "utils/system.hpp"
+#include <utils/math/kalman_multivariate.hpp>
+#include <utils/system.hpp>
 
 using Eigen::MatrixXf;
 using Eigen::VectorXf;
@@ -82,5 +79,3 @@ class KalmanFilter {
 };
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_KALMAN_FILTER_HPP_

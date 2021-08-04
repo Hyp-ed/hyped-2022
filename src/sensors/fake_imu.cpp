@@ -18,22 +18,21 @@
  *    limitations under the License.
  */
 
-#include "sensors/fake_imu.hpp"
+#include "fake_imu.hpp"
 
 #include <math.h>
 
 #include <algorithm>
+#include <data/data_point.hpp>
 #include <fstream>
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utils/math/statistics.hpp>
+#include <utils/timer.hpp>
 #include <vector>
-
-#include "data/data_point.hpp"
-#include "utils/math/statistics.hpp"
-#include "utils/timer.hpp"
 
 namespace hyped {
 

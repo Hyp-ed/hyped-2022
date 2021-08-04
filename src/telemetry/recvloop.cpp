@@ -18,7 +18,7 @@
  *    limitations under the License.
  */
 
-#include "telemetry/recvloop.hpp"
+#include "recvloop.hpp"
 
 #include <string>
 

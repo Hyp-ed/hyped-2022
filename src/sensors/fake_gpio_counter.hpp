@@ -17,15 +17,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_FAKE_GPIO_COUNTER_HPP_
-#define SENSORS_FAKE_GPIO_COUNTER_HPP_
+#pragma once
 
 #include <string>
+#include <utils/logger.hpp>
 #include <vector>
 
-#include "sensors/interface.hpp"
-#include "utils/logger.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 
@@ -100,5 +98,3 @@ class FakeGpioCounter : public GpioInterface {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_FAKE_GPIO_COUNTER_HPP_

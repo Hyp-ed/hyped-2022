@@ -17,9 +17,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef UTILS_INTERFACE_FACTORY_HPP_
-#define UTILS_INTERFACE_FACTORY_HPP_
 /**
  * @brief An abstract templated factory to provide mapping from string names
  * of abstract interfaces to functions creating the implementations of the interfaces.
@@ -32,8 +31,8 @@
 #include <map>
 #include <string>
 
-#include "utils/interfaces.hpp"
-#include "utils/logger.hpp"
+#include "interfaces.hpp"
+#include "logger.hpp"
 
 using std::string;
 
@@ -86,5 +85,3 @@ InterfaceFactory<Interface> *InterfaceFactory<Interface>::instance_ = 0;
 
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_INTERFACE_FACTORY_HPP_

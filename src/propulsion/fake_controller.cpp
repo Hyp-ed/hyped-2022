@@ -17,7 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-#include "propulsion/fake_controller.hpp"
+#include "fake_controller.hpp"
 
 namespace hyped {
 namespace motor_control {

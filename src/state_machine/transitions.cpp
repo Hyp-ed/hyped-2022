@@ -19,10 +19,7 @@
  *    limitations under the License.
  */
 
-#include "state_machine/transitions.hpp"
-
-#include "state_machine/messages.hpp"
-
+#include "transitions.hpp"
 namespace hyped {
 
 namespace state_machine {

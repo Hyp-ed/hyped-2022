@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef PROPULSION_FILE_READER_HPP_
-#define PROPULSION_FILE_READER_HPP_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,11 +25,11 @@
 
 #include <sstream>
 #include <string>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 #include <vector>
 
-#include "propulsion/controller_interface.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "controller_interface.hpp"
 
 namespace hyped {
 namespace motor_control {
@@ -68,4 +66,3 @@ class FileReader {
 };
 }  // namespace motor_control
 }  // namespace hyped
-#endif  // PROPULSION_FILE_READER_HPP_

@@ -18,9 +18,9 @@
  *    limitations under the License.
  */
 
-#include "utils/concurrent/condition_variable.hpp"
+#include "condition_variable.hpp"
 
-#include "utils/concurrent/lock.hpp"
+#include "lock.hpp"
 
 namespace hyped {
 namespace utils {

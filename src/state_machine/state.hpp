@@ -19,17 +19,15 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef STATE_MACHINE_STATE_HPP_
-#define STATE_MACHINE_STATE_HPP_
+#include <data/data.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
+#include <utils/timer.hpp>
 
-#include "data/data.hpp"
-#include "state_machine/main.hpp"
-#include "state_machine/messages.hpp"
-#include "state_machine/transitions.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
-#include "utils/timer.hpp"
+#include "main.hpp"
+#include "transitions.hpp"
 
 namespace hyped {
 
@@ -77,17 +75,12 @@ class Messages;
     /* @brief   Prints log message and sets appropriate public enum value.*/                       \
     void enter(Logger &log)                                                                        \
     {                                                                                              \
-      log.INFO("STM", "entering %s state",                    \
-               S::string_representation_);                                                         \
+      log.INFO("STM", "entering %s state", S::string_representation_);                             \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
       data_.setStateMachineData(sm_data);                                                          \
     }                                                                                              \
-    void exit(Logger &log)                                                                         \
-    {                                                                                              \
-      log.INFO("STM", "exiting %s state",                     \
-               S::string_representation_);                                                         \
-    }                                                                                              \
+    void exit(Logger &log) { log.INFO("STM", "exiting %s state", S::string_representation_); }     \
                                                                                                    \
    private:                                                                                        \
     static S instance_;                                                                            \
@@ -138,5 +131,3 @@ class Off : public State {
 
 }  // namespace state_machine
 }  // namespace hyped
-
-#endif  // STATE_MACHINE_STATE_HPP_

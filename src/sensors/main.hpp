@@ -20,16 +20,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_MAIN_HPP_
-#define SENSORS_MAIN_HPP_
+#pragma once
 
 #include <cstdint>
+#include <utils/system.hpp>
 
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
-#include "sensors/interface.hpp"
-#include "utils/system.hpp"
+#include "interface.hpp"
 
 namespace hyped {
 
@@ -97,5 +95,3 @@ class Main : public Thread {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_MAIN_HPP_

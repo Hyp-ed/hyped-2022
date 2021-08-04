@@ -17,13 +17,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef SENSORS_INTERFACE_HPP_
-#define SENSORS_INTERFACE_HPP_
-
+#include <data/data.hpp>
 #include <string>
-
-#include "data/data.hpp"
 
 namespace hyped {
 
@@ -86,5 +83,3 @@ class TemperatureInterface {
 };
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_INTERFACE_HPP_

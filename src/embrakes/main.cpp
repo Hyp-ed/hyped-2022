@@ -18,7 +18,7 @@
 
 #include "main.hpp"
 
-#include "utils/config.hpp"
+#include <utils/config.hpp>
 
 namespace hyped {
 namespace embrakes {

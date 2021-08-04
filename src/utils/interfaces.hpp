@@ -17,9 +17,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef UTILS_INTERFACES_HPP_
-#define UTILS_INTERFACES_HPP_
+#pragma once
 
 /**
  * @brief This header contains a list of all interfaces that can be use to abstract
@@ -69,5 +67,3 @@ constexpr const char *interfaceName();
 INTERFACE_LIST(AS_STRING)
 
 }  // namespace hyped
-
-#endif  // UTILS_INTERFACES_HPP_

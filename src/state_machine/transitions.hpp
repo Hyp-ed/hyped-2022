@@ -19,13 +19,12 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
-#ifndef STATE_MACHINE_TRANSITIONS_HPP_
-#define STATE_MACHINE_TRANSITIONS_HPP_
+#include <data/data.hpp>
+#include <utils/logger.hpp>
 
-#include "data/data.hpp"
-#include "state_machine/state.hpp"
-#include "utils/logger.hpp"
+#include "state.hpp"
 
 namespace hyped {
 
@@ -111,5 +110,3 @@ bool checkPodStopped(Logger &log, Navigation &nav_data);
 }  // namespace state_machine
 
 }  // namespace hyped
-
-#endif  // STATE_MACHINE_TRANSITIONS_HPP_

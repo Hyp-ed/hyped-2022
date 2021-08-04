@@ -18,7 +18,7 @@
  * the License.
  */
 
-#include "embrakes/fake_stepper.hpp"
+#include "fake_stepper.hpp"
 
 namespace hyped {
 namespace embrakes {

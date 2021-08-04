@@ -18,18 +18,15 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef SENSORS_GPIO_MANAGER_HPP_
-#define SENSORS_GPIO_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/config.hpp>
+#include <utils/io/gpio.hpp>
+#include <utils/system.hpp>
 #include <vector>
-
-#include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/config.hpp"
-#include "utils/io/gpio.hpp"
-#include "utils/system.hpp"
 
 namespace hyped {
 
@@ -85,5 +82,3 @@ class GpioManager : public Thread {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_GPIO_MANAGER_HPP_

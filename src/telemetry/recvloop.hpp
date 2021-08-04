@@ -17,12 +17,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef TELEMETRY_RECVLOOP_HPP_
-#define TELEMETRY_RECVLOOP_HPP_
+#pragma once
 
 #include "data/data.hpp"
-#include "telemetry/main.hpp"
+#include "main.hpp"
 #include "utils/concurrent/thread.hpp"
 
 namespace hyped {
@@ -41,5 +39,3 @@ class RecvLoop : public Thread {
 
 }  // namespace telemetry
 }  // namespace hyped
-
-#endif  // TELEMETRY_RECVLOOP_HPP_

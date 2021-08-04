@@ -17,14 +17,11 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#pragma once
 
 #include <array>
 #include <cmath>
 #include <initializer_list>
-
-#ifndef UTILS_MATH_VECTOR_HPP_
-#define UTILS_MATH_VECTOR_HPP_
-
 namespace hyped {
 namespace utils {
 namespace math {
@@ -359,5 +356,3 @@ bool operator==(const Vector<T1, dimension> &lhs, const Vector<T2, dimension> &r
 }  // namespace math
 }  // namespace utils
 }  // namespace hyped
-
-#endif  // UTILS_MATH_VECTOR_HPP_

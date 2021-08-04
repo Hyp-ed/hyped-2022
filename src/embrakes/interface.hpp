@@ -18,8 +18,7 @@
  *    limitations under the License.
  */
 
-#ifndef EMBRAKES_INTERFACE_HPP_
-#define EMBRAKES_INTERFACE_HPP_
+#pragma once
 
 namespace hyped {
 
@@ -40,4 +39,3 @@ class StepperInterface {
 
 }  // namespace embrakes
 }  // namespace hyped
-#endif  // EMBRAKES_INTERFACE_HPP_

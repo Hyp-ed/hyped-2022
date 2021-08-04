@@ -17,7 +17,7 @@
  *    limitations under the License.
  */
 
-#include "utils/io/spi.hpp"
+#include "spi.hpp"
 
 // #include <stdio.h>
 #include <errno.h>

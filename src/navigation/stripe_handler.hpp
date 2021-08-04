@@ -15,19 +15,16 @@
  *    either express or implied. See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef NAVIGATION_STRIPE_HANDLER_HPP_
-#define NAVIGATION_STRIPE_HANDLER_HPP_
+#pragma once
 
 #include <array>
 #include <cmath>
 #include <cstdint>
-
-#include "data/data.hpp"
-#include "data/data_point.hpp"
-#include "utils/logger.hpp"
-#include "utils/math/statistics.hpp"
-#include "utils/timer.hpp"
+#include <data/data.hpp>
+#include <data/data_point.hpp>
+#include <utils/logger.hpp>
+#include <utils/math/statistics.hpp>
+#include <utils/timer.hpp>
 
 namespace hyped {
 
@@ -139,4 +136,3 @@ class StripeHandler {
 };
 }  // namespace navigation
 }  // namespace hyped
-#endif  // NAVIGATION_STRIPE_HANDLER_HPP_

@@ -19,15 +19,12 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-#ifndef TELEMETRY_WRITER_HPP_
-#define TELEMETRY_WRITER_HPP_
+#pragma once
 
 #include <rapidjson/writer.h>
 
+#include <data/data.hpp>
 #include <string>
-
-#include "data/data.hpp"
 
 namespace hyped {
 namespace telemetry {
@@ -93,5 +90,3 @@ class Writer {
 
 }  // namespace telemetry
 }  // namespace hyped
-
-#endif  // TELEMETRY_WRITER_HPP_

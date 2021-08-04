@@ -18,13 +18,13 @@
  *    limitations under the License.
  */
 
-#include "utils/io/adc.hpp"
+#include "adc.hpp"
 
 #include <fcntl.h>   // define O_WONLY and O_RDONLY
 #include <unistd.h>  // close()
 
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped {
 namespace utils {

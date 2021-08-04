@@ -15,7 +15,10 @@ add_dependencies(${test_target} eigen)
 add_dependencies(${test_target} googletest)
 
 # include and link
-include_directories(${GTEST_INCLUDE_DIR})
+include_directories(
+    ${GTEST_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/test/src
+)
 target_link_libraries(${test_target}
     data
     embrakes

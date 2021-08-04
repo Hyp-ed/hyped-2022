@@ -16,41 +16,24 @@
  *    limitations under the License.
  */
 
-#include <fcntl.h>
-#include <stdlib.h>
+#include <gtest/gtest.h>
 
+#include <data/data.hpp>
 #include <random>
+#include <state_machine/main.hpp>
 #include <string>
+#include <utils/concurrent/thread.hpp>
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 #include <vector>
 
-#include "data/data.hpp"
-#include "gtest/gtest.h"
-#include "randomiser.hpp"
-#include "state_machine/main.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/logger.hpp"
-#include "utils/system.hpp"
+#include "../randomiser.hpp"
+#include "../test.hpp"
 
-using namespace hyped::data;
-using namespace hyped::state_machine;
-using hyped::utils::System;
-using hyped::utils::concurrent::Thread;
+namespace hyped::testing {
 
-struct RunTest : public ::testing::Test {
+struct RunTest : public Test {
   static constexpr int TEST_SIZE = 10;
-
-  // ---- Logger ---------------
-
-  // Logger that is used by the test thread.
-  hyped::utils::Logger log;
-
-  // Logger that is used by the state machine thread during testing.
-  hyped::utils::Logger stm_log;
-
-  // File descriptors for the original and the temporary standard output stream to avoid logging
-  // during testing.
-  int stdout_f;
-  int tmp_stdout_f;
 
   // ---- Error messages -------
 
@@ -110,39 +93,6 @@ struct RunTest : public ::testing::Test {
   Motors motors_data;
   StateMachine stm_data;
 
-  // ---- Utilities -------------
-
-  bool output_enabled = true;
-
-  /**
-   * Reroutes stdout into /dev/null and saves the original output stream to be restored later.
-   */
-  void disableOutput()
-  {
-    if (!output_enabled) { return; }
-    output_enabled = false;
-    fflush(stdout);
-    stdout_f     = dup(1);
-    tmp_stdout_f = open("/dev/null", O_WRONLY);
-    dup2(tmp_stdout_f, 1);
-    close(tmp_stdout_f);
-  }
-
-  /**
-   *  Restores the original output stream to stdout.
-   */
-  void enableOutput()
-  {
-    if (output_enabled) { return; }
-    output_enabled = true;
-    fflush(stdout);
-    dup2(stdout_f, 1);
-    close(stdout_f);
-  }
-
-  /**
-   *  The whole data is randomised before updating the necessary data.
-   */
   void randomiseInternally()
   {
     Randomiser::randomiseEmbrakes(embrakes_data);
@@ -225,11 +175,11 @@ struct RunTest : public ::testing::Test {
     telemetry_data.calibrate_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency           = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency           = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_calibrate_command   = checkCalibrateCommand(log, telemetry_data);
+    bool has_calibrate_command   = checkCalibrateCommand(log_, telemetry_data);
     bool has_modules_initialised = checkModulesInitialised(
-      log, embrakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, embrakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -274,12 +224,12 @@ struct RunTest : public ::testing::Test {
     // >> No work required due to the above
 
     // Verify transition conditions are as intended
-    bool has_emergency           = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency           = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_calibrating_command = checkCalibrateCommand(log, telemetry_data);
+    bool has_calibrating_command = checkCalibrateCommand(log_, telemetry_data);
     bool has_modules_initialised = checkModulesInitialised(
-      log, embrakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    bool has_modules_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data,
+      log_, embrakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+    bool has_modules_ready = checkModulesReady(log_, embrakes_data, nav_data, batteries_data,
                                                telemetry_data, sensors_data, motors_data);
 
     enableOutput();
@@ -324,9 +274,9 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency        = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
@@ -375,11 +325,11 @@ struct RunTest : public ::testing::Test {
     telemetry_data.launch_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency      = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency      = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_modules_ready  = checkModulesReady(log, embrakes_data, nav_data, batteries_data,
+    bool has_modules_ready  = checkModulesReady(log_, embrakes_data, nav_data, batteries_data,
                                                telemetry_data, sensors_data, motors_data);
-    bool has_launch_command = checkLaunchCommand(log, telemetry_data);
+    bool has_launch_command = checkLaunchCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -422,9 +372,9 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency        = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -479,11 +429,11 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = Navigation::kMaximumVelocity / 2;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency            = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_launch_command       = checkLaunchCommand(log, telemetry_data);
-    bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
-    bool has_reached_max_velocity = checkReachedMaxVelocity(log, nav_data);
+    bool has_launch_command       = checkLaunchCommand(log_, telemetry_data);
+    bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data);
+    bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -527,9 +477,9 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency        = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -580,10 +530,10 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency            = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
-    bool has_stopped              = checkPodStopped(log, nav_data);
+    bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data);
+    bool has_stopped              = checkPodStopped(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -637,10 +587,10 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = Navigation::kMaximumVelocity;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency            = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
-    bool has_reached_max_velocity = checkReachedMaxVelocity(log, nav_data);
+    bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data);
+    bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -683,9 +633,9 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_stopped   = checkPodStopped(log, nav_data);
+    bool has_stopped   = checkPodStopped(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -733,10 +683,10 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency            = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_entered_braking_zone = checkEnteredBrakingZone(log, nav_data);
-    bool has_stopped              = checkPodStopped(log, nav_data);
+    bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data);
+    bool has_stopped              = checkPodStopped(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -775,9 +725,9 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_stopped   = checkPodStopped(log, nav_data);
+    bool has_stopped   = checkPodStopped(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -828,10 +778,10 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency        = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_stopped          = checkPodStopped(log, nav_data);
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_stopped          = checkPodStopped(log_, nav_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -874,9 +824,9 @@ struct RunTest : public ::testing::Test {
     nav_data.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
+    bool has_emergency = checkEmergency(log_, embrakes_data, nav_data, batteries_data,
                                         telemetry_data, sensors_data, motors_data);
-    bool has_stopped   = checkPodStopped(log, nav_data);
+    bool has_stopped   = checkPodStopped(log_, nav_data);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -915,7 +865,7 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = true;
 
     // Verify transition conditions are as intended
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(true, has_shutdown_command);
@@ -928,7 +878,7 @@ struct RunTest : public ::testing::Test {
 
     // Check result
     enableOutput();
-    System &sys = System::getSystem();
+    utils::System &sys = utils::System::getSystem();
     ASSERT_EQ(sys.running_, false) << finished_off_transition_error;
     disableOutput();
   }
@@ -955,8 +905,8 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_stopped          = checkPodStopped(log, nav_data);
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_stopped          = checkPodStopped(log_, nav_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(true, has_stopped);
@@ -994,7 +944,7 @@ struct RunTest : public ::testing::Test {
     telemetry_data.shutdown_command = true;
 
     // Verify transition conditions are as intended
-    bool has_shutdown_command = checkShutdownCommand(log, telemetry_data);
+    bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data);
 
     enableOutput();
     ASSERT_EQ(true, has_shutdown_command);
@@ -1007,15 +957,10 @@ struct RunTest : public ::testing::Test {
 
     // Check result
     enableOutput();
-    System &sys = System::getSystem();
+    utils::System &sys = utils::System::getSystem();
     ASSERT_EQ(sys.running_, false) << finished_off_transition_error;
     disableOutput();
   }
-
- protected:
-  void SetUp() { disableOutput(); }
-
-  void TearDown() { enableOutput(); }
 };
 
 /**
@@ -1024,12 +969,12 @@ struct RunTest : public ::testing::Test {
 TEST_F(RunTest, nominalRunWithoutCruising)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1052,12 +997,12 @@ TEST_F(RunTest, nominalRunWithoutCruising)
 TEST_F(RunTest, nominalRunWithCruising)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1081,12 +1026,12 @@ TEST_F(RunTest, nominalRunWithCruising)
 TEST_F(RunTest, idleEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1105,12 +1050,12 @@ TEST_F(RunTest, idleEmergency)
 TEST_F(RunTest, calibratingEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1130,12 +1075,12 @@ TEST_F(RunTest, calibratingEmergency)
 TEST_F(RunTest, readyEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1156,12 +1101,12 @@ TEST_F(RunTest, readyEmergency)
 TEST_F(RunTest, acceleratingEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1184,12 +1129,12 @@ TEST_F(RunTest, acceleratingEmergency)
 TEST_F(RunTest, cruisingEmergency)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1214,12 +1159,12 @@ TEST_F(RunTest, cruisingEmergency)
 TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1244,12 +1189,12 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
 TEST_F(RunTest, brakingEmergencyWithCruising)
 {
   for (int i = 0; i < TEST_SIZE; i++) {
-    System &sys  = System::getSystem();
-    sys.running_ = true;
+    utils::System &sys = utils::System::getSystem();
+    sys.running_       = true;
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, stm_log);
+    Thread *state_machine = new Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1267,3 +1212,5 @@ TEST_F(RunTest, brakingEmergencyWithCruising)
     delete state_machine;
   }
 }
+
+}  // namespace hyped::testing

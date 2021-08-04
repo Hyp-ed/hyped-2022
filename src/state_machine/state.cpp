@@ -244,7 +244,7 @@ Off Off::instance_;
 
 State *Off::checkTransition(Logger &log)
 {
-  log.ERR(Messages::kStmLoggingIdentifier, Messages::kTransitionFromOffLog);
+  log.ERR("STM", Messages::kTransitionFromOffLog);
   return nullptr;
 }
 

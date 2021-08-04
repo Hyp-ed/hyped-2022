@@ -77,7 +77,7 @@ class Messages;
     /* @brief   Prints log message and sets appropriate public enum value.*/                       \
     void enter(Logger &log)                                                                        \
     {                                                                                              \
-      log.INFO(Messages::kStmLoggingIdentifier, Messages::kEnteringStateFormat,                    \
+      log.INFO("STM", "entering %s state",                    \
                S::string_representation_);                                                         \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
@@ -85,7 +85,7 @@ class Messages;
     }                                                                                              \
     void exit(Logger &log)                                                                         \
     {                                                                                              \
-      log.INFO(Messages::kStmLoggingIdentifier, Messages::kExitingStateFormat,                     \
+      log.INFO("STM", "exiting %s state",                     \
                S::string_representation_);                                                         \
     }                                                                                              \
                                                                                                    \
@@ -123,7 +123,7 @@ class Off : public State {
 
   void enter(Logger &log)
   {
-    log.INFO(Messages::kStmLoggingIdentifier, Messages::kShutdownLog);
+    log.INFO("STM", "shutting down");
     utils::System &sys = utils::System::getSystem();
     sys.running_       = false;
   }

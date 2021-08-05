@@ -29,9 +29,7 @@ jobs:
         sudo make install
     - name: CMake
       run: cmake -S . -B build
-    - name: Build executable and test binary
-      run: cmake --build build --target hyped_test -j10
-    - name: Run tests and generate coverage
+    - name: Build binaries, run tests and generate coverage
       run: | 
         rm -rf $LLVM_PATH/bin/clang++
         cmake --build build --target llvm-cov

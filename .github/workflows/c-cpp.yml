@@ -28,10 +28,11 @@ jobs:
         cd lcov
         sudo make install
     - name: CMake
-      run: cmake -S . -B build
+      run: |
+        rm -rf $LLVM_PATH/bin/clang++
+        cmake -S . -B build
     - name: Build binaries, run tests and generate coverage
       run: | 
-        rm -rf $LLVM_PATH/bin/clang++
         cmake --build build --target llvm-cov
     - uses: codecov/codecov-action@v1
       with:

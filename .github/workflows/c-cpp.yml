@@ -29,6 +29,7 @@ jobs:
         sudo make install
     - name: CMake
       run: |
+        ls $LLVM_PATH/bin
         rm -rf $LLVM_PATH/bin/clang++
         cmake -S . -B build
     - name: Build binaries, run tests and generate coverage

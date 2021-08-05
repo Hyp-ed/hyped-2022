@@ -13,6 +13,8 @@ add_executable(${test_target} ${test_sources})
 add_dependencies(${test_target} rapidjson)
 add_dependencies(${test_target} eigen)
 add_dependencies(${test_target} googletest)
+add_dependencies(${test_target} hyped)
+add_dependencies(${test_target} "${test_target}-format")
 
 # include and link
 include_directories(
@@ -51,7 +53,7 @@ set(LLVM_COV_DATA "${LLVM_COV_DIR}/hyped_test.profdata")
 set(LCOV_DATA "${LLVM_COV_DIR}/hyped_test.covdata")
 set(HYPED_CONFIG_DIR "${CMAKE_SOURCE_DIR}/configurations")
 
-add_custom_target(llvm-cov
+add_custom_target(coverage
     COMMAND cp -r ${HYPED_CONFIG_DIR} ${CMAKE_BINARY_DIR}/test/
     COMMAND mkdir -p ${LLVM_COV_DIR}
     COMMAND sh -c "LLVM_PROFILE_FILE=\"${LLVM_COV_RAW}\" ${TEST_BINARY}"

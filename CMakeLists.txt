@@ -27,7 +27,7 @@ endfunction()
 # CONFIGURE CLANG                                    #
 # -------------------------------------------------- #
 
-set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_COMPILER "clang-cpp")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")

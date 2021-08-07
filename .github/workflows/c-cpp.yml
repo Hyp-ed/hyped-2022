@@ -9,9 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: CMake
-        run: cmake -S . -B build
+        run: cmake -S . -B build -DPEDANTIC=OFF -DRELEASE=OFF -DCOVERAGE=ON
       - name: Build executable and test binary
-        run: cmake --build build --target testrunner -j10
+        run: |
+          cd build
+          make testrunner -j4
       - name: Cache LLVM and Clang
         id: cache-llvm
         uses: actions/cache@v2
@@ -32,7 +34,8 @@ jobs:
       - name: Run tests and generate coverage
         run: |
           rm -rf $LLVM_PATH/bin/clang++
-          cmake --build build --target coverage
+          cd build
+          make coverage -j4
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

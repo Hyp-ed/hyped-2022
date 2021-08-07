@@ -26,12 +26,12 @@ target_link_libraries(${test_target}
     data
     embrakes
     navigation
-    propulsion 
+    propulsion
     propulsion_can
-    sensors 
-    state_machine 
-    telemetry 
-    utils 
+    sensors
+    state_machine
+    telemetry
+    utils
     utils_concurrent
     utils_io
     utils_math
@@ -53,16 +53,18 @@ add_custom_target(test
 # GENERATE COVERAGE                                  #
 # -------------------------------------------------- #
 
-set(LLVM_COV_DIR "${CMAKE_CURRENT_BINARY_DIR}/coverage")
-set(LLVM_COV_RAW "${LLVM_COV_DIR}/hyped.profraw")
-set(LLVM_COV_DATA "${LLVM_COV_DIR}/hyped.profdata")
-set(LCOV_DATA "${LLVM_COV_DIR}/hyped.covdata")
+if (COVERAGE)
+  set(LLVM_COV_DIR "${CMAKE_CURRENT_BINARY_DIR}/coverage")
+  set(LLVM_COV_RAW "${LLVM_COV_DIR}/hyped.profraw")
+  set(LLVM_COV_DATA "${LLVM_COV_DIR}/hyped.profdata")
+  set(LCOV_DATA "${LLVM_COV_DIR}/hyped.covdata")
 
-add_custom_target(coverage
-    COMMAND mkdir -p ${LLVM_COV_DIR}
-    COMMAND sh -c "LLVM_PROFILE_FILE=\"${LLVM_COV_RAW}\" ${TEST_BINARY}"
-    COMMAND llvm-profdata merge -sparse ${LLVM_COV_RAW} -o ${LLVM_COV_DATA}
-    COMMAND llvm-cov export -format=lcov -instr-profile=${LLVM_COV_DATA} ${TEST_BINARY} > ${LCOV_DATA}
-    COMMAND genhtml --quiet --output-directory ${LLVM_COV_DIR}/html ${LCOV_DATA}
-    DEPENDS testrunner
-)
+  add_custom_target(coverage
+      COMMAND mkdir -p ${LLVM_COV_DIR}
+      COMMAND sh -c "LLVM_PROFILE_FILE=\"${LLVM_COV_RAW}\" ${TEST_BINARY}"
+      COMMAND llvm-profdata merge -sparse ${LLVM_COV_RAW} -o ${LLVM_COV_DATA}
+      COMMAND llvm-cov export -format=lcov -instr-profile=${LLVM_COV_DATA} ${TEST_BINARY} > ${LCOV_DATA}
+      COMMAND genhtml --quiet --output-directory ${LLVM_COV_DIR}/html ${LCOV_DATA}
+      DEPENDS testrunner
+  )
+endif()

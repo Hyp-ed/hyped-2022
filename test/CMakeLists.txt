@@ -51,12 +51,12 @@ set(LLVM_COV_DATA "${LLVM_COV_DIR}/hyped_test.profdata")
 set(LCOV_DATA "${LLVM_COV_DIR}/hyped_test.covdata")
 set(HYPED_CONFIG_DIR "${CMAKE_SOURCE_DIR}/configurations")
 
-add_custom_target(llvm-cov
+add_custom_target(coverage
     COMMAND cp -r ${HYPED_CONFIG_DIR} ${CMAKE_BINARY_DIR}/test/
     COMMAND mkdir -p ${LLVM_COV_DIR}
     COMMAND sh -c "LLVM_PROFILE_FILE=\"${LLVM_COV_RAW}\" ${TEST_BINARY}"
     COMMAND llvm-profdata merge -sparse ${LLVM_COV_RAW} -o ${LLVM_COV_DATA}
-    COMMAND llvm-cov export -format=lcov -instr-profile=${LLVM_COV_DATA} ${TEST_BINARY} > ${LCOV_DATA}
+    COMMAND coverage export -format=lcov -instr-profile=${LLVM_COV_DATA} ${TEST_BINARY} > ${LCOV_DATA}
     COMMAND genhtml --quiet --output-directory ${LLVM_COV_DIR}/html ${LCOV_DATA}
     DEPENDS hyped_test
 )

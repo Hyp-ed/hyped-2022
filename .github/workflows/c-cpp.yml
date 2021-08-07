@@ -34,7 +34,7 @@ jobs:
     - name: Run tests and generate coverage
       run: | 
         rm -rf $LLVM_PATH/bin/clang++
-        cmake --build build --target llvm-cov
+        cmake --build build --target coverage
     - name: List all files
       run: find
     - uses: codecov/codecov-action@v1

@@ -5,7 +5,9 @@
     }
   ],
   "settings": {
-    "editor.rulers": [100],
+    "editor.rulers": [
+      100
+    ],
     "editor.renderWhitespace": "selection",
     "files.trimTrailingWhitespace": true,
     "editor.tabSize": 2,
@@ -23,6 +25,7 @@
     },
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
+    "editor.formatOnSave": true,
     "C_Cpp.clang_format_style": "file",
     "C_Cpp.default.includePath": [
       "${workspaceRoot}/src",
@@ -30,9 +33,7 @@
       "${workspaceRoot}/build/lib/eigen/src/eigen",
       "${workspaceRoot}/build/lib/rapidjson/include"
     ],
-    "C_Cpp.default.defines": [
-
-    ],
+    "C_Cpp.default.defines": [],
     "editor.detectIndentation": false,
     "C_Cpp.default.cppStandard": "c++20"
   }

@@ -10,8 +10,6 @@
 
 namespace hyped::testing {
 
-using namespace hyped;
-
 class PropulsionDemoTest : public Test {
 };
 

@@ -10,8 +10,6 @@
 
 namespace hyped::testing {
 
-using namespace hyped;
-
 class SensorsDemoTest : public Test {
 };
 

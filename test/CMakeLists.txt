@@ -60,6 +60,7 @@ if (COVERAGE)
   set(LCOV_DATA "${LLVM_COV_DIR}/hyped.covdata")
 
   add_custom_target(coverage
+      COMMAND cp -r ${HYPED_CONFIG_DIR} ${CMAKE_BINARY_DIR}/test/
       COMMAND mkdir -p ${LLVM_COV_DIR}
       COMMAND sh -c "LLVM_PROFILE_FILE=\"${LLVM_COV_RAW}\" ${TEST_BINARY}"
       COMMAND llvm-profdata merge -sparse ${LLVM_COV_RAW} -o ${LLVM_COV_DATA}

@@ -1,38 +1,19 @@
-/*
- * Author: Neil McBlane, Brano Pilnan, Justus Rudolph
- * Organisation: HYPED
- * Date: 16/02/2020
- * Description: Main file for navigation class.
- *
- *    Copyright 2019 HYPED
- *    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- *    except in compliance with the License. You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under
- *    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- *    either express or implied. See the License for the specific language governing permissions and
- *    limitations under the License.
- */
-
-#ifndef NAVIGATION_NAVIGATION_HPP_
-#define NAVIGATION_NAVIGATION_HPP_
+#pragma once
 
 #include <math.h>
 
 #include <array>
 #include <cstdint>
+#include <data/data.hpp>
+#include <data/data_point.hpp>
 #include <fstream>
+#include <sensors/imu.hpp>
+#include <utils/logger.hpp>
+#include <utils/math/integrator.hpp>
+#include <utils/math/statistics.hpp>
 
-#include "data/data.hpp"
-#include "data/data_point.hpp"
-#include "navigation/kalman_filter.hpp"
-#include "navigation/stripe_handler.hpp"
-#include "sensors/imu.hpp"
-#include "utils/logger.hpp"
-#include "utils/math/integrator.hpp"
-#include "utils/math/statistics.hpp"
+#include "kalman_filter.hpp"
+#include "stripe_handler.hpp"
 
 namespace hyped {
 
@@ -279,5 +260,3 @@ class Navigation {
 
 }  // namespace navigation
 }  // namespace hyped
-
-#endif  // NAVIGATION_NAVIGATION_HPP_

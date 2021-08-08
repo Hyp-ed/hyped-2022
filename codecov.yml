@@ -8,3 +8,5 @@ coverage:
     patch:
       default:
         threshold: 50
+ignore: 
+  - "test"

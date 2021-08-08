@@ -1,35 +1,12 @@
-/*
- * Author:
- * Organisation: HYPED
- * Date:
- * Description:
- *    Manages basic GPIO output for state machine and module responses for easy additions and edits
- *
- *    Copyright 2019 HYPED
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
-
-#ifndef SENSORS_GPIO_MANAGER_HPP_
-#define SENSORS_GPIO_MANAGER_HPP_
+#pragma once
 
 #include <cstdint>
+#include <data/data.hpp>
+#include <utils/concurrent/thread.hpp>
+#include <utils/config.hpp>
+#include <utils/io/gpio.hpp>
+#include <utils/system.hpp>
 #include <vector>
-
-#include "data/data.hpp"
-#include "utils/concurrent/thread.hpp"
-#include "utils/config.hpp"
-#include "utils/io/gpio.hpp"
-#include "utils/system.hpp"
 
 namespace hyped {
 
@@ -85,5 +62,3 @@ class GpioManager : public Thread {
 
 }  // namespace sensors
 }  // namespace hyped
-
-#endif  // SENSORS_GPIO_MANAGER_HPP_

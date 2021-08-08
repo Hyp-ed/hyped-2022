@@ -13,15 +13,10 @@
 #include "randomiser.hpp"
 #include "test.hpp"
 
-using namespace hyped::data;
-using namespace hyped::state_machine;
-
-//---------------------------------------------------------------------------
-//--------------------------------- TESTS -----------------------------------
-//---------------------------------------------------------------------------
+namespace hyped::testing {
 
 /**
- * Struct used for testing state behaviour. Contains
+ * Class used for testing state behaviour. Contains
  *
  * 1. Variables
  * 1. Logger
@@ -546,3 +541,5 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
     disableOutput();
   }
 }
+
+}  // namespace hyped::testing

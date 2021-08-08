@@ -44,7 +44,7 @@ class TransitionFunctionality : public Test {
 
   // ---- Test size -----------
 
-  static constexpr int TEST_SIZE = 1000;
+  static constexpr int kTestSize = 1000;
 
   // ---- Utility function ----
 
@@ -815,7 +815,7 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
  * to return true. We're only checking the rough behaviour as the details may not be
  * relevant for debugging.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
 {
@@ -826,7 +826,7 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
   constexpr int kMaxBrakingDistance
     = static_cast<int>(data::Navigation::kRunLength - data::Navigation::kBrakingBuffer);
 
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t max_displacement
@@ -848,7 +848,7 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
  * to return false. We're only checking the rough behaviour as the details may not be
  * relevant for debugging.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
 {
@@ -857,7 +857,7 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
   constexpr int kMinBrakingDistance = 0;
   constexpr int kMaxBrakingDistance = data::Navigation::kRunLength;
 
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t min_displacement
@@ -881,7 +881,7 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
  *
  * This is a rather expensive test and may not be required to run during debugging.
  *
- * Time complexity: O(TEST_SIZE^2)
+ * Time complexity: O(kTestSize^2)
  */
 TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
 {
@@ -889,18 +889,18 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
 
   constexpr int kMinBrakingDistance = 0;
   constexpr int kMaxBrakingDistance = data::Navigation::kRunLength;
-  constexpr data::nav_t kStepSize   = 1.0 / static_cast<data::nav_t>(TEST_SIZE);
+  constexpr data::nav_t kStepSize   = 1.0 / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t critical_displacement
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.braking_distance;
 
     enableOutput();
-    for (int j = 0; j < TEST_SIZE; j++) {
+    for (int j = 0; j < kTestSize; j++) {
       nav_data.displacement = critical_displacement - 0.5 + kStepSize * static_cast<data::nav_t>(j);
-      if (j < TEST_SIZE / 2) {
+      if (j < kTestSize / 2) {
         ASSERT_EQ(false, state_machine::checkEnteredBrakingZone(log_, nav_data))
           << "falsely detected braking zone";
       } else {
@@ -919,7 +919,7 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
  *
  * This is a rather expensive test and may not be required to run during debugging.
  *
- * Time complexity: O(TEST_SIZE^2)
+ * Time complexity: O(kTestSize^2)
  */
 TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
 {
@@ -929,19 +929,19 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
   constexpr int kMinDisplacement = 0;
   constexpr int kMaxDisplacement
     = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - 1;
-  constexpr data::nav_t kStepSize = 1.0 / static_cast<data::nav_t>(TEST_SIZE);
+  constexpr data::nav_t kStepSize = 1.0 / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     nav_data.displacement
       = static_cast<data::nav_t>(randomInRange(kMinDisplacement, kMaxDisplacement));
     critical_braking_distance
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.displacement;
 
     enableOutput();
-    for (int j = 0; j < TEST_SIZE; j++) {
+    for (int j = 0; j < kTestSize; j++) {
       nav_data.braking_distance
         = critical_braking_distance - 0.5 + kStepSize * static_cast<data::nav_t>(j);
-      if (j < TEST_SIZE / 2) {
+      if (j < kTestSize / 2) {
         ASSERT_EQ(false, state_machine::checkEnteredBrakingZone(log_, nav_data))
           << "falsely detected braking zone";
       } else {
@@ -957,7 +957,7 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
  * Ensures that positive velocities result in checkPodStopped
  * returning false.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(TransitionFunctionality, handlesPositiveVelocity)
 {
@@ -965,9 +965,9 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
 
   constexpr int kMaxVelocity = 100;  // 100 m/s is pretty fast...
   constexpr data::nav_t kStepSize
-    = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(TEST_SIZE);
+    = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 1; i <= TEST_SIZE; i++) {
+  for (int i = 1; i <= kTestSize; i++) {
     nav_data.velocity                   = kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.displacement               = static_cast<data::nav_t>(rand());
@@ -984,7 +984,7 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
  * Ensures that nonpositive velocities result in checkPodStopped
  * returning true.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
 {
@@ -992,9 +992,9 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
 
   constexpr int kMaxVelocity = 100;  // 100 m/s is pretty fast...
   constexpr data::nav_t kStepSize
-    = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(TEST_SIZE);
+    = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     nav_data.velocity                   = -1.0 * kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.displacement               = static_cast<data::nav_t>(rand());

@@ -37,7 +37,7 @@ class StateTest : public hyped::testing::Test {
 
   // ---- Test size -----------
 
-  static constexpr int TEST_SIZE = 1000;
+  static constexpr int kTestSize = 1000;
 
   // ---- Methods -------------
 
@@ -83,7 +83,7 @@ struct IdleTest : public StateTest {
  */
 TEST_F(IdleTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -109,7 +109,7 @@ TEST_F(IdleTest, handlesEmergency)
  */
 TEST_F(IdleTest, handlesCalibrateCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -135,7 +135,7 @@ TEST_F(IdleTest, handlesCalibrateCommand)
  */
 TEST_F(IdleTest, handlesAllInitialised)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -178,7 +178,7 @@ struct CalibratingTest : public StateTest {
  */
 TEST_F(CalibratingTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -204,7 +204,7 @@ TEST_F(CalibratingTest, handlesEmergency)
  */
 TEST_F(CalibratingTest, handlesAllReady)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -241,11 +241,11 @@ struct ReadyTest : public StateTest {
  * Ensures that if any module reports an emergency,
  * the state changes to FailureStopped.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(ReadyTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -269,11 +269,11 @@ TEST_F(ReadyTest, handlesEmergency)
  * the launch command is received while in the ready state,
  * the state changes to the accelerating state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -311,11 +311,11 @@ struct AcceleratingTest : public StateTest {
  * Ensures that if any module reports an emergency,
  * the state changes to FailureBraking.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(AcceleratingTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -339,11 +339,11 @@ TEST_F(AcceleratingTest, handlesEmergency)
  * if the pod is in the braking zone, the state changes to the
  * nominal braking state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -381,11 +381,11 @@ struct NominalBrakingTest : public StateTest {
  * Ensures that if any module reports an emergency,
  * the state changes to FailureBraking.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -408,11 +408,11 @@ TEST_F(NominalBrakingTest, handlesEmergency)
  * Ensures that if no emergency is reported from any module and
  * if the pod is stopped, the state changes to the finished state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(NominalBrakingTest, handlesStopped)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
@@ -450,11 +450,11 @@ struct FinishedTest : public StateTest {
  * Ensures that if the shutdown command is received while in the
  * finished state, the state changes to the off state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
@@ -485,11 +485,11 @@ struct FailureBrakingTest : public StateTest {
  * Ensures that if the pod is stopped while in the failure
  * braking state, the state changes to FailureStopped.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(FailureBrakingTest, handlesStopped)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool stopped   = checkPodStopped(log_, nav_data_);
@@ -522,11 +522,11 @@ struct FailureStoppedTest : public StateTest {
  * Ensures that if the shutdown command is received while in the
  * failure stopped state, the state changes to the off state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
     const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);

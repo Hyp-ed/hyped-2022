@@ -15,7 +15,7 @@
 namespace hyped::testing {
 
 struct RunTest : public Test {
-  static constexpr int TEST_SIZE = 10;
+  static constexpr int kTestSize = 10;
 
   // ---- Error messages -------
 
@@ -950,7 +950,7 @@ struct RunTest : public Test {
  */
 TEST_F(RunTest, nominalRunWithoutCruising)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -978,7 +978,7 @@ TEST_F(RunTest, nominalRunWithoutCruising)
  */
 TEST_F(RunTest, nominalRunWithCruising)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1007,7 +1007,7 @@ TEST_F(RunTest, nominalRunWithCruising)
  */
 TEST_F(RunTest, idleEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1031,7 +1031,7 @@ TEST_F(RunTest, idleEmergency)
  */
 TEST_F(RunTest, calibratingEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1056,7 +1056,7 @@ TEST_F(RunTest, calibratingEmergency)
  */
 TEST_F(RunTest, readyEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1082,7 +1082,7 @@ TEST_F(RunTest, readyEmergency)
  */
 TEST_F(RunTest, acceleratingEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1110,7 +1110,7 @@ TEST_F(RunTest, acceleratingEmergency)
  */
 TEST_F(RunTest, cruisingEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1140,7 +1140,7 @@ TEST_F(RunTest, cruisingEmergency)
  */
 TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 
@@ -1170,7 +1170,7 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
  */
 TEST_F(RunTest, brakingEmergencyWithCruising)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
 

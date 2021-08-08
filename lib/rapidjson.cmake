@@ -18,3 +18,4 @@ ExternalProject_Add(
 # Prepare RapidJSON (RapidJSON is a header-only library)
 ExternalProject_Get_Property(rapidjson source_dir)
 set(RAPIDJSON_INCLUDE_DIR ${source_dir}/include)
+set_target_properties(rapidjson PROPERTIES EXCLUDE_FROM_ALL TRUE)

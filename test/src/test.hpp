@@ -1,8 +1,8 @@
 #include <fcntl.h>
+#include <gtest/gtest.h>
 #include <stdlib.h>
 
-#include "gtest/gtest.h"
-#include "utils/logger.hpp"
+#include <utils/logger.hpp>
 
 namespace hyped::testing {
 

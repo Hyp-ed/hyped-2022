@@ -5,8 +5,10 @@
     }
   ],
   "settings": {
-    "editor.rulers": [100],
-    "editor.renderWhitespace": "all",
+    "editor.rulers": [
+      100
+    ],
+    "editor.renderWhitespace": "selection",
     "files.trimTrailingWhitespace": true,
     "editor.tabSize": 2,
     "files.eol": "\n",
@@ -23,17 +25,17 @@
     },
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
-    "C_Cpp.clang_format_style": "Google",
+    "editor.formatOnSave": true,
+    "C_Cpp.clang_format_style": "file",
     "C_Cpp.default.includePath": [
       "${workspaceRoot}/src",
-      "${workspaceRoot}/lib",
-      "${workspaceRoot}/test/lib/googletest/googletest/include"
+      "${workspaceRoot}/build/lib/gtest/src/googletest/googletest/include",
+      "${workspaceRoot}/build/lib/eigen/src/eigen",
+      "${workspaceRoot}/build/lib/rapidjson/src/rapidjson/include",
+      "${workspaceRoot}/test/src"
     ],
-    "C_Cpp.default.defines": [
-
-    ],
+    "C_Cpp.default.defines": [],
     "editor.detectIndentation": false,
-    "C_Cpp.default.cppStandard": "c++11",
-    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.cppStandard": "c++20"
   }
 }

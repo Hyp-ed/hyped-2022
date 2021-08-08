@@ -14,3 +14,4 @@ ExternalProject_Add(
 
 ExternalProject_Get_Property(eigen source_dir)
 set(EIGEN_INCLUDE_DIR ${source_dir}/)
+set_target_properties(eigen PROPERTIES EXCLUDE_FROM_ALL TRUE)

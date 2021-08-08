@@ -15,7 +15,7 @@ function(make_lib target, include_path)
     )
     set(link_libs ${ALL_LIBS})
     list(REMOVE_ITEM link_libs "${target}")
-    target_link_libraries(${target} ${link_libs}) 
+    target_link_libraries(${target} ${link_libs})
     add_custom_target("${target}-format"
         COMMAND clang-format -i -style=file ${code} ${headers}
     )
@@ -30,9 +30,40 @@ endfunction()
 set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Og -pthread ${COVERAGE_FLAGS}")
-set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -Wall -Wextra -stdlib=libc++ -lpthread")
+
+option(COVERAGE "Makes the binary produce coverage information")
+if(COVERAGE)
+  message("coverage:  ON")
+  set(COVERAGE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+else()
+  message("coverage:  OFF")
+  set(COVERAGE_FLAGS "")
+endif()
+
+option(RELEASE "Configures the binary for release")
+if (RELEASE)
+  message("release:   ON")
+  set(OPTIMISATION_FLAGS "-O2")
+else()
+  message("release:   OFF")
+  set(OPTIMISATION_FLAGS "-Og")
+endif()
+
+option(PEDANTIC "Enable pedantic warnings" ON)
+if(PEDANTIC)
+  message("pedantic:  ON")
+  set(WARN_FLAGS "-Wall -Wextra -Wpedantic")
+else()
+  message("pedantic:  OFF")
+  set(WARN_FLAGS "")
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread ${COVERAGE_FLAGS} ${OPTIMISATION_FLAGS} ${WARN_FLAGS}")
+set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -stdlib=libc++ -lpthread ${WARN_FLAGS}")
+
+message("compile flags: ${CMAKE_CXX_FLAGS}")
+message("link flags:    ${CMAKE_CXX_LINKER_FLAGS}")
+
 add_compile_definitions(ARCH_64)
 add_compile_definitions(LINUX)
 
@@ -76,12 +107,12 @@ target_link_libraries(${target}
     data
     embrakes
     navigation
-    propulsion 
+    propulsion
     propulsion_can
-    sensors 
-    state_machine 
-    telemetry 
-    utils 
+    sensors
+    state_machine
+    telemetry
+    utils
     utils_concurrent
     utils_io
     utils_math

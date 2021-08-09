@@ -11,16 +11,12 @@
 #include <vector>
 
 #include "randomiser.hpp"
+#include "test.hpp"
 
-using namespace hyped::data;
-using namespace hyped::state_machine;
-
-//---------------------------------------------------------------------------
-//--------------------------------- TESTS -----------------------------------
-//---------------------------------------------------------------------------
+namespace hyped::testing {
 
 /**
- * Struct used for testing state behaviour. Contains
+ * Class used for testing state behaviour. Contains
  *
  * 1. Variables
  * 1. Logger
@@ -28,37 +24,20 @@ using namespace hyped::state_machine;
  * 3. Constant test size
  */
 
-struct StateTest : public ::testing::Test {
-  // ---- Variables ------------
+class StateTest : public hyped::testing::Test {
+  Data &data_ = Data::getInstance();
 
-  Data &data = Data::getInstance();
-
-  EmergencyBrakes embrakes_data;
-  Navigation nav_data;
-  Batteries batteries_data;
-  Telemetry telemetry_data;
-  Sensors sensors_data;
-  Motors motors_data;
-
-  // ---- Logger ---------------
-
-  hyped::utils::Logger log;
-  int stdout_f;
-  int tmp_stdout_f;
-
-  // ---- Error messages -------
-
-  const std::string not_enter_emergency_error = "Does not enter emergency when required.";
-  const std::string enter_emergency_error     = "Enters emergency when not required.";
-  const std::string not_enter_off_error       = "Does not enter Off when required.";
-  const std::string enter_off_error           = "Enters Off when not required.";
-  const std::string not_enter_failure_stopped_error
-    = "Does not enter Failure Stopped when required.";
-  const std::string enter_failure_stopped_error = "Enters Failure Stopped when not required.";
+ protected:
+  EmergencyBrakes embrakes_data_;
+  Navigation nav_data_;
+  Batteries batteries_data_;
+  Telemetry telemetry_data_;
+  Sensors sensors_data_;
+  Motors motors_data_;
 
   // ---- Test size -----------
 
-  static constexpr int TEST_SIZE = 1000;
+  static constexpr int kTestSize = 1000;
 
   // ---- Methods -------------
 
@@ -67,46 +46,21 @@ struct StateTest : public ::testing::Test {
    */
   void randomiseData()
   {
-    Randomiser::randomiseEmbrakes(embrakes_data);
-    Randomiser::randomiseNavigation(nav_data);
-    Randomiser::randomiseTelemetry(telemetry_data);
-    Randomiser::randomiseMotors(motors_data);
-    Randomiser::randomiseSensorsData(sensors_data);
-    Randomiser::randomiseBatteriesData(batteries_data);
+    Randomiser::randomiseEmbrakes(embrakes_data_);
+    Randomiser::randomiseNavigation(nav_data_);
+    Randomiser::randomiseTelemetry(telemetry_data_);
+    Randomiser::randomiseMotors(motors_data_);
+    Randomiser::randomiseSensorsData(sensors_data_);
+    Randomiser::randomiseBatteriesData(batteries_data_);
 
-    data.setEmergencyBrakesData(embrakes_data);
-    data.setNavigationData(nav_data);
-    data.setTelemetryData(telemetry_data);
-    data.setMotorData(motors_data);
-    data.setSensorsData(sensors_data);
-    data.setBatteriesData(batteries_data);
+    data_.setEmergencyBrakesData(embrakes_data_);
+    data_.setNavigationData(nav_data_);
+    data_.setTelemetryData(telemetry_data_);
+    data_.setMotorData(motors_data_);
+    data_.setSensorsData(sensors_data_);
+    data_.setBatteriesData(batteries_data_);
   }
 
-  // ---- Utilities -------------
-
-  bool output_enabled = true;
-
-  void disableOutput()
-  {
-    if (!output_enabled) { return; }
-    output_enabled = false;
-    fflush(stdout);
-    stdout_f     = dup(1);
-    tmp_stdout_f = open("/dev/null", O_WRONLY);
-    dup2(tmp_stdout_f, 1);
-    close(tmp_stdout_f);
-  }
-
-  void enableOutput()
-  {
-    if (output_enabled) { return; }
-    output_enabled = true;
-    fflush(stdout);
-    dup2(stdout_f, 1);
-    close(stdout_f);
-  }
-
- protected:
   void SetUp() { disableOutput(); }
 
   void TearDown() { enableOutput(); }
@@ -121,10 +75,6 @@ struct StateTest : public ::testing::Test {
  */
 struct IdleTest : public StateTest {
   Idle *state = Idle::getInstance();
-
-  const std::string calibrate_command_error     = "Should handle calibrate command.";
-  const std::string not_enter_calibrating_error = "Does not enter Calibrating when required.";
-  const std::string enter_calibrating_error     = "Enters Calibrating when not required.";
 };
 
 /**
@@ -133,18 +83,20 @@ struct IdleTest : public StateTest {
  */
 TEST_F(IdleTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
+      ASSERT_EQ(new_state, FailureStopped::getInstance())
+        << "failed to enter FailureStopped from Idle";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
+      ASSERT_NE(new_state, FailureStopped::getInstance())
+        << "falsely entered FailureStopped from Idle";
     }
     disableOutput();
   }
@@ -157,19 +109,19 @@ TEST_F(IdleTest, handlesEmergency)
  */
 TEST_F(IdleTest, handlesCalibrateCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      bool calibrate_command                 = checkCalibrateCommand(log, telemetry_data);
-      hyped::state_machine::State *new_state = state->checkTransition(log);
+      const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
+      const auto new_state         = state->checkTransition(log_);
 
       if (!calibrate_command) {
         enableOutput();
-        ASSERT_EQ(new_state, nullptr) << calibrate_command_error;
+        ASSERT_EQ(new_state, nullptr) << "falsely transitioned from Idle";
         disableOutput();
       }
     }
@@ -183,24 +135,25 @@ TEST_F(IdleTest, handlesCalibrateCommand)
  */
 TEST_F(IdleTest, handlesAllInitialised)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
 
-    bool calibrate_command = checkCalibrateCommand(log, telemetry_data);
+    const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
 
     if (!has_emergency && calibrate_command) {
-      bool all_initialised = checkModulesInitialised(log, embrakes_data, nav_data, batteries_data,
-                                                     telemetry_data, sensors_data, motors_data);
-      hyped::state_machine::State *new_state = state->checkTransition(log);
+      const bool all_initialised
+        = checkModulesInitialised(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+      const auto new_state = state->checkTransition(log_);
 
       enableOutput();
       if (all_initialised) {
-        ASSERT_EQ(new_state, Calibrating::getInstance()) << not_enter_calibrating_error;
+        ASSERT_EQ(new_state, Calibrating::getInstance()) << "failed to enter Calibrating from Idle";
       } else {
-        ASSERT_NE(new_state, Calibrating::getInstance()) << enter_calibrating_error;
+        ASSERT_NE(new_state, Calibrating::getInstance()) << "falsely entered Calibrating from Idle";
       }
       disableOutput();
     }
@@ -217,9 +170,6 @@ TEST_F(IdleTest, handlesAllInitialised)
 
 struct CalibratingTest : public StateTest {
   Calibrating *state = Calibrating::getInstance();
-
-  const std::string not_enter_ready_error = "Does not enter Ready when required.";
-  const std::string enter_ready_error     = "Enters Ready when not required.";
 };
 
 /**
@@ -228,18 +178,20 @@ struct CalibratingTest : public StateTest {
  */
 TEST_F(CalibratingTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
+      ASSERT_EQ(new_state, FailureStopped::getInstance())
+        << "failed to enter FailureStopped from Calibrating";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
+      ASSERT_NE(new_state, FailureStopped::getInstance())
+        << "falsely entered FailureStopped from Calibrating";
     }
     disableOutput();
   }
@@ -252,22 +204,22 @@ TEST_F(CalibratingTest, handlesEmergency)
  */
 TEST_F(CalibratingTest, handlesAllReady)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
+    bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                        telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      bool all_ready = checkModulesReady(log, embrakes_data, nav_data, batteries_data,
-                                         telemetry_data, sensors_data, motors_data);
-      hyped::state_machine::State *new_state = state->checkTransition(log);
+      const bool all_ready = checkModulesReady(log_, embrakes_data_, nav_data_, batteries_data_,
+                                               telemetry_data_, sensors_data_, motors_data_);
+      const auto new_state = state->checkTransition(log_);
 
       enableOutput();
       if (all_ready) {
-        ASSERT_EQ(new_state, Ready::getInstance()) << not_enter_ready_error;
+        ASSERT_EQ(new_state, Ready::getInstance()) << "failed to enter Ready from Calibrating";
       } else {
-        ASSERT_NE(new_state, Ready::getInstance()) << enter_ready_error;
+        ASSERT_NE(new_state, Ready::getInstance()) << "falsely entered Ready from Calibrating";
       }
       disableOutput();
     }
@@ -283,31 +235,30 @@ TEST_F(CalibratingTest, handlesAllReady)
  */
 struct ReadyTest : public StateTest {
   Ready *state = Ready::getInstance();
-
-  const std::string not_enter_accelerating_error = "Does not enter Accelerating when required.";
-  const std::string enter_accelerating_error     = "Enters Accelerating when not required.";
 };
 
 /**
  * Ensures that if any module reports an emergency,
  * the state changes to FailureStopped.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(ReadyTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_emergency_error;
+      ASSERT_EQ(new_state, FailureStopped::getInstance())
+        << "failed to enter FailureStopped from Ready";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_emergency_error;
+      ASSERT_NE(new_state, FailureStopped::getInstance())
+        << "falsely entered FailureStopped from Ready";
     }
     disableOutput();
   }
@@ -318,25 +269,27 @@ TEST_F(ReadyTest, handlesEmergency)
  * the launch command is received while in the ready state,
  * the state changes to the accelerating state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      bool received_launch_command           = checkLaunchCommand(log, telemetry_data);
-      hyped::state_machine::State *new_state = state->checkTransition(log);
+      const bool received_launch_command = checkLaunchCommand(log_, telemetry_data_);
+      const auto new_state               = state->checkTransition(log_);
 
       enableOutput();
       if (received_launch_command) {
-        ASSERT_EQ(new_state, Accelerating::getInstance()) << not_enter_accelerating_error;
+        ASSERT_EQ(new_state, Accelerating::getInstance())
+          << "failed to enter Accelerating from Ready";
       } else {
-        ASSERT_NE(new_state, Accelerating::getInstance()) << enter_accelerating_error;
+        ASSERT_NE(new_state, Accelerating::getInstance())
+          << "falsely entered Accelerating from Ready";
       }
       disableOutput();
     }
@@ -352,31 +305,30 @@ TEST_F(ReadyTest, handlesLaunchCommand)
  */
 struct AcceleratingTest : public StateTest {
   Accelerating *state = Accelerating::getInstance();
-
-  const std::string not_enter_braking_error = "Does not enter Nominal Braking when required.";
-  const std::string enter_braking_error     = "Enters Nominal Braking when not required.";
 };
 
 /**
  * Ensures that if any module reports an emergency,
  * the state changes to FailureBraking.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(AcceleratingTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance()) << not_enter_emergency_error;
+      ASSERT_EQ(new_state, FailureBraking::getInstance())
+        << "failed to enter FailureBraking from Accelerating";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance()) << enter_emergency_error;
+      ASSERT_NE(new_state, FailureBraking::getInstance())
+        << "falsely entered FailureBraking from Accelerating";
     }
     disableOutput();
   }
@@ -387,25 +339,27 @@ TEST_F(AcceleratingTest, handlesEmergency)
  * if the pod is in the braking zone, the state changes to the
  * nominal braking state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      bool in_braking_zone                   = checkEnteredBrakingZone(log, nav_data);
-      hyped::state_machine::State *new_state = state->checkTransition(log);
+      const bool in_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
+      const auto new_state       = state->checkTransition(log_);
 
       enableOutput();
       if (in_braking_zone) {
-        ASSERT_EQ(new_state, NominalBraking::getInstance()) << not_enter_braking_error;
+        ASSERT_EQ(new_state, NominalBraking::getInstance())
+          << "failed to enter NominalBraking from Accelerating";
       } else {
-        ASSERT_NE(new_state, NominalBraking::getInstance()) << enter_braking_error;
+        ASSERT_NE(new_state, NominalBraking::getInstance())
+          << "falsely entered NominalBraking from Accelerating";
       }
       disableOutput();
     }
@@ -421,31 +375,30 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
  */
 struct NominalBrakingTest : public StateTest {
   NominalBraking *state = NominalBraking::getInstance();
-
-  const std::string not_enter_finished_error = "Does not enter Finished when required.";
-  const std::string enter_finished_error     = "Enters Finished when not required.";
 };
 
 /**
  * Ensures that if any module reports an emergency,
  * the state changes to FailureBraking.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance()) << not_enter_emergency_error;
+      ASSERT_EQ(new_state, FailureBraking::getInstance())
+        << "failed to enter FailureBraking from NominalBraking";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance()) << enter_emergency_error;
+      ASSERT_NE(new_state, FailureBraking::getInstance())
+        << "falsely entered FailureBraking from NominalBraking";
     }
     disableOutput();
   }
@@ -455,25 +408,27 @@ TEST_F(NominalBrakingTest, handlesEmergency)
  * Ensures that if no emergency is reported from any module and
  * if the pod is stopped, the state changes to the finished state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(NominalBrakingTest, handlesStopped)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log, embrakes_data, nav_data, batteries_data,
-                                        telemetry_data, sensors_data, motors_data);
+    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      bool stopped                           = checkPodStopped(log, nav_data);
-      hyped::state_machine::State *new_state = state->checkTransition(log);
+      const bool stopped   = checkPodStopped(log_, nav_data_);
+      const auto new_state = state->checkTransition(log_);
 
       enableOutput();
       if (stopped) {
-        ASSERT_EQ(new_state, Finished::getInstance()) << not_enter_finished_error;
+        ASSERT_EQ(new_state, Finished::getInstance())
+          << "failed to enter Finished from NominalBraking";
       } else {
-        ASSERT_NE(new_state, Finished::getInstance()) << enter_finished_error;
+        ASSERT_NE(new_state, Finished::getInstance())
+          << "falsely entered Finished from NominalBraking";
       }
       disableOutput();
     }
@@ -495,21 +450,21 @@ struct FinishedTest : public StateTest {
  * Ensures that if the shutdown command is received while in the
  * finished state, the state changes to the off state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
+    const auto new_state                 = state->checkTransition(log_);
 
     enableOutput();
     if (received_shutdown_command) {
-      ASSERT_EQ(new_state, Off::getInstance()) << not_enter_off_error;
+      ASSERT_EQ(new_state, Off::getInstance()) << "failed to enter Off from Finished";
     } else {
-      ASSERT_NE(new_state, Off::getInstance()) << enter_off_error;
+      ASSERT_NE(new_state, Off::getInstance()) << "falsely entered Off from Finished";
     }
     disableOutput();
   }
@@ -530,21 +485,23 @@ struct FailureBrakingTest : public StateTest {
  * Ensures that if the pod is stopped while in the failure
  * braking state, the state changes to FailureStopped.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(FailureBrakingTest, handlesStopped)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool stopped                           = checkPodStopped(log, nav_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool stopped   = checkPodStopped(log_, nav_data_);
+    const auto new_state = state->checkTransition(log_);
 
     enableOutput();
     if (stopped) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance()) << not_enter_failure_stopped_error;
+      ASSERT_EQ(new_state, FailureStopped::getInstance())
+        << "failed to enter FailureStopped from FailureBraking";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance()) << enter_failure_stopped_error;
+      ASSERT_NE(new_state, FailureStopped::getInstance())
+        << "falsely entered FailureStopped from FailureBraking";
     }
     disableOutput();
   }
@@ -565,22 +522,24 @@ struct FailureStoppedTest : public StateTest {
  * Ensures that if the shutdown command is received while in the
  * failure stopped state, the state changes to the off state.
  *
- * Time complexity: O(TEST_SIZE)
+ * Time complexity: O(kTestSize)
  */
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {
-  for (int i = 0; i < TEST_SIZE; i++) {
+  for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool received_shutdown_command         = checkShutdownCommand(log, telemetry_data);
-    hyped::state_machine::State *new_state = state->checkTransition(log);
+    const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
+    const auto new_state                 = state->checkTransition(log_);
 
     enableOutput();
     if (received_shutdown_command) {
-      ASSERT_EQ(new_state, Off::getInstance()) << not_enter_off_error;
+      ASSERT_EQ(new_state, Off::getInstance()) << "failed to enter Off from FailureStopped";
     } else {
-      ASSERT_NE(new_state, Off::getInstance()) << enter_off_error;
+      ASSERT_NE(new_state, Off::getInstance()) << "falsely entered Off from FailureStopped";
     }
     disableOutput();
   }
 }
+
+}  // namespace hyped::testing

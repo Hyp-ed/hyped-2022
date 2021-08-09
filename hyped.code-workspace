@@ -36,6 +36,29 @@
     ],
     "C_Cpp.default.defines": [],
     "editor.detectIndentation": false,
-    "C_Cpp.default.cppStandard": "c++20"
+    "C_Cpp.default.cppStandard": "c++20",
+    "files.associations": {
+      "alignedvector3": "cpp",
+      "fft": "cpp",
+      "nonlinearoptimization": "cpp",
+      "openglsupport": "cpp",
+      "array": "cpp",
+      "*.tcc": "cpp",
+      "bitset": "cpp",
+      "string": "cpp",
+      "vector": "cpp",
+      "string_view": "cpp",
+      "functional": "cpp",
+      "iomanip": "cpp",
+      "istream": "cpp",
+      "limits": "cpp",
+      "ostream": "cpp",
+      "ratio": "cpp",
+      "sstream": "cpp",
+      "stop_token": "cpp",
+      "streambuf": "cpp",
+      "regex": "cpp",
+      "tuple": "cpp"
+    }
   }
 }

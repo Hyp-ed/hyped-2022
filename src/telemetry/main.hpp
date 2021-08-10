@@ -1,9 +1,9 @@
 #pragma once
 
+#include "client.hpp"
+
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
-
-#include "client.hpp"
 
 namespace hyped {
 

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-
 #include "utils.hpp"
+
+#include <stdint.h>
 
 namespace hyped {
 namespace utils {

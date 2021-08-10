@@ -1,10 +1,12 @@
 #pragma once
 
-#include <array>
-#include <cmath>
-#include <initializer_list>
-
 #include "vector.hpp"
+
+#include <cmath>
+
+#include <array>
+
+#include <initializer_list>
 
 using hyped::utils::math::Vector;
 

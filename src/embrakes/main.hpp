@@ -1,12 +1,11 @@
 #pragma once
 
+#include "fake_stepper.hpp"
 #include <data/data.hpp>
 #include <embrakes/stepper.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
-
-#include "fake_stepper.hpp"
 
 namespace hyped {
 

@@ -1,8 +1,10 @@
 #pragma once
 
-#include <array>
 #include <cmath>
+
+#include <array>
 #include <cstdint>
+
 #include <data/data.hpp>
 #include <data/data_point.hpp>
 #include <utils/logger.hpp>

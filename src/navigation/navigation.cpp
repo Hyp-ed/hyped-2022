@@ -1,6 +1,7 @@
 #include "navigation.hpp"
 
 #include <algorithm>
+
 #include <utils/concurrent/thread.hpp>
 #include <utils/timer.hpp>
 

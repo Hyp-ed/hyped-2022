@@ -1,10 +1,11 @@
 #pragma once
 
-#include <data/data.hpp>
+#include "interfaces.hpp"
+
 #include <string>
 #include <vector>
 
-#include "interfaces.hpp"
+#include <data/data.hpp>
 
 namespace hyped {
 namespace utils {

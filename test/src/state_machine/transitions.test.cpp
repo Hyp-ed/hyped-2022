@@ -1,4 +1,5 @@
 #include "state_machine/transitions.hpp"
+#include "test.hpp"
 
 #include <fcntl.h>
 #include <stdlib.h>
@@ -8,7 +9,6 @@
 
 #include "data/data.hpp"
 #include "gtest/gtest.h"
-#include "test.hpp"
 #include "utils/logger.hpp"
 
 namespace hyped::testing {

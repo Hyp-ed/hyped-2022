@@ -1,12 +1,13 @@
-#include <gtest/gtest.h>
 #include <math.h>
 
 #include <cstdlib>
-#include <data/data_point.hpp>
 #include <iostream>
 #include <string>
-#include <utils/math/integrator.hpp>
 #include <vector>
+
+#include <data/data_point.hpp>
+#include <gtest/gtest.h>
+#include <utils/math/integrator.hpp>
 
 namespace hyped {
 namespace utils {

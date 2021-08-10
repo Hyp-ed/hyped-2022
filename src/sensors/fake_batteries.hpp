@@ -1,10 +1,11 @@
 #pragma once
 
+#include "interface.hpp"
+
 #include <string>
-#include <utils/concurrent/thread.hpp>
 #include <vector>
 
-#include "interface.hpp"
+#include <utils/concurrent/thread.hpp>
 
 namespace hyped {
 

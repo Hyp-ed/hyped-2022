@@ -1,10 +1,9 @@
-#include "bms_manager.hpp"
+#include "bms.hpp"
 
+#include "bms_manager.hpp"
+#include "fake_batteries.hpp"
 #include <utils/config.hpp>
 #include <utils/timer.hpp>
-
-#include "bms.hpp"
-#include "fake_batteries.hpp"
 
 namespace hyped {
 namespace sensors {

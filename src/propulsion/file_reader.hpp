@@ -6,11 +6,11 @@
 
 #include <sstream>
 #include <string>
-#include <utils/logger.hpp>
-#include <utils/system.hpp>
 #include <vector>
 
 #include "controller_interface.hpp"
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped {
 namespace motor_control {

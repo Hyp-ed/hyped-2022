@@ -1,12 +1,14 @@
 #pragma once
 
+#include "main.hpp"
+#include "transitions.hpp"
+
+#include <string>
+
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
-
-#include "main.hpp"
-#include "transitions.hpp"
 
 namespace hyped {
 

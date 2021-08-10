@@ -1,11 +1,11 @@
 #pragma once
 
+#include "navigation.hpp"
+
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
-
-#include "navigation.hpp"
 
 namespace hyped {
 

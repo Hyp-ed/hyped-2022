@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cassert>
 #include <cmath>
+
+#include <cassert>
 #include <list>
 #include <queue>
 

@@ -1,13 +1,12 @@
 #pragma once
 
+#include "state_processor.hpp"
 #include <data/data.hpp>
 #include <utils/concurrent/barrier.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
-
-#include "state_processor.hpp"
 
 namespace hyped {
 using data::Data;

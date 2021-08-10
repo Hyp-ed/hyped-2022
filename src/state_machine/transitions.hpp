@@ -1,9 +1,9 @@
 #pragma once
 
+#include "state.hpp"
+
 #include <data/data.hpp>
 #include <utils/logger.hpp>
-
-#include "state.hpp"
 
 namespace hyped {
 

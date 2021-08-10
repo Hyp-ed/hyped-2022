@@ -1,10 +1,11 @@
 #include "imu.hpp"
 
 #include <algorithm>
+#include <vector>
+
 #include <utils/concurrent/thread.hpp>
 #include <utils/interface_factory.hpp>
 #include <utils/math/statistics.hpp>
-#include <vector>
 
 // user bank addresse
 constexpr uint8_t kRegBankSel = 0x7F;

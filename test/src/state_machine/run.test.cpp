@@ -1,16 +1,16 @@
-#include <gtest/gtest.h>
+#include "randomiser.hpp"
+#include "test.hpp"
+
+#include <random>
+#include <string>
+#include <vector>
 
 #include <data/data.hpp>
-#include <random>
+#include <gtest/gtest.h>
 #include <state_machine/main.hpp>
-#include <string>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
-#include <vector>
-
-#include "randomiser.hpp"
-#include "test.hpp"
 
 namespace hyped::testing {
 

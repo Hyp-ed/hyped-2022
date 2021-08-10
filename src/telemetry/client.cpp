@@ -1,12 +1,13 @@
 #include "client.hpp"
 
 #include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include <unistd.h>
 
 #include <cstring>
 #include <string>
+
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <utils/system.hpp>
 
 namespace hyped {

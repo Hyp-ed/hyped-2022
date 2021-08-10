@@ -1,11 +1,12 @@
 #pragma once
 
+#include "state.hpp"
+
 #include <cstdint>
+
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
-
-#include "state.hpp"
 
 namespace hyped {
 

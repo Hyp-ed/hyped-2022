@@ -1,8 +1,9 @@
-#include <gtest/gtest.h>
 #include <math.h>
 
-#include <data/data_point.hpp>
 #include <iostream>
+
+#include <data/data_point.hpp>
+#include <gtest/gtest.h>
 #include <utils/math/differentiator.hpp>
 #include <utils/system.hpp>
 

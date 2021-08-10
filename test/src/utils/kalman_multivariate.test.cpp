@@ -1,8 +1,9 @@
-#include <gtest/gtest.h>
 #include <math.h>
 
 #include <iostream>
 #include <string>
+
+#include <gtest/gtest.h>
 #include <utils/math/kalman_multivariate.hpp>
 #include <utils/system.hpp>
 

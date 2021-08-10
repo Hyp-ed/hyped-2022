@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <utils/utils.hpp>
 #include <vector>
+
+#include <utils/utils.hpp>
 
 namespace hyped {
 namespace utils {

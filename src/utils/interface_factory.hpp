@@ -9,11 +9,11 @@
  * use the same factory.
  */
 
-#include <map>
-#include <string>
-
 #include "interfaces.hpp"
 #include "logger.hpp"
+
+#include <map>
+#include <string>
 
 using std::string;
 

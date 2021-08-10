@@ -1,11 +1,12 @@
 #pragma once
 
+#include "interface.hpp"
+
 #include <cstdint>
+
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
-
-#include "interface.hpp"
 
 namespace hyped {
 

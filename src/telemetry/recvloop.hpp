@@ -1,7 +1,8 @@
 #pragma once
 
-#include "data/data.hpp"
 #include "main.hpp"
+
+#include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
 
 namespace hyped {

@@ -1,12 +1,12 @@
 #pragma once
 
+#include "interface.hpp"
+
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/io/gpio.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
-
-#include "interface.hpp"
 
 namespace hyped {
 

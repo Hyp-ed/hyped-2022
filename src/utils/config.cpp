@@ -1,4 +1,6 @@
 #include "config.hpp"
+#include "logger.hpp"
+#include "system.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -7,8 +9,6 @@
 #include <vector>
 
 #include "interface_factory.hpp"
-#include "logger.hpp"
-#include "system.hpp"
 
 namespace hyped {
 namespace utils {

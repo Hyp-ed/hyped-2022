@@ -1,7 +1,8 @@
-#include <gtest/gtest.h>
 #include <math.h>
 
 #include <cstdlib>
+
+#include <gtest/gtest.h>
 #include <utils/math/vector.hpp>
 
 namespace hyped {

@@ -4,16 +4,16 @@
 
 #include <array>
 #include <cstdint>
+#include <fstream>
+
+#include "kalman_filter.hpp"
+#include "stripe_handler.hpp"
 #include <data/data.hpp>
 #include <data/data_point.hpp>
-#include <fstream>
 #include <sensors/imu.hpp>
 #include <utils/logger.hpp>
 #include <utils/math/integrator.hpp>
 #include <utils/math/statistics.hpp>
-
-#include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 
 namespace hyped {
 

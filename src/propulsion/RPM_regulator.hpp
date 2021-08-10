@@ -4,12 +4,13 @@
 #define MAX_TEMP 150
 #define MAX_CURRENT 1500  // mA
 
+#include "controller.hpp"
+
 #include <cstdlib>
-#include <utils/logger.hpp>
-#include <utils/system.hpp>
 #include <vector>
 
-#include "controller.hpp"
+#include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped {
 

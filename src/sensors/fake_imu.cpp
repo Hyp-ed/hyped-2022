@@ -3,16 +3,17 @@
 #include <math.h>
 
 #include <algorithm>
-#include <data/data_point.hpp>
 #include <fstream>
 #include <iostream>
 #include <random>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
+
+#include <data/data_point.hpp>
 #include <utils/math/statistics.hpp>
 #include <utils/timer.hpp>
-#include <vector>
 
 namespace hyped {
 

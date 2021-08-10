@@ -1,7 +1,8 @@
 #pragma once
 
-#include <data/data.hpp>
 #include <string>
+
+#include <data/data.hpp>
 
 namespace hyped {
 

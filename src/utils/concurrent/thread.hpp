@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <thread>
+
 #include <utils/logger.hpp>
 
 namespace hyped {

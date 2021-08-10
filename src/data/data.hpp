@@ -2,11 +2,11 @@
 
 #include <array>
 #include <cstdint>
-#include <utils/concurrent/lock.hpp>
-#include <utils/math/vector.hpp>
 #include <vector>
 
 #include "data_point.hpp"
+#include <utils/concurrent/lock.hpp>
+#include <utils/math/vector.hpp>
 
 using std::array;
 using std::vector;

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
+
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/config.hpp>
 #include <utils/io/gpio.hpp>
 #include <utils/system.hpp>
-#include <vector>
 
 namespace hyped {
 

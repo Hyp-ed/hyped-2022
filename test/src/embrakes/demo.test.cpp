@@ -1,12 +1,12 @@
-#include <gtest/gtest.h>
+#include "test.hpp"
+
+#include <memory>
 
 #include <embrakes/main.hpp>
-#include <memory>
+#include <gtest/gtest.h>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
-
-#include "../test.hpp"
 
 namespace hyped::testing {
 

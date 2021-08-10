@@ -1,9 +1,10 @@
 #include "can.hpp"
 
-#include <net/if.h>
 #include <stdio.h>
-#include <sys/socket.h>
 #include <unistd.h>
+
+#include <net/if.h>
+#include <sys/socket.h>
 
 #if LINUX
 #include <linux/can.h>

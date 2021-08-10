@@ -1,17 +1,18 @@
-#include <fcntl.h>
-#include <gtest/gtest.h>
-#include <stdlib.h>
-
-#include <data/data.hpp>
-#include <random>
-#include <state_machine/state.hpp>
-#include <state_machine/transitions.hpp>
-#include <string>
-#include <utils/logger.hpp>
-#include <vector>
-
 #include "randomiser.hpp"
 #include "test.hpp"
+
+#include <fcntl.h>
+#include <stdlib.h>
+
+#include <random>
+#include <string>
+#include <vector>
+
+#include <data/data.hpp>
+#include <gtest/gtest.h>
+#include <state_machine/state.hpp>
+#include <state_machine/transitions.hpp>
+#include <utils/logger.hpp>
 
 namespace hyped::testing {
 

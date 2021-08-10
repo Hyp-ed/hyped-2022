@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "system.hpp"
 
 #include <getopt.h>
@@ -6,8 +7,6 @@
 
 #include <csignal>
 #include <cstring>
-
-#include "config.hpp"
 
 #define DEFAULT_CONFIG "config.txt"
 

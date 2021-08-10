@@ -4,10 +4,11 @@
 
 #include <cstdint>
 #include <cstdio>
-#include <data/data.hpp>
-#include <data/data_point.hpp>
 #include <fstream>
 #include <string>
+
+#include <data/data.hpp>
+#include <data/data_point.hpp>
 
 namespace hyped {
 using data::DataPoint;

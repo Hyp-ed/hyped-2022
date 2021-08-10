@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
+
 #include <utils/concurrent/lock.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/utils.hpp>
-#include <vector>
 
 namespace hyped {
 namespace utils {

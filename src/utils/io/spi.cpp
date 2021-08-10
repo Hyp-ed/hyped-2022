@@ -4,9 +4,10 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
+#include <unistd.h>
+
 #include <sys/ioctl.h>
 #include <sys/mman.h>
-#include <unistd.h>
 
 #if LINUX
 #include <linux/spi/spidev.h>

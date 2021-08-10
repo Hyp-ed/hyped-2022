@@ -1,15 +1,15 @@
 #pragma once
 
+#include "controller.hpp"
+
+#include "RPM_regulator.hpp"
+#include "controller_interface.hpp"
+#include "fake_controller.hpp"
+#include "state_processor_interface.hpp"
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
-
-#include "RPM_regulator.hpp"
-#include "controller.hpp"
-#include "controller_interface.hpp"
-#include "fake_controller.hpp"
-#include "state_processor_interface.hpp"
 
 namespace hyped {
 

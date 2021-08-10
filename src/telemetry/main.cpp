@@ -1,9 +1,8 @@
 #include "main.hpp"
-
-#include <utils/system.hpp>
-
 #include "recvloop.hpp"
 #include "sendloop.hpp"
+
+#include <utils/system.hpp>
 
 namespace hyped {
 

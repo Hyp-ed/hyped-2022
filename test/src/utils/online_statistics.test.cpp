@@ -1,10 +1,11 @@
-#include <gtest/gtest.h>
+#include <cmath>
 #include <math.h>
 
-#include <cmath>
 #include <iostream>
 #include <numeric>
 #include <string>
+
+#include <gtest/gtest.h>
 #include <utils/math/statistics.hpp>
 
 namespace hyped {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <rapidjson/writer.h>
+#include "main.hpp"
+
+#include <string>
 
 #include <data/data.hpp>
-#include <string>
+#include <rapidjson/writer.h>
 #include <utils/concurrent/thread.hpp>
-
-#include "main.hpp"
 
 using rapidjson::StringBuffer;
 using rapidjson::Writer;

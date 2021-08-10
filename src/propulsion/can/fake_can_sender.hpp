@@ -2,11 +2,11 @@
 
 #include <atomic>
 #include <iostream>
-#include <utils/io/can.hpp>
-#include <utils/logger.hpp>
 
 #include "fake_can_endpoint.hpp"
 #include "sender_interface.hpp"
+#include <utils/io/can.hpp>
+#include <utils/logger.hpp>
 
 namespace hyped {
 namespace motor_control {

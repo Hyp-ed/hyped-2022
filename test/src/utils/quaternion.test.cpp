@@ -1,9 +1,10 @@
-#include <gtest/gtest.h>
 #include <math.h>
 
-#include <data/data_point.hpp>
 #include <iostream>
 #include <string>
+
+#include <data/data_point.hpp>
+#include <gtest/gtest.h>
 #include <utils/math/quaternion.hpp>
 #include <utils/math/vector.hpp>
 #include <utils/system.hpp>

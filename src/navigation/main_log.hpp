@@ -1,19 +1,20 @@
 #pragma once
 
+#include "navigation.hpp"
+
 #include <stdio.h>
 
 #include <cstdio>
+#include <fstream>
+
+#include "imu_data_logger.hpp"
 #include <data/data.hpp>
 #include <data/data_point.hpp>
-#include <fstream>
 #include <sensors/imu.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/math/statistics.hpp>
 #include <utils/system.hpp>
-
-#include "imu_data_logger.hpp"
-#include "navigation.hpp"
 
 namespace hyped {
 

@@ -1,11 +1,12 @@
 #pragma once
 
+#include "interface.hpp"
+
+#include <vector>
+
 #include <utils/io/gpio.hpp>
 #include <utils/io/spi.hpp>
 #include <utils/logger.hpp>
-#include <vector>
-
-#include "interface.hpp"
 
 namespace hyped {
 

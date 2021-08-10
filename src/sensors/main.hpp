@@ -1,11 +1,12 @@
 #pragma once
 
+#include "interface.hpp"
+
 #include <cstdint>
-#include <utils/system.hpp>
 
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
-#include "interface.hpp"
+#include <utils/system.hpp>
 
 namespace hyped {
 

@@ -2,13 +2,13 @@
 
 #include <atomic>
 #include <iostream>
+
+#include "sender_interface.hpp"
 #include <propulsion/controller_interface.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 #include <utils/timer.hpp>
-
-#include "sender_interface.hpp"
 
 #define TIMEOUT 70000
 

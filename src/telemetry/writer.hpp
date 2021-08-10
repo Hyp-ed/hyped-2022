@@ -1,9 +1,9 @@
 #pragma once
 
-#include <rapidjson/writer.h>
+#include <string>
 
 #include <data/data.hpp>
-#include <string>
+#include <rapidjson/writer.h>
 
 namespace hyped {
 namespace telemetry {

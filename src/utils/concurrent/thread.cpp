@@ -1,6 +1,7 @@
 #include "thread.hpp"
 
 #include <chrono>
+
 #include <utils/system.hpp>
 
 namespace hyped {

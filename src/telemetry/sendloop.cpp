@@ -1,8 +1,7 @@
 #include "sendloop.hpp"
+#include "writer.hpp"
 
 #include <string>
-
-#include "writer.hpp"
 
 namespace hyped {
 namespace telemetry {

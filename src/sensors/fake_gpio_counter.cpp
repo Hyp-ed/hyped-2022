@@ -1,12 +1,14 @@
 #include "fake_gpio_counter.hpp"
 
 #include <cmath>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <utils/timer.hpp>
 #include <vector>
+
+#include <utils/timer.hpp>
 
 uint64_t kBrakeTime     = 10000000;
 uint32_t kTrackDistance = 2000;

@@ -1,10 +1,11 @@
 #pragma once
 
-#include <cstdint>
-#include <utils/concurrent/barrier.hpp>
-
 #include "logger.hpp"
 #include "utils.hpp"
+
+#include <cstdint>
+
+#include <utils/concurrent/barrier.hpp>
 
 namespace hyped {
 

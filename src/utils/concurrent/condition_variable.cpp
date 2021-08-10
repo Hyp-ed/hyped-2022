@@ -1,5 +1,4 @@
 #include "condition_variable.hpp"
-
 #include "lock.hpp"
 
 namespace hyped {

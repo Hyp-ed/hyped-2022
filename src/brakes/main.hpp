@@ -1,8 +1,8 @@
 #pragma once
 
 #include "fake_stepper.hpp"
+#include <brakes/stepper.hpp>
 #include <data/data.hpp>
-#include <embrakes/stepper.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
@@ -14,9 +14,9 @@ using utils::Logger;
 using utils::System;
 using utils::concurrent::Thread;
 
-namespace embrakes {
+namespace brakes {
 /*
- * @description This module handles the interaction with the embrakes.
+ * @description This module handles the interaction with the brakes.
  */
 class Main : public Thread {
  public:
@@ -48,5 +48,5 @@ class Main : public Thread {
   StepperInterface *f_brake_;  // Stepper for friction brakes
 };
 
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

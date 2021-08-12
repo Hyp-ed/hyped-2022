@@ -1,5 +1,5 @@
 add_subdirectory(data)
-add_subdirectory(embrakes)
+add_subdirectory(brakes)
 add_subdirectory(navigation)
 add_subdirectory(propulsion)
 add_subdirectory(sensors)

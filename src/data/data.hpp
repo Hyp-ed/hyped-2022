@@ -110,8 +110,8 @@ struct Batteries : public Module {
 
 struct EmergencyBrakes : public Module {
   static constexpr int kBrakeCommandWaitTime = 1000;  // milliseconds
-  static constexpr int kNumEmbrakes          = 2;
-  bool brakes_retracted[kNumEmbrakes]        = {false};  // true if brakes retract
+  static constexpr int kNumBrakes            = 2;
+  bool brakes_retracted[kNumBrakes]          = {false};  // true if brakes retract
 };
 
 // -------------------------------------------------------------------------------------------------

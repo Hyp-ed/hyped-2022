@@ -2,7 +2,7 @@
 
 namespace hyped {
 
-namespace embrakes {
+namespace brakes {
 
 class StepperInterface {
  public:
@@ -17,5 +17,5 @@ class StepperInterface {
   virtual ~StepperInterface() {}
 };
 
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

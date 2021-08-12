@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.21.0 FATAL_ERROR)
 # -------------------------------------------------- #
 
 # List of all libraries for linking purposes
-set(ALL_LIBS "data;embrakes;navigation;propulsion;propulsion_can;sensors;state_machine;telemetry;utils;utils_concurrent;utils_io;utils_math")
+set(ALL_LIBS "data;brakes;navigation;propulsion;propulsion_can;sensors;state_machine;telemetry;utils;utils_concurrent;utils_io;utils_math")
 function(make_lib target, include_path)
     file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
     file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
@@ -88,7 +88,7 @@ include_directories(
 
 # building all the libraries and tests
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/data)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/embrakes)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/brakes)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/navigation)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/propulsion)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
@@ -105,7 +105,7 @@ set(target "hyped")
 add_executable(${target} ${CMAKE_SOURCE_DIR}/run/main.cpp)
 target_link_libraries(${target}
     data
-    embrakes
+    brakes
     navigation
     propulsion
     propulsion_can

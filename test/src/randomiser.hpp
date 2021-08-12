@@ -1,16 +1,17 @@
 #pragma once
 
 #include <fcntl.h>
-#include <gtest/gtest.h>
 #include <stdlib.h>
 
-#include <data/data.hpp>
 #include <random>
+#include <string>
+#include <vector>
+
+#include <data/data.hpp>
+#include <gtest/gtest.h>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
-#include <string>
 #include <utils/logger.hpp>
-#include <vector>
 
 using namespace hyped::data;
 using namespace hyped::state_machine;
@@ -182,12 +183,12 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::EmergencyBrakes struct.
-  static void randomiseEmbrakes(EmergencyBrakes &embrakes_data)
+  static void randomiseBrakes(EmergencyBrakes &brakes_data)
   {
-    randomiseModuleStatus(embrakes_data.module_status);
+    randomiseModuleStatus(brakes_data.module_status);
 
-    for (int i = 0; i < embrakes_data.kNumEmbrakes; i++) {
-      embrakes_data.brakes_retracted[i] = static_cast<bool>(rand() > (RAND_MAX / 2));
+    for (int i = 0; i < brakes_data.kNumBrakes; i++) {
+      brakes_data.brakes_retracted[i] = static_cast<bool>(rand() > (RAND_MAX / 2));
     }
   }
 

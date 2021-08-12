@@ -3,7 +3,7 @@
 #include <utils/config.hpp>
 
 namespace hyped {
-namespace embrakes {
+namespace brakes {
 
 Main::Main(uint8_t id, Logger &log)
     : Thread(id, log),
@@ -13,10 +13,10 @@ Main::Main(uint8_t id, Logger &log)
 {
   // parse GPIO pins from config.txt file
   for (int i = 0; i < 2; i++) {
-    command_pins_[i] = sys_.config->embrakes.command[i];
-    button_pins_[i]  = sys_.config->embrakes.button[i];
+    command_pins_[i] = sys_.config->brakes.command[i];
+    button_pins_[i]  = sys_.config->brakes.button[i];
   }
-  if (sys_.fake_embrakes) {
+  if (sys_.fake_brakes) {
     m_brake_ = new FakeStepper(log_, 1);
     f_brake_ = new FakeStepper(log_, 2);
   } else {
@@ -37,7 +37,7 @@ void Main::run()
   System &sys = System::getSystem();
 
   while (sys.running_) {
-    // Get the current state of embrakes, state machine and telemetry modules from data
+    // Get the current state of brakes, state machine and telemetry modules from data
     em_brakes_ = data_.getEmergencyBrakesData();
     sm_data_   = data_.getStateMachineData();
     tlm_data_  = data_.getTelemetryData();
@@ -128,5 +128,5 @@ Main::~Main()
   delete m_brake_;
 }
 
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

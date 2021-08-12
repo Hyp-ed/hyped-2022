@@ -26,7 +26,7 @@ class State;  // Forward declaration
 /*
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+bool checkEmergency(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
                     Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                     Motors &motors_data);
 
@@ -38,14 +38,14 @@ bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav
  * @brief   Returns true iff the command has been received and all modules are
  *          initialised.
  */
-bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+bool checkModulesInitialised(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
                              Batteries &batteries_data, Telemetry &telemetry_data,
                              Sensors &sensors_data, Motors &motors_data);
 
 /*
  * @brief    Returns true iff all modules are ready.
  */
-bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+bool checkModulesReady(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
                        Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                        Motors &motors_data);
 

@@ -32,18 +32,18 @@ void printUsage()
     "\n  -v, --verbose[=<bool>]\n"
     "    Set system-wide setting of verbosity. If enabled, prints all INFO messages\n"
     "\n  --verbose_motor, --verbose_nav, --verbose_sensor, --verbose_state, --verbose_tlm, "
-    "--verbose_embrakes\n"
+    "--verbose_brakes\n"
     "    Set module-specific setting of verbosity. If enabled, prints all INFO messages\n"
     "\n  -d, --debug[=<level>]\n"
     "    Set system-wide debug level. All DBG[n] where n <= level messages are printed.\n"
-    "\n  --debug_motor, --debug_nav, --debug_sensor, --debug_state, --debug_tlm, --debug_embrakes\n"
+    "\n  --debug_motor, --debug_nav, --debug_sensor, --debug_state, --debug_tlm, --debug_brakes\n"
     "    Set module-specific debug level. All DBG[n] where n <= level messages are printed.\n"
     "    To use fake system.\n"
     "    --fake_imu --fake_imu_fail\n"
     "    --fake_batteries --fake_batteries_fail\n"
     "    --fake_keyence --fake_keyence_fail\n"
     "    --fake_temperature --fake_temperature_fail\n"
-    "    --fake_embrakes --fake_motors\n"
+    "    --fake_brakes --fake_motors\n"
     "    --battery_test  --fake_highpower\n"
     "    To set navigation IDs.\n"
     "    --imu_id, --run_id\n"
@@ -69,19 +69,19 @@ System::System(int argc, char *argv[])
       verbose_sensor(DEFAULT_VERBOSE),
       verbose_state(DEFAULT_VERBOSE),
       verbose_tlm(DEFAULT_VERBOSE),
-      verbose_embrakes(DEFAULT_VERBOSE),
+      verbose_brakes(DEFAULT_VERBOSE),
       debug(DEFAULT_DEBUG),
       debug_motor(DEFAULT_DEBUG),
       debug_nav(DEFAULT_DEBUG),
       debug_sensor(DEFAULT_DEBUG),
       debug_state(DEFAULT_DEBUG),
       debug_tlm(DEFAULT_DEBUG),
-      debug_embrakes(DEFAULT_VERBOSE),
+      debug_brakes(DEFAULT_VERBOSE),
       fake_imu(false),
       fake_batteries(false),
       fake_keyence(false),
       fake_temperature(false),
-      fake_embrakes(false),
+      fake_brakes(false),
       fake_motors(false),
       fake_imu_fail(false),
       fake_batteries_fail(false),
@@ -111,7 +111,7 @@ System::System(int argc, char *argv[])
          {"verbose_nav", optional_argument, 0, 'A'},
          {"verbose_sensor", optional_argument, 0, 'b'},
          {"verbose_state", optional_argument, 0, 'B'},
-         {"verbose_embrakes", optional_argument, 0, 'o'},
+         {"verbose_brakes", optional_argument, 0, 'o'},
          {"verbose_tlm", optional_argument, 0, 'c'},
          {"config", required_argument, 0, 'C'},
          {"debug", optional_argument, 0, 'd'},
@@ -120,14 +120,14 @@ System::System(int argc, char *argv[])
          {"debug_sensor", optional_argument, 0, 'f'},
          {"debug_state", optional_argument, 0, 'F'},
          {"debug_tlm", optional_argument, 0, 'g'},
-         {"debug_embrakes", optional_argument, 0, 'O'},
+         {"debug_brakes", optional_argument, 0, 'O'},
          {"help", no_argument, 0, 'h'},
          {"fake_imu", no_argument, 0, 'i'},
          {"fake_batteries", no_argument, 0, 'j'},
          {"fake_keyence", no_argument, 0, 'k'},
          {"fake_temperature", no_argument, 0, 'l'},
          {"fake_motors", no_argument, 0, 'm'},
-         {"fake_embrakes", no_argument, 0, 'n'},
+         {"fake_brakes", no_argument, 0, 'n'},
          {"fake_imu_fail", no_argument, 0, 'I'},
          {"fake_batteries_fail", no_argument, 0, 'J'},
          {"fake_keyence_fail", no_argument, 0, 'K'},
@@ -196,11 +196,11 @@ System::System(int argc, char *argv[])
         else
           verbose_tlm = true;
         break;
-      case 'o':  // verbose_embrakes
+      case 'o':  // verbose_brakes
         if (optarg)
-          verbose_embrakes = atoi(optarg);
+          verbose_brakes = atoi(optarg);
         else
-          verbose_embrakes = true;
+          verbose_brakes = true;
         break;
       case 'C':
         strncpy(config_file, optarg, 250 - 1);
@@ -235,11 +235,11 @@ System::System(int argc, char *argv[])
         else
           debug_tlm = 0;
         break;
-      case 'O':  // debug_embrakes
+      case 'O':  // debug_brakes
         if (optarg)
-          debug_embrakes = atoi(optarg);
+          debug_brakes = atoi(optarg);
         else
-          debug_embrakes = 0;
+          debug_brakes = 0;
         break;
       case 'i':  // fake_imu
         if (optarg)
@@ -271,11 +271,11 @@ System::System(int argc, char *argv[])
         else
           fake_motors = 1;
         break;
-      case 'n':  // fake_embrakes
+      case 'n':  // fake_brakes
         if (optarg)
-          fake_embrakes = atoi(optarg);
+          fake_brakes = atoi(optarg);
         else
-          fake_embrakes = 1;
+          fake_brakes = 1;
         break;
       case 'I':  // fake_imu_fail
         if (optarg)
@@ -381,14 +381,14 @@ System::System(int argc, char *argv[])
   if (verbose_sensor == DEFAULT_VERBOSE) verbose_sensor = verbose;
   if (verbose_state == DEFAULT_VERBOSE) verbose_state = verbose;
   if (verbose_tlm == DEFAULT_VERBOSE) verbose_tlm = verbose;
-  if (verbose_embrakes == DEFAULT_VERBOSE) verbose_embrakes = verbose;
+  if (verbose_brakes == DEFAULT_VERBOSE) verbose_brakes = verbose;
 
   if (debug_motor == DEFAULT_DEBUG) debug_motor = debug;
   if (debug_nav == DEFAULT_DEBUG) debug_nav = debug;
   if (debug_sensor == DEFAULT_DEBUG) debug_sensor = debug;
   if (debug_state == DEFAULT_DEBUG) debug_state = debug;
   if (debug_tlm == DEFAULT_DEBUG) debug_tlm = debug;
-  if (debug_embrakes == DEFAULT_DEBUG) debug_embrakes = debug;
+  if (debug_brakes == DEFAULT_DEBUG) debug_brakes = debug;
 
   log_    = new Logger(verbose, debug);
   system_ = this;  // own address

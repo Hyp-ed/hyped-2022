@@ -24,7 +24,7 @@ include_directories(
 )
 target_link_libraries(${test_target}
     data
-    embrakes
+    brakes
     navigation
     propulsion
     propulsion_can

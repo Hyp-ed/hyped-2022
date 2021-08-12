@@ -1,11 +1,12 @@
 #include "navigation/main.hpp"
 
-#include <embrakes/main.hpp>
 #include <fstream>
+#include <string>
+
+#include <brakes/main.hpp>
 #include <propulsion/main.hpp>
 #include <sensors/main.hpp>
 #include <state_machine/main.hpp>
-#include <string>
 #include <telemetry/main.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
@@ -23,7 +24,7 @@ int main(int argc, char *argv[])
   System &sys = System::getSystem();
   Logger log_system(sys.verbose, sys.debug);
   Logger log_motor(sys.verbose_motor, sys.debug_motor);
-  Logger log_embrakes(sys.verbose_embrakes, sys.debug_embrakes);
+  Logger log_brakes(sys.verbose_brakes, sys.debug_brakes);
   Logger log_nav(sys.verbose_nav, sys.debug_nav);
   Logger log_sensor(sys.verbose_sensor, sys.debug_sensor);
   Logger log_state(sys.verbose_state, sys.debug_state);
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
 
   // Initalise the threads here
   Thread *sensors       = new hyped::sensors::Main(0, log_sensor);
-  Thread *embrakes      = new hyped::embrakes::Main(1, log_embrakes);
+  Thread *brakes        = new hyped::brakes::Main(1, log_brakes);
   Thread *motors        = new hyped::motor_control::Main(2, log_motor);
   Thread *state_machine = new hyped::state_machine::Main(4, log_state);
   Thread *nav           = new hyped::navigation::Main(5, log_nav);
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
 
   // Start the threads here
   sensors->start();
-  embrakes->start();
+  brakes->start();
   motors->start();
   state_machine->start();
   nav->start();
@@ -63,14 +64,14 @@ int main(int argc, char *argv[])
 
   // Join the threads here
   sensors->join();
-  embrakes->join();
+  brakes->join();
   motors->join();
   state_machine->join();
   nav->join();
   tlm->join();
 
   delete sensors;
-  delete embrakes;
+  delete brakes;
   delete motors;
   delete state_machine;
   delete nav;

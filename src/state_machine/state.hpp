@@ -32,7 +32,7 @@ class State {
   data::Data &data_;
 
  protected:
-  data::EmergencyBrakes embrakes_data_;
+  data::EmergencyBrakes brakes_data_;
   data::Navigation nav_data_;
   data::Batteries batteries_data_;
   data::Telemetry telemetry_data_;

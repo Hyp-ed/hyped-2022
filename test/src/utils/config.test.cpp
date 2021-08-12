@@ -34,10 +34,10 @@ TEST_F(utils_config, test_config_reads_top_config_file)
 
 TEST_F(utils_config, test_config_reads_subconfig_file)
 {
-  for (int val : config->embrakes.command) {
+  for (int val : config->brakes.command) {
     ASSERT_EQ(val, 0);
   }
-  for (int val : config->embrakes.button) {
+  for (int val : config->brakes.button) {
     ASSERT_EQ(val, 1);
   }
 }

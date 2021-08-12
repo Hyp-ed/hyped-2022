@@ -29,7 +29,7 @@ class StateTest : public hyped::testing::Test {
   Data &data_ = Data::getInstance();
 
  protected:
-  EmergencyBrakes embrakes_data_;
+  EmergencyBrakes brakes_data_;
   Navigation nav_data_;
   Batteries batteries_data_;
   Telemetry telemetry_data_;
@@ -47,14 +47,14 @@ class StateTest : public hyped::testing::Test {
    */
   void randomiseData()
   {
-    Randomiser::randomiseEmbrakes(embrakes_data_);
+    Randomiser::randomiseBrakes(brakes_data_);
     Randomiser::randomiseNavigation(nav_data_);
     Randomiser::randomiseTelemetry(telemetry_data_);
     Randomiser::randomiseMotors(motors_data_);
     Randomiser::randomiseSensorsData(sensors_data_);
     Randomiser::randomiseBatteriesData(batteries_data_);
 
-    data_.setEmergencyBrakesData(embrakes_data_);
+    data_.setEmergencyBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
@@ -87,7 +87,7 @@ TEST_F(IdleTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
     const auto new_state     = state->checkTransition(log_);
 
@@ -113,7 +113,7 @@ TEST_F(IdleTest, handlesCalibrateCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
@@ -139,14 +139,14 @@ TEST_F(IdleTest, handlesAllInitialised)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
     const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
 
     if (!has_emergency && calibrate_command) {
       const bool all_initialised
-        = checkModulesInitialised(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+        = checkModulesInitialised(log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
@@ -182,7 +182,7 @@ TEST_F(CalibratingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
     const auto new_state     = state->checkTransition(log_);
 
@@ -208,11 +208,11 @@ TEST_F(CalibratingTest, handlesAllReady)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool all_ready = checkModulesReady(log_, embrakes_data_, nav_data_, batteries_data_,
+      const bool all_ready = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
                                                telemetry_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
@@ -249,7 +249,7 @@ TEST_F(ReadyTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
     const auto new_state     = state->checkTransition(log_);
 
@@ -277,7 +277,7 @@ TEST_F(ReadyTest, handlesLaunchCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
@@ -319,7 +319,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
     const auto new_state     = state->checkTransition(log_);
 
@@ -347,7 +347,7 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
@@ -389,7 +389,7 @@ TEST_F(NominalBrakingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
     const auto new_state     = state->checkTransition(log_);
 
@@ -416,7 +416,7 @@ TEST_F(NominalBrakingTest, handlesStopped)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {

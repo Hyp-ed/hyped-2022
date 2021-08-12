@@ -15,7 +15,7 @@ using utils::Logger;
 using utils::concurrent::Thread;
 using utils::io::GPIO;
 
-namespace embrakes {
+namespace brakes {
 
 class Stepper : public StepperInterface {
  public:
@@ -64,5 +64,5 @@ class Stepper : public StepperInterface {
   uint8_t is_clamped_;
 };
 
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

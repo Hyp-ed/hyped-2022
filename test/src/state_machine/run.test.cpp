@@ -22,7 +22,7 @@ class RunTest : public Test {
 
   Data &data_ = Data::getInstance();
 
-  EmergencyBrakes embrakes_data_;
+  EmergencyBrakes brakes_data_;
   Navigation nav_data_;
   Batteries batteries_data_;
   Telemetry telemetry_data_;
@@ -32,7 +32,7 @@ class RunTest : public Test {
 
   void randomiseInternally()
   {
-    Randomiser::randomiseEmbrakes(embrakes_data_);
+    Randomiser::randomiseBrakes(brakes_data_);
     Randomiser::randomiseNavigation(nav_data_);
     Randomiser::randomiseTelemetry(telemetry_data_);
     Randomiser::randomiseMotors(motors_data_);
@@ -47,7 +47,7 @@ class RunTest : public Test {
   {
     // We only need to set one critical failure as other behaviour
     // is tested in transitions.test.cpp.
-    embrakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
   }
 
   /**
@@ -55,7 +55,7 @@ class RunTest : public Test {
    */
   void writeData()
   {
-    data_.setEmergencyBrakesData(embrakes_data_);
+    data_.setEmergencyBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
@@ -68,7 +68,7 @@ class RunTest : public Test {
    */
   void readData()
   {
-    embrakes_data_  = data_.getEmergencyBrakesData();
+    brakes_data_    = data_.getEmergencyBrakesData();
     stm_data_       = data_.getStateMachineData();
     nav_data_       = data_.getNavigationData();
     telemetry_data_ = data_.getTelemetryData();
@@ -103,7 +103,7 @@ class RunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Prevent Idle -> Calibrating
-    embrakes_data_.module_status      = ModuleStatus::kStart;
+    brakes_data_.module_status        = ModuleStatus::kStart;
     nav_data_.module_status           = ModuleStatus::kStart;
     telemetry_data_.module_status     = ModuleStatus::kStart;
     motors_data_.module_status        = ModuleStatus::kStart;
@@ -112,12 +112,11 @@ class RunTest : public Test {
     telemetry_data_.calibrate_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency         = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency           = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
-    bool has_calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
-    bool has_modules_initialised
-      = checkModulesInitialised(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
-                                sensors_data_, motors_data_);
+    bool has_calibrate_command   = checkCalibrateCommand(log_, telemetry_data_);
+    bool has_modules_initialised = checkModulesInitialised(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -151,7 +150,7 @@ class RunTest : public Test {
 
     // Enforce Idle -> Calibrating
     telemetry_data_.calibrate_command = true;
-    embrakes_data_.module_status      = ModuleStatus::kInit;
+    brakes_data_.module_status        = ModuleStatus::kInit;
     nav_data_.module_status           = ModuleStatus::kInit;
     telemetry_data_.module_status     = ModuleStatus::kInit;
     motors_data_.module_status        = ModuleStatus::kInit;
@@ -162,13 +161,12 @@ class RunTest : public Test {
     // >> No work required due to the above
 
     // Verify transition conditions are as intended
-    bool has_emergency           = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency           = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_calibrating_command = checkCalibrateCommand(log_, telemetry_data_);
-    bool has_modules_initialised
-      = checkModulesInitialised(log_, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
-                                sensors_data_, motors_data_);
-    bool has_modules_ready = checkModulesReady(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_modules_initialised = checkModulesInitialised(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    bool has_modules_ready = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
                                                telemetry_data_, sensors_data_, motors_data_);
 
     enableOutput();
@@ -213,7 +211,7 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
 
@@ -253,7 +251,7 @@ class RunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce Calibrating -> Ready
-    embrakes_data_.module_status  = ModuleStatus::kReady;
+    brakes_data_.module_status    = ModuleStatus::kReady;
     nav_data_.module_status       = ModuleStatus::kReady;
     telemetry_data_.module_status = ModuleStatus::kReady;
     motors_data_.module_status    = ModuleStatus::kReady;
@@ -264,9 +262,9 @@ class RunTest : public Test {
     telemetry_data_.launch_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency      = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
-    bool has_modules_ready  = checkModulesReady(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_modules_ready  = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
                                                telemetry_data_, sensors_data_, motors_data_);
     bool has_launch_command = checkLaunchCommand(log_, telemetry_data_);
 
@@ -311,7 +309,7 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
 
@@ -349,7 +347,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Ready -> FailureStopped
-    embrakes_data_.module_status           = ModuleStatus::kReady;
+    brakes_data_.module_status             = ModuleStatus::kReady;
     nav_data_.module_status                = ModuleStatus::kReady;
     telemetry_data_.module_status          = ModuleStatus::kReady;
     motors_data_.module_status             = ModuleStatus::kReady;
@@ -368,7 +366,7 @@ class RunTest : public Test {
     nav_data_.velocity = Navigation::kMaximumVelocity / 2;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_launch_command       = checkLaunchCommand(log_, telemetry_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
@@ -416,7 +414,7 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
 
@@ -453,7 +451,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Accelerating -> FailureBraking
-    embrakes_data_.module_status           = ModuleStatus::kReady;
+    brakes_data_.module_status             = ModuleStatus::kReady;
     nav_data_.module_status                = ModuleStatus::kReady;
     telemetry_data_.module_status          = ModuleStatus::kReady;
     motors_data_.module_status             = ModuleStatus::kReady;
@@ -469,7 +467,7 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_stopped              = checkPodStopped(log_, nav_data_);
@@ -509,7 +507,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Accelerating -> FailureBraking
-    embrakes_data_.module_status           = ModuleStatus::kReady;
+    brakes_data_.module_status             = ModuleStatus::kReady;
     nav_data_.module_status                = ModuleStatus::kReady;
     telemetry_data_.module_status          = ModuleStatus::kReady;
     motors_data_.module_status             = ModuleStatus::kReady;
@@ -526,7 +524,7 @@ class RunTest : public Test {
     nav_data_.velocity = Navigation::kMaximumVelocity;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
@@ -572,7 +570,7 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_stopped   = checkPodStopped(log_, nav_data_);
 
@@ -606,7 +604,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Cruising -> FailureBraking
-    embrakes_data_.module_status           = ModuleStatus::kReady;
+    brakes_data_.module_status             = ModuleStatus::kReady;
     nav_data_.module_status                = ModuleStatus::kReady;
     telemetry_data_.module_status          = ModuleStatus::kReady;
     motors_data_.module_status             = ModuleStatus::kReady;
@@ -622,7 +620,7 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency            = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_stopped              = checkPodStopped(log_, nav_data_);
@@ -664,7 +662,7 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_stopped   = checkPodStopped(log_, nav_data_);
 
@@ -702,7 +700,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent NominalBraking -> FailureBraking
-    embrakes_data_.module_status           = ModuleStatus::kReady;
+    brakes_data_.module_status             = ModuleStatus::kReady;
     nav_data_.module_status                = ModuleStatus::kReady;
     telemetry_data_.module_status          = ModuleStatus::kReady;
     motors_data_.module_status             = ModuleStatus::kReady;
@@ -717,7 +715,7 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    bool has_emergency        = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_stopped          = checkPodStopped(log_, nav_data_);
     bool has_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
@@ -763,7 +761,7 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    bool has_emergency = checkEmergency(log_, embrakes_data_, nav_data_, batteries_data_,
+    bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                         telemetry_data_, sensors_data_, motors_data_);
     bool has_stopped   = checkPodStopped(log_, nav_data_);
 

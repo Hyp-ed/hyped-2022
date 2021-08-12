@@ -1,7 +1,7 @@
 #include "fake_stepper.hpp"
 
 namespace hyped {
-namespace embrakes {
+namespace brakes {
 
 FakeStepper::FakeStepper(Logger &log, uint8_t id)
     : log_(log),
@@ -62,5 +62,5 @@ bool FakeStepper::checkClamped()
 {
   return is_clamped_;
 }
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

@@ -1,4 +1,4 @@
-> Embrakes
+> Brakes
 Command     0,0
 Button      1,1
 

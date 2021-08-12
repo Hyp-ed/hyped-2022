@@ -132,20 +132,20 @@ void Config::parseTelemetry(char *line)
   }
 }
 
-void Config::parseEmbrakes(char *line)
+void Config::parseBrakes(char *line)
 {
   char *token = strtok(line, " ");
 
   if (strcmp(token, "Command") == 0) {
     for (int i = 0; i < 2; i++) {
       char *value = strtok(NULL, ",");
-      if (value) { embrakes.command[i] = atoi(value); }
+      if (value) { brakes.command[i] = atoi(value); }
     }
   }
   if (strcmp(token, "Button") == 0) {
     for (int i = 0; i < 4; i++) {
       char *value = strtok(NULL, ",");
-      if (value) { embrakes.button[i] = atoi(value); }
+      if (value) { brakes.button[i] = atoi(value); }
     }
   }
 }

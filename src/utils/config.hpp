@@ -33,7 +33,7 @@ struct ModuleEntry;
   V(Navigation)                                                                                    \
   V(StateMachine)                                                                                  \
   V(Telemetry)                                                                                     \
-  V(Embrakes)                                                                                      \
+  V(Brakes)                                                                                        \
   V(Sensors)                                                                                       \
   V(MotorControl)                                                                                  \
   V(InterfaceFactory)
@@ -60,10 +60,10 @@ class Config {
     std::string Port;
   } telemetry;
 
-  struct Embrakes {
+  struct Brakes {
     uint8_t command[2];
     uint8_t button[2];
-  } embrakes;
+  } brakes;
 
   struct Sensors {
     int chip_select[data::Sensors::kNumImus];

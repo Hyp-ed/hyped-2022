@@ -13,7 +13,7 @@ using data::ModuleStatus;
 using utils::Logger;
 using utils::concurrent::Thread;
 
-namespace embrakes {
+namespace brakes {
 
 class FakeStepper : public StepperInterface {
  public:
@@ -62,5 +62,5 @@ class FakeStepper : public StepperInterface {
   bool fake_button_;
 };
 
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

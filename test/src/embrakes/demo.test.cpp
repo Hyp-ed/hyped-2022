@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <embrakes/main.hpp>
+#include <brakes/main.hpp>
 #include <gtest/gtest.h>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
@@ -10,16 +10,16 @@
 
 namespace hyped::testing {
 
-class EmbrakesDemoTest : public Test {
+class BrakesDemoTest : public Test {
 };
 
-TEST_F(EmbrakesDemoTest, handlesSysNotRunning)
+TEST_F(BrakesDemoTest, handlesSysNotRunning)
 {
   utils::System &sys = utils::System::getSystem();
   sys.running_       = false;
-  auto embrakes      = std::make_unique<embrakes::Main>(0, log_);
-  embrakes->start();
-  embrakes->join();
+  auto brakes        = std::make_unique<brakes::Main>(0, log_);
+  brakes->start();
+  brakes->join();
 }
 
 }  // namespace hyped::testing

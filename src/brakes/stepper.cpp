@@ -1,7 +1,7 @@
 #include "stepper.hpp"
 
 namespace hyped {
-namespace embrakes {
+namespace brakes {
 
 Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id)
     : log_(log),
@@ -64,5 +64,5 @@ bool Stepper::checkClamped()
   return is_clamped_;
 }
 
-}  // namespace embrakes
+}  // namespace brakes
 }  // namespace hyped

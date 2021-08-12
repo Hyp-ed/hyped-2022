@@ -10,7 +10,7 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+bool checkEmergency(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
                     Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                     Motors &motors_data)
 {
@@ -26,8 +26,8 @@ bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav
   } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
     log.ERR("STM", "critical failure in motors");
     return true;
-  } else if (embrakes_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in embrakes");
+  } else if (brakes_data.module_status == ModuleStatus::kCriticalFailure) {
+    log.ERR("STM", "critical failure in brakes");
     return true;
   } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
     log.ERR("STM", "critical failure in batteries");
@@ -43,11 +43,11 @@ bool checkEmergency(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+bool checkModulesInitialised(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
                              Batteries &batteries_data, Telemetry &telemetry_data,
                              Sensors &sensors_data, Motors &motors_data)
 {
-  if (embrakes_data.module_status < ModuleStatus::kInit) return false;
+  if (brakes_data.module_status < ModuleStatus::kInit) return false;
   if (nav_data.module_status < ModuleStatus::kInit) return false;
   if (batteries_data.module_status < ModuleStatus::kInit) return false;
   if (telemetry_data.module_status < ModuleStatus::kInit) return false;
@@ -58,11 +58,11 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes &embrakes_data, Naviga
   return true;
 }
 
-bool checkModulesReady(Logger &log, EmergencyBrakes &embrakes_data, Navigation &nav_data,
+bool checkModulesReady(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
                        Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
                        Motors &motors_data)
 {
-  if (embrakes_data.module_status != ModuleStatus::kReady) return false;
+  if (brakes_data.module_status != ModuleStatus::kReady) return false;
   if (nav_data.module_status != ModuleStatus::kReady) return false;
   if (batteries_data.module_status != ModuleStatus::kReady) return false;
   if (telemetry_data.module_status != ModuleStatus::kReady) return false;

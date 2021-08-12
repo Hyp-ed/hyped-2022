@@ -14,7 +14,7 @@ State::State() : data_(data::Data::getInstance())
 
 void State::updateModuleData()
 {
-  embrakes_data_  = data_.getEmergencyBrakesData();
+  brakes_data_    = data_.getEmergencyBrakesData();
   nav_data_       = data_.getNavigationData();
   batteries_data_ = data_.getBatteriesData();
   telemetry_data_ = data_.getTelemetryData();
@@ -34,14 +34,14 @@ State *Idle::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
   bool calibrate_command = checkCalibrateCommand(log, telemetry_data_);
   if (!calibrate_command) { return nullptr; }
 
-  bool all_initialised = checkModulesInitialised(log, embrakes_data_, nav_data_, batteries_data_,
+  bool all_initialised = checkModulesInitialised(log, brakes_data_, nav_data_, batteries_data_,
                                                  telemetry_data_, sensors_data_, motors_data_);
   if (all_initialised) { return Calibrating::getInstance(); }
 
@@ -60,12 +60,12 @@ State *Calibrating::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool all_ready = checkModulesReady(log, embrakes_data_, nav_data_, batteries_data_,
-                                     telemetry_data_, sensors_data_, motors_data_);
+  bool all_ready = checkModulesReady(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                     sensors_data_, motors_data_);
   if (all_ready) { return Ready::getInstance(); }
 
   return nullptr;
@@ -83,7 +83,7 @@ State *Ready::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
@@ -105,7 +105,7 @@ State *Accelerating::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureBraking::getInstance(); }
 
@@ -130,7 +130,7 @@ State *Cruising::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureBraking::getInstance(); }
 
@@ -152,7 +152,7 @@ State *NominalBraking::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  bool emergency = checkEmergency(log, embrakes_data_, nav_data_, batteries_data_, telemetry_data_,
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureBraking::getInstance(); }
 

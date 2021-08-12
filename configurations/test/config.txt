@@ -1,7 +1,7 @@
 
 # this is the main config entry point for testing utils/config
 # submodules telemetry and sensors are defined here
-# submodules embrakes and state_machine are defined in subconfig.txt
+# submodules brakes and state_machine are defined in subconfig.txt
 
 
 > Telemetry

@@ -6,7 +6,7 @@ namespace brakes {
 Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
-      em_brakes_data_(data_.getEmergencyBrakesData()),
+      brakes_data_(data_.getEmergencyBrakesData()),
       command_pin_(enable_pin, utils::io::gpio::kOut, log_),
       button_(button_pin, utils::io::gpio::kIn, log_),
       brake_id_(id),
@@ -18,12 +18,12 @@ Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id
 
 void Stepper::checkHome()
 {
-  if (button_.read() && !em_brakes_data_.brakes_retracted[brake_id_ - 1]) {
-    em_brakes_data_.brakes_retracted[brake_id_ - 1] = true;
-    data_.setEmergencyBrakesData(em_brakes_data_);
-  } else if (!button_.read() && em_brakes_data_.brakes_retracted[brake_id_ - 1]) {
-    em_brakes_data_.brakes_retracted[brake_id_ - 1] = false;
-    data_.setEmergencyBrakesData(em_brakes_data_);
+  if (button_.read() && !brakes_data_.brakes_retracted[brake_id_ - 1]) {
+    brakes_data_.brakes_retracted[brake_id_ - 1] = true;
+    data_.setEmergencyBrakesData(brakes_data_);
+  } else if (!button_.read() && brakes_data_.brakes_retracted[brake_id_ - 1]) {
+    brakes_data_.brakes_retracted[brake_id_ - 1] = false;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
 }
 
@@ -45,8 +45,8 @@ void Stepper::checkAccFailure()
 {
   if (!button_.read()) {  // false = brakes are clamped
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
-    em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(em_brakes_data_);
+    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
 }
 
@@ -54,8 +54,8 @@ void Stepper::checkBrakingFailure()
 {
   if (button_.read()) {  // true = brakes are retracted
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
-    em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(em_brakes_data_);
+    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
 }
 

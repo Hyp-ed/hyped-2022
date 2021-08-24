@@ -6,7 +6,7 @@ namespace brakes {
 FakeStepper::FakeStepper(Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
-      em_brakes_data_(data_.getEmergencyBrakesData()),
+      brakes_data_(data_.getEmergencyBrakesData()),
       brake_id_(id),
       is_clamped_(true),
       fake_button_(false)
@@ -15,12 +15,12 @@ FakeStepper::FakeStepper(Logger &log, uint8_t id)
 
 void FakeStepper::checkHome()
 {
-  if (fake_button_ && !em_brakes_data_.brakes_retracted[brake_id_ - 1]) {
-    em_brakes_data_.brakes_retracted[brake_id_ - 1] = true;
-    data_.setEmergencyBrakesData(em_brakes_data_);
-  } else if (!fake_button_ && em_brakes_data_.brakes_retracted[brake_id_ - 1]) {
-    em_brakes_data_.brakes_retracted[brake_id_ - 1] = false;
-    data_.setEmergencyBrakesData(em_brakes_data_);
+  if (fake_button_ && !brakes_data_.brakes_retracted[brake_id_ - 1]) {
+    brakes_data_.brakes_retracted[brake_id_ - 1] = true;
+    data_.setEmergencyBrakesData(brakes_data_);
+  } else if (!fake_button_ && brakes_data_.brakes_retracted[brake_id_ - 1]) {
+    brakes_data_.brakes_retracted[brake_id_ - 1] = false;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
 }
 
@@ -42,8 +42,8 @@ void FakeStepper::checkAccFailure()
 {
   if (!fake_button_) {  // false = brakes are clamped
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
-    em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(em_brakes_data_);
+    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
   return;
 }
@@ -52,8 +52,8 @@ void FakeStepper::checkBrakingFailure()
 {
   if (fake_button_) {  // true = brakes are retracted
     log_.ERR("Brakes", "Brake %b failure", brake_id_);
-    em_brakes_data_.module_status = ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(em_brakes_data_);
+    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
   return;
 }

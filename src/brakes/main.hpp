@@ -40,7 +40,7 @@ class Main : public Thread {
   data::Data &data_;
   utils::System &sys_;
   data::StateMachine sm_data_;
-  data::EmergencyBrakes em_brakes_;
+  data::EmergencyBrakes brakes_;
   data::Telemetry tlm_data_;
   uint8_t command_pins_[2];    // GPIO pin numbers for sending commands to brakes
   uint8_t button_pins_[2];     // GPIO pin numbers for retrieving brake status

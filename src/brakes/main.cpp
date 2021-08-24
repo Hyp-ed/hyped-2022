@@ -28,9 +28,9 @@ Main::Main(uint8_t id, Logger &log)
 void Main::run()
 {
   // Setting module status for STM transition
-  em_brakes_               = data_.getEmergencyBrakesData();
-  em_brakes_.module_status = ModuleStatus::kInit;
-  data_.setEmergencyBrakesData(em_brakes_);
+  brakes_               = data_.getEmergencyBrakesData();
+  brakes_.module_status = ModuleStatus::kInit;
+  data_.setEmergencyBrakesData(brakes_);
 
   log_.INFO("Brakes", "Thread started");
 
@@ -38,9 +38,9 @@ void Main::run()
 
   while (sys.running_) {
     // Get the current state of brakes, state machine and telemetry modules from data
-    em_brakes_ = data_.getEmergencyBrakesData();
-    sm_data_   = data_.getStateMachineData();
-    tlm_data_  = data_.getTelemetryData();
+    brakes_   = data_.getEmergencyBrakesData();
+    sm_data_  = data_.getStateMachineData();
+    tlm_data_ = data_.getTelemetryData();
 
     switch (sm_data_.current_state) {
       case data::State::kIdle:
@@ -70,8 +70,8 @@ void Main::run()
         if (f_brake_->checkClamped()) { f_brake_->sendRetract(); }
 
         if (!m_brake_->checkClamped() && !f_brake_->checkClamped()) {
-          em_brakes_.module_status = ModuleStatus::kReady;
-          data_.setEmergencyBrakesData(em_brakes_);
+          brakes_.module_status = ModuleStatus::kReady;
+          data_.setEmergencyBrakesData(brakes_);
         }
 
         Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);

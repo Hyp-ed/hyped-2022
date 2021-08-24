@@ -57,7 +57,7 @@ class Stepper : public StepperInterface {
  private:
   utils::Logger &log_;
   data::Data &data_;
-  data::EmergencyBrakes em_brakes_data_;
+  data::EmergencyBrakes brakes_data_;
   GPIO command_pin_;
   GPIO button_;
   uint8_t brake_id_;

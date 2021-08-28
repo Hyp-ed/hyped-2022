@@ -101,7 +101,7 @@ class Navigation {
   /**
    * @brief Initialise timestamps for integration
    */
-  void initTimestamps();
+  void initialiseTimestamps();
   /**
    * @brief Used to check whether initial timestamps have been set
    *
@@ -126,8 +126,8 @@ class Navigation {
   void logWrite();
 
  private:
-  static constexpr int kCalibrationAttempts = 3;
-  static constexpr int kCalibrationQueries  = 10000;
+  static constexpr int kMaxCalibrationAttempts = 3;
+  static constexpr int kCalibrationQueries     = 10000;
 
   // number of previous measurements stored
   static constexpr int kPreviousMeasurements = 1000;
@@ -141,26 +141,23 @@ class Navigation {
 
   static constexpr data::nav_t kStripeDistance = 30.48;
 
-  static constexpr uint32_t pod_mass_             = 250;   // kg
-  static constexpr data::nav_t mom_inertia_wheel_ = 0.04;  // kgm²
-  static constexpr uint32_t kNumBrakes            = 4;
-  static constexpr data::nav_t coeff_friction_    = 0.38;
-  static constexpr uint32_t spring_compression_   = 40;
-  static constexpr uint32_t spring_coefficient_   = 18;
-  static constexpr data::nav_t embrake_angle_     = 0.52;
+  static constexpr uint32_t kPodMass                 = 250;   // kg
+  static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
+  static constexpr uint32_t kNumBrakes               = 4;
+  static constexpr data::nav_t kFrictionCoefficient  = 0.38;
+  static constexpr uint32_t kSpringCompression       = 40;
+  static constexpr uint32_t kSpringCoefficient       = 18;
+  static constexpr data::nav_t kEmbrakeAngle         = 0.52;
 
-  static constexpr data::nav_t pi = 3.14159265359;  // Have to approximate
+  static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
 
   // System communication
   Logger &log_;
   Data &data_;
   ModuleStatus status_;
 
-  // counter for outputs
-  unsigned int counter_;
-
-  // movement axis
-  unsigned int axis_;
+  unsigned int log_counter_;
+  unsigned int movement_axis_;
 
   // acceptable variances for calibration measurements: {x, y, z}
   std::array<data::nav_t, 3> calibration_limits_;
@@ -170,12 +167,12 @@ class Navigation {
   // Array of previous measurements
   std::array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
   // Current point in recent measurements, to save space
-  uint16_t curr_msmt_;
+  uint16_t current_measurements_;
   // Boolean value to check if the array has been filled, to not wrong variance
-  bool prev_filled_;
+  bool previous_filled_;
 
   // Flag to write to file
-  bool nav_write_;
+  bool write_to_file_;
 
   // Kalman filters to filter each IMU measurement individually
   FilterArray filters_;
@@ -183,9 +180,9 @@ class Navigation {
   // Counter for consecutive outlier output from each IMU
   std::array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
   // Array of booleans to signify which IMUs are reliable or faulty
-  std::array<bool, Sensors::kNumImus> imu_reliable_;
+  std::array<bool, Sensors::kNumImus> is_imu_reliable_;
   // Counter of how many IMUs have failed
-  uint32_t nOutlierImus_;
+  uint32_t num_outlier_imus_;
 
   // To store estimated values
   ImuDataPointArray sensor_readings_;
@@ -195,25 +192,25 @@ class Navigation {
   NavigationVectorArray gravity_calibration_;
 
   // Initial timestamp (for comparisons)
-  uint32_t init_timestamp_;
+  uint32_t initial_timestamp_;
   // Previous timestamp
-  uint32_t prev_timestamp_;
+  uint32_t previous_timestamp_;
   // Uncertainty in distance
-  data::nav_t displ_unc_;
+  data::nav_t displacement_uncertainty_;
   // Uncertainty in velocity
-  data::nav_t vel_unc_;
+  data::nav_t velocity_uncertainty_;
   // Previous acceleration measurement, necessary for uncertainty determination
-  data::nav_t prev_acc_;
+  data::nav_t previous_acceleration_;
   // Previous velocity measurement
-  data::nav_t prev_vel_;
+  data::nav_t previous_velocity_;
   // Have initial timestamps been set?
-  bool init_time_set_;
+  bool has_initial_time_;
 
   // Stripe counter object
   StripeHandler stripe_counter_;
   // Flags if keyences are used and if real
-  bool keyence_used_;
-  bool keyence_real_;
+  bool is_keyence_used_;
+  bool is_keyence_real_;
 
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity

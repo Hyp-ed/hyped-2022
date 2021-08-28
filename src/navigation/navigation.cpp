@@ -73,27 +73,27 @@ data::nav_t Navigation::getEmergencyBrakingDistance() const
 
 data::nav_t Navigation::getBrakingDistance() const
 {
-  data::Motors motor_data = data_.getMotorData();
-  uint32_t total_rpm      = 0;
+  const auto motor_data = data_.getMotorData();
+  uint32_t total_rpm    = 0;
   for (uint32_t i = 0; i < data::Motors::kNumMotors; i++) {
     total_rpm += motor_data.rpms[i];
   }
-  data::nav_t avg_rpm
+  const auto avg_rpm
     = static_cast<data::nav_t>(total_rpm) / static_cast<data::nav_t>(data::Motors::kNumMotors);
-  data::nav_t rot_velocity = (avg_rpm / 60.0) * (2 * kPi);
+  const auto rot_velocity = (avg_rpm / 60.0) * (2 * kPi);
 
-  data::nav_t actuation_force = kSpringCompression * kSpringCoefficient;
-  data::nav_t braking_force
+  const auto actuation_force = kSpringCompression * kSpringCoefficient;
+  const auto braking_force
     = (actuation_force * kFrictionCoefficient) / (std::tan(kEmbrakeAngle) - kFrictionCoefficient);
-  data::nav_t deceleration_total = static_cast<data::nav_t>(kNumBrakes) * braking_force / kPodMass;
+  const auto deceleration_total = static_cast<data::nav_t>(kNumBrakes) * braking_force / kPodMass;
 
-  data::nav_t velocity           = getVelocity();
-  data::nav_t pod_kinetic_energy = 0.5 * kPodMass * velocity;
-  data::nav_t rotational_kinetic_energy
+  const auto velocity           = getVelocity();
+  const auto pod_kinetic_energy = 0.5 * kPodMass * velocity;
+  const auto rotational_kinetic_energy
     = data::Motors::kNumMotors * 0.5 * kMomentOfInertiaWheel * rot_velocity * rot_velocity;
-  data::nav_t total_kinetic_energy = pod_kinetic_energy + rotational_kinetic_energy;
+  const auto total_kinetic_energy = pod_kinetic_energy + rotational_kinetic_energy;
 
-  data::nav_t braking_distance = (total_kinetic_energy / kPodMass) / deceleration_total;
+  const auto braking_distance = (total_kinetic_energy / kPodMass) / deceleration_total;
 
   return braking_distance;
 }
@@ -119,16 +119,18 @@ void Navigation::calibrateGravity()
 
     // Average each sensor over specified number of readings
     for (uint32_t i = 0; i < kCalibrationQueries; ++i) {
-      sensor_readings_ = data_.getSensorsImuData();
+      const auto full_imu_data = data_.getSensorsImuData();
       for (uint32_t j = 0; j < data::Sensors::kNumImus; ++j) {
-        NavigationVector imu_data = sensor_readings_.value[j].acc;
-        online_array[j].update(imu_data);
+        const auto single_imu_data = full_imu_data.value[j].acc;
+        online_array[j].update(single_imu_data);
         if (write_to_file_) {
-          std::ofstream writefile;
-          writefile.open("src/navigation/testing/nav_data.csv", std::ios::app);
-          writefile << j << kDelimiter << imu_data[0] << kDelimiter << imu_data[1] << kDelimiter
-                    << imu_data[2] << std::endl;
-          writefile.close();
+          std::ofstream output_file;
+          output_file.open("src/navigation/testing/nav_data.csv", std::ios::app);
+          output_file << j << kDelimiter;
+          output_file << single_imu_data[0] << kDelimiter;
+          output_file << single_imu_data[1] << kDelimiter;
+          output_file << single_imu_data[2] << std::endl;
+          output_file.close();
         }
       }
       Thread::sleep(1);
@@ -137,8 +139,8 @@ void Navigation::calibrateGravity()
     calibration_successful = true;
     for (uint32_t i = 0; i < data::Sensors::kNumImus; ++i) {
       for (uint32_t j = 0; j < 3; ++j) {
-        bool var_within_lim    = online_array[i].getVariance()[j] < calibration_limits_[j];
-        calibration_successful = calibration_successful && var_within_lim;
+        const bool var_within_lim = online_array[i].getVariance()[j] < calibration_limits_[j];
+        calibration_successful    = calibration_successful && var_within_lim;
       }
     }
     calibration_attempts++;
@@ -162,11 +164,11 @@ void Navigation::calibrateGravity()
     // set calibration uncertainties
     for (uint32_t axis = 0; axis < 3; axis++) {
       for (uint32_t i = 0; i < data::Sensors::kNumImus; i++) {
-        data::nav_t variance = online_array[i].getVariance()[axis];
+        const auto variance = online_array[i].getVariance()[axis];
         calibration_variance_[axis] += variance * variance;
       }
       // geometric mean for variances of different IMUs
-      calibration_variance_[axis] = sqrt(calibration_variance_[axis]);
+      calibration_variance_[axis] = std::sqrt(calibration_variance_[axis]);
     }
     log_.INFO("NAV", "Calibration Variance: x-axis: %.3f, y-axis: %.3f, z-axis: %.3f",
               calibration_variance_[0], calibration_variance_[1], calibration_variance_[2]);
@@ -176,14 +178,14 @@ void Navigation::calibrateGravity()
   } else {
     log_.INFO("NAV", "Calibration of IMU acceleration failed with final readings:");
     for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
-      NavigationVector acc = online_array[i].getMean();
-      data::nav_t variance = 0.0;
+      const auto acceleration = online_array[i].getMean();
+      data::nav_t variance    = 0.0;
       for (uint32_t j = 0; j < 3; ++j) {
         variance += online_array[i].getVariance()[j];
       }
 
-      log_.INFO("NAV", "\tIMU %d: g=(%.5f, %.5f, %.5f), variance=%.5f", i, acc[0], acc[1], acc[2],
-                variance);
+      log_.INFO("NAV", "\tIMU %d: g=(%.5f, %.5f, %.5f), variance=%.5f", i, acceleration[0],
+                acceleration[1], acceleration[2], variance);
     }
     status_ = ModuleStatus::kCriticalFailure;
     updateData();
@@ -191,30 +193,27 @@ void Navigation::calibrateGravity()
   }
 }
 
-data::nav_t Navigation::accNorm(NavigationVector &acc)
+data::nav_t Navigation::accNorm(const NavigationVector &acc)
 {
   data::nav_t norm = 0.0;
   for (uint32_t i = 0; i < 3; i++) {
-    data::nav_t a = acc[i];
-    norm += a * a;
+    norm += acc[i] * acc[i];
   }
-  norm = std::sqrt(norm);
-  return norm;
+  return std::sqrt(norm);
 }
 
 void Navigation::queryImus()
 {
-  ImuAxisData raw_acceleration;             // All raw data, four values per axis
   NavigationArray raw_acceleration_moving;  // Raw values in moving axis
 
-  utils::math::OnlineStatistics<data::nav_t> acceleration_average_filter;
-  sensor_readings_ = data_.getSensorsImuData();
-  uint32_t t       = sensor_readings_.timestamp;
+  const auto imu_data = data_.getSensorsImuData();
+  uint32_t t          = imu_data.timestamp;
   // process raw values
+  ImuAxisData raw_acceleration;  // All raw data, four values per axis
   for (uint32_t axis = 0; axis < 3; axis++) {
     for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
-      NavigationVector acceleration = sensor_readings_.value[i].acc - gravity_calibration_[i];
-      raw_acceleration[axis][i]     = acceleration[axis];
+      const auto acceleration   = imu_data.value[i].acc - gravity_calibration_[i];
+      raw_acceleration[axis][i] = acceleration[axis];
 
       // the moving axis should be set to 0 for tukeyFences
       if (!is_imu_reliable_[i]) {
@@ -232,6 +231,7 @@ void Navigation::queryImus()
   // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
 
   // Kalman filter the readings which are reliable
+  utils::math::OnlineStatistics<data::nav_t> acceleration_average_filter;
   for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
     if (is_imu_reliable_[i]) {
       data::nav_t estimate = filters_[i].filter(raw_acceleration_moving[i]);
@@ -258,7 +258,7 @@ void Navigation::checkVibration()
   // curr_msmt points at next measurement, ie the last one
   std::array<utils::math::OnlineStatistics<data::nav_t>, 3> online_array_axis;
   for (uint32_t i = 0; i < kPreviousMeasurements; i++) {
-    ImuAxisData raw_data
+    const auto raw_data
       = previous_measurements_[(current_measurements_ + i) % kPreviousMeasurements];
     for (uint32_t axis = 0; axis < 3; axis++) {
       if (axis != movement_axis_) {  // assume variance in moving axis are not vibrations
@@ -269,12 +269,13 @@ void Navigation::checkVibration()
     }
   }
   for (uint32_t axis = 0; axis < 3; axis++) {
-    data::nav_t variance = online_array_axis[axis].getVariance();
+    const auto variance = online_array_axis[axis].getVariance();
     if (log_counter_ % 100000 == 0 && axis != movement_axis_) {
       log_.INFO("NAV", "Variance in axis %d: %.3f", axis, variance);
     }
-    data::nav_t ratio                      = variance / calibration_variance_[axis];
-    data::nav_t statistical_variance_ratio = kCalibrationQueries / kPreviousMeasurements;
+    const auto ratio                      = variance / calibration_variance_[axis];
+    const auto statistical_variance_ratio = static_cast<data::nav_t>(kCalibrationQueries)
+                                            / static_cast<data::nav_t>(kPreviousMeasurements);
     if (ratio > statistical_variance_ratio) {
       log_.ERR("NAV", "Variance in axis %d is %.3f times larger than its calibration variance.",
                axis, ratio);
@@ -284,9 +285,9 @@ void Navigation::checkVibration()
 
 void Navigation::updateUncertainty()
 {
-  data::nav_t time_delta
+  const auto time_delta
     = static_cast<data::nav_t>(displacement_.timestamp - previous_timestamp_) / 1000000.0;
-  data::nav_t absolute_acceleration_delta = std::abs(getAcceleration() - previous_acceleration_);
+  const auto absolute_acceleration_delta = std::abs(getAcceleration() - previous_acceleration_);
   // Random walk uncertainty
   velocity_uncertainty_ += absolute_acceleration_delta * time_delta / 2.;
   // Processing uncertainty
@@ -294,13 +295,13 @@ void Navigation::updateUncertainty()
   for (uint32_t i = 0; i < Sensors::kNumImus; i++) {
     acceleration_variance_ += filters_[i].getEstimateVariance();
   }
-  acceleration_variance_                      = acceleration_variance_ / data::Sensors::kNumImus;
-  data::nav_t acceleration_standard_deviation = std::sqrt(acceleration_variance_);
+  acceleration_variance_                     = acceleration_variance_ / data::Sensors::kNumImus;
+  const auto acceleration_standard_deviation = std::sqrt(acceleration_variance_);
   // uncertainty in velocity is the std deviation of acceleration integrated
   velocity_uncertainty_ += acceleration_standard_deviation * time_delta;
   displacement_uncertainty_ += velocity_uncertainty_ * time_delta;
   // Random walk uncertainty
-  displacement_uncertainty_ += abs(getVelocity() - previous_velocity_) * time_delta / 2.;
+  displacement_uncertainty_ += std::abs(getVelocity() - previous_velocity_) * time_delta / 2.;
 }
 
 void Navigation::disableKeyenceUsage()
@@ -328,7 +329,7 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-void Navigation::tukeyFences(NavigationArray &data_array, data::nav_t threshold)
+void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t threshold)
 {
   // Define the quartiles first:
   data::nav_t q1 = 0;
@@ -378,14 +379,14 @@ void Navigation::tukeyFences(NavigationArray &data_array, data::nav_t threshold)
     return;
   }
   // find the thresholds
-  data::nav_t iqr = q3 - q1;
   // clip IQR to upper bound to avoid issues with very large outliers
-  if (iqr > kTukeyIQRBound) { iqr = kTukeyIQRBound; }
-  data::nav_t upper_limit = q3 + threshold * iqr;
-  data::nav_t lower_limit = q1 - threshold * iqr;
+  const auto iqr         = std::min(q3 - q1, kTukeyIQRBound);
+  const auto upper_limit = q3 + threshold * iqr;
+  const auto lower_limit = q1 - threshold * iqr;
   // replace any outliers with the median
   for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
-    if ((data_array[i] < lower_limit or data_array[i] > upper_limit) && is_imu_reliable_[i]) {
+    const auto exceeds_limits = data_array[i] < lower_limit || data_array[i] > upper_limit;
+    if (exceeds_limits && is_imu_reliable_[i]) {
       log_.DBG3(
         "NAV",
         "Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",  // NOLINT

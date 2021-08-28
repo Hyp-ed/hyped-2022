@@ -88,7 +88,7 @@ class Navigation {
    * @param pointer to array of original acceleration readings
    * @param threshold value
    */
-  void tukeyFences(NavigationArray &data_array, data::nav_t threshold);
+  void tukeyFences(NavigationArray &data_array, const data::nav_t threshold);
   /**
    * @brief Update central data structure
    */
@@ -219,7 +219,7 @@ class Navigation {
   /**
    * @brief Compute norm of acceleration measurement
    */
-  data::nav_t accNorm(data::NavigationVector &acc);
+  data::nav_t accNorm(const data::NavigationVector &acc);
   /**
    * @brief Query sensors to determine acceleration, velocity and distance
    */

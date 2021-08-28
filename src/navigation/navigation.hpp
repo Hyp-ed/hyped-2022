@@ -34,7 +34,7 @@ class Navigation {
    * @param log System logger
    * @param axis Axis used of acceleration measurements
    */
-  explicit Navigation(utils::Logger &log, unsigned int axis = 0);
+  explicit Navigation(utils::Logger &log, uint32_t axis = 0);
   /**
    * @brief Get the current state of the navigation module
    *
@@ -141,12 +141,12 @@ class Navigation {
 
   static constexpr data::nav_t kStripeDistance = 30.48;
 
-  static constexpr uint32_t kPodMass                 = 250;   // kg
+  static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
   static constexpr uint32_t kNumBrakes               = 4;
   static constexpr data::nav_t kFrictionCoefficient  = 0.38;
-  static constexpr uint32_t kSpringCompression       = 40;
-  static constexpr uint32_t kSpringCoefficient       = 18;
+  static constexpr data::nav_t kSpringCompression    = 40;
+  static constexpr data::nav_t kSpringCoefficient    = 18;
   static constexpr data::nav_t kEmbrakeAngle         = 0.52;
 
   static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
@@ -156,8 +156,8 @@ class Navigation {
   Data &data_;
   ModuleStatus status_;
 
-  unsigned int log_counter_;
-  unsigned int movement_axis_;
+  uint32_t log_counter_;
+  uint32_t movement_axis_;
 
   // acceptable variances for calibration measurements: {x, y, z}
   std::array<data::nav_t, 3> calibration_limits_;

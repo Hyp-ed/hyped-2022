@@ -231,10 +231,6 @@ void Navigation::queryImus()
   // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
   // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
 
-  /*for (int axis = 0; axis < 3; axis++) {
-    if (axis != movement_axis_) tukeyFences(raw_acceleration[axis], kTukeyThreshold);
-  }*/
-
   // Kalman filter the readings which are reliable
   for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
     if (is_imu_reliable_[i]) {
@@ -394,13 +390,11 @@ void Navigation::tukeyFences(NavigationArray &data_array, data::nav_t threshold)
         "NAV",
         "Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",  // NOLINT
         i + 1, data_array[i], lower_limit, upper_limit, q2);
-      // log_.DBG3("NAV", "Outlier detected with quantiles: %.3f, %.3f, %.3f", q1, q2, q3);
 
       data_array[i] = q2;
       imu_outlier_counter_[i]++;
       // If this counter exceeds some threshold then that IMU is deemed unreliable
       if (imu_outlier_counter_[i] > 1000 && is_imu_reliable_[i]) {
-        // log_.DBG3("NAV", "IMU%d is an outlier!", i + 1);
         is_imu_reliable_[i] = false;
         num_outlier_imus_++;
       }
@@ -410,21 +404,8 @@ void Navigation::tukeyFences(NavigationArray &data_array, data::nav_t threshold)
       }
     } else {
       imu_outlier_counter_[i] = 0;
-      if (log_counter_ % 100 == 0 && is_imu_reliable_[i]) {
-        /*
-         * log_.DBG3("NAV", "No Outlier detected in IMU %d, reading: %.3f in [%.3f, %.3f]",
-         *           i+1, data_array[i], lower_limit, upper_limit);
-         */
-      }
     }
   }
-  /*
-   * if (log_counter_ % 100 == 0) {
-   *   log_.DBG3("NAV", "Outliers: IMU1: %d, IMU2: %d, IMU3: %d, IMU4: %d", imu_outlier_counter_[0],
-   *    imu_outlier_counter_[1], imu_outlier_counter_[2], imu_outlier_counter_[3]);
-   *   log_.DBG3("NAV", "Number of outliers: %d", nOutlierImus_);
-   * }
-   */
 }
 
 void Navigation::updateData()

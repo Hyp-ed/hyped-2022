@@ -7,8 +7,6 @@
 
 namespace hyped {
 
-using hyped::utils::concurrent::Thread;
-
 namespace navigation {
 
 Navigation::Navigation(Logger &log, uint32_t axis /*=0*/)
@@ -133,7 +131,7 @@ void Navigation::calibrateGravity()
           output_file.close();
         }
       }
-      Thread::sleep(1);
+      utils::concurrent::Thread::sleep(1);
     }
     // Check if each calibration's variance is acceptable
     calibration_successful = true;
@@ -191,15 +189,6 @@ void Navigation::calibrateGravity()
     updateData();
     log_.ERR("NAV", "Navigation module failed on calibration");
   }
-}
-
-data::nav_t Navigation::accNorm(const NavigationVector &acc)
-{
-  data::nav_t norm = 0.0;
-  for (uint32_t i = 0; i < 3; i++) {
-    norm += acc[i] * acc[i];
-  }
-  return std::sqrt(norm);
 }
 
 void Navigation::queryImus()

@@ -217,10 +217,6 @@ class Navigation {
   utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
 
   /**
-   * @brief Compute norm of acceleration measurement
-   */
-  data::nav_t accNorm(const data::NavigationVector &acc);
-  /**
    * @brief Query sensors to determine acceleration, velocity and distance
    */
   void queryImus();

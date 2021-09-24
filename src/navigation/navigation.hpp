@@ -162,7 +162,7 @@ class Navigation {
   // acceptable variances for calibration measurements: {x, y, z}
   std::array<data::nav_t, 3> calibration_limits_;
   // Calibration variances in each dimension, necessary for vibration checking
-  std::array<nav_t, 3> calibration_variance_;
+  std::array<data::nav_t, 3> calibration_variance_;
 
   // Array of previous measurements
   std::array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
@@ -186,9 +186,9 @@ class Navigation {
 
   // To store estimated values
   ImuDataPointArray sensor_readings_;
-  data::DataPoint<nav_t> acceleration_;
-  data::DataPoint<nav_t> velocity_;
-  data::DataPoint<nav_t> displacement_;
+  data::DataPoint<data::nav_t> acceleration_;
+  data::DataPoint<data::nav_t> velocity_;
+  data::DataPoint<data::nav_t> displacement_;
   NavigationVectorArray gravity_calibration_;
 
   // Initial timestamp (for comparisons)

@@ -104,11 +104,11 @@ Navigation::NavigationVectorArray Navigation::getGravityCalibration() const
 void Navigation::calibrateGravity()
 {
   log_.INFO("NAV", "Calibrating gravity");
-  std::array<utils::math::RollingStatistics<NavigationVector>, Sensors::kNumImus> online_array
-    = {{utils::math::RollingStatistics<NavigationVector>(kCalibrationQueries),
-        utils::math::RollingStatistics<NavigationVector>(kCalibrationQueries),
-        utils::math::RollingStatistics<NavigationVector>(kCalibrationQueries),
-        utils::math::RollingStatistics<NavigationVector>(kCalibrationQueries)}};
+  std::array<utils::math::RollingStatistics<data::NavigationVector>, Sensors::kNumImus> online_array
+    = {{utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
+        utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
+        utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
+        utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries)}};
   bool calibration_successful   = false;
   uint32_t calibration_attempts = 0;
 

@@ -20,7 +20,7 @@ add_dependencies(${test_target} googletest)
 # include and link
 include_directories(
     ${GTEST_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/test/src
+    ${CMAKE_SOURCE_DIR}/test
 )
 target_link_libraries(${test_target}
     data

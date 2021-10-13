@@ -16,4 +16,4 @@ jobs:
       - name: CMake
         run: cmake -S . -B build -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=OFF -DCROSS=ON
       - name: Build
-        run: make -j8
+        run: cd build; make -j8

@@ -14,6 +14,6 @@ jobs:
       - name: Install cross compiler
         run: mkdir build; cd build; ../install-cc.sh
       - name: CMake
-        run: cmake .. -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=OFF -DCROSS=ON
+        run: cmake -S . -B build -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=OFF -DCROSS=ON
       - name: Build
         run: make -j8

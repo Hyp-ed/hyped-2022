@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: CMake
-        run: cmake -S . -B build -DPEDANTIC=OFF -DRELEASE=OFF -DCOVERAGE=ON -DCROSS=OFF
+        run: cmake -S . -B build -DPEDANTIC=OFF -DRELEASE=OFF -DCOVERAGE=ON -DCROSS=OFF -DCMAKE_CXX_COMPILER=$(which clang++)
       - name: Build executable and test binary
         run: |
           cd build

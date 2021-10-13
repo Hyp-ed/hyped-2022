@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Linux x64 build, test & coverage
 
 on: [push, pull_request]
 
@@ -9,11 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: CMake
-        run: cmake -S . -B build -DPEDANTIC=OFF -DRELEASE=OFF -DCOVERAGE=ON
+        run: cmake -S . -B build -DPEDANTIC=OFF -DRELEASE=OFF -DCOVERAGE=ON -DCROSS=OFF
       - name: Build executable and test binary
         run: |
           cd build
-          make testrunner -j4
+          make testrunner -j8
       - name: Cache LLVM and Clang
         id: cache-llvm
         uses: actions/cache@v2
@@ -35,7 +35,7 @@ jobs:
         run: |
           rm -rf $LLVM_PATH/bin/clang++
           cd build
-          make coverage -j4
+          make coverage -j8
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

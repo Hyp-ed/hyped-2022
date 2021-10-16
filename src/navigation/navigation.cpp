@@ -84,7 +84,7 @@ data::nav_t Navigation::getBrakingDistance() const
   const auto deceleration_total = static_cast<data::nav_t>(kNumBrakes) * braking_force / kPodMass;
 
   const auto velocity           = getVelocity();
-  const auto pod_kinetic_energy = 0.5 * kPodMass * velocity;
+  const auto pod_kinetic_energy = 0.5 * kPodMass * velocity * velocity;
   const auto rotational_kinetic_energy
     = data::Motors::kNumMotors * 0.5 * kMomentOfInertiaWheel * rot_velocity * rot_velocity;
   const auto total_kinetic_energy = pod_kinetic_energy + rotational_kinetic_energy;

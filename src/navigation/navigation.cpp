@@ -33,7 +33,7 @@ Navigation::Navigation(Logger &log, uint32_t axis /*=0*/)
       velocity_integrator_(&displacement_)
 {
   log_.INFO("NAV", "Navigation module started");
-  for (uint32_t i = 0; i < Sensors::kNumImus; i++) {
+  for (std::size_t i = 0; i < Sensors::kNumImus; i++) {
     filters_[i] = KalmanFilter(1, 1);
     filters_[i].setup();
   }
@@ -73,7 +73,7 @@ data::nav_t Navigation::getBrakingDistance() const
 {
   const auto motor_data = data_.getMotorData();
   uint32_t total_rpm    = 0;
-  for (uint32_t i = 0; i < data::Motors::kNumMotors; i++) {
+  for (std::size_t i = 0; i < data::Motors::kNumMotors; i++) {
     total_rpm += motor_data.rpms[i];
   }
   const auto avg_rpm
@@ -361,7 +361,8 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
         sum_non_outliers += data_array[i];
       }
     }
-    // TODO(Sury): Handle possible division by zero if all data points are 0.0 or explain why this can't happen.
+    // TODO(Sury): Handle possible division by zero if all data points are 0.0 or explain why this
+    // can't happen.
     for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
       data_array[i] = sum_non_outliers / num_non_outliers;
     }

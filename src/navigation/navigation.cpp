@@ -116,9 +116,9 @@ void Navigation::calibrateGravity()
     log_.INFO("NAV", "Calibration attempt %d", calibration_attempts + 1);
 
     // Average each sensor over specified number of readings
-    for (uint32_t i = 0; i < kCalibrationQueries; ++i) {
+    for (std::size_t i = 0; i < kCalibrationQueries; ++i) {
       const auto full_imu_data = data_.getSensorsImuData();
-      for (uint32_t j = 0; j < data::Sensors::kNumImus; ++j) {
+      for (std::size_t j = 0; j < data::Sensors::kNumImus; ++j) {
         const auto single_imu_data = full_imu_data.value[j].acc;
         online_array[j].update(single_imu_data);
         if (write_to_file_) {
@@ -135,8 +135,8 @@ void Navigation::calibrateGravity()
     }
     // Check if each calibration's variance is acceptable
     calibration_successful = true;
-    for (uint32_t i = 0; i < data::Sensors::kNumImus; ++i) {
-      for (uint32_t j = 0; j < 3; ++j) {
+    for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
+      for (std::size_t j = 0; j < 3; ++j) {
         const bool var_within_lim = online_array[i].getVariance()[j] < calibration_limits_[j];
         calibration_successful    = calibration_successful && var_within_lim;
       }
@@ -147,10 +147,10 @@ void Navigation::calibrateGravity()
   // Store calibration and update filters if successful
   if (calibration_successful) {
     log_.INFO("NAV", "Calibration of IMU acceleration succeeded with final readings:");
-    for (uint32_t i = 0; i < data::Sensors::kNumImus; ++i) {
+    for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
       gravity_calibration_[i] = online_array[i].getMean();
       data::nav_t variance    = 0.0;
-      for (uint32_t j = 0; j < 3; ++j) {
+      for (std::size_t j = 0; j < 3; ++j) {
         variance += online_array[i].getVariance()[j];
       }
       filters_[i].updateMeasurementCovarianceMatrix(variance);
@@ -160,8 +160,8 @@ void Navigation::calibrateGravity()
                 variance);
     }
     // set calibration uncertainties
-    for (uint32_t axis = 0; axis < 3; axis++) {
-      for (uint32_t i = 0; i < data::Sensors::kNumImus; i++) {
+    for (std::size_t axis = 0; axis < 3; axis++) {
+      for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
         const auto variance = online_array[i].getVariance()[axis];
         calibration_variance_[axis] += variance * variance;
       }
@@ -175,10 +175,10 @@ void Navigation::calibrateGravity()
     log_.INFO("NAV", "Navigation module ready");
   } else {
     log_.INFO("NAV", "Calibration of IMU acceleration failed with final readings:");
-    for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
+    for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
       const auto acceleration = online_array[i].getMean();
       data::nav_t variance    = 0.0;
-      for (uint32_t j = 0; j < 3; ++j) {
+      for (std::size_t j = 0; j < 3; ++j) {
         variance += online_array[i].getVariance()[j];
       }
 
@@ -199,8 +199,8 @@ void Navigation::queryImus()
   uint32_t t          = imu_data.timestamp;
   // process raw values
   ImuAxisData raw_acceleration;  // All raw data, four values per axis
-  for (uint32_t axis = 0; axis < 3; axis++) {
-    for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
+  for (std::size_t axis = 0; axis < 3; axis++) {
+    for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
       const auto acceleration   = imu_data.value[i].acc - gravity_calibration_[i];
       raw_acceleration[axis][i] = acceleration[axis];
 
@@ -221,7 +221,7 @@ void Navigation::queryImus()
 
   // Kalman filter the readings which are reliable
   utils::math::OnlineStatistics<data::nav_t> acceleration_average_filter;
-  for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
+  for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
     if (is_imu_reliable_[i]) {
       data::nav_t estimate = filters_[i].filter(raw_acceleration_moving[i]);
       acceleration_average_filter.update(estimate);
@@ -246,18 +246,18 @@ void Navigation::checkVibration()
 {
   // curr_msmt points at next measurement, ie the last one
   std::array<utils::math::OnlineStatistics<data::nav_t>, 3> online_array_axis;
-  for (uint32_t i = 0; i < kPreviousMeasurements; i++) {
+  for (std::size_t i = 0; i < kPreviousMeasurements; i++) {
     const auto raw_data
       = previous_measurements_[(current_measurements_ + i) % kPreviousMeasurements];
-    for (uint32_t axis = 0; axis < 3; axis++) {
+    for (std::size_t axis = 0; axis < 3; axis++) {
       if (axis != movement_axis_) {  // assume variance in moving axis are not vibrations
-        for (uint32_t imu = 0; imu < Sensors::kNumImus; imu++) {
+        for (std::size_t imu = 0; imu < Sensors::kNumImus; imu++) {
           online_array_axis[axis].update(raw_data[axis][imu]);
         }
       }
     }
   }
-  for (uint32_t axis = 0; axis < 3; axis++) {
+  for (std::size_t axis = 0; axis < 3; axis++) {
     const auto variance = online_array_axis[axis].getVariance();
     if (log_counter_ % 100000 == 0 && axis != movement_axis_) {
       log_.INFO("NAV", "Variance in axis %d: %.3f", axis, variance);
@@ -281,7 +281,7 @@ void Navigation::updateUncertainty()
   velocity_uncertainty_ += absolute_acceleration_delta * time_delta / 2.;
   // Processing uncertainty
   data::nav_t acceleration_variance_ = 0.0;
-  for (uint32_t i = 0; i < Sensors::kNumImus; i++) {
+  for (std::size_t i = 0; i < Sensors::kNumImus; i++) {
     acceleration_variance_ += filters_[i].getEstimateVariance();
   }
   acceleration_variance_                     = acceleration_variance_ / data::Sensors::kNumImus;
@@ -354,14 +354,15 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
     // set all 0.0 IMUs to non-zero avg
     data::nav_t sum_non_outliers = 0.0;
     uint32_t num_non_outliers    = 0;
-    for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
+    for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
       if (data_array[i] != 0.0) {
         // no outlier
         num_non_outliers += 1;
         sum_non_outliers += data_array[i];
       }
     }
-    for (uint32_t i = 0; i < Sensors::kNumImus; ++i) {
+    // TODO(Sury): Handle possible division by zero if all data points are 0.0 or explain why this can't happen.
+    for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
       data_array[i] = sum_non_outliers / num_non_outliers;
     }
     // do not check for further outliers because no reliable detection could be made!

@@ -40,7 +40,7 @@ Controller::Controller(Logger &log, uint8_t id)
   FileReader::readFileData(autoAlignMsg, 1, kAutoAlignMsgFile);
 }
 
-bool Controller::sendControllerMessage(ControllerMessage message_template)
+bool Controller::sendControllerMessage(const ControllerMessage message_template)
 {
   for (int i = 0; i < message_template.len; i++) {
     sdo_message_.data[i] = message_template.message_data[i];
@@ -120,7 +120,7 @@ void Controller::checkState()
   if (sendControllerMessage(checkStateMsg_[0])) return;
 }
 
-void Controller::sendTargetVelocity(int32_t target_velocity)
+void Controller::sendTargetVelocity(const int32_t target_velocity)
 {
   // Send 32 bit integer in Little Edian bytes
   for (int i = 0; i < 8; i++) {
@@ -135,7 +135,7 @@ void Controller::sendTargetVelocity(int32_t target_velocity)
   sender.sendMessage(sdo_message_);
 }
 
-void Controller::sendTargetTorque(int16_t target_torque)
+void Controller::sendTargetTorque(const int16_t target_torque)
 {
   // Send 16 bit integer in Little Edian bytes
   for (int i = 0; i < 8; i++) {
@@ -368,7 +368,7 @@ void Controller::processEmergencyMessage(utils::io::can::Frame &message)
   log_.DBG1("MOTOR", "index 1: %d, index 2: %d", index_1, index_2);
 }
 
-void Controller::processErrorMessage(uint16_t error_message)
+void Controller::processErrorMessage(const uint16_t error_message)
 {
   switch (error_message) {
     case 0x1000:

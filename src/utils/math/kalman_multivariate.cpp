@@ -14,7 +14,7 @@ KalmanMultivariate::KalmanMultivariate(unsigned int n, unsigned int m, unsigned 
 void KalmanMultivariate::setDynamicsModel(MatrixXf &A, MatrixXf &Q)
 {
   if (A.cols() != n_ || A.rows() != n_ || Q.cols() != n_ || Q.rows() != n_) {
-    throw std::invalid_argument("Wrong dimension of the Matrices");
+    throwMatrixDimensionException(n_);
   } else {
     A_ = A;
     Q_ = Q;
@@ -25,7 +25,7 @@ void KalmanMultivariate::setDynamicsModel(MatrixXf &A, MatrixXf &B, MatrixXf &Q)
 {
   if (A.cols() != n_ || A.rows() != n_ || Q.cols() != n_ || Q.rows() != n_ || B.rows() != n_
       || B.cols() != k_) {
-    throw std::invalid_argument("Wrong dimension of the Matrices");
+    throwMatrixDimensionException();
   } else {
     A_ = A;
     B_ = B;
@@ -36,7 +36,7 @@ void KalmanMultivariate::setDynamicsModel(MatrixXf &A, MatrixXf &B, MatrixXf &Q)
 void KalmanMultivariate::setMeasurementModel(MatrixXf &H, MatrixXf &R)
 {
   if (R.cols() != m_ || R.rows() != m_ || H.rows() != m_ || H.cols() != n_) {
-    throw std::invalid_argument("Wrong dimension of the Matrices");
+    throwMatrixDimensionException();
   } else {
     H_ = H;
     R_ = R;
@@ -57,8 +57,8 @@ void KalmanMultivariate::setModels(MatrixXf &A, MatrixXf &B, MatrixXf &Q, Matrix
 void KalmanMultivariate::updateA(MatrixXf &A)
 {
   if (A.cols() != n_ || A.rows() != n_) {
-    throw std::invalid_argument("Wrong dimension of the Matrices");
-  } else {
+    throwMatrixDimensionException(n_);       
+  } else { 
     A_ = A;
   }
 }
@@ -66,7 +66,7 @@ void KalmanMultivariate::updateA(MatrixXf &A)
 void KalmanMultivariate::updateR(MatrixXf &R)
 {
   if (R.cols() != m_ || R.rows() != m_) {
-    throw std::invalid_argument("Wrong dimension of the Matrices");
+    throwMatrixDimensionException(m_);       
   } else {
     R_ = R;
   }
@@ -75,7 +75,7 @@ void KalmanMultivariate::updateR(MatrixXf &R)
 void KalmanMultivariate::setInitial(VectorXf &x0, MatrixXf &P0)
 {
   if (x0.rows() != n_ || P0.rows() != n_ || P0.cols() != n_) {
-    throw std::invalid_argument("Dimension of Matrices not correct");
+    throwMatrixDimensionException(n_);       
   } else {
     x_ = x0;
     P_ = P0;
@@ -122,6 +122,26 @@ VectorXf &KalmanMultivariate::getStateEstimate()
 MatrixXf &KalmanMultivariate::getStateCovariance()
 {
   return P_;
+}
+
+// Helper functions 
+
+/**
+ * @brief Helper function for throwing exceptions in case of incorrect matrix dimensions. 
+ * 
+ * @param expected The actual matrix dimensions we were expecting.    
+ */
+
+void throwMatrixDimensionException(int expected) {
+    throw std::invalid_argument("Wrong matrix dimensions: expected row/column number is : " + expected); 
+}
+
+/**
+ * @brief Helper function for throwing exceptions in case of incorrect matrix dimensions - no parameters version. 
+ */
+
+void throwMatrixDimensionException(int expected) {
+    throw std::invalid_argument("Wrong dimension of the Matrices");
 }
 
 }  // namespace math

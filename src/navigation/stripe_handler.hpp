@@ -12,44 +12,33 @@
 #include <utils/timer.hpp>
 
 namespace hyped {
-
-using data::Data;
-using data::DataPoint;
-using data::ModuleStatus;
-using data::Motors;
-using data::nav_t;
-using data::NavigationVector;
-using data::Sensors;
-using std::array;
-using utils::Logger;
-
 namespace navigation {
 
 class StripeHandler {
  public:
-  typedef array<data::StripeCounter, Sensors::kNumKeyence> KeyenceDataArray;
+  using KeyenceDataArray = std::array<data::StripeCounter, Sensors::kNumKeyence>;
 
   /**
    * @brief Construct a new Stripe Counter object
    *
    * @param log System logger
    * @param data Central data struct
-   * @param displ_unc Reference to uncertainty in displacement, read only
-   * @param vel_unc Reference to uncertainty in velocity, this is written to
-   * @param stripe_dist Distance between two stripes
+   * @param displacement_uncertainty Reference to uncertainty in displacement, read only
+   * @param velocity_uncertainty Reference to uncertainty in velocity, this is written to
+   * @param stripe_distance Distance between two stripes
    */
-  explicit StripeHandler(Logger &log, Data &data, const nav_t &displ_unc, nav_t &vel_unc,
-                         const nav_t stripe_dist);
+  explicit StripeHandler(Logger &log, Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
+                         const data::nav_t stripe_distance);
 
   /**
    * @brief Check if stripe has been detected and changes the displacement
    *        and velocity input from the navigation class accordingly
    *
-   * @param displ Current displacement
-   * @param vel Current velocity
+   * @param displacement Current displacement
+   * @param velocity Current velocity
    * @param real Whether or not the sensors are real
    */
-  void queryKeyence(nav_t &displ, nav_t &vel, bool real);
+  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity, bool real);
   /**
    * @brief Checks if submodule should enter kCriticalFailure
    *
@@ -57,7 +46,7 @@ class StripeHandler {
    *
    * @return bool to enter kCriticalFailure or not
    */
-  bool checkFailure(nav_t displ);
+  bool checkFailure(data::nav_t displacement);
   /**
    * @brief Sets the initial time and keyence data
    *        Occurs on the first iteration when nav-
@@ -71,53 +60,60 @@ class StripeHandler {
    *
    * @return number of stripes hit
    */
-  uint16_t getStripeCount();
+  uint32_t getStripeCount() const;
   /**
    * @brief Get the current number of failures
    *
    * @return number of failures
    */
-  uint8_t getFailureCount();
+  uint32_t getFailureCount() const;
+  /**
+   * @brief Get the offset between given displacement and stripe count displacement
+   * @param displacement To find offset between
+   * @return Difference between strip count displacement and given displacement
+   */
+  data::nav_t getDisplacementOffset(data::nav_t &displacement) const;
 
  private:
   // Distance between stripes
-  const nav_t kStripeDist;
+  const data::nav_t kStripeDist;
 
   /**
    * @brief Update nav data
    *
-   * @param displ Current displacement
-   * @param vel Current velocity
+   * @param displacement Current displacement
+   * @param velocity Current velocity
    */
-  void updateNavData(nav_t &displ, nav_t &vel);
+  void updateNavData(data::nav_t &displacement, data::nav_t &velocity);
   /**
    * @brief update prev_readings
    */
-  void updateReadings();
+  void updatePrevReadings();
   /**
-   * @brief get current readings
+   * @brief update current readings
    */
-  void getReadings();
+  void updateNewReadings();
 
   // Central logging and data struct
   Logger &log_;
   Data &data_;
 
   // Number of stripes hit & most recent timestamp
-  DataPoint<uint16_t> stripe_counter_;
+  data::DataPoint<uint32_t> stripe_counter_;
   // Keyence data read
   KeyenceDataArray readings_;
   // Previous keyence data for comparison
   KeyenceDataArray prev_readings_;
   // Number of significant sensor disagreements
-  uint8_t n_missed_stripes_;
+  uint32_t num_missed_stripes_;
 
   // displacement uncertainty, const because this is never written to
-  const nav_t &displ_unc_;
+  const data::nav_t &displacement_uncertainty_;
   // velocity uncertainty
-  nav_t &vel_unc_;
+  data::nav_t &velocity_uncertainty_;
   // initial timestamp
   uint32_t init_time_;
 };
 }  // namespace navigation
 }  // namespace hyped
+

@@ -5,24 +5,24 @@
 namespace hyped {
 namespace navigation {
 
-StripeHandler::StripeHandler(Logger &log, Data &data, const nav_t &displ_unc, nav_t &vel_unc,
-                             const nav_t stripe_dist)
-    : kStripeDist(stripe_dist),
-      log_(log),
-      data_(data),
-      stripe_counter_(0, 0),
-      n_missed_stripes_(0),
-      displ_unc_(displ_unc),
-      vel_unc_(vel_unc)
+StripeHandler::StripeHandler(Logger &log, Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
+                             const data::nav_t stripe_distance)
+  : kStripeDist(stripe_distance),
+    log_(log),
+    data_(data),
+    stripe_counter_(0, 0),
+    num_missed_stripes_(0),
+    displacement_uncertainty_(displacement_uncertainty),
+    velocity_uncertainty_(velocity_uncertainty)
 {
 }
 
-void StripeHandler::getReadings()
+void StripeHandler::updateNewReadings()
 {
   readings_ = data_.getSensorsKeyenceData();
 }
 
-void StripeHandler::updateReadings()
+void StripeHandler::updatePrevReadings()
 {
   prev_readings_ = readings_;
 }
@@ -33,42 +33,48 @@ void StripeHandler::set_init(uint32_t init_time)
   prev_readings_ = data_.getSensorsKeyenceData();
 }
 
-uint16_t StripeHandler::getStripeCount()
+uint32_t StripeHandler::getStripeCount() const
 {
   return stripe_counter_.value;
 }
 
-uint8_t StripeHandler::getFailureCount()
+uint32_t StripeHandler::getFailureCount() const
 {
-  return n_missed_stripes_;
+  return num_missed_stripes_;
 }
 
-bool StripeHandler::checkFailure(nav_t displ)
+data::nav_t StripeHandler::getDisplacementOffset(data::nav_t &displacement) const
+{
+  return displacement - stripe_counter_.value * kStripeDist;
+}
+
+bool StripeHandler::checkFailure(data::nav_t displacement)
 {
   // Failure if more than one disagreement
-  if (n_missed_stripes_ > 1) {
+  if (num_missed_stripes_ > 1) {
     log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
     return true;
   }
-  if (displ - stripe_counter_.value * kStripeDist > 4 * kStripeDist) {
+  // TODO(Sury): Justify the threshold value of 4 * kStripeDist
+  if (getDisplacementOffset(displacement) > 4 * kStripeDist) {
     log_.ERR("NAV", "IMU distance at least 3 * kStripeDist ahead, entering kCriticalFailure.");
     return true;
   }
   return false;
 }
 
-void StripeHandler::updateNavData(nav_t &displ, nav_t &vel)
+void StripeHandler::updateNavData(data::nav_t &displacement, data::nav_t &velocity)
 {
-  nav_t displ_offset = displ - stripe_counter_.value * kStripeDist;
-  vel -= displ_offset * 1e6 / (stripe_counter_.timestamp - init_time_);
-  displ -= displ_offset;
+  data::nav_t displacement_offset = getDisplacementOffset(displacement);
+  velocity -= displacement_offset * 1e6 / (stripe_counter_.timestamp - init_time_);
+  displacement -= displacement_offset;
 }
 
-void StripeHandler::queryKeyence(nav_t &displ, nav_t &vel, bool real)
+void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocity, bool real)
 {
-  getReadings();
+  updateNewReadings();
 
-  for (int i = 0; i < Sensors::kNumKeyence; i++) {
+  for (std::size_t i = 0; i < Sensors::kNumKeyence; i++) {
     // Check new readings and ensure new stripe has been hit
     if (prev_readings_[i].count.value == readings_[i].count.value
         || readings_[i].count.timestamp - stripe_counter_.timestamp < 1e5)
@@ -77,14 +83,14 @@ void StripeHandler::queryKeyence(nav_t &displ, nav_t &vel, bool real)
     stripe_counter_.timestamp = readings_[i].count.timestamp;
     if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
 
-    nav_t minimum_uncertainty = kStripeDist / 5.;
-    nav_t allowed_uncertainty = std::max(displ_unc_, minimum_uncertainty);
-    nav_t displ_offset        = displ - stripe_counter_.value * kStripeDist;
+    data::nav_t minimum_uncertainty = kStripeDist / 5.;
+    data::nav_t allowed_uncertainty = std::max(displacement_uncertainty_, minimum_uncertainty);
+    data::nav_t displ_offset        = displacement - stripe_counter_.value * kStripeDist;
 
     // Allow up to one missed stripe
     if (displ_offset > kStripeDist - allowed_uncertainty
         && displ_offset < kStripeDist + allowed_uncertainty
-        && displ > stripe_counter_.value * kStripeDist + 0.5 * kStripeDist) {
+        && displacement > stripe_counter_.value * kStripeDist + 0.5 * kStripeDist) {
       stripe_counter_.value++;
       displ_offset -= kStripeDist;
     }
@@ -92,23 +98,24 @@ void StripeHandler::queryKeyence(nav_t &displ, nav_t &vel, bool real)
     if (std::abs(displ_offset) > 2 * allowed_uncertainty) {
       log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_offset,
                 allowed_uncertainty);
-      n_missed_stripes_++;
-      n_missed_stripes_ += floor(abs(displ_offset) / kStripeDist);
+      num_missed_stripes_++;
+      num_missed_stripes_ += floor(abs(displ_offset) / kStripeDist);
     }
     // Lower the uncertainty in velocity
-    vel_unc_ -= abs(displ_offset * 1e6 / (stripe_counter_.timestamp - init_time_));
+    velocity_uncertainty_ -= abs(displ_offset * 1e6 / (stripe_counter_.timestamp - init_time_));
     log_.DBG("NAV", "Stripe detected!");
     log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_time_);
     log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
 
     // Ensure velocity uncertainty is positive
-    vel_unc_ = abs(vel_unc_);
-    updateNavData(displ, vel);
+    velocity_uncertainty_ = abs(velocity_uncertainty_);
+    updateNavData(displacement, velocity);
 
     break;
   }
   // Update old keyence readings with current ones
-  updateReadings();
+  updatePrevReadings();
 }
 }  // namespace navigation
 }  // namespace hyped
+

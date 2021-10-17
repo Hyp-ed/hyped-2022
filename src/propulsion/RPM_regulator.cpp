@@ -10,10 +10,10 @@ RPM_Regulator::RPM_Regulator(Logger &log) : log_(log), current_index(0), failure
 {
 }
 
-int32_t RPM_Regulator::calculateRPM(int32_t actual_velocity, int32_t actual_rpm, int32_t actual_current,
-                                    int32_t actual_temperature)
+int32_t RPM_Regulator::calculateRPM(const int32_t actual_velocity, const int32_t actual_rpm, const int32_t actual_current,
+                                    const int32_t actual_temperature)
 {
-  int32_t optimal_rpm = calculateOptimalRPM(actual_velocity);
+  const int32_t optimal_rpm = calculateOptimalRPM(actual_velocity);
   if (actual_temperature <= MAX_TEMPERATURE) {
     if (actual_current < MAX_CURRENT && actual_temperature < MAX_TEMPERATURE && actual_rpm < optimal_rpm) {
       return actual_rpm + step(optimal_rpm, true);
@@ -32,14 +32,14 @@ int32_t RPM_Regulator::calculateRPM(int32_t actual_velocity, int32_t actual_rpm,
   }
 }
 
-int32_t RPM_Regulator::calculateOptimalRPM(int32_t actual_velocity)
+int32_t RPM_Regulator::calculateOptimalRPM(const int32_t actual_velocity)
 {
   int32_t optimal_rpm
     = std::round(0.32047 * actual_velocity * actual_velocity + 297.72578 * actual_velocity + 1024.30824);
   return optimal_rpm;
 }
 
-int32_t RPM_Regulator::step(int32_t optimal_rpm, bool direction)
+int32_t RPM_Regulator::step(const int32_t optimal_rpm, const bool direction)
 {
   if (direction) {
     return std::round(optimal_rpm * 0.1);

@@ -132,7 +132,7 @@ MatrixXf &KalmanMultivariate::getStateCovariance()
  * @param expected The actual matrix dimensions we were expecting.    
  */
 
-void throwMatrixDimensionException(int expected) {
+void throwMatrixDimensionException(const int expected) {
     throw std::invalid_argument("Wrong matrix dimensions: expected row/column number is : " + expected); 
 }
 
@@ -140,7 +140,7 @@ void throwMatrixDimensionException(int expected) {
  * @brief Helper function for throwing exceptions in case of incorrect matrix dimensions - no parameters version. 
  */
 
-void throwMatrixDimensionException(int expected) {
+void throwMatrixDimensionException() {
     throw std::invalid_argument("Wrong dimension of the Matrices");
 }
 

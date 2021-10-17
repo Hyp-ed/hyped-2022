@@ -14,10 +14,10 @@
 
 namespace hyped {
 
-using std::vector;
+std::vector;
 
-using motor_control::Controller;
-using utils::Logger;
+motor_control::Controller;
+utils::Logger;
 
 namespace motor_control {
 

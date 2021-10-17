@@ -40,7 +40,7 @@ class MainLog : public Thread {
   Logger &log_;
   System &sys_;
   Data &data_;
-  std::array<NavigationVector, data::Sensors::kNumImus> gravity_calibration_;
+  std::array<data::NavigationVector, data::Sensors::kNumImus> gravity_calibration_;
 
   std::array<ImuDataLogger, data::Sensors::kNumImus> imu_loggers_;
 

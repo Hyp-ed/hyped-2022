@@ -1,0 +1,6 @@
+"C:\Program Files\JetBrains\CLion 2021.2.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - MinGW Makefiles" C:\Users\Callum\Desktop\hyped-2022
+CMake Error at CMakeLists.txt:1 (cmake_minimum_required):
+  CMake 3.21.0 or higher is required.  You are running version 3.20.2
+
+
+-- Configuring incomplete, errors occurred!

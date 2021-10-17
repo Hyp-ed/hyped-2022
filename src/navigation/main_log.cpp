@@ -29,7 +29,7 @@ MainLog::MainLog(uint8_t id, Logger &log)
 void MainLog::calibrateGravity()
 {
   log_.INFO("NAV", "Calibrating gravity");
-  std::array<OnlineStatistics<NavigationVector>, data::Sensors::kNumImus> online_array;
+  std::array<OnlineStatistics<data::NavigationVector>, data::Sensors::kNumImus> online_array;
   // Average each sensor over specified number of readings
   for (int i = 0; i < kNumCalibrationQueries; ++i) {
     DataPoint<ImuDataArray> sensor_readings = data_.getSensorsImuData();
@@ -54,8 +54,8 @@ void MainLog::run()
     DataPoint<ImuDataArray> sensor_readings = data_.getSensorsImuData();
     for (int i = 0; i < data::Sensors::kNumImus; ++i) {
       // Apply calibrated correction
-      NavigationVector acc     = sensor_readings.value[i].acc;
-      NavigationVector acc_cor = acc - gravity_calibration_[i];
+      data::NavigationVector acc     = sensor_readings.value[i].acc;
+      data::NavigationVector acc_cor = acc - gravity_calibration_[i];
       log_.DBG("NAV", "%.3f %.3f %.3f / %.3f %.3f %.3f", acc[0], acc[1], acc[2], acc_cor[0],
                acc_cor[1], acc_cor[2]);
       imu_loggers_[i].dataToFile(acc_cor, acc, sensor_readings.timestamp);

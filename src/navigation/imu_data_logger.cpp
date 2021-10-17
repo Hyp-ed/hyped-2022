@@ -30,22 +30,22 @@ void ImuDataLogger::setupKalman(int imu_id, int run_id)
   *outfile_ << "arx,ary,arz,acx,acy,acz,afx,afy,afz,t\n";
 }
 
-void ImuDataLogger::dataToFileSimulation(NavigationVector &acc, uint32_t timestamp)
+void ImuDataLogger::dataToFileSimulation(data::NavigationVector &acceleration, uint32_t timestamp)
 {
-  *outfile_ << acc[0] << "," << acc[1] << "," << acc[2] << "," << timestamp << "\n";
+  *outfile_ << acceleration[0] << "," << acceleration[1] << "," << acceleration[2] << "," << timestamp << "\n";
 }
 
-void ImuDataLogger::dataToFile(NavigationVector &accR, NavigationVector &accC, uint32_t timestamp)
+void ImuDataLogger::dataToFile(data::NavigationVector &raw_acceleration, data::NavigationVector &calibrated_acceleration, uint32_t timestamp)
 {
-  *outfile_ << accR[0] << "," << accR[1] << "," << accR[2] << "," << accC[0] << "," << accC[1]
-            << "," << accC[2] << "," << timestamp << "\n";
+  *outfile_ << raw_acceleration[0] << "," << raw_acceleration[1] << "," << raw_acceleration[2] << "," << calibrated_acceleration[0] << "," << calibrated_acceleration[1]
+            << "," << calibrated_acceleration[2] << "," << timestamp << "\n";
 }
 
-void ImuDataLogger::dataToFileKalman(NavigationVector &accR, NavigationVector &accC,
-                                     NavigationVector &x, uint32_t timestamp)
+void ImuDataLogger::dataToFileKalman(data::NavigationVector &raw_acceleration, data::NavigationVector &calibrated_acceleration,
+                                     data::NavigationVector &x, uint32_t timestamp)
 {
-  *outfile_ << accR[0] << "," << accR[1] << "," << accR[2] << "," << accC[0] << "," << accC[1]
-            << "," << accC[2] << "," << x[0] << "," << x[1] << "," << x[2] << "," << timestamp
+  *outfile_ << raw_acceleration[0] << "," << raw_acceleration[1] << "," << raw_acceleration[2] << "," << calibrated_acceleration[0] << "," << calibrated_acceleration[1]
+            << "," << calibrated_acceleration[2] << "," << x[0] << "," << x[1] << "," << x[2] << "," << timestamp
             << "\n";
 }
 

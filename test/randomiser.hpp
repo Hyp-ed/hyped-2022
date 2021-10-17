@@ -80,7 +80,7 @@ class Randomiser {
       imu_data.acc[i] = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
     }
     for (int i = 0; i < 3; i++) {
-      imu_data.fifo.push_back(static_cast<NavigationVector>((rand() % 100 + 75) + randomDecimal()));
+      imu_data.fifo.push_back(static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
   }
 

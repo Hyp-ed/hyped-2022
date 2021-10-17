@@ -37,7 +37,7 @@ struct Module {
 // Navigation
 // -------------------------------------------------------------------------------------------------
 typedef float nav_t;
-typedef Vector<nav_t, 3> NavigationVector;
+typedef Vector<nav_t, 3> data::NavigationVector;
 struct Navigation : public Module {
   static constexpr nav_t kMaximumVelocity = 100;     // m/s
   static constexpr nav_t kRunLength       = 1250.0;  // m
@@ -57,9 +57,9 @@ struct Sensor {
 };
 
 struct ImuData : public Sensor {
-  NavigationVector acc;
+  data::NavigationVector acc;
 
-  std::vector<NavigationVector> fifo;
+  std::vector<data::NavigationVector> fifo;
 };
 
 struct EncoderData : public Sensor {

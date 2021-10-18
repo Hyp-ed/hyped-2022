@@ -39,7 +39,7 @@ void Writer::packCrucialData()
   rjwriter_.Key("crucial_data");
   rjwriter_.StartArray();
 
-  data::Navigation nav_data  = data_.getNavigationData();
+  data::Navigation nav_data = data_.getNavigationData();
   data::StateMachine sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);

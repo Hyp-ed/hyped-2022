@@ -20,7 +20,7 @@ class Client {
  private:
   Client(utils::Logger &log, const utils::Config &config);
 
-  Logger &log_;
+  utils::Logger &log_;
   int sockfd_;
   const char *kPort;
   const char *kServerIP;

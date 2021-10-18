@@ -13,11 +13,11 @@
 namespace hyped {
 namespace telemetry {
 
-Client::Client(Logger &log) : Client{log, *utils::System::getSystem().config}
+Client::Client(utils::Logger &log) : Client{log, *utils::System::getSystem().config}
 {
 }
 
-Client::Client(Logger &log, const utils::Config &config)
+Client::Client(utils::Logger &log, const utils::Config &config)
     : log_{log},
       kPort{config.telemetry.Port.c_str()},
       kServerIP{config.telemetry.IP.c_str()}

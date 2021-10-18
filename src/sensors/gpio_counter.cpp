@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+//Where to find the utils??
 #include <utils/io/gpio.hpp>
 #include <utils/timer.hpp>
 
@@ -39,6 +40,7 @@ void GpioCounter::run()
   }
 }
 
+//Is this the method where the count is updated?? What does the operational part do?
 void GpioCounter::getData(StripeCounter *stripe_counter)
 {
   stripe_counter->count       = stripe_counter_.count;

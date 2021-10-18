@@ -21,7 +21,7 @@ utils::Logger;
 
 namespace motor_control {
 
-class RPM_Regulator {
+class RPMRegulator {
  public:
   /*
    * @brief Construct a new rpm regulator object

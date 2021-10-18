@@ -4,9 +4,9 @@
 
 #include <utils/io/can.hpp>
 
-using hyped::utils::io::can::Frame;
-
 namespace hyped {
+
+using hyped::utils::io::can::Frame;
 
 namespace motor_control {
 enum ControllerState {

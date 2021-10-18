@@ -14,12 +14,6 @@
 
 namespace hyped {
 
-using std::atomic;
-
-using utils::Logger;
-using utils::concurrent::Thread;
-using utils::io::can::Frame;
-
 namespace motor_control {
 
 class Controller : public ControllerInterface {
@@ -29,7 +23,7 @@ class Controller : public ControllerInterface {
    * @param log
    * @param id
    */
-  Controller(Logger &log, uint8_t id);
+  Controller(utils::Logger &log, uint8_t id);
   /**
    * @brief Registers controller to recieve and transmit CAN messages.
    */
@@ -172,16 +166,16 @@ class Controller : public ControllerInterface {
    */
   void throwCriticalFailure();
 
-  Logger &log_;
+  utils::Logger &log_;
   data::Data &data_;
   data::Motors motor_data_;
-  atomic<ControllerState> state_;
+  std::atomic<ControllerState> state_;
   uint8_t node_id_;
-  atomic<bool> critical_failure_;
-  atomic<int32_t> actual_velocity_;
-  atomic<int16_t> actual_torque_;
-  atomic<uint8_t> motor_temperature_;
-  atomic<uint8_t> controller_temperature_;
+  std::atomic<bool> critical_failure_;
+  std::atomic<int32_t> actual_velocity_;
+  std::atomic<int16_t> actual_torque_;
+  std::atomic<uint8_t> motor_temperature_;
+  std::atomic<uint8_t> controller_temperature_;
   CanSender sender;
   Frame sdo_message_;
   Frame nmt_message_;

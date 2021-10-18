@@ -10,8 +10,8 @@ RPM_Regulator::RPM_Regulator(Logger &log) : log_(log), current_index(0), failure
 {
 }
 
-float RPM_Regulator::calculateRPM(float act_velocity, int32_t act_rpm, int32_t act_current,
-                                  int32_t act_temp)
+int32_t RPM_Regulator::calculateRPM(data::nav_t act_velocity, int32_t act_rpm, int32_t act_current,
+                                    int32_t act_temp)
 {
   int32_t opt_rpm = calculateOptimalRPM(act_velocity);
   if (act_temp <= MAX_TEMP) {

@@ -36,9 +36,9 @@ class RPM_Regulator {
    * @param act_rpm - average rpm of all the motors
    * @param act_current - max current (mA) drawn out of all the motors
    * @param act_temp - max temperature out of all the motors
-   * @return float - the optimal rpm which the motors should be set to.
+   * @return int32_t - the optimal rpm which the motors should be set to.
    */
-  float calculateRPM(float act_velocity, int32_t act_rpm, int32_t act_current, int32_t act_temp);
+  int32_t calculateRPM(data::nav_t act_velocity, int32_t act_rpm, int32_t act_current, int32_t act_temp);
 
   /**
    * @brief Get the Failure boolean

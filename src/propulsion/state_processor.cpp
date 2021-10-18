@@ -124,7 +124,7 @@ void StateProcessor::accelerate()
       int32_t act_current = calcMaxCurrent();
       int32_t act_temp    = calcMaxTemp(controllers);
 
-      float rpm = regulator.calculateRPM(velocity, act_rpm, act_current, act_temp);
+      int32_t rpm = regulator.calculateRPM(velocity, act_rpm, act_current, act_temp);
 
       log_.INFO("MOTOR", "Sending %d rpm as target", rpm);
 

@@ -19,14 +19,14 @@ Main::Main(uint8_t id, Logger &log)
 void Main::run()
 {
   // check if telemetry is disabled
-  hyped::utils::System &sys             = hyped::utils::System::getSystem();
-  data::Telemetry telemetry_data_struct = data_.getTelemetryData();
+  hyped::utils::System &sys      = hyped::utils::System::getSystem();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
 
   if (sys.telemetry_off) {
     log_.DBG("Telemetry", "Telemetry is disabled");
     log_.DBG("Telemetry", "Exiting Telemetry Main thread");
-    telemetry_data_struct.module_status = data::ModuleStatus::kReady;
-    data_.setTelemetryData(telemetry_data_struct);
+    telemetry_data.module_status = data::ModuleStatus::kReady;
+    data_.setTelemetryData(telemetry_data);
     return;
   }
 
@@ -38,14 +38,14 @@ void Main::run()
     log_.ERR("Telemetry", e.what());
     log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
-    telemetry_data_struct.module_status = data::ModuleStatus::kCriticalFailure;
-    data_.setTelemetryData(telemetry_data_struct);
+    telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setTelemetryData(telemetry_data);
 
     return;
   }
 
-  telemetry_data_struct.module_status = data::ModuleStatus::kReady;
-  data_.setTelemetryData(telemetry_data_struct);
+  telemetry_data.module_status = data::ModuleStatus::kReady;
+  data_.setTelemetryData(telemetry_data);
 
   SendLoop sendloop_thread{log_, data_, this};
   RecvLoop recvloop_thread{log_, data_, this};

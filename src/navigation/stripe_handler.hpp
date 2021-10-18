@@ -27,7 +27,7 @@ class StripeHandler {
    * @param velocity_uncertainty Reference to uncertainty in velocity, this is written to
    * @param stripe_distance Distance between two stripes
    */
-  explicit StripeHandler(Logger &log, Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
+  explicit StripeHandler(utils::Logger &log, data::Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
                          const data::nav_t stripe_distance);
 
   /**
@@ -38,7 +38,7 @@ class StripeHandler {
    * @param velocity Current velocity
    * @param real Whether or not the sensors are real
    */
-  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity, bool real);
+  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity, const bool real);
   /**
    * @brief Checks if submodule should enter kCriticalFailure
    *

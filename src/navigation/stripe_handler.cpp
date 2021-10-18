@@ -5,15 +5,15 @@
 namespace hyped {
 namespace navigation {
 
-StripeHandler::StripeHandler(Logger &log, Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
+StripeHandler::StripeHandler(utils::Logger &log, data::Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
                              const data::nav_t stripe_distance)
-  : kStripeDist(stripe_distance),
-    log_(log),
-    data_(data),
-    stripe_counter_(0, 0),
-    num_missed_stripes_(0),
-    displacement_uncertainty_(displacement_uncertainty),
-    velocity_uncertainty_(velocity_uncertainty)
+    : kStripeDist(stripe_distance),
+      log_(log),
+      data_(data),
+      stripe_counter_(0, 0),
+      num_missed_stripes_(0),
+      displacement_uncertainty_(displacement_uncertainty),
+      velocity_uncertainty_(velocity_uncertainty)
 {
 }
 
@@ -70,7 +70,7 @@ void StripeHandler::updateNavData(data::nav_t &displacement, data::nav_t &veloci
   displacement -= displacement_offset;
 }
 
-void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocity, bool real)
+void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocity, const bool real)
 {
   updateNewReadings();
 
@@ -85,30 +85,30 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
 
     data::nav_t minimum_uncertainty = kStripeDist / 5.;
     data::nav_t allowed_uncertainty = std::max(displacement_uncertainty_, minimum_uncertainty);
-    data::nav_t displ_offset        = displacement - stripe_counter_.value * kStripeDist;
+    data::nav_t displacement_offset = displacement - stripe_counter_.value * kStripeDist;
 
     // Allow up to one missed stripe
-    if (displ_offset > kStripeDist - allowed_uncertainty
-        && displ_offset < kStripeDist + allowed_uncertainty
+    if (displacement_offset > kStripeDist - allowed_uncertainty
+        && displacement_offset < kStripeDist + allowed_uncertainty
         && displacement > stripe_counter_.value * kStripeDist + 0.5 * kStripeDist) {
       stripe_counter_.value++;
-      displ_offset -= kStripeDist;
+      displacement_offset -= kStripeDist;
     }
     // Too large disagreement
-    if (std::abs(displ_offset) > 2 * allowed_uncertainty) {
-      log_.INFO("NAV", "Displ_change: %.3f, allowed uncertainty: %.3f", displ_offset,
+    if (std::abs(displacement_offset) > 2 * allowed_uncertainty) {
+      log_.INFO("NAV", "Displacement change: %.3f, allowed uncertainty: %.3f", displacement_offset,
                 allowed_uncertainty);
       num_missed_stripes_++;
-      num_missed_stripes_ += floor(abs(displ_offset) / kStripeDist);
+      num_missed_stripes_ += floor(std::abs(displacement_offset) / kStripeDist);
     }
     // Lower the uncertainty in velocity
-    velocity_uncertainty_ -= abs(displ_offset * 1e6 / (stripe_counter_.timestamp - init_time_));
+    velocity_uncertainty_ -= std::abs(displacement_offset * 1e6 / (stripe_counter_.timestamp - init_time_));
     log_.DBG("NAV", "Stripe detected!");
     log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_time_);
     log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
 
     // Ensure velocity uncertainty is positive
-    velocity_uncertainty_ = abs(velocity_uncertainty_);
+    velocity_uncertainty_ = std::abs(velocity_uncertainty_);
     updateNavData(displacement, velocity);
 
     break;

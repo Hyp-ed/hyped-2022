@@ -52,8 +52,7 @@ void StateProcessor::initMotors()
   if (regulator.getFailure()) {
     error         = true;
     criticalError = true;
-    return;
-  }
+    }
 
   for (int i = 0; i < motorAmount; i++) {
     if (controllers[i]->getFailure()) {

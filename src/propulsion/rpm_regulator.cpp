@@ -10,7 +10,7 @@ RpmRegulator::RpmRegulator(Logger &log) : log_(log), current_index(0), failure(f
 {
 }
 
-int32_t RpmRegulator::calculateRpm(const float actual_velocity, const int32_t actual_rpm,
+int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm,
                                    const int32_t actual_current, const int32_t actual_temperature)
 {
   const int32_t optimal_rpm = calculateOptimalRpm(actual_velocity);

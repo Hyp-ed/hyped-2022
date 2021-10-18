@@ -7,14 +7,11 @@
 
 namespace hyped {
 
-using utils::Logger;
-using utils::concurrent::Thread;
-
 namespace telemetry {
 
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
-  Main(uint8_t id, Logger &log);
+  Main(uint8_t id, utils::Logger &log);
   void run() override;
 
  private:

@@ -6,8 +6,6 @@
 
 namespace hyped {
 
-using data::ModuleStatus;
-
 namespace telemetry {
 
 Main::Main(uint8_t id, Logger &log)
@@ -27,7 +25,7 @@ void Main::run()
   if (sys.telemetry_off) {
     log_.DBG("Telemetry", "Telemetry is disabled");
     log_.DBG("Telemetry", "Exiting Telemetry Main thread");
-    telem_data_struct.module_status = ModuleStatus::kReady;
+    telem_data_struct.module_status = data::ModuleStatus::kReady;
     data_.setTelemetryData(telem_data_struct);
     return;
   }
@@ -40,13 +38,13 @@ void Main::run()
     log_.ERR("Telemetry", e.what());
     log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
-    telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
+    telem_data_struct.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setTelemetryData(telem_data_struct);
 
     return;
   }
 
-  telem_data_struct.module_status = ModuleStatus::kReady;
+  telem_data_struct.module_status = data::ModuleStatus::kReady;
   data_.setTelemetryData(telem_data_struct);
 
   SendLoop sendloop_thread{log_, data_, this};

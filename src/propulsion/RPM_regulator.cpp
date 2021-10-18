@@ -1,4 +1,4 @@
-#include "RPM_Regulator.hpp"
+#include "rpm_regulator.hpp"
 
 #include <vector>
 
@@ -6,14 +6,14 @@ namespace hyped {
 
 namespace motor_control {
 
-RPMRegulator::RPMRegulator(Logger &log) : log_(log), current_index(0), failure(false)
+RpmRegulator::RpmRegulator(Logger &log) : log_(log), current_index(0), failure(false)
 {
 }
 
-int32_t RPMRegulator::calculateRPM(const int32_t actual_velocity, const int32_t actual_rpm,
+int32_t RpmRegulator::calculateRpm(const int32_t actual_velocity, const int32_t actual_rpm,
                                    const int32_t actual_current, const int32_t actual_temperature)
 {
-  const int32_t optimal_rpm = calculateOptimalRPM(actual_velocity);
+  const int32_t optimal_rpm = calculateOptimalRpm(actual_velocity);
   if (actual_temperature <= MAX_TEMPERATURE) {
     if (actual_current < MAX_CURRENT && actual_temperature < MAX_TEMPERATURE
         && actual_rpm < optimal_rpm) {
@@ -34,14 +34,14 @@ int32_t RPMRegulator::calculateRPM(const int32_t actual_velocity, const int32_t 
   }
 }
 
-int32_t RPMRegulator::calculateOptimalRPM(const int32_t actual_velocity)
+int32_t RpmRegulator::calculateOptimalRpm(const int32_t actual_velocity)
 {
   int32_t optimal_rpm = std::round(0.32047 * actual_velocity * actual_velocity
                                    + 297.72578 * actual_velocity + 1024.30824);
   return optimal_rpm;
 }
 
-int32_t RPMRegulator::step(const int32_t optimal_rpm, const bool direction)
+int32_t RpmRegulator::step(const int32_t optimal_rpm, const bool direction)
 {
   if (direction) {
     return std::round(optimal_rpm * 0.1);
@@ -50,7 +50,7 @@ int32_t RPMRegulator::step(const int32_t optimal_rpm, const bool direction)
   }
 }
 
-bool RPMRegulator::getFailure()
+bool RpmRegulator::getFailure()
 {
   return failure;
 }

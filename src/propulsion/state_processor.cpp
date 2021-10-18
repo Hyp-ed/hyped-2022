@@ -16,7 +16,7 @@ StateProcessor::StateProcessor(int motorAmount, Logger &log)
       speed(0),
       regulator(log_)
 {
-  // rpmCalculator = new CalculateRPM(log);
+  // rpmCalculator = new CalculateRpm(log);
 
   useFakeController = sys_.fake_motors;
 
@@ -120,11 +120,11 @@ void StateProcessor::accelerate()
       accelerationTimestamp = accelerationTimer.getTimeMicros();
       velocity              = navigationData.velocity;
 
-      int32_t act_rpm     = calcAverageRPM(controllers);
+      int32_t act_rpm     = calcAverageRpm(controllers);
       int32_t act_current = calcMaxCurrent();
       int32_t act_temp    = calcMaxTemp(controllers);
 
-      int32_t rpm = regulator.calculateRPM(velocity, act_rpm, act_current, act_temp);
+      int32_t rpm = regulator.calculateRpm(velocity, act_rpm, act_current, act_temp);
 
       log_.INFO("MOTOR", "Sending %d rpm as target", rpm);
 
@@ -137,7 +137,7 @@ void StateProcessor::accelerate()
   }
 }
 
-int32_t StateProcessor::calcAverageRPM(ControllerInterface **controllers)
+int32_t StateProcessor::calcAverageRpm(ControllerInterface **controllers)
 {
   int32_t total = 0;
   for (int i = 0; i < motorAmount; i++) {

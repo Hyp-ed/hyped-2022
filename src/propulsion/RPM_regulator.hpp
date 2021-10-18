@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_RPM 6000
+#define MAX_Rpm 6000
 #define MAX_TEMPERATURE 150
 #define MAX_CURRENT 1500  // mA
 
@@ -21,13 +21,13 @@ utils::Logger;
 
 namespace motor_control {
 
-class RPMRegulator {
+class RpmRegulator {
  public:
   /*
    * @brief Construct a new rpm regulator object
    * @param log
    */
-  explicit RPMRegulator(Logger &log);
+  explicit RpmRegulator(Logger &log);
   /**
    * @brief Calculate the optimal rpm based on criteria from all the motors
    *        as well optimal values produced by simulations.
@@ -38,7 +38,7 @@ class RPMRegulator {
    * @param actual_temperature - max temperature out of all the motors
    * @return int32_t - the optimal rpm which the motors should be set to.
    */
-  int32_t calculateRPM(int32_t actual_velocity, int32_t actual_rpm, int32_t actual_current,
+  int32_t calculateRpm(int32_t actual_velocity, int32_t actual_rpm, int32_t actual_current,
                        int32_t actual_temperature);
 
   /**
@@ -56,7 +56,7 @@ class RPMRegulator {
    * @param actual_velocity
    * @return double - optimal rpm
    */
-  int32_t calculateOptimalRPM(int32_t actual_velocity);
+  int32_t calculateOptimalRpm(int32_t actual_velocity);
 
   /**
    * @brief calculate the step to increase or decrease the rpm by.

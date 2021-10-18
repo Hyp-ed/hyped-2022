@@ -2,9 +2,9 @@
 
 #include "controller.hpp"
 
-#include "RPM_regulator.hpp"
 #include "controller_interface.hpp"
 #include "fake_controller.hpp"
+#include "rpm_regulator.hpp"
 #include "state_processor_interface.hpp"
 #include <data/data.hpp>
 #include <utils/logger.hpp>
@@ -102,7 +102,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calcAverageRPM(ControllerInterface **controllers);
+  int32_t calcAverageRpm(ControllerInterface **controllers);
 
   /**
    * @brief calculate the max Current drawn out of all the motors
@@ -131,7 +131,7 @@ class StateProcessor : public StateProcessorInterface {
   int32_t servicePropulsionSpeed;
   float speed;
   ControllerInterface **controllers;
-  RPMRegulator regulator;
+  RpmRegulator regulator;
   float velocity;
   Navigation navigationData;
   uint64_t accelerationTimestamp;

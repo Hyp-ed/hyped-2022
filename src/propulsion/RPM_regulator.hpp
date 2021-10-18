@@ -27,7 +27,7 @@ class RPMRegulator {
    * @brief Construct a new rpm regulator object
    * @param log
    */
-  explicit RPM_Regulator(Logger &log);
+  explicit RPMRegulator(Logger &log);
   /**
    * @brief Calculate the optimal rpm based on criteria from all the motors
    *        as well optimal values produced by simulations.

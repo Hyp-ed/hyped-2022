@@ -131,7 +131,7 @@ class StateProcessor : public StateProcessorInterface {
   int32_t servicePropulsionSpeed;
   float speed;
   ControllerInterface **controllers;
-  RPM_Regulator regulator;
+  RPMRegulator regulator;
   float velocity;
   Navigation navigationData;
   uint64_t accelerationTimestamp;

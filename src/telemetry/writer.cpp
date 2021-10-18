@@ -14,32 +14,31 @@ void Writer::packTime()
 {
   rjwriter_.Key("time");
   rjwriter_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                     .count());
+    std::chrono::system_clock::now().time_since_epoch()).count());
 }
 
-// additional data points that are displayed in the GUI data section
+// Additional data points that are displayed in the GUI data section
 // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
 void Writer::packAdditionalData()
 {
   rjwriter_.Key("additional_data");
   rjwriter_.StartArray();
 
-  // edit below
+  // Edit below
 
-  // edit above
+  // Edit above
 
   rjwriter_.EndArray();
 }
 
-// crucial data points that are displayed in various fixed GUI points
+// Crucial data points that are displayed in various fixed GUI points
 // NOT EDITABLE
 void Writer::packCrucialData()
 {
   rjwriter_.Key("crucial_data");
   rjwriter_.StartArray();
 
-  data::Navigation nav_data  = data_.getNavigationData();
+  data::Navigation nav_data = data_.getNavigationData();
   data::StateMachine sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
@@ -49,7 +48,7 @@ void Writer::packCrucialData()
   rjwriter_.EndArray();
 }
 
-// status data points that are displayed in the GUI status tab
+// Status data points that are displayed in the GUI status tab
 // NOT EDITABLE
 void Writer::packStatusData()
 {

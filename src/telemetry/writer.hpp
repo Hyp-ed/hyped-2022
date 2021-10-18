@@ -29,28 +29,28 @@ class Writer {
  public:
   explicit Writer(data::Data &data);
 
-  // separate functions that allow to better manage data points based on their purpose
+  // Separate functions that allow to better manage data points based on their purpose
   void packTime();
   void packCrucialData();
   void packStatusData();
   void packAdditionalData();
 
-  // before starting adding data points, this function must be called to start the main JSON object
+  // Before starting adding data points, this function must be called to start the main JSON object
   void start() { rjwriter_.StartObject(); }
 
-  // before calling getString(), this function must be called to close the main JSON object
-  // after calling this function, no additional data points can be added
+  // Before calling getString(), this function must be called to close the main JSON object
+  // After calling this function, no additional data points can be added
   void end() { rjwriter_.EndObject(); }
 
-  // returns the main JSON object as a string, that is ready to be sent to GUI
+  // Returns the main JSON object as a string, that is ready to be sent to GUI
   std::string getString() { return sb_.GetString(); }
 
-  // converts Enum to String values with required formatting for GUI
+  // Converts Enum to String values with required formatting for GUI
   static const char *convertStateMachineState(data::State state);
   static const char *convertModuleStatus(data::ModuleStatus module_status);
 
  private:
-  // calls RapidJSON functions to add a value of specific type to JSON
+  // Calls RapidJSON functions to add a value of specific type to JSON
   void add(const char *name, int min, int max, const char *unit, int value);
   void add(const char *name, float min, float max, const char *unit, float value);
   void add(const char *name, bool value);
@@ -58,7 +58,7 @@ class Writer {
   void add(const char *name, data::State value);
   void add(const char *name, data::ModuleStatus value);
 
-  // starts and ends lists, which allow to structure the data
+  // Starts and ends lists, which allow to structure the data
   void startList(const char *name);
   void endList();
 

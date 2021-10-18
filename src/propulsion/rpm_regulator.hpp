@@ -33,7 +33,7 @@ class RpmRegulator {
    * @param actual_temperature - max temperature out of all the motors
    * @return int32_t - the optimal rpm which the motors should be set to.
    */
-  int32_t calculateRpm(int32_t actual_velocity, int32_t actual_rpm, int32_t actual_current,
+  int32_t calculateRpm(float actual_velocity, int32_t actual_rpm, int32_t actual_current,
                        int32_t actual_temperature);
 
   /**

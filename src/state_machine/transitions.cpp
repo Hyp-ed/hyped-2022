@@ -10,9 +10,9 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-bool checkEmergency(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
-                    Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
-                    Motors &motors_data)
+bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
+                    const Batteries &batteries_data, const Telemetry &telemetry_data, const Sensors &sensors_data,
+                    const Motors &motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
     log.ERR("STM", "stop command received");
@@ -43,9 +43,9 @@ bool checkEmergency(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_d
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
-                             Batteries &batteries_data, Telemetry &telemetry_data,
-                             Sensors &sensors_data, Motors &motors_data)
+bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
+                             const Batteries &batteries_data, const Telemetry &telemetry_data,
+                             const Sensors &sensors_data, const Motors &motors_data)
 {
   if (brakes_data.module_status < ModuleStatus::kInit) return false;
   if (nav_data.module_status < ModuleStatus::kInit) return false;
@@ -58,9 +58,9 @@ bool checkModulesInitialised(Logger &log, EmergencyBrakes &brakes_data, Navigati
   return true;
 }
 
-bool checkModulesReady(Logger &log, EmergencyBrakes &brakes_data, Navigation &nav_data,
-                       Batteries &batteries_data, Telemetry &telemetry_data, Sensors &sensors_data,
-                       Motors &motors_data)
+bool checkModulesReady(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
+                       const Batteries &batteries_data, const Telemetry &telemetry_data, const Sensors &sensors_data,
+                       const Motors &motors_data)
 {
   if (brakes_data.module_status != ModuleStatus::kReady) return false;
   if (nav_data.module_status != ModuleStatus::kReady) return false;
@@ -77,21 +77,21 @@ bool checkModulesReady(Logger &log, EmergencyBrakes &brakes_data, Navigation &na
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 
-bool checkCalibrateCommand(Logger &log, Telemetry &telemetry_data)
+bool checkCalibrateCommand(const Telemetry &telemetry_data)
 {
   if (!telemetry_data.calibrate_command) return false;
 
   return true;
 }
 
-bool checkLaunchCommand(Logger &log, Telemetry &telemetry_data)
+bool checkLaunchCommand(const Telemetry &telemetry_data)
 {
   if (!telemetry_data.launch_command) return false;
 
   return true;
 }
 
-bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
+bool checkShutdownCommand(const Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
 
@@ -102,7 +102,7 @@ bool checkShutdownCommand(Logger &log, Telemetry &telemetry_data)
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 
-bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
+bool checkEnteredBrakingZone(Logger &log, const Navigation &nav_data)
 {
   data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
   data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
@@ -112,7 +112,7 @@ bool checkEnteredBrakingZone(Logger &log, Navigation &nav_data)
   return true;
 }
 
-bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data)
+bool checkReachedMaxVelocity(Logger &log, const Navigation &nav_data)
 {
   if (nav_data.velocity < Navigation::kMaximumVelocity) return false;
 
@@ -120,7 +120,7 @@ bool checkReachedMaxVelocity(Logger &log, Navigation &nav_data)
   return true;
 }
 
-bool checkPodStopped(Logger &log, Navigation &nav_data)
+bool checkPodStopped(Logger &log, const Navigation &nav_data)
 {
   if (nav_data.velocity > 0) return false;
 

@@ -14,11 +14,6 @@
 
 namespace hyped {
 
-std::vector;
-
-motor_control::Controller;
-utils::Logger;
-
 namespace motor_control {
 
 class RpmRegulator {

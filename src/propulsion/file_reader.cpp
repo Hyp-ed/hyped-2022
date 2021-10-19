@@ -9,7 +9,7 @@
 
 namespace hyped {
 namespace motor_control {
-Logger log_(true, 0);
+utils::Logger log_(true, 0);
 
 bool FileReader::readFileData(ControllerMessage *messages, int len, const char *filepath)
 {

@@ -15,9 +15,6 @@
 namespace hyped {
 namespace motor_control {
 
-using hyped::utils::Logger;
-using hyped::utils::System;
-
 class FileReader {
  public:
   /**

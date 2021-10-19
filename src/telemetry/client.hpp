@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <cstring>
 
 #include <utils/config.hpp>
 #include <utils/logger.hpp>
@@ -23,8 +22,8 @@ class Client {
 
   utils::Logger &log_;
   int sockfd_;
-  const std::cstring *kPort;
-  const std::cstring *kServerIP;
+  const std::string *kPort;
+  const std::string *kServerIP;
 };
 
 }  // namespace telemetry

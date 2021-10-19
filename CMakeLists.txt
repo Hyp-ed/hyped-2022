@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+set(project hyped)
+project(${project} LANGUAGES CXX)
+
 
 # -------------------------------------------------- #
 # LIB HELPER                                         #
@@ -75,9 +78,6 @@ add_compile_definitions(LINUX)
 include(${CMAKE_SOURCE_DIR}/lib/rapidjson.cmake)
 include(${CMAKE_SOURCE_DIR}/lib/eigen.cmake)
 include(${CMAKE_SOURCE_DIR}/lib/gtest.cmake)
-
-set(project hyped)
-project(${project})
 
 # defining where the third party headers can be found
 include_directories(

@@ -19,8 +19,8 @@ Client::Client(utils::Logger &log) : Client{log, *utils::System::getSystem().con
 
 Client::Client(utils::Logger &log, const utils::Config &config)
     : log_{log},
-      kPort{config.telemetry.Port.str()},
-      kServerIP{config.telemetry.IP.str()}
+      kPort{config.telemetry.Port},
+      kServerIP{config.telemetry.IP}
 {
   log_.DBG("Telemetry", "Client object created");
 }

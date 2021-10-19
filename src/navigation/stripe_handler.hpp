@@ -16,7 +16,7 @@ namespace navigation {
 
 class StripeHandler {
  public:
-  using KeyenceDataArray = std::array<data::StripeCounter, Sensors::kNumKeyence>;
+  using KeyenceDataArray = std::array<data::StripeCounter, data::Sensors::kNumKeyence>;
 
   /**
    * @brief Construct a new Stripe Counter object
@@ -95,8 +95,8 @@ class StripeHandler {
   void updateNewReadings();
 
   // Central logging and data struct
-  Logger &log_;
-  Data &data_;
+  utils::Logger &log_;
+  data::Data &data_;
 
   // Number of stripes hit & most recent timestamp
   data::DataPoint<uint32_t> stripe_counter_;

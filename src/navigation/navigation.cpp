@@ -468,7 +468,7 @@ void Navigation::initTimestamps()
   init_timestamp_         = utils::Timer::getTimeMicros();
   log_.DBG3("NAV", "Initial timestamp:%d", init_timestamp_);
   prev_timestamp_ = utils::Timer::getTimeMicros();
-  stripe_counter_.set_init(init_timestamp_);
+  stripe_counter_.setInit(init_timestamp_);
 }
 }  // namespace navigation
 }  // namespace hyped

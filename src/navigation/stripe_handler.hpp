@@ -27,14 +27,15 @@ class StripeHandler {
    * @param velocity_uncertainty Reference to uncertainty in velocity, this is written to
    * @param stripe_distance Distance between two stripes
    */
-  explicit StripeHandler(utils::Logger &log, data::Data &data, const data::nav_t &displacement_uncertainty, data::nav_t &velocity_uncertainty,
-                         const data::nav_t stripe_distance);
+  explicit StripeHandler(utils::Logger &log, data::Data &data,
+                         const data::nav_t &displacement_uncertainty,
+                         data::nav_t &velocity_uncertainty, const data::nav_t stripe_distance);
 
   /**
    * @brief Check if stripe has been detected and changes the displacement
    *        and velocity input from the navigation class accordingly
    *
-   * @param displacement Current displacement
+   * @param displacement Current displacement, reported by other sensors
    * @param velocity Current velocity
    * @param real Whether or not the sensors are real
    */
@@ -42,11 +43,11 @@ class StripeHandler {
   /**
    * @brief Checks if submodule should enter kCriticalFailure
    *
-   * @param displ Current displacement from all sensors for comparison
+   * @param displ Current displacement, reported by other sensors
    *
    * @return bool to enter kCriticalFailure or not
    */
-  bool checkFailure(data::nav_t displacement);
+  bool checkFailure(const data::nav_t displacement);
   /**
    * @brief Sets the initial time and keyence data
    *        Occurs on the first iteration when nav-
@@ -54,7 +55,7 @@ class StripeHandler {
    *
    * @param init_time initial timestamp
    */
-  void set_init(uint32_t init_time);
+  void setInit(const uint32_t init_time);
   /**
    * @brief Get the current stripe count
    *
@@ -68,31 +69,38 @@ class StripeHandler {
    */
   uint32_t getFailureCount() const;
   /**
+   * @brief Get the current displacement, measured by the stripe sensor
+   * @return Number of stripes encountered * Distance of each stripe
+   */
+  data::nav_t getStripeDisplacement() const;
+  /**
    * @brief Get the offset between given displacement and stripe count displacement
-   * @param displacement To find offset between
+   * @param displacement Current displacement, reported by other sensors
    * @return Difference between strip count displacement and given displacement
    */
-  data::nav_t getDisplacementOffset(data::nav_t &displacement) const;
+  data::nav_t getDisplacementOffset(const data::nav_t displacement) const;
 
  private:
+  // TODO(Sury): Justify these thresholds
+  // The divisor that determines the stripe uncertainty, e.g kStripeDist / kStripeUncertainty
+  static constexpr data::nav_t kStripeUncertainty = 5.;
+  // The multiplier for the max displacement offset e.g kStripeDist * kMaxStripeDifference
+  static constexpr int kMaxStripeDifference = 4;
+
   // Distance between stripes
   const data::nav_t kStripeDist;
 
   /**
    * @brief Update nav data
    *
-   * @param displacement Current displacement
+   * @param displacement Current displacement, reported by other sensors
    * @param velocity Current velocity
    */
   void updateNavData(data::nav_t &displacement, data::nav_t &velocity);
   /**
-   * @brief update prev_readings
+   * @brief update prev_readings and current readings_
    */
-  void updatePrevReadings();
-  /**
-   * @brief update current readings
-   */
-  void updateNewReadings();
+  void updateReadings();
 
   // Central logging and data struct
   utils::Logger &log_;
@@ -116,4 +124,3 @@ class StripeHandler {
 };
 }  // namespace navigation
 }  // namespace hyped
-

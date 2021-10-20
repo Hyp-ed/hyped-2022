@@ -6,7 +6,7 @@ namespace hyped {
 
 namespace motor_control {
 
-RpmRegulator::RpmRegulator(Logger &log) : log_(log), current_index(0), failure(false)
+RpmRegulator::RpmRegulator() : current_index(0), failure(false)
 {
 }
 

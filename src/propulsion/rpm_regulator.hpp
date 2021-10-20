@@ -22,7 +22,7 @@ class RpmRegulator {
    * @brief Construct a new rpm regulator object
    * @param log
    */
-  explicit RpmRegulator(Logger &log);
+  explicit RpmRegulator();
   /**
    * @brief Calculate the optimal rpm based on criteria from all the motors
    *        as well optimal values produced by simulations.
@@ -62,7 +62,6 @@ class RpmRegulator {
    */
   int32_t step(const int32_t optimal_rpm, const bool direction);
 
-  Logger &log_;
   int32_t current_index;
   bool failure;
 };

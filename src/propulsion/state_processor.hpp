@@ -102,7 +102,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calcAverageRpm(ControllerInterface **controllers);
+  int32_t calculateAverageRpm(ControllerInterface **controllers);
 
   /**
    * @brief calculate the max Current drawn out of all the motors
@@ -110,7 +110,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int16_t calcMaxCurrent();
+  int16_t calculateMaxCurrent();
 
   /**
    * @brief Calculate the max temperature out of all the motors
@@ -118,7 +118,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calcMaxTemp(ControllerInterface **controllers);
+  int32_t calculateMaxTemp(ControllerInterface **controllers);
 
   bool useFakeController;
   Logger &log_;

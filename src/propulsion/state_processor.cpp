@@ -14,7 +14,7 @@ StateProcessor::StateProcessor(int motorAmount, Logger &log)
       criticalError(false),
       servicePropulsionSpeed(100),
       speed(0),
-      regulator(log_)
+      regulator()
 {
   // rpmCalculator = new CalculateRpm(log);
 
@@ -120,9 +120,9 @@ void StateProcessor::accelerate()
       accelerationTimestamp = accelerationTimer.getTimeMicros();
       velocity              = navigationData.velocity;
 
-      int32_t act_rpm     = calcAverageRpm(controllers);
-      int32_t act_current = calcMaxCurrent();
-      int32_t act_temp    = calcMaxTemp(controllers);
+      int32_t act_rpm     = calculateAverageRpm(controllers);
+      int32_t act_current = calculateMaxCurrent();
+      int32_t act_temp    = calculateMaxTemp(controllers);
 
       int32_t rpm = regulator.calculateRpm(velocity, act_rpm, act_current, act_temp);
 
@@ -137,7 +137,7 @@ void StateProcessor::accelerate()
   }
 }
 
-int32_t StateProcessor::calcAverageRpm(ControllerInterface **controllers)
+int32_t StateProcessor::calculateAverageRpm(ControllerInterface **controllers)
 {
   int32_t total = 0;
   for (int i = 0; i < motorAmount; i++) {
@@ -147,7 +147,7 @@ int32_t StateProcessor::calcAverageRpm(ControllerInterface **controllers)
   return std::round(total / motorAmount);
 }
 
-int16_t StateProcessor::calcMaxCurrent()
+int16_t StateProcessor::calculateMaxCurrent()
 {
   Batteries hp_packs  = data_.getBatteriesData();
   int16_t max_current = 0;
@@ -158,7 +158,7 @@ int16_t StateProcessor::calcMaxCurrent()
   return max_current;
 }
 
-int32_t StateProcessor::calcMaxTemp(ControllerInterface **controllers)
+int32_t StateProcessor::calculateMaxTemp(ControllerInterface **controllers)
 {
   int32_t max_temp = 0;
   for (int i = 0; i < motorAmount; i++) {

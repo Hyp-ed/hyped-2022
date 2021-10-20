@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_Rpm 6000
+#define MAX_RPM 6000
 #define MAX_TEMPERATURE 150
 #define MAX_CURRENT 1500  // mA
 

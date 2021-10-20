@@ -8,20 +8,17 @@
 
 namespace hyped {
 namespace utils {
-class Logger;
+class utils::Logger;
 }
 namespace motor_control {
-
-using utils::Logger;
-using utils::Timer;
-using utils::concurrent::Thread;
+  
 
 class FakeController : public ControllerInterface {
  public:
   /**
    * @brief  Construct a new Fake Controller object
    */
-  FakeController(Logger &log, uint8_t id, bool isFaulty);
+  FakeController(utils::Logger &log, uint8_t id, bool isFaulty);
   /**
    * @brief  Registers controller to recieve and transmit CAN messages.
    *         note: empty implementation.
@@ -104,11 +101,11 @@ class FakeController : public ControllerInterface {
    * @brief Times the duration of the run. Starts when we enter the accelerating state.
    */
   void startTimer();
-  Logger &log_;
+  utils::Logger &log_;
   data::Data &data_;
   data::Motors motor_data_;
   ControllerState state_;
-  Timer timer;
+  utils::Timer timer;
   uint8_t id_;
   bool isFaulty_;
   bool critical_failure_;

@@ -3,7 +3,7 @@
 namespace hyped {
 namespace motor_control {
 
-FakeController::FakeController(Logger &log, uint8_t id, bool isFaulty)
+FakeController::FakeController(utils::Logger &log, uint8_t id, bool isFaulty)
     : log_(log),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
@@ -28,7 +28,7 @@ void FakeController::configure()
 
 void FakeController::startTimer()
 {
-  start_time_    = Timer::getTimeMicros();
+  start_time_    = utils::Timer::getTimeMicros();
   timer_started_ = true;
   fail_time_     = std::rand() % 20000000 + 1000000;
 }

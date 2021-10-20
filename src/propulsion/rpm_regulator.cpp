@@ -14,20 +14,16 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
                                    const int32_t actual_current, const int32_t actual_temperature)
 {
   const int32_t optimal_rpm = calculateOptimalRpm(actual_velocity);
-  if (actual_temperature <= MAX_TEMPERATURE) {
-    if (actual_current < MAX_CURRENT && actual_temperature < MAX_TEMPERATURE
-        && actual_rpm < optimal_rpm) {
-      return actual_rpm + step(optimal_rpm, true);
-    } else if (actual_current > MAX_CURRENT || actual_temperature > MAX_TEMPERATURE
-               || actual_rpm > optimal_rpm) {
-      int32_t target = actual_rpm - step(optimal_rpm, false);
-      if (target < 0) {
-        return 0;
-      } else {
-        return target;
-      }
+  if (actual_current < MAX_CURRENT && actual_temperature < MAX_TEMPERATURE
+      && actual_rpm < optimal_rpm) {
+    return actual_rpm + step(optimal_rpm, true);
+  } else if (actual_current > MAX_CURRENT || actual_temperature > MAX_TEMPERATURE
+             || actual_rpm > optimal_rpm) {
+    const int32_t target = actual_rpm - step(optimal_rpm, false);
+    if (target < 0) {
+      return 0;
     } else {
-      return actual_rpm;
+      return target;
     }
   } else {
     return actual_rpm;

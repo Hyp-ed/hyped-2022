@@ -7,11 +7,8 @@
 #include <utils/timer.hpp>
 
 namespace hyped {
-namespace utils {
-class utils::Logger;
-}
+
 namespace motor_control {
-  
 
 class FakeController : public ControllerInterface {
  public:

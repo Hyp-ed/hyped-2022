@@ -33,8 +33,8 @@ class RpmRegulator {
    * @param actual_temperature - max temperature out of all the motors
    * @return int32_t - the optimal rpm which the motors should be set to.
    */
-  int32_t calculateRpm(data::nav_t actual_velocity, int32_t actual_rpm, int32_t actual_current,
-                       int32_t actual_temperature);
+  int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm,
+                       const int32_t actual_current, const int32_t actual_temperature);
 
   /**
    * @brief Get the Failure boolean
@@ -51,7 +51,7 @@ class RpmRegulator {
    * @param actual_velocity
    * @return double - optimal rpm
    */
-  int32_t calculateOptimalRpm(int32_t actual_velocity);
+  int32_t calculateOptimalRpm(const int32_t actual_velocity);
 
   /**
    * @brief calculate the step to increase or decrease the rpm by.
@@ -60,7 +60,7 @@ class RpmRegulator {
    * @param direction - the direction that the step must go in: true for pos false for neg.
    * @return int32_t - the step with which to increase the rpm
    */
-  int32_t step(int32_t optimal_rpm, bool direction);
+  int32_t step(const int32_t optimal_rpm, const bool direction);
 
   Logger &log_;
   int32_t current_index;

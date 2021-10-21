@@ -27,8 +27,8 @@ class State;  // Forward declaration
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
 bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                    const Batteries &batteries_data, const Telemetry &telemetry_data, const Sensors &sensors_data,
-                    const Motors &motors_data);
+                    const Batteries &batteries_data, const Telemetry &telemetry_data,
+                    const Sensors &sensors_data, const Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Module Status
@@ -38,16 +38,17 @@ bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navig
  * @brief   Returns true iff the command has been received and all modules are
  *          initialised.
  */
-bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                             const Batteries &batteries_data, const Telemetry &telemetry_data,
-                             const Sensors &sensors_data, const Motors &motors_data);
+bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data,
+                             const Navigation &nav_data, const Batteries &batteries_data,
+                             const Telemetry &telemetry_data, const Sensors &sensors_data,
+                             const Motors &motors_data);
 
 /*
  * @brief    Returns true iff all modules are ready.
  */
 bool checkModulesReady(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                       const Batteries &batteries_data, const Telemetry &telemetry_data, const Sensors &sensors_data,
-                       const Motors &motors_data);
+                       const Batteries &batteries_data, const Telemetry &telemetry_data,
+                       const Sensors &sensors_data, const Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands

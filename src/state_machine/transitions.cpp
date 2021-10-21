@@ -11,8 +11,8 @@ namespace state_machine {
  * @brief   Local function that determines whether or not there is an emergency.
  */
 bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                    const Batteries &batteries_data, const Telemetry &telemetry_data, const Sensors &sensors_data,
-                    const Motors &motors_data)
+                    const Batteries &batteries_data, const Telemetry &telemetry_data,
+                    const Sensors &sensors_data, const Motors &motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
     log.ERR("STM", "stop command received");
@@ -43,9 +43,10 @@ bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navig
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                             const Batteries &batteries_data, const Telemetry &telemetry_data,
-                             const Sensors &sensors_data, const Motors &motors_data)
+bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data,
+                             const Navigation &nav_data, const Batteries &batteries_data,
+                             const Telemetry &telemetry_data, const Sensors &sensors_data,
+                             const Motors &motors_data)
 {
   if (brakes_data.module_status < ModuleStatus::kInit) return false;
   if (nav_data.module_status < ModuleStatus::kInit) return false;
@@ -59,8 +60,8 @@ bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data, co
 }
 
 bool checkModulesReady(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                       const Batteries &batteries_data, const Telemetry &telemetry_data, const Sensors &sensors_data,
-                       const Motors &motors_data)
+                       const Batteries &batteries_data, const Telemetry &telemetry_data,
+                       const Sensors &sensors_data, const Motors &motors_data)
 {
   if (brakes_data.module_status != ModuleStatus::kReady) return false;
   if (nav_data.module_status != ModuleStatus::kReady) return false;

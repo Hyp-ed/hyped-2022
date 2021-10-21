@@ -13,8 +13,7 @@ utils::Logger log_(true, 0);
 
 bool FileReader::readFileData(ControllerMessage *messages, const char *filepath)
 {
-  FILE *current_file;
-  current_file = fopen(filepath, "r");
+  FILE *current_file = fopen(filepath, "r");
 
   if (current_file == NULL) {
     log_.ERR("MOTOR", "Unable to open: %s", filepath);
@@ -42,7 +41,7 @@ bool FileReader::readFileData(ControllerMessage *messages, const char *filepath)
   return true;
 }
 
-void FileReader::splitData(std::basic_string<char> line, std::string lineData[])
+void FileReader::splitData(const std::basic_string<char> line, std::string lineData[])
 {
   std::vector<std::string> tokens;
   std::stringstream check1(line);
@@ -55,7 +54,7 @@ void FileReader::splitData(std::basic_string<char> line, std::string lineData[])
   }
 }
 
-void FileReader::addData(std::string lineData[], uint8_t *message_data)
+void FileReader::addData(const std::string lineData[], uint8_t *message_data)
 {
   for (int i = 0; i < 8; i++) {
     message_data[i] = static_cast<uint8_t>(std::stoi(lineData[i], NULL, 16));

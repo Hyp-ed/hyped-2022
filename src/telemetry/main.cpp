@@ -47,12 +47,12 @@ void Main::run()
   telemetry_data.module_status = data::ModuleStatus::kReady;
   data_.setTelemetryData(telemetry_data);
 
-  SendLoop sendloop_thread{log_, data_, this};
-  RecvLoop recvloop_thread{log_, data_, this};
-  sendloop_thread.start();
-  recvloop_thread.start();
-  sendloop_thread.join();
-  recvloop_thread.join();
+  SendLoop send_loop_thread{log_, data_, this};
+  RecvLoop receive_loop_thread{log_, data_, this};
+  send_loop_thread.start();
+  receive_loop_thread.start();
+  send_loop_thread.join();
+  receive_loop_thread.join();
 
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }

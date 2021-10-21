@@ -25,19 +25,19 @@ Controller::Controller(Logger &log, uint8_t id)
   nmt_message_.len      = 2;
 
   // Initialse arrays of message data:
-  FileReader::readFileData(configMsgs_, 24, kConfigMsgFile);
-  FileReader::readFileData(enterOpMsgs_, 4, kEnterOpMsgFile);
-  FileReader::readFileData(enterPreOpMsg_, 1, kEnterPreOpMsgFile);
-  FileReader::readFileData(checkStateMsg_, 1, kCheckStateMsgFile);
-  FileReader::readFileData(sendTargetVelMsg, 1, kSendTargetVelMsgFile);
-  FileReader::readFileData(sendTargetTorqMsg, 1, kSendTargetTorqMsgFile);
-  FileReader::readFileData(updateActualVelMsg, 1, kUpdateActualVelMsgFile);
-  FileReader::readFileData(updateActualTorqMsg, 1, kUpdateActualTorqMsgFile);
-  FileReader::readFileData(quickStopMsg, 1, kQuickStopMsgFile);
-  FileReader::readFileData(healthCheckMsgs, 2, kHealthCheckMsgFile);
-  FileReader::readFileData(updateMotorTempMsg, 1, kUpdateMotorTempFile);
-  FileReader::readFileData(updateContrTempMsg, 1, kUpdateContrTempFile);
-  FileReader::readFileData(autoAlignMsg, 1, kAutoAlignMsgFile);
+  FileReader::readFileData(configMsgs_, kConfigMsgFile);
+  FileReader::readFileData(enterOpMsgs_, kEnterOpMsgFile);
+  FileReader::readFileData(enterPreOpMsg_, kEnterPreOpMsgFile);
+  FileReader::readFileData(checkStateMsg_, kCheckStateMsgFile);
+  FileReader::readFileData(sendTargetVelMsg, kSendTargetVelMsgFile);
+  FileReader::readFileData(sendTargetTorqMsg, kSendTargetTorqMsgFile);
+  FileReader::readFileData(updateActualVelMsg, kUpdateActualVelMsgFile);
+  FileReader::readFileData(updateActualTorqMsg, kUpdateActualTorqMsgFile);
+  FileReader::readFileData(quickStopMsg, kQuickStopMsgFile);
+  FileReader::readFileData(healthCheckMsgs, kHealthCheckMsgFile);
+  FileReader::readFileData(updateMotorTempMsg, kUpdateMotorTempFile);
+  FileReader::readFileData(updateContrTempMsg, kUpdateContrTempFile);
+  FileReader::readFileData(autoAlignMsg, kAutoAlignMsgFile);
 }
 
 bool Controller::sendControllerMessage(ControllerMessage message_template)

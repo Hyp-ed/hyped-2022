@@ -15,7 +15,7 @@ class FakeController : public ControllerInterface {
   /**
    * @brief  Construct a new Fake Controller object
    */
-  FakeController(utils::Logger &log, uint8_t id, bool isFaulty);
+  FakeController(utils::Logger &log, const uint8_t id, const bool isFaulty);
   /**
    * @brief  Registers controller to recieve and transmit CAN messages.
    *         note: empty implementation.
@@ -41,7 +41,7 @@ class FakeController : public ControllerInterface {
    * @brief  Sets actual velocity = target velocity
    * @param[in]  target_velocity in rpm (Calculated in speed calculator).
    */
-  void sendTargetVelocity(int32_t target_velocity) override;
+  void sendTargetVelocity(const int32_t target_velocity) override;
   /**
    * @brief  Send a request to the motor controller to get the actual velocity.
    *         note: empty implementation.

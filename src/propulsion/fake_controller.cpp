@@ -3,7 +3,7 @@
 namespace hyped {
 namespace motor_control {
 
-FakeController::FakeController(utils::Logger &log, uint8_t id, bool isFaulty)
+FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool isFaulty)
     : log_(log),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
@@ -53,7 +53,7 @@ void FakeController::checkState()
   log_.DBG1("MOTOR", "Controller %d: Checking status", id_);
 }
 
-void FakeController::sendTargetVelocity(int32_t target_velocity)
+void FakeController::sendTargetVelocity(const int32_t target_velocity)
 {
   if (!timer_started_) { startTimer(); }
   log_.DBG2("MOTOR", "Controller %d: Updating target velocity to %d", id_, target_velocity);

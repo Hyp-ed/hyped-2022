@@ -23,7 +23,7 @@ class FileReader {
    * @param message
    * @param len - length of messages array
    */
-  static bool readFileData(ControllerMessage messages[], int len, const char *filepath);
+  static bool readFileData(ControllerMessage messages[], const char *filepath);
 
  private:
   /**

@@ -11,7 +11,7 @@ namespace hyped {
 namespace motor_control {
 utils::Logger log_(true, 0);
 
-bool FileReader::readFileData(ControllerMessage *messages, int len, const char *filepath)
+bool FileReader::readFileData(ControllerMessage *messages, const char *filepath)
 {
   FILE *current_file;
   current_file = fopen(filepath, "r");

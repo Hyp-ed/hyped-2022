@@ -38,7 +38,7 @@ State *Idle::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool calibrate_command = checkCalibrateCommand(log, telemetry_data_);
+  bool calibrate_command = checkCalibrateCommand(const telemetry_data_);
   if (!calibrate_command) { return nullptr; }
 
   bool all_initialised = checkModulesInitialised(log, brakes_data_, nav_data_, batteries_data_,
@@ -87,7 +87,7 @@ State *Ready::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool recieved_launch_command = checkLaunchCommand(log, telemetry_data_);
+  bool recieved_launch_command = checkLaunchCommand(const telemetry_data_);
   if (recieved_launch_command) { return Accelerating::getInstance(); }
 
   return nullptr;
@@ -174,7 +174,7 @@ State *Finished::checkTransition(Logger &log)
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
 
-  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  bool received_shutdown_command = checkShutdownCommand(const telemetry_data_);
   if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }
@@ -210,7 +210,7 @@ State *FailureStopped::checkTransition(Logger &log)
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
 
-  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  bool received_shutdown_command = checkShutdownCommand(const telemetry_data_);
   if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }

@@ -6,9 +6,9 @@
 namespace hyped {
 namespace telemetry {
 
-SendLoop::SendLoop(utils::Logger &log, data::Data &data, Main *main_pointer)
+SendLoop::SendLoop(utils::Logger &log, data::Data &data, Main &main_ref)
     : utils::concurrent::Thread{log},
-      main_ref_{*main_pointer},
+      main_ref_{main_ref},
       data_{data}
 {
   log_.DBG("Telemetry", "Telemetry SendLoop thread object created");

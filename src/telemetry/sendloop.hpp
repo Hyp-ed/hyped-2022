@@ -14,7 +14,7 @@ namespace telemetry {
 
 class SendLoop : public utils::concurrent::Thread {
  public:
-  explicit SendLoop(utils::Logger &log, data::Data &data, Main *main_pointer);
+  explicit SendLoop(utils::Logger &log, data::Data &data, Main &main_ref);
   void run() override;
 
  private:

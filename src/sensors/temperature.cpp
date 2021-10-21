@@ -30,11 +30,9 @@ void Temperature::run()
 
 int Temperature::scaleData(uint16_t raw_value)
 {
-  // convert to degrees C
-  // convert from what to degrees C?
+  // convert from Potential Difference to degrees C
   double temp = static_cast<double>(raw_value) / 4095;
-  temp        = (temp * 175) - 50;
-  // I have never seen this ^^ temperature calculation before
+  temp        = (temp * 200) - 50;
   return static_cast<int>(temp);
 }
 

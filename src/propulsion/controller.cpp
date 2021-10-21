@@ -3,7 +3,7 @@
 namespace hyped {
 namespace motor_control {
 
-Controller::Controller(Logger &log, uint8_t id)
+Controller::Controller(utils::Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),

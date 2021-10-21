@@ -177,8 +177,8 @@ class Controller : public ControllerInterface {
   std::atomic<uint8_t> motor_temperature_;
   std::atomic<uint8_t> controller_temperature_;
   CanSender sender;
-  Frame sdo_message_;
-  Frame nmt_message_;
+  utils::io::can::Frame sdo_message_;
+  utils::io::can::Frame nmt_message_;
 
   // Network management CAN commands:
   const uint8_t kNmtOperational = 0x01;

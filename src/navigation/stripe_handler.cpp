@@ -77,8 +77,9 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
 {
   for (std::size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
     // Check new readings and ensure new stripe has been hit
-    if (prev_readings_[i].count.value == readings_[i].count.value
-        || readings_[i].count.timestamp - stripe_counter_.timestamp < 1e5)
+    const bool same_as_previous = prev_readings_.at(i).count.value == readings_.at(i).count.value;
+    const bool no_new_readings = readings_.at(i).count.timestamp - stripe_counter_.timestamp < 1e5;
+    if (no_new_readings || same_as_previous)
       continue;
     stripe_counter_.value++;
     stripe_counter_.timestamp = readings_[i].count.timestamp;

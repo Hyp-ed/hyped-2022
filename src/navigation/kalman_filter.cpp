@@ -92,7 +92,7 @@ const Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt) const
   //  number of values for each acc, vel, pos: usually 1 or 3
   uint32_t num_values = n_ / 3;
 
-  for (uint32_t i = 0; i < num_values; i++) {
+  for (uint32_t i = 0; i < num_values; ++i) {
     // compute acceleration rows
     A(i, i) = 1.;
 
@@ -113,7 +113,7 @@ const Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt) const
 const Eigen::MatrixXf KalmanFilter::createMeasurementMatrix() const
 {
   Eigen::MatrixXf H = Eigen::MatrixXf::Zero(m_, n_);
-  for (uint32_t i = 0; i < m_; i++) {
+  for (uint32_t i = 0; i < m_; ++i) {
     H(i, i) = 1.;
   }
   return H;

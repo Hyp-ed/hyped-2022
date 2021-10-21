@@ -13,17 +13,17 @@ utils::Logger log_(true, 0);
 
 bool FileReader::readFileData(ControllerMessage *messages, int len, const char *filepath)
 {
-  FILE *fp;
-  fp = fopen(filepath, "r");
+  FILE *current_file;
+  current_file = fopen(filepath, "r");
 
-  if (fp == NULL) {
+  if (current_file == NULL) {
     log_.ERR("MOTOR", "Unable to open: %s", filepath);
 
     return false;
   } else {
     int m = 0;
     char line[250];
-    while (fgets(line, static_cast<int>(sizeof(line) / sizeof(line[0])), fp) != NULL) {
+    while (fgets(line, static_cast<int>(sizeof(line) / sizeof(line[0])), current_file) != NULL) {
       if (line[0] == '\n' || line[0] == '\0') {
       } else if (line[0] == '#') {
       } else if (line[0] == '>') {
@@ -38,7 +38,7 @@ bool FileReader::readFileData(ControllerMessage *messages, int len, const char *
       }
     }
   }
-  fclose(fp);
+  fclose(current_file);
   return true;
 }
 

@@ -8,7 +8,7 @@ namespace hyped {
 
 namespace telemetry {
 
-Main::Main(uint8_t id, Logger &log)
+Main::Main(const uint8_t id, Logger &log)
     : Thread{id, log},
       data_{data::Data::getInstance()},
       client_{log}
@@ -19,7 +19,7 @@ Main::Main(uint8_t id, Logger &log)
 void Main::run()
 {
   // check if telemetry is disabled
-  hyped::utils::System &sys      = hyped::utils::System::getSystem();
+  const auto &sys                = hyped::utils::System::getSystem();
   data::Telemetry telemetry_data = data_.getTelemetryData();
 
   if (sys.telemetry_off) {

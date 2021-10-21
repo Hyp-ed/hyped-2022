@@ -11,7 +11,7 @@ namespace telemetry {
 
 class Main : public utils::concurrent::Thread {
  public:
-  Main(uint8_t id, utils::Logger &log);
+  Main(const uint8_t id, utils::Logger &log);
   void run() override;
 
  private:

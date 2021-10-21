@@ -36,11 +36,11 @@ class Writer {
   void packAdditionalData();
 
   // before starting adding data points, this function must be called to start the main JSON object
-  void start() { rjwriter_.StartObject(); }
+  void start() { rapid_json_writer_.StartObject(); }
 
   // before calling getString(), this function must be called to close the main JSON object
   // after calling this function, no additional data points can be added
-  void end() { rjwriter_.EndObject(); }
+  void end() { rapid_json_writer_.EndObject(); }
 
   // returns the main JSON object as a string, that is ready to be sent to GUI
   std::string getString() { return sb_.GetString(); }
@@ -63,7 +63,7 @@ class Writer {
   void endList();
 
   rapidjson::StringBuffer sb_;
-  rapidjson::Writer<rapidjson::StringBuffer> rjwriter_;
+  rapidjson::Writer<rapidjson::StringBuffer> rapid_json_writer_;
   data::Data &data_;
 };
 

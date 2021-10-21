@@ -12,134 +12,134 @@ namespace telemetry {
 // The current time in milliseconds that will be used later
 void Writer::packTime()
 {
-  rjwriter_.Key("time");
-  rjwriter_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>(
+  rapid_json_writer_.Key("time");
+  rapid_json_writer_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>(
                      std::chrono::system_clock::now().time_since_epoch())
                      .count());
 }
 
-// additional data points that are displayed in the GUI data section
+// Ddditional data points that are displayed in the GUI data section
 // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
 void Writer::packAdditionalData()
 {
-  rjwriter_.Key("additional_data");
-  rjwriter_.StartArray();
+  rapid_json_writer_.Key("additional_data");
+  rapid_json_writer_.StartArray();
 
-  // edit below
+  // Edit below
 
-  // edit above
+  // Edit above
 
-  rjwriter_.EndArray();
+  rapid_json_writer_.EndArray();
 }
 
-// crucial data points that are displayed in various fixed GUI points
+// Crucial data points that are displayed in various fixed GUI points
 // NOT EDITABLE
 void Writer::packCrucialData()
 {
-  rjwriter_.Key("crucial_data");
-  rjwriter_.StartArray();
+  rapid_json_writer_.Key("crucial_data");
+  rapid_json_writer_.StartArray();
 
-  data::Navigation nav_data  = data_.getNavigationData();
+  data::Navigation nav_data = data_.getNavigationData();
   data::StateMachine sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
   add("acceleration", -50.0, 50.0, "m/s^2", nav_data.acceleration);
   add("status", sm_data.current_state);
 
-  rjwriter_.EndArray();
+  rapid_json_writer_.EndArray();
 }
 
-// status data points that are displayed in the GUI status tab
+// Status data points that are displayed in the GUI status tab
 // NOT EDITABLE
 void Writer::packStatusData()
 {
-  rjwriter_.Key("status_data");
-  rjwriter_.StartArray();
+  rapid_json_writer_.Key("status_data");
+  rapid_json_writer_.StartArray();
 
   // TODO(everyone): add all required data points
 
-  rjwriter_.EndArray();
+  rapid_json_writer_.EndArray();
 }
 
-Writer::Writer(data::Data &data) : rjwriter_(sb_), data_{data}
+Writer::Writer(data::Data &data) : rapid_json_writer_(sb_), data_{data}
 {
 }
 
 void Writer::startList(const char *name)
 {
-  rjwriter_.StartObject();
-  rjwriter_.Key("name");
-  rjwriter_.String(name);
-  rjwriter_.Key("value");
-  rjwriter_.StartArray();
+  rapid_json_writer_.StartObject();
+  rapid_json_writer_.Key("name");
+  rapid_json_writer_.String(name);
+  rapid_json_writer_.Key("value");
+  rapid_json_writer_.StartArray();
 }
 
 void Writer::endList()
 {
-  rjwriter_.EndArray();
-  rjwriter_.EndObject();
+  rapid_json_writer_.EndArray();
+  rapid_json_writer_.EndObject();
 }
 
 void Writer::add(const char *name, int min, int max, const char *unit, int value)
 {
-  rjwriter_.StartObject();
-  rjwriter_.Key("name");
-  rjwriter_.String(name);
-  rjwriter_.Key("min");
-  rjwriter_.Int(min);
-  rjwriter_.Key("max");
-  rjwriter_.Int(max);
-  rjwriter_.Key("unit");
-  rjwriter_.String(unit);
-  rjwriter_.Key("value");
-  rjwriter_.Int(value);
-  rjwriter_.EndObject();
+  rapid_json_writer_.StartObject();
+  rapid_json_writer_.Key("name");
+  rapid_json_writer_.String(name);
+  rapid_json_writer_.Key("min");
+  rapid_json_writer_.Int(min);
+  rapid_json_writer_.Key("max");
+  rapid_json_writer_.Int(max);
+  rapid_json_writer_.Key("unit");
+  rapid_json_writer_.String(unit);
+  rapid_json_writer_.Key("value");
+  rapid_json_writer_.Int(value);
+  rapid_json_writer_.EndObject();
 }
 
 void Writer::add(const char *name, float min, float max, const char *unit, float value)
 {
-  rjwriter_.StartObject();
-  rjwriter_.Key("name");
-  rjwriter_.String(name);
-  rjwriter_.Key("min");
-  rjwriter_.Double(min);
-  rjwriter_.Key("max");
-  rjwriter_.Double(max);
-  rjwriter_.Key("unit");
-  rjwriter_.String(unit);
-  rjwriter_.Key("value");
-  rjwriter_.Double(value);
-  rjwriter_.EndObject();
+  rapid_json_writer_.StartObject();
+  rapid_json_writer_.Key("name");
+  rapid_json_writer_.String(name);
+  rapid_json_writer_.Key("min");
+  rapid_json_writer_.Double(min);
+  rapid_json_writer_.Key("max");
+  rapid_json_writer_.Double(max);
+  rapid_json_writer_.Key("unit");
+  rapid_json_writer_.String(unit);
+  rapid_json_writer_.Key("value");
+  rapid_json_writer_.Double(value);
+  rapid_json_writer_.EndObject();
 }
 
 void Writer::add(const char *name, bool value)
 {
-  rjwriter_.StartObject();
-  rjwriter_.Key("name");
-  rjwriter_.String(name);
-  rjwriter_.Key("value");
-  rjwriter_.Bool(value);
-  rjwriter_.EndObject();
+  rapid_json_writer_.StartObject();
+  rapid_json_writer_.Key("name");
+  rapid_json_writer_.String(name);
+  rapid_json_writer_.Key("value");
+  rapid_json_writer_.Bool(value);
+  rapid_json_writer_.EndObject();
 }
 
 void Writer::add(const char *name, data::State value)
 {
-  rjwriter_.StartObject();
-  rjwriter_.Key("name");
-  rjwriter_.String(name);
-  rjwriter_.Key("value");
-  rjwriter_.String(convertStateMachineState(value));
-  rjwriter_.EndObject();
+  rapid_json_writer_.StartObject();
+  rapid_json_writer_.Key("name");
+  rapid_json_writer_.String(name);
+  rapid_json_writer_.Key("value");
+  rapid_json_writer_.String(convertStateMachineState(value));
+  rapid_json_writer_.EndObject();
 }
 
 void Writer::add(const char *name, data::ModuleStatus value)
 {
-  rjwriter_.StartObject();
-  rjwriter_.Key("name");
-  rjwriter_.String(name);
-  rjwriter_.Key("value");
-  rjwriter_.String(convertModuleStatus(value));
-  rjwriter_.EndObject();
+  rapid_json_writer_.StartObject();
+  rapid_json_writer_.Key("name");
+  rapid_json_writer_.String(name);
+  rapid_json_writer_.Key("value");
+  rapid_json_writer_.String(convertModuleStatus(value));
+  rapid_json_writer_.EndObject();
 }
 
 const char *Writer::convertStateMachineState(data::State state)

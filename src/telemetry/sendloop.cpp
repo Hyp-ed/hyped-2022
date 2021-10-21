@@ -6,8 +6,8 @@
 namespace hyped {
 namespace telemetry {
 
-SendLoop::SendLoop(Logger &log, data::Data &data, Main *main_pointer)
-    : Thread{log},
+SendLoop::SendLoop(utils::Logger &log, data::Data &data, Main *main_pointer)
+    : utils::concurrent::Thread{log},
       main_ref_{*main_pointer},
       data_{data}
 {
@@ -37,7 +37,7 @@ void SendLoop::run()
       break;
     }
 
-    Thread::sleep(100);
+    utils::concurrent::Thread::sleep(100);
   }
 
   log_.DBG("Telemetry", "Exiting Telemetry SendLoop thread");

@@ -17,7 +17,7 @@ Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id
 }
 
 void Stepper::checkHome()
-{
+{ // Checks if button is pushed
   if (button_.read() && !brakes_data_.brakes_retracted[brake_id_ - 1]) {
     brakes_data_.brakes_retracted[brake_id_ - 1] = true;
     data_.setEmergencyBrakesData(brakes_data_);
@@ -28,14 +28,14 @@ void Stepper::checkHome()
 }
 
 void Stepper::sendRetract()
-{
+{  // Sends message for Brakes to retract (deactivate)
   log_.INFO("Brakes", "Sending a retract message to brake %i", brake_id_);
   command_pin_.clear();
   is_clamped_ = false;
 }
 
 void Stepper::sendClamp()
-{
+{  // Sends message to Brakes to clamp (activate)
   log_.INFO("Brakes", "Sending a engage message to brake %i", brake_id_);
   command_pin_.set();
   is_clamped_ = true;

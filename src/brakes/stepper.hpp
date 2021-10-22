@@ -31,7 +31,7 @@ class Stepper : public StepperInterface {
   ~Stepper() {}
 
   /**
-   * @brief {checks if brake's button is pressed, notes change in the data struct}
+   * @brief checks if brake's button is pressed, notes change in the data struct
    */
   void checkHome() override;
 

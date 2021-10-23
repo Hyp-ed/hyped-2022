@@ -38,7 +38,7 @@ bool Client::connect()
   hints.ai_socktype = SOCK_STREAM;
 
   // get possible addresses we can connect to
-  int error = getaddrinfo(kServerIP, kPort, &hints, &server_info);
+  int error = getaddrinfo(kServerIP.c_str(), kPort.c_str(), &hints, &server_info);
   if (error != 0) {
     log_.ERR("Telemetry", "%s", gai_strerror(error));
     throw std::runtime_error{"Failed getting possible addresses"};

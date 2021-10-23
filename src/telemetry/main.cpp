@@ -47,7 +47,7 @@ void Main::run()
   telemetry_data.module_status = data::ModuleStatus::kReady;
   data_.setTelemetryData(telemetry_data);
 
-  SendLoop send_loop_thread{log_, data_, this};
+  SendLoop send_loop_thread{log_, data_, *this};
   RecvLoop receive_loop_thread{log_, data_, this};
   send_loop_thread.start();
   receive_loop_thread.start();

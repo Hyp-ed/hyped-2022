@@ -200,19 +200,19 @@ class Controller : public ControllerInterface {
 
  public:
   // Arrays of messages sent to controller (see config files for details about message contents)
-  ControllerMessage configMsgs_[24];
-  ControllerMessage enterOpMsgs_[4];
-  ControllerMessage enterPreOpMsg_[1];
-  ControllerMessage checkStateMsg_[1];
-  ControllerMessage sendTargetVelMsg_[1];
-  ControllerMessage sendTargetTorqMsg_[1];
-  ControllerMessage updateActualVelMsg_[1];
-  ControllerMessage updateActualTorqMsg_[1];
-  ControllerMessage quickStopMsg_[1];
-  ControllerMessage healthCheckMsgs_[2];
-  ControllerMessage updateMotorTempMsg_[1];
-  ControllerMessage updateContrTempMsg_[1];
-  ControllerMessage autoAlignMsg_[1];
+  ControllerMessage configMessages_[24];
+  ControllerMessage enterOperationalMessages_[4];
+  ControllerMessage enterPreOperationalMessage_[1];
+  ControllerMessage checkStateMessage_[1];
+  ControllerMessage sendTargetVelocityMessage_[1];
+  ControllerMessage sendTargetTorqueMessage_[1];
+  ControllerMessage updateActualVelocityMessage_[1];
+  ControllerMessage updateActualTorqueMessage_[1];
+  ControllerMessage quickStopMessage_[1];
+  ControllerMessage healthCheckMessages_[2];
+  ControllerMessage updateMotorTemperatueMessage_[1];
+  ControllerMessage updateControllerTemperatureMessage_[1];
+  ControllerMessage autoAlignMessage_[1];
 };
 }  // namespace motor_control
 }  // namespace hyped

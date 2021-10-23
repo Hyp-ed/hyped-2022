@@ -176,7 +176,7 @@ class Controller : public ControllerInterface {
   std::atomic<int16_t> actual_torque_;
   std::atomic<uint8_t> motor_temperature_;
   std::atomic<uint8_t> controller_temperature_;
-  CanSender sender;
+  CanSender sender_;
   utils::io::can::Frame sdo_message_;
   utils::io::can::Frame nmt_message_;
 
@@ -204,15 +204,15 @@ class Controller : public ControllerInterface {
   ControllerMessage enterOpMsgs_[4];
   ControllerMessage enterPreOpMsg_[1];
   ControllerMessage checkStateMsg_[1];
-  ControllerMessage sendTargetVelMsg[1];
-  ControllerMessage sendTargetTorqMsg[1];
-  ControllerMessage updateActualVelMsg[1];
-  ControllerMessage updateActualTorqMsg[1];
-  ControllerMessage quickStopMsg[1];
-  ControllerMessage healthCheckMsgs[2];
-  ControllerMessage updateMotorTempMsg[1];
-  ControllerMessage updateContrTempMsg[1];
-  ControllerMessage autoAlignMsg[1];
+  ControllerMessage sendTargetVelMsg_[1];
+  ControllerMessage sendTargetTorqMsg_[1];
+  ControllerMessage updateActualVelMsg_[1];
+  ControllerMessage updateActualTorqMsg_[1];
+  ControllerMessage quickStopMsg_[1];
+  ControllerMessage healthCheckMsgs_[2];
+  ControllerMessage updateMotorTempMsg_[1];
+  ControllerMessage updateContrTempMsg_[1];
+  ControllerMessage autoAlignMsg_[1];
 };
 }  // namespace motor_control
 }  // namespace hyped

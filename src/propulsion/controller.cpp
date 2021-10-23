@@ -14,7 +14,7 @@ Controller::Controller(utils::Logger &log, uint8_t id)
       actual_torque_(0),
       motor_temperature_(0),
       controller_temperature_(0),
-      sender(this, node_id_, log)
+      sender_(this, node_id_, log)
 {
   sdo_message_.id       = kSdoReceive + node_id_;
   sdo_message_.extended = false;
@@ -29,15 +29,15 @@ Controller::Controller(utils::Logger &log, uint8_t id)
   FileReader::readFileData(enterOpMsgs_, 4, kEnterOpMsgFile);
   FileReader::readFileData(enterPreOpMsg_, 1, kEnterPreOpMsgFile);
   FileReader::readFileData(checkStateMsg_, 1, kCheckStateMsgFile);
-  FileReader::readFileData(sendTargetVelMsg, 1, kSendTargetVelMsgFile);
-  FileReader::readFileData(sendTargetTorqMsg, 1, kSendTargetTorqMsgFile);
-  FileReader::readFileData(updateActualVelMsg, 1, kUpdateActualVelMsgFile);
-  FileReader::readFileData(updateActualTorqMsg, 1, kUpdateActualTorqMsgFile);
-  FileReader::readFileData(quickStopMsg, 1, kQuickStopMsgFile);
-  FileReader::readFileData(healthCheckMsgs, 2, kHealthCheckMsgFile);
-  FileReader::readFileData(updateMotorTempMsg, 1, kUpdateMotorTempFile);
-  FileReader::readFileData(updateContrTempMsg, 1, kUpdateContrTempFile);
-  FileReader::readFileData(autoAlignMsg, 1, kAutoAlignMsgFile);
+  FileReader::readFileData(sendTargetVelMsg_, 1, kSendTargetVelMsgFile);
+  FileReader::readFileData(sendTargetTorqMsg_, 1, kSendTargetTorqMsgFile);
+  FileReader::readFileData(updateActualVelMsg_, 1, kUpdateActualVelMsgFile);
+  FileReader::readFileData(updateActualTorqMsg_, 1, kUpdateActualTorqMsgFile);
+  FileReader::readFileData(quickStopMsg_, 1, kQuickStopMsgFile);
+  FileReader::readFileData(healthCheckMsgs_, 2, kHealthCheckMsgFile);
+  FileReader::readFileData(updateMotorTempMsg_, 1, kUpdateMotorTempFile);
+  FileReader::readFileData(updateContrTempMsg_, 1, kUpdateContrTempFile);
+  FileReader::readFileData(autoAlignMsg_, 1, kAutoAlignMsgFile);
 }
 
 bool Controller::sendControllerMessage(const ControllerMessage message_template)
@@ -56,7 +56,7 @@ bool Controller::sendControllerMessage(const ControllerMessage message_template)
 
 void Controller::registerController()
 {
-  sender.registerController();
+  sender_.registerController();
 }
 
 void Controller::configure()
@@ -77,7 +77,7 @@ void Controller::enterOperational()
   nmt_message_.data[1] = node_id_;
 
   log_.INFO("MOTOR", "Controller %d: Sending NMT Operational command", node_id_);
-  sender.sendMessage(nmt_message_);
+  sender_.sendMessage(nmt_message_);
   // leave time for the controller to enter NMT Operational
   Thread::sleep(100);
 
@@ -124,71 +124,71 @@ void Controller::sendTargetVelocity(const int32_t target_velocity)
 {
   // Send 32 bit integer in Little Edian bytes
   for (int i = 0; i < 8; i++) {
-    sdo_message_.data[i] = sendTargetVelMsg[0].message_data[i];
+    sdo_message_.data[i] = sendTargetVelMsg_[0].message_data[i];
   }
   sdo_message_.data[4] = target_velocity & 0xFF;
   sdo_message_.data[5] = (target_velocity >> 8) & 0xFF;
   sdo_message_.data[6] = (target_velocity >> 16) & 0xFF;
   sdo_message_.data[7] = (target_velocity >> 24) & 0xFF;
 
-  log_.DBG2("MOTOR", sendTargetVelMsg[0].logger_output, node_id_, target_velocity);
-  sender.sendMessage(sdo_message_);
+  log_.DBG2("MOTOR", sendTargetVelMsg_[0].logger_output, node_id_, target_velocity);
+  sender_.sendMessage(sdo_message_);
 }
 
 void Controller::sendTargetTorque(const int16_t target_torque)
 {
   // Send 16 bit integer in Little Edian bytes
   for (int i = 0; i < 8; i++) {
-    sdo_message_.data[i] = sendTargetTorqMsg[0].message_data[i];
+    sdo_message_.data[i] = sendTargetTorqMsg_[0].message_data[i];
   }
   sdo_message_.data[4] = target_torque & 0xFF;
   sdo_message_.data[5] = (target_torque >> 8) & 0xFF;
 
-  log_.DBG2("MOTOR", sendTargetTorqMsg[0].logger_output, node_id_, target_torque);
+  log_.DBG2("MOTOR", sendTargetTorqMsg_[0].logger_output, node_id_, target_torque);
   sendSdoMessage(sdo_message_);
 }
 
 void Controller::updateActualVelocity()
 {
   // Check actual velocity in object dictionary
-  if (sendControllerMessage(updateActualVelMsg[0])) return;
+  if (sendControllerMessage(updateActualVelMsg_[0])) return;
 }
 
 void Controller::updateActualTorque()
 {
   // Check actual torque in object dictionary
-  if (sendControllerMessage(updateActualTorqMsg[0])) return;
+  if (sendControllerMessage(updateActualTorqMsg_[0])) return;
 }
 
 void Controller::quickStop()
 {
   // Send quickStop command
-  if (sendControllerMessage(quickStopMsg[0])) return;
+  if (sendControllerMessage(quickStopMsg_[0])) return;
 }
 
 void Controller::healthCheck()
 {
   // Check warning status & Check error status
   for (int i = 0; i < 2; i++) {
-    if (sendControllerMessage(healthCheckMsgs[i])) return;
+    if (sendControllerMessage(healthCheckMsgs_[i])) return;
   }
 }
 
 void Controller::updateMotorTemp()
 {
   // Check motor temp in object dictionary
-  if (sendControllerMessage(updateMotorTempMsg[0])) return;
+  if (sendControllerMessage(updateMotorTempMsg_[0])) return;
 }
 
 void Controller::updateControllerTemp()
 {
   // Check controller temp in object dictionary
-  if (sendControllerMessage(updateContrTempMsg[0])) return;
+  if (sendControllerMessage(updateContrTempMsg_[0])) return;
 }
 
 void Controller::sendSdoMessage(utils::io::can::Frame &message)
 {
-  if (!sender.sendMessage(message)) {
+  if (!sender_.sendMessage(message)) {
     log_.ERR("MOTOR", "Controller %d: No response from controller", node_id_);
     throwCriticalFailure();
   }
@@ -208,7 +208,7 @@ void Controller::requestStateTransition(utils::io::can::Frame &message, Controll
   // Wait for max of 3 seconds, checking if the state has changed every second
   // If it hasn't changed by the end then throw critical failure.
   for (state_count = 0; state_count < 3; state_count++) {
-    sender.sendMessage(message);
+    sender_.sendMessage(message);
     Thread::sleep(1000);
     checkState();
     if (state_ == state) { return; }
@@ -226,7 +226,7 @@ void Controller::autoAlignMotorPosition()
   nmt_message_.data[1] = node_id_;
   sendSdoMessage(nmt_message_);
   Thread::sleep(100);
-  if (sendControllerMessage(autoAlignMsg[0])) return;
+  if (sendControllerMessage(autoAlignMsg_[0])) return;
 }
 
 void Controller::processEmergencyMessage(utils::io::can::Frame &message)

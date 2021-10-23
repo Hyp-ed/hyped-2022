@@ -2,16 +2,7 @@
 
 #include "controller_interface.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <sstream>
 #include <string>
-#include <vector>
-
-#include <utils/logger.hpp>
-#include <utils/system.hpp>
 
 namespace hyped {
 namespace motor_control {
@@ -33,7 +24,7 @@ class FileReader {
    * @param line
    * @return const char*
    */
-  static void splitData(const std::basic_string<char> line, std::string line_data[]);
+  static std::vector<std::string> splitData(const std::string line);
   /*
    * @brief helper function to add the split data to the message struct.
    *
@@ -41,7 +32,7 @@ class FileReader {
    * @param message
    * @param len
    */
-  static void addData(const std::string line_data[], uint8_t *message_data);
+  static void addData(const std::vector<std::string> line_data, uint8_t *message_data);
 };
 }  // namespace motor_control
 }  // namespace hyped

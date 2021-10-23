@@ -88,9 +88,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINUX")
 endif()
 
-if(CROSS)
-endif()
-
 message("host system:    ${CMAKE_HOST_SYSTEM_NAME}")
 message("target system:  ${CMAKE_SYSTEM_NAME}")
 message("compile flags: ${CMAKE_CXX_FLAGS}")
@@ -126,7 +123,10 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
-add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+
+if (CROSS EQUAL OFF)
+  add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+endif()
 
 # -------------------------------------------------- #
 # BUILD EXECUTABLES                                  #

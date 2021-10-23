@@ -3,12 +3,12 @@
 namespace hyped {
 namespace motor_control {
 
-FakeController::FakeController(Logger &log, uint8_t id, bool isFaulty)
+FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty)
     : log_(log),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
       id_(id),
-      isFaulty_(isFaulty),
+      is_faulty_(is_faulty),
       critical_failure_(false),
       actual_velocity_(0),
       start_time_(0),
@@ -28,9 +28,10 @@ void FakeController::configure()
 
 void FakeController::startTimer()
 {
-  start_time_    = Timer::getTimeMicros();
+  start_time_    = utils::Timer::getTimeMicros();
   timer_started_ = true;
-  fail_time_     = std::rand() % 20000000 + 1000000;
+  fail_time_
+    = std::rand() % 20000000 + 1000000;  // failure occurs between seconds 1 and 21 of the run
 }
 
 void FakeController::enterOperational()
@@ -53,7 +54,7 @@ void FakeController::checkState()
   log_.DBG1("MOTOR", "Controller %d: Checking status", id_);
 }
 
-void FakeController::sendTargetVelocity(int32_t target_velocity)
+void FakeController::sendTargetVelocity(const int32_t target_velocity)
 {
   if (!timer_started_) { startTimer(); }
   log_.DBG2("MOTOR", "Controller %d: Updating target velocity to %d", id_, target_velocity);
@@ -76,14 +77,15 @@ void FakeController::quickStop()
 
 void FakeController::healthCheck()
 {
-  if (isFaulty_) {
-    data::State state = data_.getStateMachineData().current_state;
-    if (state == data::State::kAccelerating || state == data::State::kNominalBraking) {
-      if (fail_time_ <= (timer.getMicros() - start_time_)) {
-        critical_failure_ = true;
-        log_.ERR("FakeController", "Fake critical failure");
-      }
-    }
+  if (!is_faulty_) { return; }
+  const data::State state = data_.getStateMachineData().current_state;
+  if (state != data::State::kAccelerating && state != data::State::kCruising
+      && state != data::State::kNominalBraking) {
+    return;
+  }
+  if (fail_time_ <= (timer_.getMicros() - start_time_)) {
+    critical_failure_ = true;
+    log_.ERR("FakeController", "Fake critical failure");
   }
 }
 

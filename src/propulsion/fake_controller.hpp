@@ -8,21 +8,15 @@
 #include <utils/timer.hpp>
 
 namespace hyped {
-namespace utils {
-class Logger;
-}
-namespace motor_control {
 
-using utils::Logger;
-using utils::Timer;
-using utils::concurrent::Thread;
+namespace motor_control {
 
 class FakeController : public ControllerInterface {
  public:
   /**
    * @brief  Construct a new Fake Controller object
    */
-  FakeController(Logger &log, uint8_t id, bool isFaulty);
+  FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty);
   /**
    * @brief  Registers controller to recieve and transmit CAN messages.
    *         note: empty implementation.
@@ -48,7 +42,7 @@ class FakeController : public ControllerInterface {
    * @brief  Sets actual velocity = target velocity
    * @param[in]  target_velocity in rpm (Calculated in speed calculator).
    */
-  void sendTargetVelocity(int32_t target_velocity) override;
+  void sendTargetVelocity(const int32_t target_velocity) override;
   /**
    * @brief  Send a request to the motor controller to get the actual velocity.
    *         note: empty implementation.
@@ -105,13 +99,13 @@ class FakeController : public ControllerInterface {
    * @brief Times the duration of the run. Starts when we enter the accelerating state.
    */
   void startTimer();
-  Logger &log_;
+  utils::Logger &log_;
   data::Data &data_;
   data::Motors motor_data_;
   ControllerState state_;
-  Timer timer;
+  utils::Timer timer_;
   uint8_t id_;
-  bool isFaulty_;
+  bool is_faulty_;
   bool critical_failure_;
   int32_t actual_velocity_;
   uint64_t start_time_;

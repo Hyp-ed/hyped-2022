@@ -14,8 +14,8 @@ void Writer::packTime()
 {
   rapid_json_writer_.Key("time");
   rapid_json_writer_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::system_clock::now().time_since_epoch())
-                     .count());
+                              std::chrono::system_clock::now().time_since_epoch())
+                              .count());
 }
 
 // Ddditional data points that are displayed in the GUI data section
@@ -39,7 +39,7 @@ void Writer::packCrucialData()
   rapid_json_writer_.Key("crucial_data");
   rapid_json_writer_.StartArray();
 
-  data::Navigation nav_data = data_.getNavigationData();
+  data::Navigation nav_data  = data_.getNavigationData();
   data::StateMachine sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);

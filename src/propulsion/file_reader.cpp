@@ -3,6 +3,7 @@
  *             messages to initialise them.
  */
 #include "file_reader.hpp"
+
 #include <string>
 #include <vector>
 
@@ -53,7 +54,7 @@ void FileReader::splitData(const std::basic_string<char> line, std::string line_
 
 void FileReader::addData(const std::string line_data[], uint8_t *message_data)
 {
-  for (int i = 0; i < 8; ++i) { // stores 8 bytes to be sent to motor controller
+  for (int i = 0; i < 8; ++i) {  // stores 8 bytes to be sent to motor controller
     message_data[i] = static_cast<uint8_t>(std::stoi(line_data[i], NULL, 16));
   }
 }

@@ -3,7 +3,6 @@
  *             messages to initialise them.
  */
 #include "file_reader.hpp"
-
 #include <string>
 #include <vector>
 
@@ -14,16 +13,13 @@ utils::Logger log_(true, 0);
 bool FileReader::readFileData(ControllerMessage *messages, const char *filepath)
 {
   FILE *current_file = fopen(filepath, "r");
-
   if (current_file == NULL) {
     log_.ERR("MOTOR", "Unable to open: %s", filepath);
-
     return false;
   }
-
+  
   int m = 0;
   char line[250];
-
   while (fgets(line, static_cast<int>(sizeof(line) / sizeof(line[0])), current_file) != NULL) {
     if (line[0] == '\n' || line[0] == '\0' || line[0] == '#') { continue; }
     if (line[0] == '>') {

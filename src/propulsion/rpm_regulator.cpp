@@ -16,9 +16,9 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
   const int32_t optimal_rpm = calculateOptimalRpm(actual_velocity);
   if (actual_temperature > kMaximumTemperature) { return actual_rpm; }
   if (actual_current < kMaximumCurrent && actual_rpm < optimal_rpm) {
-    return actual_rpm + step(optimal_rpm, true);
+    return actual_rpm + step(optimal_rpm, actual_rpm);
   }
-  const int32_t target = actual_rpm - step(optimal_rpm, false);
+  const int32_t target = actual_rpm - step(optimal_rpm, actual_rpm);
   if (target < 0) { return 0; }
   if (actual_current > kMaximumCurrent || actual_rpm > optimal_rpm) { return target; }
   return actual_rpm;
@@ -26,17 +26,14 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
 
 int32_t RpmRegulator::calculateOptimalRpm(const int32_t actual_velocity)
 {
-  return std::round(0.32047 * actual_velocity * actual_velocity
-                                   + 297.72578 * actual_velocity + 1024.30824);
+  return std::round(0.32047 * actual_velocity * actual_velocity + 297.72578 * actual_velocity
+                    + 1024.30824);
 }
 
-int32_t RpmRegulator::step(const int32_t optimal_rpm, const bool direction)
+int32_t RpmRegulator::step(const int32_t optimal_rpm, const int32_t actual_rpm)
 {
-  if (direction) {
-    return std::round(optimal_rpm * 0.1);
-  } else {
-    return std::round(optimal_rpm * 0.05);
-  }
+  if (actual_rpm < optimal_rpm) { return std::round(optimal_rpm * 0.1); }
+  return std::round(optimal_rpm * 0.05);
 }
 
 bool RpmRegulator::isFaulty()

@@ -55,10 +55,9 @@ class RpmRegulator {
    * @brief calculate the step to increase or decrease the rpm by.
    *
    * @param optimal_rpm - the optimal rpm for our current velocity
-   * @param direction - the direction that the step must go in: true for pos false for neg.
    * @return int32_t - the step with which to increase the rpm
    */
-  int32_t step(const int32_t optimal_rpm, const bool direction);
+  int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);
 
   int32_t current_index_;
   bool failure_;

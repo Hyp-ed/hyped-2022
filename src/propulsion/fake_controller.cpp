@@ -28,9 +28,10 @@ void FakeController::configure()
 
 void FakeController::startTimer()
 {
-  start_time_    = utils::Timer::getTimeMicros();
+  start_time_    = utils::Timer::getTimeMicros();  // time in microseconds
   timer_started_ = true;
-  fail_time_     = std::rand() % 20000000 + 1000000;
+  fail_time_
+    = std::rand() % 20000000 + 1000000;  // failure occurs between seconds 1 and 21 of the run
 }
 
 void FakeController::enterOperational()
@@ -76,14 +77,15 @@ void FakeController::quickStop()
 
 void FakeController::healthCheck()
 {
-  if (isFaulty_) {
-    data::State state = data_.getStateMachineData().current_state;
-    if (state == data::State::kAccelerating || state == data::State::kNominalBraking) {
-      if (fail_time_ <= (timer.getMicros() - start_time_)) {
-        critical_failure_ = true;
-        log_.ERR("FakeController", "Fake critical failure");
-      }
-    }
+  if (!isFaulty_) { return; }
+  const data::State state = data_.getStateMachineData().current_state;
+  if (state != data::State::kAccelerating && state != data::State::kCruising
+      && state != data::State::kNominalBraking) {
+    return;
+  }
+  if (fail_time_ <= (timer_.getMicros() - start_time_)) {
+    critical_failure_ = true;
+    log_.ERR("FakeController", "Fake critical failure");
   }
 }
 

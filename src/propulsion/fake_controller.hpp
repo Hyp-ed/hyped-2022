@@ -102,7 +102,7 @@ class FakeController : public ControllerInterface {
   data::Data &data_;
   data::Motors motor_data_;
   ControllerState state_;
-  utils::Timer timer;
+  utils::Timer timer_;
   uint8_t id_;
   bool isFaulty_;
   bool critical_failure_;

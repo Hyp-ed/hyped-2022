@@ -6,7 +6,7 @@ namespace hyped {
 
 namespace motor_control {
 
-RpmRegulator::RpmRegulator() : current_index(0), failure(false)
+RpmRegulator::RpmRegulator() : current_index_(0), failure_(false)
 {
 }
 
@@ -26,9 +26,8 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
 
 int32_t RpmRegulator::calculateOptimalRpm(const int32_t actual_velocity)
 {
-  int32_t optimal_rpm = std::round(0.32047 * actual_velocity * actual_velocity
+  return std::round(0.32047 * actual_velocity * actual_velocity
                                    + 297.72578 * actual_velocity + 1024.30824);
-  return optimal_rpm;
 }
 
 int32_t RpmRegulator::step(const int32_t optimal_rpm, const bool direction)
@@ -42,7 +41,7 @@ int32_t RpmRegulator::step(const int32_t optimal_rpm, const bool direction)
 
 bool RpmRegulator::isFaulty()
 {
-  return failure;
+  return failure_;
 }
 }  // namespace motor_control
 }  // namespace hyped

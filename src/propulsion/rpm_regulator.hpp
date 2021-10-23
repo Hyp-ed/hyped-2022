@@ -60,8 +60,8 @@ class RpmRegulator {
    */
   int32_t step(const int32_t optimal_rpm, const bool direction);
 
-  int32_t current_index;
-  bool failure;
+  int32_t current_index_;
+  bool failure_;
 };
 
 }  // namespace motor_control

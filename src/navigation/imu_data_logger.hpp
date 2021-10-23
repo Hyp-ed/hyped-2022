@@ -21,12 +21,12 @@ class ImuDataLogger {
   ~ImuDataLogger();
   void setup(int imu_id, int run_id);
   void setupKalman(int imu_id, int run_id);
-  void dataToFileSimulation(data::NavigationVector &acceleration, uint32_t timestamp);
-  void dataToFile(data::NavigationVector &raw_acceleration,
-                  data::NavigationVector &calibrated_acceleration, uint32_t timestamp);
-  void dataToFileKalman(data::NavigationVector &raw_acceleration,
-                        data::NavigationVector &calibrated_acceleration, data::NavigationVector &x,
-                        uint32_t timestamp);
+  void dataToFileSimulation(const data::NavigationVector &acceleration, const uint32_t timestamp);
+  void dataToFile(const data::NavigationVector &raw_acceleration,
+                  const data::NavigationVector &calibrated_acceleration, const uint32_t timestamp);
+  void dataToFileKalman(const data::NavigationVector &raw_acceleration,
+                        const data::NavigationVector &calibrated_acceleration,
+                        const data::NavigationVector &x, const uint32_t timestamp);
 
  private:
   std::string file_path_;

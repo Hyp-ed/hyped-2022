@@ -30,7 +30,8 @@ void ImuDataLogger::setupKalman(const int imu_id, const int run_id)
   *outfile_ << "arx,ary,arz,acx,acy,acz,afx,afy,afz,t" << std::endl;
 }
 
-void ImuDataLogger::dataToFileSimulation(data::NavigationVector &acceleration, uint32_t timestamp)
+void ImuDataLogger::dataToFileSimulation(const data::NavigationVector &acceleration,
+                                         const uint32_t timestamp)
 {
   *outfile_ << acceleration[0] << ",";
   *outfile_ << acceleration[1] << ",";
@@ -38,8 +39,9 @@ void ImuDataLogger::dataToFileSimulation(data::NavigationVector &acceleration, u
   *outfile_ << timestamp << std::endl;
 }
 
-void ImuDataLogger::dataToFile(data::NavigationVector &raw_acceleration,
-                               data::NavigationVector &calibrated_acceleration, uint32_t timestamp)
+void ImuDataLogger::dataToFile(const data::NavigationVector &raw_acceleration,
+                               const data::NavigationVector &calibrated_acceleration,
+                               const uint32_t timestamp)
 {
   *outfile_ << raw_acceleration[0] << ",";
   *outfile_ << raw_acceleration[1] << ",";
@@ -50,9 +52,9 @@ void ImuDataLogger::dataToFile(data::NavigationVector &raw_acceleration,
   *outfile_ << timestamp << std::endl;
 }
 
-void ImuDataLogger::dataToFileKalman(data::NavigationVector &raw_acceleration,
-                                     data::NavigationVector &calibrated_acceleration,
-                                     data::NavigationVector &x, uint32_t timestamp)
+void ImuDataLogger::dataToFileKalman(const data::NavigationVector &raw_acceleration,
+                                     const data::NavigationVector &calibrated_acceleration,
+                                     const data::NavigationVector &x, const uint32_t timestamp)
 {
   *outfile_ << raw_acceleration[0] << ",";
   *outfile_ << raw_acceleration[1] << ",";

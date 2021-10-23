@@ -1,9 +1,10 @@
 #pragma once
 
+#include "sender_interface.hpp"
+
 #include <atomic>
 #include <iostream>
 
-#include "sender_interface.hpp"
 #include <propulsion/controller_interface.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/io/can.hpp>

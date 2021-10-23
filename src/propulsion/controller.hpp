@@ -1,9 +1,10 @@
 #pragma once
 
-#include <atomic>
-
 #include "controller_interface.hpp"
 #include "file_reader.hpp"
+
+#include <atomic>
+
 #include <data/data.hpp>
 #include <propulsion/can/can_sender.hpp>
 #include <utils/concurrent/thread.hpp>

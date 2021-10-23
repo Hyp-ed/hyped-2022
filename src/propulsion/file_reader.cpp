@@ -4,7 +4,10 @@
  */
 #include "file_reader.hpp"
 
+#include <fstream>
+#include <iostream>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 namespace hyped {

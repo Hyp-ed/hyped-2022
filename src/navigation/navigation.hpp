@@ -1,13 +1,14 @@
 #pragma once
 
+#include "kalman_filter.hpp"
+#include "stripe_handler.hpp"
+
 #include <math.h>
 
 #include <array>
 #include <cstdint>
 #include <fstream>
 
-#include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 #include <data/data.hpp>
 #include <data/data_point.hpp>
 #include <sensors/imu.hpp>

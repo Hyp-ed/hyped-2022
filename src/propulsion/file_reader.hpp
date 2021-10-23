@@ -1,5 +1,7 @@
 #pragma once
 
+#include "controller_interface.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "controller_interface.hpp"
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 

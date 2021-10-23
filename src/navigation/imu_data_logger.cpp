@@ -14,18 +14,18 @@ ImuDataLogger::~ImuDataLogger()
 
 void ImuDataLogger::setup(const int imu_id, const int run_id)
 {
-  char buff[100];
-  snprintf(buff, sizeof(buff), "test_data/run%d/imu%d/data.csv", run_id, imu_id);
-  file_path_ = buff;
+  std::ostringstream stream;
+  stream << "test_data/run" << run_id << "/imu" << imu_id << "/data.csv";
+  file_path_ = stream.str();
   outfile_->open(file_path_);
   *outfile_ << "arx,ary,arz,acx,acy,acz,t" << std::endl;
 }
 
 void ImuDataLogger::setupKalman(const int imu_id, const int run_id)
 {
-  char buff[100];
-  snprintf(buff, sizeof(buff), "test_data/run%d/imu%d/data.csv", run_id, imu_id);
-  file_path_ = buff;
+  std::ostringstream stream;
+  stream << "test_data/run" << run_id << "/imu" << imu_id << "/data.csv";
+  file_path_ = stream.str();
   outfile_->open(file_path_);
   *outfile_ << "arx,ary,arz,acx,acy,acz,afx,afy,afz,t" << std::endl;
 }

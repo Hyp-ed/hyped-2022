@@ -11,7 +11,7 @@ namespace telemetry {
 
 class RecvLoop : public Thread {
  public:
-  explicit RecvLoop(Logger &log, data::Data &data, Main *main_pointer);
+  explicit RecvLoop(utils::Logger &log, data::Data &data, Main *main_pointer);
   void run() override;
 
  private:

@@ -15,7 +15,7 @@ class FakeController : public ControllerInterface {
   /**
    * @brief  Construct a new Fake Controller object
    */
-  FakeController(utils::Logger &log, const uint8_t id, const bool isFaulty);
+  FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty);
   /**
    * @brief  Registers controller to recieve and transmit CAN messages.
    *         note: empty implementation.
@@ -104,7 +104,7 @@ class FakeController : public ControllerInterface {
   ControllerState state_;
   utils::Timer timer_;
   uint8_t id_;
-  bool isFaulty_;
+  bool is_faulty_;
   bool critical_failure_;
   int32_t actual_velocity_;
   uint64_t start_time_;

@@ -3,12 +3,12 @@
 namespace hyped {
 namespace motor_control {
 
-FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool isFaulty)
+FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty)
     : log_(log),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
       id_(id),
-      isFaulty_(isFaulty),
+      is_faulty_(is_faulty),
       critical_failure_(false),
       actual_velocity_(0),
       start_time_(0),
@@ -28,7 +28,7 @@ void FakeController::configure()
 
 void FakeController::startTimer()
 {
-  start_time_    = utils::Timer::getTimeMicros();  // time in microseconds
+  start_time_    = utils::Timer::getTimeMicros();
   timer_started_ = true;
   fail_time_
     = std::rand() % 20000000 + 1000000;  // failure occurs between seconds 1 and 21 of the run
@@ -77,7 +77,7 @@ void FakeController::quickStop()
 
 void FakeController::healthCheck()
 {
-  if (!isFaulty_) { return; }
+  if (!is_faulty_) { return; }
   const data::State state = data_.getStateMachineData().current_state;
   if (state != data::State::kAccelerating && state != data::State::kCruising
       && state != data::State::kNominalBraking) {

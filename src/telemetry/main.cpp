@@ -10,7 +10,7 @@ using data::ModuleStatus;
 
 namespace telemetry {
 
-Main::Main(uint8_t id, Logger &log)
+Main::Main(uint8_t id, utils::Logger &log)
     : Thread{id, log},
       data_{data::Data::getInstance()},
       client_{log}

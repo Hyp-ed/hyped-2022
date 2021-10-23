@@ -4,8 +4,6 @@
 
 #include <utils/io/can.hpp>
 
-using hyped::utils::io::can::Frame;
-
 namespace hyped {
 
 namespace motor_control {

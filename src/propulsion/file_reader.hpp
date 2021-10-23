@@ -1,22 +1,11 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <sstream>
-#include <string>
-#include <vector>
-
 #include "controller_interface.hpp"
-#include <utils/logger.hpp>
-#include <utils/system.hpp>
+
+#include <string>
 
 namespace hyped {
 namespace motor_control {
-
-using hyped::utils::Logger;
-using hyped::utils::System;
 
 class FileReader {
  public:
@@ -26,7 +15,7 @@ class FileReader {
    * @param message
    * @param len - length of messages array
    */
-  static bool readFileData(ControllerMessage messages[], int len, const char *filepath);
+  static bool readFileData(ControllerMessage messages[], const char *filepath);
 
  private:
   /**
@@ -35,7 +24,7 @@ class FileReader {
    * @param line
    * @return const char*
    */
-  static void splitData(std::basic_string<char> line, std::string lineData[]);
+  static std::vector<std::string> splitData(const std::string line);
   /*
    * @brief helper function to add the split data to the message struct.
    *
@@ -43,7 +32,7 @@ class FileReader {
    * @param message
    * @param len
    */
-  static void addData(std::string lineData[], uint8_t *message_data);
+  static void addData(const std::vector<std::string> line_data, uint8_t *message_data);
 };
 }  // namespace motor_control
 }  // namespace hyped

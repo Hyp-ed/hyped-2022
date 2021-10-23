@@ -1,7 +1,7 @@
 #include "bms.hpp"
-
 #include "bms_manager.hpp"
 #include "fake_batteries.hpp"
+
 #include <utils/config.hpp>
 #include <utils/timer.hpp>
 

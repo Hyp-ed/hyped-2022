@@ -25,19 +25,19 @@ Controller::Controller(utils::Logger &log, uint8_t id)
   nmt_message_.len      = 2;
 
   // Initialse arrays of message data:
-  FileReader::readFileData(configMessages_, 24, kConfigMsgFile);
-  FileReader::readFileData(enterOperationalMessages_, 4, kEnterOpMsgFile);
-  FileReader::readFileData(enterPreOperationalMessage_, 1, kEnterPreOpMsgFile);
-  FileReader::readFileData(checkStateMessage_, 1, kCheckStateMsgFile);
-  FileReader::readFileData(sendTargetVelocityMessage_, 1, kSendTargetVelMsgFile);
-  FileReader::readFileData(sendTargetTorqueMessage_, 1, kSendTargetTorqMsgFile);
-  FileReader::readFileData(updateActualVelocityMessage_, 1, kUpdateActualVelMsgFile);
-  FileReader::readFileData(updateActualTorqueMessage_, 1, kUpdateActualTorqMsgFile);
-  FileReader::readFileData(quickStopMessage_, 1, kQuickStopMsgFile);
-  FileReader::readFileData(healthCheckMessages_, 2, kHealthCheckMsgFile);
-  FileReader::readFileData(updateMotorTemperatueMessage_, 1, kUpdateMotorTempFile);
-  FileReader::readFileData(updateControllerTemperatureMessage_, 1, kUpdateContrTempFile);
-  FileReader::readFileData(autoAlignMessage_, 1, kAutoAlignMsgFile);
+  FileReader::readFileData(configMessages_, kConfigMsgFile);
+  FileReader::readFileData(enterOperationalMessages_, kEnterOpMsgFile);
+  FileReader::readFileData(enterPreOperationalMessage_, kEnterPreOpMsgFile);
+  FileReader::readFileData(checkStateMessage_, kCheckStateMsgFile);
+  FileReader::readFileData(sendTargetVelocityMessage_, kSendTargetVelMsgFile);
+  FileReader::readFileData(sendTargetTorqueMessage_, kSendTargetTorqMsgFile);
+  FileReader::readFileData(updateActualVelocityMessage_, kUpdateActualVelMsgFile);
+  FileReader::readFileData(updateActualTorqueMessage_, kUpdateActualTorqMsgFile);
+  FileReader::readFileData(quickStopMessage_, kQuickStopMsgFile);
+  FileReader::readFileData(healthCheckMessages_, kHealthCheckMsgFile);
+  FileReader::readFileData(updateActualTorqueMessage_, kUpdateMotorTempFile);
+  FileReader::readFileData(updateControllerTemperatureMessage_, kUpdateContrTempFile);
+  FileReader::readFileData(autoAlignMessage_, kAutoAlignMsgFile);
 }
 
 bool Controller::sendControllerMessage(const ControllerMessage message_template)

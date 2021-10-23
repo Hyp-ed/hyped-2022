@@ -5,7 +5,6 @@
 #include <cmath>
 
 #include <array>
-
 #include <initializer_list>
 
 using hyped::utils::math::Vector;

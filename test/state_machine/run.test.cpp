@@ -525,7 +525,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                   telemetry_data_, sensors_data_, motors_data_);
+                                        telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
 

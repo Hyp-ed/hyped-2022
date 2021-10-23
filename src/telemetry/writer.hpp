@@ -43,7 +43,7 @@ class Writer {
   void end() { json_writer_.EndObject(); }
 
   // returns the main JSON object as a string, that is ready to be sent to GUI
-  std::string getString() { return sb_.GetString(); }
+  std::string getString() { return string_buffer_.GetString(); }
 
   // converts Enum to String values with required formatting for GUI
   static const char *convertStateMachineState(data::State state);
@@ -62,7 +62,7 @@ class Writer {
   void startList(const std::string name);
   void endList();
 
-  rapidjson::StringBuffer sb_;
+  rapidjson::StringBuffer string_buffer_;
   rapidjson::Writer<rapidjson::StringBuffer> json_writer_;
   data::Data &data_;
 };

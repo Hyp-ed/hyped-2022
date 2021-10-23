@@ -18,7 +18,7 @@ void Writer::packTime()
                               .count());
 }
 
-// Ddditional data points that are displayed in the GUI data section
+// Additional data points that are displayed in the GUI data section
 // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
 void Writer::packAdditionalData()
 {
@@ -61,7 +61,7 @@ void Writer::packStatusData()
   json_writer_.EndArray();
 }
 
-Writer::Writer(data::Data &data) : json_writer_(sb_), data_{data}
+Writer::Writer(data::Data &data) : json_writer_(string_buffer_), data_{data}
 {
 }
 

@@ -14,8 +14,8 @@ void Writer::packTime()
 {
   json_writer_.Key("time");
   json_writer_.Uint64(std::chrono::duration_cast<std::chrono::milliseconds>(
-                          std::chrono::system_clock::now().time_since_epoch())
-                          .count());
+                        std::chrono::system_clock::now().time_since_epoch())
+                        .count());
 }
 
 // Additional data points that are displayed in the GUI data section

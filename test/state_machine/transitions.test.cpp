@@ -737,7 +737,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
     sensors_data.module_status   = other;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Sensors not being ready";
   }
 }

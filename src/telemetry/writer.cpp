@@ -128,7 +128,7 @@ void Writer::add(const std::string name, data::State value)
   json_writer_.Key("name");
   json_writer_.String(name.c_str());
   json_writer_.Key("value");
-  json_writer_.String(convertStateMachineState(value));
+  json_writer_.String(convertStateMachineState(value).c_str());
   json_writer_.EndObject();
 }
 
@@ -138,11 +138,11 @@ void Writer::add(const std::string name, data::ModuleStatus value)
   json_writer_.Key("name");
   json_writer_.String(name.c_str());
   json_writer_.Key("value");
-  json_writer_.String(convertModuleStatus(value));
+  json_writer_.String(convertModuleStatus(value).c_str());
   json_writer_.EndObject();
 }
 
-const char *Writer::convertStateMachineState(data::State state)
+const std::string Writer::convertStateMachineState(data::State state)
 {
   switch (state) {
     case data::State::kInvalid:
@@ -170,7 +170,7 @@ const char *Writer::convertStateMachineState(data::State state)
   }
 }
 
-const char *Writer::convertModuleStatus(data::ModuleStatus module_status)
+const std::string Writer::convertModuleStatus(data::ModuleStatus module_status)
 {
   switch (module_status) {
     case data::ModuleStatus::kStart:

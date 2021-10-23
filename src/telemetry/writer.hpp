@@ -46,15 +46,15 @@ class Writer {
   std::string getString() { return string_buffer_.GetString(); }
 
   // converts Enum to String values with required formatting for GUI
-  static const char *convertStateMachineState(data::State state);
-  static const char *convertModuleStatus(data::ModuleStatus module_status);
+  static const std::string convertStateMachineState(data::State state);
+  static const std::string convertModuleStatus(data::ModuleStatus module_status);
 
  private:
   // calls RapidJSON functions to add a value of specific type to JSON
   void add(const std::string name, int min, int max, const std::string unit, int value);
   void add(const std::string name, float min, float max, const std::string unit, float value);
   void add(const std::string name, bool value);
-  void add(const std::string name, const char *value);
+  void add(const std::string name, const std::string value);
   void add(const std::string name, data::State value);
   void add(const std::string name, data::ModuleStatus value);
 

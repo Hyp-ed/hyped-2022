@@ -42,7 +42,7 @@ int32_t RpmRegulator::step(const int32_t optimal_rpm, const bool direction)
   }
 }
 
-bool RpmRegulator::getFailure()
+bool RpmRegulator::isFaulty()
 {
   return failure;
 }

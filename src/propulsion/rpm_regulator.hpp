@@ -1,8 +1,5 @@
 #pragma once
 
-static constexpr int kMaximumTemperature = 150;
-static constexpr int kMaximumCurrent     = 1500;  // mA
-
 #include "controller.hpp"
 
 #include <cstdlib>
@@ -10,6 +7,9 @@ static constexpr int kMaximumCurrent     = 1500;  // mA
 
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
+
+static constexpr int kMaximumTemperature = 150;
+static constexpr int kMaximumCurrent     = 1500;  // mA
 
 namespace hyped {
 
@@ -19,7 +19,6 @@ class RpmRegulator {
  public:
   /*
    * @brief Construct a new rpm regulator object
-   * @param log
    */
   explicit RpmRegulator();
   /**
@@ -41,7 +40,7 @@ class RpmRegulator {
    * @return true - if failure has occured
    * @return false - if no failure has occured
    */
-  bool getFailure();
+  bool isFaulty();
 
  private:
   /**

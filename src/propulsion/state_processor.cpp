@@ -49,7 +49,7 @@ void StateProcessor::initMotors()
 
   bool error = false;
 
-  if (regulator.getFailure()) {
+  if (regulator.isFaulty()) {
     error         = true;
     criticalError = true;
     return;

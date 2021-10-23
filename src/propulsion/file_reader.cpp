@@ -42,7 +42,7 @@ bool FileReader::readFileData(ControllerMessage *messages, const char *filepath)
   return true;
 }
 
-void FileReader::splitData(const std::basic_string<char> line, std::string lineData[])
+void FileReader::splitData(const std::basic_string<char> line, std::string line_data[])
 {
   std::vector<std::string> tokens;
   std::stringstream check1(line);
@@ -55,9 +55,9 @@ void FileReader::splitData(const std::basic_string<char> line, std::string lineD
   }
 }
 
-void FileReader::addData(const std::string lineData[], uint8_t *message_data)
+void FileReader::addData(const std::string line_data[], uint8_t *message_data)
 {
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 8; ++i) {
     message_data[i] = static_cast<uint8_t>(std::stoi(lineData[i], NULL, 16));
   }
 }

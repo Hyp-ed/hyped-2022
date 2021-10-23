@@ -32,7 +32,7 @@ class FileReader {
    * @param line
    * @return const char*
    */
-  static void splitData(const std::basic_string<char> line, std::string lineData[]);
+  static void splitData(const std::basic_string<char> line, std::string line_data[]);
   /*
    * @brief helper function to add the split data to the message struct.
    *
@@ -40,7 +40,7 @@ class FileReader {
    * @param message
    * @param len
    */
-  static void addData(const std::string lineData[], uint8_t *message_data);
+  static void addData(const std::string line_data[], uint8_t *message_data);
 };
 }  // namespace motor_control
 }  // namespace hyped

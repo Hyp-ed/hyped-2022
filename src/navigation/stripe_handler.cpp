@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <utils/timer.hpp>
+
 namespace hyped {
 namespace navigation {
 
@@ -78,17 +80,17 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
   for (std::size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
     // Check new readings and ensure new stripe has been hit
     const bool same_as_previous = prev_readings_.at(i).count.value == readings_.at(i).count.value;
-    const bool no_new_readings = readings_.at(i).count.timestamp - stripe_counter_.timestamp < 1e5;
+    const bool no_new_readings  = readings_.at(i).count.timestamp - stripe_counter_.timestamp < 1e5;
     if (no_new_readings || same_as_previous)
+      // look at next sensor reading
       continue;
-    stripe_counter_.value++;
-    stripe_counter_.timestamp = readings_[i].count.timestamp;
+
+    ++stripe_counter_.value;
+    stripe_counter_.timestamp = readings_.at(i).count.timestamp;
     if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
 
-    const data::nav_t minimum_uncertainty = kStripeUncertainty;
-    const data::nav_t allowed_uncertainty
-      = std::max(displacement_uncertainty_, minimum_uncertainty);
-    data::nav_t displacement_offset = getDisplacementOffset(displacement);
+    const data::nav_t allowed_uncertainty = std::max(displacement_uncertainty_, kStripeUncertainty);
+    data::nav_t displacement_offset       = getDisplacementOffset(displacement);
 
     const bool single_missed_stripe = displacement_offset > kStripeDist - allowed_uncertainty;
     const bool between_two_stripes  = displacement_offset < kStripeDist + allowed_uncertainty;

@@ -49,7 +49,7 @@ class RpmRegulator {
    * @param actual_velocity
    * @return double - optimal rpm
    */
-  int32_t calculateOptimalRpm(const int32_t actual_velocity);
+  int32_t calculateOptimalRpm(const data::nav_t actual_velocity);
 
   /**
    * @brief calculate the step to increase or decrease the rpm by.

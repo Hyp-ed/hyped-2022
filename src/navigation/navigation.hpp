@@ -16,33 +16,17 @@
 #include <utils/math/statistics.hpp>
 
 namespace hyped {
-
-using data::Data;
-using data::DataPoint;
-using data::ImuData;
-using data::ModuleStatus;
-using data::Motors;
-using data::nav_t;
-using data::NavigationVector;
-using data::Sensors;
-using navigation::KalmanFilter;
-using std::array;
-using utils::Logger;
-using utils::math::Integrator;
-using utils::math::OnlineStatistics;
-using utils::math::RollingStatistics;
-
 namespace navigation {
 
 class Navigation {
  public:
-  typedef array<ImuData, Sensors::kNumImus> ImuDataArray;
-  typedef DataPoint<ImuDataArray> ImuDataPointArray;
-  typedef array<NavigationVector, Sensors::kNumImus> NavigationVectorArray;
-  typedef array<array<nav_t, Sensors::kNumImus>, 3> ImuAxisData;
-  typedef array<nav_t, Sensors::kNumImus> NavigationArray;
-  typedef array<nav_t, Sensors::kNumImus - 1> NavigationArrayOneFaulty;
-  typedef array<KalmanFilter, Sensors::kNumImus> FilterArray;
+  using ImuDataArray             = std::array<data::ImuData, Sensors::kNumImus>;
+  using ImuDataPointArray        = data::DataPoint<ImuDataArray>;
+  using NavigationVectorArray    = std::array<data::NavigationVector, data::Sensors::kNumImus>;
+  using ImuAxisData              = std::array<std::array<data::nav_t, data::Sensors::kNumImus>, 3>;
+  using NavigationArray          = std::array<data::nav_t, data::Sensors::kNumImus>;
+  using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
+  using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
 
   /**
    * @brief Construct a new Navigation object
@@ -50,44 +34,44 @@ class Navigation {
    * @param log System logger
    * @param axis Axis used of acceleration measurements
    */
-  explicit Navigation(Logger &log, unsigned int axis = 0);
+  explicit Navigation(utils::Logger &log, uint32_t axis = 0);
   /**
    * @brief Get the current state of the navigation module
    *
    * @return ModuleStatus the current state of the navigation module
    */
-  ModuleStatus getModuleStatus() const;
+  data::ModuleStatus getModuleStatus() const;
   /**
    * @brief Get the measured acceleration [m/s^2]
    *
    * @return nav_t Returns the forward component of acceleration vector (negative when
    *                        decelerating) [m/s^2]
    */
-  nav_t getAcceleration() const;
+  data::nav_t getAcceleration() const;
   /**
    * @brief Get the measured velocity [m/s]
    *
    * @return nav_t Returns the forward component of velocity vector [m/s]
    */
-  nav_t getVelocity() const;
+  data::nav_t getVelocity() const;
   /**
    * @brief Get the measured displacement [m]
    *
    * @return nav_t Returns the forward component of displacement vector [m]
    */
-  nav_t getDisplacement() const;
+  data::nav_t getDisplacement() const;
   /**
    * @brief Get the emergency braking distance [m]
    *
    * @return nav_t emergency braking distance [m]
    */
-  nav_t getEmergencyBrakingDistance() const;
+  data::nav_t getEmergencyBrakingDistance() const;
   /**
    * @brief Get the braking distance [m]
    *
    * @return nav_t braking distance [m]
    */
-  nav_t getBrakingDistance() const;
+  data::nav_t getBrakingDistance() const;
   /**
    * @brief Get the determined gravity calibration [m/s^2]
    *
@@ -104,7 +88,7 @@ class Navigation {
    * @param pointer to array of original acceleration readings
    * @param threshold value
    */
-  void tukeyFences(NavigationArray &data_array, float threshold);
+  void tukeyFences(NavigationArray &data_array, const data::nav_t threshold);
   /**
    * @brief Update central data structure
    */
@@ -117,7 +101,7 @@ class Navigation {
   /**
    * @brief Initialise timestamps for integration
    */
-  void initTimestamps();
+  void initialiseTimestamps();
   /**
    * @brief Used to check whether initial timestamps have been set
    *
@@ -142,103 +126,96 @@ class Navigation {
   void logWrite();
 
  private:
-  static constexpr int kCalibrationAttempts = 3;
-  static constexpr int kCalibrationQueries  = 10000;
+  static constexpr int kMaxCalibrationAttempts = 3;
+  static constexpr int kCalibrationQueries     = 10000;
 
   // number of previous measurements stored
   static constexpr int kPreviousMeasurements = 1000;
 
   static constexpr char kDelimiter = '\t';
 
-  static constexpr int kPrintFreq               = 1;
-  static constexpr nav_t kEmergencyDeceleration = 24;
-  static constexpr float kTukeyThreshold        = 1;  // 0.75
-  static constexpr float kTukeyIQRBound         = 3;
+  static constexpr int kPrintFreq                     = 1;
+  static constexpr data::nav_t kEmergencyDeceleration = 24;
+  static constexpr data::nav_t kTukeyThreshold        = 1;  // 0.75
+  static constexpr data::nav_t kTukeyIQRBound         = 3;
 
-  static constexpr nav_t kStripeDistance = 30.48;
+  static constexpr data::nav_t kStripeDistance = 30.48;
 
-  static constexpr uint32_t pod_mass_           = 250;   // kg
-  static constexpr float mom_inertia_wheel_     = 0.04;  // kgm²
-  static constexpr uint32_t kNumBrakes          = 4;
-  static constexpr float coeff_friction_        = 0.38;
-  static constexpr uint32_t spring_compression_ = 40;
-  static constexpr uint32_t spring_coefficient_ = 18;
-  static constexpr float embrake_angle_         = 0.52;
+  static constexpr data::nav_t kPodMass              = 250;   // kg
+  static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
+  static constexpr uint32_t kNumBrakes               = 4;
+  static constexpr data::nav_t kFrictionCoefficient  = 0.38;
+  static constexpr data::nav_t kSpringCompression    = 40;
+  static constexpr data::nav_t kSpringCoefficient    = 18;
+  static constexpr data::nav_t kEmbrakeAngle         = 0.52;
 
-  static constexpr float pi = 3.14159265359;  // Have to approximate
+  static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
 
   // System communication
   Logger &log_;
   Data &data_;
   ModuleStatus status_;
 
-  // counter for outputs
-  unsigned int counter_;
-
-  // movement axis
-  unsigned int axis_;
+  uint32_t log_counter_;
+  uint32_t movement_axis_;
 
   // acceptable variances for calibration measurements: {x, y, z}
-  array<float, 3> calibration_limits_;
+  std::array<data::nav_t, 3> calibration_limits_;
   // Calibration variances in each dimension, necessary for vibration checking
-  array<nav_t, 3> calibration_variance_;
+  std::array<data::nav_t, 3> calibration_variance_;
 
   // Array of previous measurements
-  array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
+  std::array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
   // Current point in recent measurements, to save space
-  uint16_t curr_msmt_;
+  uint16_t current_measurements_;
   // Boolean value to check if the array has been filled, to not wrong variance
-  bool prev_filled_;
+  bool previous_filled_;
 
   // Flag to write to file
-  bool nav_write_;
+  bool write_to_file_;
 
   // Kalman filters to filter each IMU measurement individually
   FilterArray filters_;
 
   // Counter for consecutive outlier output from each IMU
-  array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
+  std::array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
   // Array of booleans to signify which IMUs are reliable or faulty
-  array<bool, Sensors::kNumImus> imu_reliable_;
+  std::array<bool, Sensors::kNumImus> is_imu_reliable_;
   // Counter of how many IMUs have failed
-  uint32_t nOutlierImus_;
+  uint32_t num_outlier_imus_;
 
   // To store estimated values
   ImuDataPointArray sensor_readings_;
-  DataPoint<nav_t> acceleration_;
-  DataPoint<nav_t> velocity_;
-  DataPoint<nav_t> displacement_;
+  data::DataPoint<data::nav_t> acceleration_;
+  data::DataPoint<data::nav_t> velocity_;
+  data::DataPoint<data::nav_t> displacement_;
   NavigationVectorArray gravity_calibration_;
 
   // Initial timestamp (for comparisons)
-  uint32_t init_timestamp_;
+  uint32_t initial_timestamp_;
   // Previous timestamp
-  uint32_t prev_timestamp_;
+  uint32_t previous_timestamp_;
   // Uncertainty in distance
-  nav_t displ_unc_;
+  data::nav_t displacement_uncertainty_;
   // Uncertainty in velocity
-  nav_t vel_unc_;
+  data::nav_t velocity_uncertainty_;
   // Previous acceleration measurement, necessary for uncertainty determination
-  nav_t prev_acc_;
+  data::nav_t previous_acceleration_;
   // Previous velocity measurement
-  nav_t prev_vel_;
+  data::nav_t previous_velocity_;
   // Have initial timestamps been set?
-  bool init_time_set_;
+  bool has_initial_time_;
 
   // Stripe counter object
   StripeHandler stripe_counter_;
   // Flags if keyences are used and if real
-  bool keyence_used_;
-  bool keyence_real_;
+  bool is_keyence_used_;
+  bool is_keyence_real_;
 
   // To convert acceleration -> velocity -> distance
-  Integrator<nav_t> acceleration_integrator_;  // acceleration to velocity
-  Integrator<nav_t> velocity_integrator_;      // velocity to distance
+  utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
+  utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
 
-  /**
-   * @brief Compute norm of acceleration measurement
-   */
-  nav_t accNorm(NavigationVector &acc);
   /**
    * @brief Query sensors to determine acceleration, velocity and distance
    */

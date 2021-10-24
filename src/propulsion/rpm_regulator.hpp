@@ -55,6 +55,7 @@ class RpmRegulator {
    * @brief calculate the step to increase or decrease the rpm by.
    *
    * @param optimal_rpm - the optimal rpm for our current velocity
+   * @param actual_rpm - the rpm of the motor
    * @return int32_t - the step with which to increase the rpm
    */
   int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);

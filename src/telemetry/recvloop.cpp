@@ -20,7 +20,7 @@ void RecvLoop::run()
 {
   log_.DBG("Telemetry", "Telemetry RecvLoop thread started");
 
-  data::Telemetry telem_data_struct = data_.getTelemetryData();
+  data::Telemetry telem_data = data_.getTelemetryData();
   std::string message;
 
   while (true) {
@@ -29,8 +29,8 @@ void RecvLoop::run()
     } catch (std::exception &e) {
       log_.ERR("Telemetry", "%s", e.what());
 
-      telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
-      data_.setTelemetryData(telem_data_struct);
+      telem_data.module_status = ModuleStatus::kCriticalFailure;
+      data_.setTelemetryData(telem_data);
 
       break;
     }
@@ -39,34 +39,34 @@ void RecvLoop::run()
       log_.INFO("Telemetry", "FROM SERVER: ACK");
     } else if (message == "STOP") {
       log_.INFO("Telemetry", "FROM SERVER: STOP");
-      telem_data_struct.emergency_stop_command = true;
+      telem_data.emergency_stop_command = true;
     } else if (message == "CALIBRATE") {
       log_.INFO("Telemetry", "FROM SERVER: CALIBRATE");
-      telem_data_struct.calibrate_command = true;
+      telem_data.calibrate_command = true;
     } else if (message == "LAUNCH") {
       log_.INFO("Telemetry", "FROM SERVER: LAUNCH");
-      telem_data_struct.launch_command = true;
+      telem_data.launch_command = true;
     } else if (message == "SHUTDOWN") {
       log_.INFO("Telemetry", "FROM SERVER: SHUTDOWN");
-      telem_data_struct.shutdown_command = true;
+      telem_data.shutdown_command = true;
     } else if (message == "SERVER_PROPULSION_GO") {
       log_.INFO("Telemetry", "FROM SERVER: SERVICE_PROPULSION_GO");
-      telem_data_struct.service_propulsion_go = true;
+      telem_data.service_propulsion_go = true;
     } else if (message == "SERVER_PROPULSION_STOP") {
       log_.INFO("Telemetry", "FROM SERVER: SERVICE_PROPULSION_STOP");
-      telem_data_struct.service_propulsion_go = false;
+      telem_data.service_propulsion_go = false;
     } else if (message == "NOMINAL_BRAKING") {
       log_.INFO("Telemetry", "FROM SERVER: NOMINAL_BRAKING");
-      telem_data_struct.nominal_braking_command = true;
+      telem_data.nominal_braking_command = true;
     } else if (message == "NOMINAL_RETRACT") {
       log_.INFO("Telemetry", "FROM SERVER: NOMINAL_RETRACT");
-      telem_data_struct.nominal_braking_command = false;
+      telem_data.nominal_braking_command = false;
     } else {
       log_.ERR("Telemetry", "Unrecognized input from server, ENTERING CRITICAL FAILURE");
-      telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
+      telem_data.module_status = ModuleStatus::kCriticalFailure;
     }
 
-    data_.setTelemetryData(telem_data_struct);
+    data_.setTelemetryData(telem_data);
   }
 
   log_.DBG("Telemetry", "Exiting Telemetry RecvLoop thread");

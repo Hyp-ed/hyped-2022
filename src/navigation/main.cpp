@@ -45,7 +45,7 @@ void Main::run()
 
       case State::kAccelerating:
         if (!nav_.getHasInit()) {
-          nav_.initTimestamps();
+          nav_.initialiseTimestamps();
           nav_.setHasInit();
         }
 

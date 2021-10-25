@@ -36,34 +36,34 @@ class Writer {
   void packAdditionalData();
 
   // before starting adding data points, this function must be called to start the main JSON object
-  void start() { rjwriter_.StartObject(); }
+  void start() { json_writer_.StartObject(); }
 
   // before calling getString(), this function must be called to close the main JSON object
   // after calling this function, no additional data points can be added
-  void end() { rjwriter_.EndObject(); }
+  void end() { json_writer_.EndObject(); }
 
   // returns the main JSON object as a string, that is ready to be sent to GUI
-  std::string getString() { return sb_.GetString(); }
+  std::string getString() { return string_buffer_.GetString(); }
 
   // converts Enum to String values with required formatting for GUI
-  static const char *convertStateMachineState(data::State state);
-  static const char *convertModuleStatus(data::ModuleStatus module_status);
+  static const std::string convertStateMachineState(data::State state);
+  static const std::string convertModuleStatus(data::ModuleStatus module_status);
 
  private:
   // calls RapidJSON functions to add a value of specific type to JSON
-  void add(const char *name, int min, int max, const char *unit, int value);
-  void add(const char *name, float min, float max, const char *unit, float value);
-  void add(const char *name, bool value);
-  void add(const char *name, const char *value);
-  void add(const char *name, data::State value);
-  void add(const char *name, data::ModuleStatus value);
+  void add(const std::string name, int min, int max, const std::string unit, int value);
+  void add(const std::string name, float min, float max, const std::string unit, float value);
+  void add(const std::string name, bool value);
+  void add(const std::string name, const std::string value);
+  void add(const std::string name, data::State value);
+  void add(const std::string name, data::ModuleStatus value);
 
   // starts and ends lists, which allow to structure the data
-  void startList(const char *name);
+  void startList(const std::string name);
   void endList();
 
-  rapidjson::StringBuffer sb_;
-  rapidjson::Writer<rapidjson::StringBuffer> rjwriter_;
+  rapidjson::StringBuffer string_buffer_;
+  rapidjson::Writer<rapidjson::StringBuffer> json_writer_;
   data::Data &data_;
 };
 

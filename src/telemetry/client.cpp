@@ -97,7 +97,7 @@ std::string Client::receiveData()
   memset(buffer, 0, sizeof(buffer));  // fill with 0's so null terminated by default
 
   // receive payload
-  if (recv(socket_, buffer, payload_length, 0) <= 0) {
+  if (recv(socket_, buffer, payload_length, 0) == -1) {
     throw std::runtime_error{"Error receiving payload"};
   }
 

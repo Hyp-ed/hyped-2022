@@ -21,9 +21,9 @@ class Client {
   Client(utils::Logger &log, const utils::Config &config);
 
   utils::Logger &log_;
-  int sockfd_;
-  const char *kPort;
-  const char *kServerIP;
+  int socket_;
+  std::string kPort;
+  std::string kServerIP;
 };
 
 }  // namespace telemetry

@@ -6,12 +6,11 @@
 
 namespace hyped {
 
-using data::ModuleStatus;
-
 namespace telemetry {
 
-Main::Main(uint8_t id, Logger &log)
-    : Thread{id, log},
+
+Main::Main(const uint8_t id, utils::Logger &log)
+    : utils::concurrent::Thread{id, log},
       data_{data::Data::getInstance()},
       client_{log}
 {
@@ -21,14 +20,14 @@ Main::Main(uint8_t id, Logger &log)
 void Main::run()
 {
   // check if telemetry is disabled
-  hyped::utils::System &sys         = hyped::utils::System::getSystem();
-  data::Telemetry telem_data_struct = data_.getTelemetryData();
+  const auto &sys                = utils::System::getSystem();
+  data::Telemetry telemetry_data = data_.getTelemetryData();
 
   if (sys.telemetry_off) {
     log_.DBG("Telemetry", "Telemetry is disabled");
     log_.DBG("Telemetry", "Exiting Telemetry Main thread");
-    telem_data_struct.module_status = ModuleStatus::kReady;
-    data_.setTelemetryData(telem_data_struct);
+    telemetry_data.module_status = data::ModuleStatus::kReady;
+    data_.setTelemetryData(telemetry_data);
     return;
   }
 
@@ -40,21 +39,21 @@ void Main::run()
     log_.ERR("Telemetry", e.what());
     log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
 
-    telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
-    data_.setTelemetryData(telem_data_struct);
+    telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setTelemetryData(telemetry_data);
 
     return;
   }
 
-  telem_data_struct.module_status = ModuleStatus::kReady;
-  data_.setTelemetryData(telem_data_struct);
+  telemetry_data.module_status = data::ModuleStatus::kReady;
+  data_.setTelemetryData(telemetry_data);
 
-  SendLoop sendloop_thread{log_, data_, this};
-  RecvLoop recvloop_thread{log_, data_, this};
-  sendloop_thread.start();
-  recvloop_thread.start();
-  sendloop_thread.join();
-  recvloop_thread.join();
+  SendLoop send_loop_thread{log_, data_, *this};
+  RecvLoop receive_loop_thread{log_, data_, this};
+  send_loop_thread.start();
+  receive_loop_thread.start();
+  send_loop_thread.join();
+  receive_loop_thread.join();
 
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }

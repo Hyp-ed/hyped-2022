@@ -9,8 +9,8 @@ namespace hyped {
 namespace telemetry {
 
 
-Main::Main(uint8_t id, utils::Logger &log)
-    : Thread{id, log},
+Main::Main(const uint8_t id, utils::Logger &log)
+    : utils::concurrent::Thread{id, log},
       data_{data::Data::getInstance()},
       client_{log}
 {

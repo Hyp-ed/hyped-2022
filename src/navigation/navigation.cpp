@@ -9,10 +9,10 @@ namespace hyped {
 
 namespace navigation {
 
-Navigation::Navigation(Logger &log, uint32_t axis /*=0*/)
+Navigation::Navigation(utils::Logger &log, uint32_t axis /*=0*/)
     : log_(log),
-      data_(Data::getInstance()),
-      status_(ModuleStatus::kStart),
+      data_(data::Data::getInstance()),
+      status_(data::ModuleStatus::kStart),
       log_counter_(0),
       movement_axis_(axis),
       calibration_limits_{{0.05, 0.05, 0.05}},
@@ -33,16 +33,16 @@ Navigation::Navigation(Logger &log, uint32_t axis /*=0*/)
       velocity_integrator_(&displacement_)
 {
   log_.INFO("NAV", "Navigation module started");
-  for (std::size_t i = 0; i < Sensors::kNumImus; i++) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
     filters_[i] = KalmanFilter(1, 1);
     filters_[i].setup();
   }
-  status_ = ModuleStatus::kInit;
+  status_ = data::ModuleStatus::kInit;
   updateData();
   log_.INFO("NAV", "Navigation module initialised");
 }
 
-ModuleStatus Navigation::getModuleStatus() const
+data::ModuleStatus Navigation::getModuleStatus() const
 {
   return status_;
 }
@@ -102,11 +102,11 @@ Navigation::NavigationVectorArray Navigation::getGravityCalibration() const
 void Navigation::calibrateGravity()
 {
   log_.INFO("NAV", "Calibrating gravity");
-  std::array<utils::math::RollingStatistics<data::NavigationVector>, Sensors::kNumImus> online_array
-    = {{utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
-        utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
-        utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
-        utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries)}};
+  std::array<utils::math::RollingStatistics<data::NavigationVector>, data::Sensors::kNumImus>
+    online_array = {{utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
+                     utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
+                     utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries),
+                     utils::math::RollingStatistics<data::NavigationVector>(kCalibrationQueries)}};
   bool calibration_successful   = false;
   uint32_t calibration_attempts = 0;
 
@@ -176,7 +176,7 @@ void Navigation::calibrateGravity()
     log_.INFO("NAV", "Navigation module ready");
   } else {
     log_.INFO("NAV", "Calibration of IMU acceleration failed with final readings:");
-    for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
+    for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
       const auto acceleration    = online_array.at(i).getMean();
       const auto variance        = online_array.at(i).getVariance();
       data::nav_t total_variance = 0.0;
@@ -187,7 +187,7 @@ void Navigation::calibrateGravity()
       log_.INFO("NAV", "\tIMU %d: g=(%.5f, %.5f, %.5f), variance=%.5f", i, acceleration[0],
                 acceleration[1], acceleration[2], total_variance);
     }
-    status_ = ModuleStatus::kCriticalFailure;
+    status_ = data::ModuleStatus::kCriticalFailure;
     updateData();
     log_.ERR("NAV", "Navigation module failed on calibration");
   }
@@ -201,7 +201,7 @@ void Navigation::queryImus()
   uint32_t t          = imu_data.timestamp;
   // process raw values
   ImuAxisData raw_acceleration;  // All raw data, four values per axis
-  for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     const auto acceleration = imu_data.value.at(i).acc - gravity_calibration_.at(i);
     for (std::size_t axis = 0; axis < 3; ++axis) {
       raw_acceleration.at(axis)[i] = acceleration[axis];
@@ -219,7 +219,7 @@ void Navigation::queryImus()
 
   // Kalman filter the readings which are reliable
   utils::math::OnlineStatistics<data::nav_t> acceleration_average_filter;
-  for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     if (is_imu_reliable_.at(i)) {
       data::nav_t estimate = filters_.at(i).filter(raw_acceleration_moving.at(i));
       acceleration_average_filter.update(estimate);
@@ -373,7 +373,7 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
   const auto upper_limit = q3 + threshold * iqr;
   const auto lower_limit = q1 - threshold * iqr;
   // replace any outliers with the median
-  for (std::size_t i = 0; i < Sensors::kNumImus; ++i) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_imu_reliable_.at(i)) {
       log_.DBG3(
@@ -389,7 +389,7 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
         num_outlier_imus_++;
       }
       if (num_outlier_imus_ > 1) {
-        status_ = ModuleStatus::kCriticalFailure;
+        status_ = data::ModuleStatus::kCriticalFailure;
         log_.ERR("NAV", "At least two IMUs no longer reliable, entering CriticalFailure.");
       }
     } else {
@@ -429,7 +429,8 @@ void Navigation::navigate()
   queryImus();
   if (is_keyence_used_) {
     stripe_counter_.queryKeyence(displacement_.value, velocity_.value, is_keyence_real_);
-    if (stripe_counter_.checkFailure(displacement_.value)) status_ = ModuleStatus::kCriticalFailure;
+    if (stripe_counter_.checkFailure(displacement_.value))
+      status_ = data::ModuleStatus::kCriticalFailure;
   }
   if (log_counter_ > 1000) updateUncertainty();
   updateData();
@@ -446,7 +447,7 @@ void Navigation::initialiseTimestamps()
   initial_timestamp_      = utils::Timer::getTimeMicros();
   log_.DBG3("NAV", "Initial timestamp:%d", initial_timestamp_);
   previous_timestamp_ = utils::Timer::getTimeMicros();
-  stripe_counter_.set_init(initial_timestamp_);
+  stripe_counter_.setInit(initial_timestamp_);
 }
 }  // namespace navigation
 }  // namespace hyped

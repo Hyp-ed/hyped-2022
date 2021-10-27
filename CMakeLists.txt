@@ -92,7 +92,7 @@ message("host system:    ${CMAKE_HOST_SYSTEM_NAME}")
 message("target system:  ${CMAKE_SYSTEM_NAME}")
 message("compile flags: ${CMAKE_CXX_FLAGS}")
 message("link flags:    ${CMAKE_CXX_LINKER_FLAGS}")
-message("compiler:       ${CMAKE_CXX_COMPILER}")    
+message("compiler:       ${CMAKE_CXX_COMPILER}")
 
 
 # -------------------------------------------------- #
@@ -124,10 +124,10 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
 
-if (CROSS EQUAL OFF)
+if (CROSS)
+else()
   add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 endif()
-
 # -------------------------------------------------- #
 # BUILD EXECUTABLES                                  #
 # -------------------------------------------------- #

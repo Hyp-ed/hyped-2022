@@ -23,7 +23,7 @@ bool Main::handleTransition()
 void Main::handleCriticalFailure(Data &data, Motors &motor_data)
 {
   is_running_              = false;
-  motor_data.module_status = ModuleStatus::kCriticalFailure;
+  motor_data.module_status = data::ModuleStatus::kCriticalFailure;
   data.setMotorData(motor_data);
 }
 
@@ -35,10 +35,10 @@ void Main::run()
 
   // Initialise states
   current_state_  = data.getStateMachineData().current_state;
-  previous_state_ = State::kInvalid;
+  previous_state_ = data::State::kInvalid;
 
   // kInit for SM transition
-  motor_data.module_status = ModuleStatus::kInit;
+  motor_data.module_status = data::ModuleStatus::kInit;
   data.setMotorData(motor_data);
   log_.INFO("Motor", "Initialisation complete");
 
@@ -49,12 +49,12 @@ void Main::run()
     bool encountered_transition = handleTransition();
 
     switch (current_state_) {
-      case State::kIdle:
+      case data::State::kIdle:
         break;
-      case State::kCalibrating:
+      case data::State::kCalibrating:
         if (state_processor_->isInitialized()) {
-          if (motor_data.module_status != ModuleStatus::kReady) {
-            motor_data.module_status = ModuleStatus::kReady;
+          if (motor_data.module_status != data::ModuleStatus::kReady) {
+            motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);
           }
         } else {
@@ -62,15 +62,15 @@ void Main::run()
           if (state_processor_->isCriticalFailure()) { handleCriticalFailure(data, motor_data); }
         }
         break;
-      case State::kReady:
+      case data::State::kReady:
         if (encountered_transition) { state_processor_->sendOperationalCommand(); }
         break;
-      case State::kAccelerating:
+      case data::State::kAccelerating:
         state_processor_->accelerate();
         break;
-      case State::kCruising:
-      case State::kNominalBraking:
-      case State::kEmergencyBraking:
+      case data::State::kCruising:
+      case data::State::kNominalBraking:
+      case data::State::kEmergencyBraking:
         state_processor_->quickStopAll();
         break;
       default:

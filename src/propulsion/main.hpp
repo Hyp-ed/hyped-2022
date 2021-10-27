@@ -9,14 +9,6 @@
 #include <utils/timer.hpp>
 
 namespace hyped {
-using data::Data;
-using data::ModuleStatus;
-using data::Motors;
-using data::State;
-using data::Telemetry;
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
 
 namespace motor_control {
 
@@ -36,10 +28,10 @@ class Main : public Thread {
   bool is_running_;
   Logger &log_;
   StateProcessor *state_processor_;
-  State current_state_;
-  State previous_state_;
+  data::State current_state_;
+  data::State previous_state_;
   /**
-   * @brief   Returns true iff the pod state has changed since the last check.
+   * @brief   Returns true if the pod state has changed since the last check.
    */
   bool handleTransition();
 

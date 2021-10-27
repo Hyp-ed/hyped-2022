@@ -3,7 +3,7 @@
 namespace hyped {
 
 namespace motor_control {
-Main::Main(uint8_t id, Logger &log)
+Main::Main(uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),
@@ -20,7 +20,7 @@ bool Main::handleTransition()
   return true;
 }
 
-void Main::handleCriticalFailure(Data &data, Motors &motor_data)
+void Main::handleCriticalFailure(data::Data &data, data::Motors &motor_data)
 {
   is_running_              = false;
   motor_data.module_status = data::ModuleStatus::kCriticalFailure;

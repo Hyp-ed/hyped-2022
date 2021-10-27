@@ -16,7 +16,7 @@ constexpr int32_t kNumMotors = 4;
 
 class Main : public Thread {
  public:
-  Main(uint8_t id, Logger &log);
+  Main(uint8_t id, utils::Logger &log);
 
   /**
    * @brief {This function is the entrypoint to the propulsion module and reacts to the certain
@@ -26,7 +26,7 @@ class Main : public Thread {
 
  private:
   bool is_running_;
-  Logger &log_;
+  utils::Logger &log_;
   StateProcessor *state_processor_;
   data::State current_state_;
   data::State previous_state_;
@@ -35,7 +35,7 @@ class Main : public Thread {
    */
   bool handleTransition();
 
-  void handleCriticalFailure(Data &data, Motors &motor_data);
+  void handleCriticalFailure(data::Data &data, data::Motors &motor_data);
 };
 
 }  // namespace motor_control

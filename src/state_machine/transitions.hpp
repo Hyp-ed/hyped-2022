@@ -26,9 +26,10 @@ class State;  // Forward declaration
 /*
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
-bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                    const Batteries &batteries_data, const Telemetry &telemetry_data,
-                    const Sensors &sensors_data, const Motors &motors_data);
+bool checkEmergency(Logger &log, const data::EmergencyBrakes &brakes_data,
+                    const data::Navigation &nav_data, const data::Batteries &batteries_data,
+                    const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
+                    const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Module Status
@@ -38,17 +39,19 @@ bool checkEmergency(Logger &log, const EmergencyBrakes &brakes_data, const Navig
  * @brief   Returns true iff the command has been received and all modules are
  *          initialised.
  */
-bool checkModulesInitialised(Logger &log, const EmergencyBrakes &brakes_data,
-                             const Navigation &nav_data, const Batteries &batteries_data,
-                             const Telemetry &telemetry_data, const Sensors &sensors_data,
-                             const Motors &motors_data);
+bool checkModulesInitialised(Logger &log, const data::EmergencyBrakes &brakes_data,
+                             const data::Navigation &nav_data,
+                             const data::Batteries &batteries_data,
+                             const data::Telemetry &telemetry_data,
+                             const data::Sensors &sensors_data, const data::Motors &motors_data);
 
 /*
  * @brief    Returns true iff all modules are ready.
  */
-bool checkModulesReady(Logger &log, const EmergencyBrakes &brakes_data, const Navigation &nav_data,
-                       const Batteries &batteries_data, const Telemetry &telemetry_data,
-                       const Sensors &sensors_data, const Motors &motors_data);
+bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
+                       const data::Navigation &nav_data, const data::Batteries &batteries_data,
+                       const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
+                       const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands
@@ -57,17 +60,17 @@ bool checkModulesReady(Logger &log, const EmergencyBrakes &brakes_data, const Na
 /*
  * @brief   Returns true iff the calibrate command has been received.
  */
-bool checkCalibrateCommand(const Telemetry &telemetry_data);
+bool checkCalibrateCommand(const data::Telemetry &telemetry_data);
 
 /*
  * @brief   Returns true iff the launch command has been received.
  */
-bool checkLaunchCommand(const Telemetry &telemetry_data);
+bool checkLaunchCommand(const data::Telemetry &telemetry_data);
 
 /*
  * @brief    Returns true iff the shutdown command has been received.
  */
-bool checkShutdownCommand(const Telemetry &telemetry_data);
+bool checkShutdownCommand(const data::Telemetry &telemetry_data);
 
 //--------------------------------------------------------------------------------------
 // Navigation Data Events
@@ -76,17 +79,17 @@ bool checkShutdownCommand(const Telemetry &telemetry_data);
 /*
  * @brief   Returns true iff the pod is close enough to the end of the track.
  */
-bool checkEnteredBrakingZone(Logger &log, const Navigation &nav_data);
+bool checkEnteredBrakingZone(Logger &log, const data::Navigation &nav_data);
 
 /*
  * @brief   Returns true iff the pod has reached the maximum velocity.
  */
-bool checkReachedMaxVelocity(Logger &log, const Navigation &nav_data);
+bool checkReachedMaxVelocity(Logger &log, const data::Navigation &nav_data);
 
 /*
  * @brief   Returns true iff the pod has reached zero velocity.
  */
-bool checkPodStopped(Logger &log, const Navigation &nav_data);
+bool checkPodStopped(Logger &log, const data::Navigation &nav_data);
 }  // namespace state_machine
 
 }  // namespace hyped

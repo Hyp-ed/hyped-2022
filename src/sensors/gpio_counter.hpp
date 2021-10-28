@@ -16,7 +16,7 @@ using utils::concurrent::Thread;
 
 namespace sensors {
 
-class GpioCounter : public GpioInterface, public Thread {  // interface.hpp
+class GpioCounter : public GpioInterface, public utils::concurrent::Thread {  // interface.hpp
  public:
   GpioCounter(utils::Logger &log, int pin);
   ~GpioCounter() {}
@@ -26,7 +26,7 @@ class GpioCounter : public GpioInterface, public Thread {  // interface.hpp
 
  private:
   int pin_;
-  System &sys_;
+  utils::System &sys_;
   utils::Logger &log_;
   data::StripeCounter stripe_counter_;
 };

@@ -11,10 +11,6 @@
 
 namespace hyped {
 
-using data::Data;
-using utils::Logger;
-using utils::concurrent::Thread;
-using utils::io::GPIO;
 
 namespace sensors {
 /**
@@ -25,9 +21,9 @@ namespace sensors {
  * check data directly from data.hpp.g
  */
 
-class GpioManager : public Thread {
+class GpioManager : public utils::concurrent::Thread {
  public:
-  explicit GpioManager(Logger &log);
+  explicit GpioManager(utils::Logger &log);
   void run() override;
 
  private:
@@ -40,13 +36,13 @@ class GpioManager : public Thread {
   /**
    * @brief master switch to keep pod on, signal held high at startup
    */
-  GPIO *master_;
+  utils::io::GPIO *master_;
 
   /**
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<GPIO *> hp_ssr_;
+  std::vector<utils::io::GPIO *> hp_ssr_;
 
   /**
    * @brief stores the previous state when switch statement checks state machine

@@ -12,7 +12,7 @@ if [ $SYSTEM = "Linux" ]; then
     tar xf $ARCHIVE
     printf "DONE\n"
 elif [ $SYSTEM = "Darwin" ]; then
-    echo "Downloading Darwin x86 to ARM cross compiler"
+    git clone git@github.com:Hyp-ed/mac-crosscompiler.git
 else
     printf "Unsupported kernel name %s\n" $SYSTEM 
 fi

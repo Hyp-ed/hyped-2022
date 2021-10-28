@@ -6,19 +6,19 @@
 namespace hyped {
 namespace sensors {
 
-GpioManager::GpioManager(Logger &log)
+GpioManager::GpioManager(utils::Logger &log)
     : Thread(log),
       sys_(utils::System::getSystem()),
-      data_(Data::getInstance())
+      data_(data::Data::getInstance())
 {
   // clear HPSSRs if default is high
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    hp_ssr_.push_back(new GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
+    hp_ssr_.push_back(new utils::io::GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
     hp_ssr_[i]->clear();
     log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
   }
   // master switch to keep pod on
-  master_ = new GPIO(sys_.config->sensors.master, utils::io::gpio::kOut);
+  master_ = new utils::io::GPIO(sys_.config->sensors.master, utils::io::gpio::kOut);
   master_->set();
   log_.INFO("BMS-MANAGER", "Master switch SET");
 

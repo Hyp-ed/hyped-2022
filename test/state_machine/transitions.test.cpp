@@ -794,13 +794,11 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
     telemetry_data.shutdown_command  = static_cast<bool>((i >> 2) & 1);
     enableOutput();
     ASSERT_EQ(telemetry_data.calibrate_command,
-              state_machine::checkCalibrateCommand(log_, telemetry_data))
+              state_machine::checkCalibrateCommand(telemetry_data))
       << "failed to react based on calibrate command";
-    ASSERT_EQ(telemetry_data.launch_command,
-              state_machine::checkLaunchCommand(log_, telemetry_data))
+    ASSERT_EQ(telemetry_data.launch_command, state_machine::checkLaunchCommand(telemetry_data))
       << "failed to react based on launch command";
-    ASSERT_EQ(telemetry_data.shutdown_command,
-              state_machine::checkShutdownCommand(log_, telemetry_data))
+    ASSERT_EQ(telemetry_data.shutdown_command, state_machine::checkShutdownCommand(telemetry_data))
       << "failed to react based on shutdown command";
     disableOutput();
   }

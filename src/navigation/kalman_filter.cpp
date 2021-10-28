@@ -1,5 +1,7 @@
 #include "kalman_filter.hpp"
 
+// TODO: Fix matrix notation to fit with style guide (to be done with kalman fixing update)
+
 namespace hyped {
 namespace navigation {
 
@@ -25,8 +27,8 @@ void KalmanFilter::setup()
   Eigen::MatrixXf H = createMeasurementMatrix();
 
   // check system navigation run for R setup
-  utils::System &sys = utils::System::getSystem();
-  Eigen::MatrixXf R  = Eigen::MatrixXf::Zero(m_, m_);
+  const auto &sys   = utils::System::getSystem();
+  Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m_, m_);
   ;
   if (sys.official_run || sys.outside_run)
     R = createTrackMeasurementCovarianceMatrix();
@@ -64,8 +66,8 @@ const data::nav_t KalmanFilter::filter(data::nav_t z)
   data::nav_t estimate = getEstimate();
   return estimate;
 }
-
-const data::nav_t KalmanFilter::filter(data::nav_t u, data::nav_t z)
+/*
+data::nav_t KalmanFilter::filter(data::nav_t u, data::nav_t z)
 {
   Eigen::VectorXf vu(k_);
   vu(0) = u;
@@ -78,6 +80,7 @@ const data::nav_t KalmanFilter::filter(data::nav_t u, data::nav_t z)
   data::nav_t estimate = getEstimate();
   return estimate;
 }
+*/
 
 const Eigen::MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix() const
 {
@@ -85,23 +88,24 @@ const Eigen::MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix() const
   return P;
 }
 
-const Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt) const
+// TODO: (Max) look into kalman filter and look at what's happening here exactly
+Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt)
 {
   Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n_, n_);
-  double acc_ddt = 0.5 * dt * dt;
+  double acc_ddt    = 0.5 * dt * dt;
   //  number of values for each acc, vel, pos: usually 1 or 3
   uint32_t num_values = n_ / 3;
 
-  for (uint32_t i = 0; i < num_values; ++i) {
+  for (std::size_t i = 0; i < num_values; ++i) {
     // compute acceleration rows
     A(i, i) = 1.;
 
     // compute velocity rows
-    A(i + num_values, i)         = dt;
+    A(i + num_values, i)              = dt;
     A(i + num_values, i + num_values) = 1.;
 
     // compute position rows
-    A(i + 2 * num_values, i)             = acc_ddt;
+    A(i + 2 * num_values, i)                  = acc_ddt;
     A(i + 2 * num_values, i + num_values)     = dt;
     A(i + 2 * num_values, i + 2 * num_values) = 1.;
   }
@@ -113,7 +117,7 @@ const Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt) const
 const Eigen::MatrixXf KalmanFilter::createMeasurementMatrix() const
 {
   Eigen::MatrixXf H = Eigen::MatrixXf::Zero(m_, n_);
-  for (uint32_t i = 0; i < m_; ++i) {
+  for (std::size_t i = 0; i < m_; ++i) {
     H(i, i) = 1.;
   }
   return H;
@@ -144,14 +148,14 @@ const Eigen::MatrixXf KalmanFilter::createStationaryMeasurementCovarianceMatrix(
 
 const data::nav_t KalmanFilter::getEstimate()
 {
-  Eigen::VectorXf x = kalmanFilter_.getStateEstimate();
+  Eigen::VectorXf x    = kalmanFilter_.getStateEstimate();
   data::nav_t estimate = x(0);
   return estimate;
 }
 
 const data::nav_t KalmanFilter::getEstimateVariance()
 {
-  Eigen::MatrixXf P = kalmanFilter_.getStateCovariance();
+  Eigen::MatrixXf P      = kalmanFilter_.getStateCovariance();
   data::nav_t covariance = P(0, 0);
   return covariance;
 }

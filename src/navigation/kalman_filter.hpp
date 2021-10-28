@@ -7,7 +7,6 @@
 #include <utils/math/kalman_multivariate.hpp>
 #include <utils/system.hpp>
 
-
 namespace hyped {
 namespace navigation {
 
@@ -44,7 +43,7 @@ class KalmanFilter {
   const Eigen::MatrixXf createInitialErrorCovarianceMatrix() const;
 
   // create state transition matrix A
-  const Eigen::MatrixXf createStateTransitionMatrix(double dt) const;
+  Eigen::MatrixXf createStateTransitionMatrix(double dt);
 
   // create measurement matrix H
   const Eigen::MatrixXf createMeasurementMatrix() const;

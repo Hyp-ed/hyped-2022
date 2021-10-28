@@ -19,11 +19,12 @@ Client::Client(utils::Logger &log) : Client{log, *utils::System::getSystem().con
 
 Client::Client(utils::Logger &log, const utils::Config &config)
     : log_{log},
-      kPort{config.telemetry.Port},
-      kServerIP{config.telemetry.IP}
+      port_{config.telemetry.Port.c_str()},
+      server_ip_{config.telemetry.IP.c_str()}
 {
   log_.DBG("Telemetry", "Client object created");
 }
+
 bool Client::connect()
 {
   log_.INFO("Telemetry", "Beginning process to connect to server");
@@ -37,7 +38,7 @@ bool Client::connect()
   hints.ai_socktype = SOCK_STREAM;
 
   // get possible addresses we can connect to
-  const int error = getaddrinfo(kServerIP.c_str(), kPort.c_str(), &hints, &server_info);
+  const int error = getaddrinfo(server_ip_.c_str(), port_.c_str(), &hints, &server_info);
   if (error != 0) {
     log_.ERR("Telemetry", "%s", gai_strerror(error));
     throw std::runtime_error{"Failed getting possible addresses"};
@@ -90,7 +91,7 @@ std::string Client::receiveData()
   char header[8];
 
   // receive header
-  if (recv(socket_, header, 8, 0) <= 0) { throw std::runtime_error{"Error receiving header"}; }
+  if (recv(socket_, header, 8, 0) == -1) { throw std::runtime_error{"Error receiving header"}; }
 
   int payload_length = strtol(header, NULL, 0);
   char buffer[1024];                  // power of 2 because apparently it's better for networking

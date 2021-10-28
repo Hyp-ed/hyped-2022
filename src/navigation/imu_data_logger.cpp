@@ -1,5 +1,8 @@
 #include "imu_data_logger.hpp"
 
+#include <fstream>
+#include <sstream>
+
 namespace hyped {
 namespace navigation {
 

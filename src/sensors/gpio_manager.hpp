@@ -42,7 +42,7 @@ class GpioManager : public utils::concurrent::Thread {
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<utils::io::GPIO *> hp_ssr_;
+  std::vector<utils::io::GPIO> hp_ssr_;
 
   /**
    * @brief stores the previous state when switch statement checks state machine

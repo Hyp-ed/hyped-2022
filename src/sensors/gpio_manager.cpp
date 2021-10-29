@@ -12,8 +12,8 @@ GpioManager::GpioManager(utils::Logger &log)
       data_(data::Data::getInstance())
 {
   // clear HPSSRs if default is high
-  for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    hp_ssr_.push_back(new utils::io::GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
+  for (std::size_t i; i < data::Batteries::kNumHPBatteries; ++i) {
+    hp_ssr_.emplace_back(new utils::io::GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
     hp_ssr_[i]->clear();
     log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
   }

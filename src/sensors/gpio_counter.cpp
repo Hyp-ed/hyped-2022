@@ -9,7 +9,7 @@ namespace hyped {
 
 namespace sensors {
 
-GpioCounter::GpioCounter(utils::Logger &log, int pin)
+GpioCounter::GpioCounter(utils::Logger &log, const int pin)
     : pin_(pin),
       sys_(utils::System::getSystem()),
       log_(log)
@@ -19,12 +19,12 @@ GpioCounter::GpioCounter(utils::Logger &log, int pin)
 void GpioCounter::run()
 {
   utils::io::GPIO thepin(pin_, utils::io::gpio::kIn);          // exports pin
-  uint8_t val                     = thepin.wait();  // Ignore first reading
+  thepin.wait();  // Ignore first reading
   stripe_counter_.count.value     = 0;
   stripe_counter_.count.timestamp = utils::Timer::getTimeMicros();
 
   while (sys_.running_) {
-    val = thepin.wait();
+    const uint8_t val = thepin.wait();
     if (val == 1) {
       stripe_counter_.count.value = stripe_counter_.count.value + 1;
       log_.DBG3("TEST-KEYENCE", "Stripe Count: %d", stripe_counter_.count.value);

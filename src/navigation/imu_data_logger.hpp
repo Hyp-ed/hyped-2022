@@ -59,8 +59,7 @@ class ImuDataLogger {
    * @param raw_acceleration a vector of type nav_t (float) holding the raw acceleration
    * @param calibrated_acceleration a vector of type nav_t (float) holding the acceleration after
    * filtering
-   * @param x // (TODO - rename x, we are currently unsure what exactly it is and what it is used
-   * for)
+   * @param x //TODO:(rename x, we are currently unsure what exactly it is and what it is used for)
    * @param timestamp time that data was received
    */
   void dataToFileKalman(const data::NavigationVector &raw_acceleration,

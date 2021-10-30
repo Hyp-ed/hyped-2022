@@ -13,8 +13,8 @@ GpioManager::GpioManager(utils::Logger &log)
 {
   // clear HPSSRs if default is high
   for (std::size_t i; i < data::Batteries::kNumHPBatteries; ++i) {
-    hp_ssr_.emplace_back(new utils::io::GPIO(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut));
-    hp_ssr_[i]->clear();
+    hp_ssr_.emplace_back(sys_.config->sensors.hp_shutoff[i], utils::io::gpio::kOut);
+    hp_ssr_[i].clear();
     log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
   }
   // master switch to keep pod on
@@ -30,14 +30,14 @@ void GpioManager::clearHP()
 {
   master_->clear();  // important to clear this first
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    hp_ssr_[i]->clear();  // HP off until kReady State
+    hp_ssr_[i].clear();  // HP off until kReady State
   }
 }
 
 void GpioManager::setHP()
 {
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-    hp_ssr_[i]->set();
+    hp_ssr_[i].set();
     sleep(50);
   }
   master_->set();

@@ -40,7 +40,7 @@ void Controller::registerController()
 void Controller::configure()
 {
   log_.INFO("MOTOR", "Controller %d: Configuring...", node_id_);
-  for (constexpr auto &message : kConfigurationMessages) {
+  for (const auto &message : kConfigurationMessages) {
     if (sendControllerMessage(message)) return;
     Thread::sleep(100);
   }
@@ -142,7 +142,7 @@ void Controller::quickStop()
 void Controller::healthCheck()
 {
   log_.INFO("MOTOR", "Controller %d: Checking warnings and errors", node_id_);
-  for (constexpr auto &message : kHealthCheckMessages) {
+  for (const auto &message : kHealthCheckMessages) {
     if (sendControllerMessage(message)) return;
   }
 }

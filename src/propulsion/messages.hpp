@@ -10,7 +10,7 @@ using ControllerMessage = std::array<uint8_t, 8>;
 
 static constexpr ControllerMessage kAutoAlignMessage
   // Write -4 to the modes of operation.
-  = {0x2F, 0x60, 0x60, 0x00, -0x04, 0x00, 0x00, 0x00};
+  = {0x2F, 0x60, 0x60, 0x00, static_cast<uint8_t>(-0x04), 0x00, 0x00, 0x00};
 
 static constexpr ControllerMessage kCheckStateMessage
   // Check the status word in object dictionary

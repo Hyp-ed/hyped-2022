@@ -118,20 +118,20 @@ bool BmsManager::batteriesInRange()
   // check LP
   for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
     auto &battery = batteries_.low_power_batteries[i];     // reference batteries individually
-    if (battery.voltage < 175 || battery.voltage > 294) {  // voltage in 17.5V to 29.4V
+    if (battery.voltage < 30 || battery.voltage > 37) {  // voltage in 3.0 V to 3.7 V
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d voltage out of range: %d", i, battery.voltage);
       return false;
     }
 
-    if (battery.current < 0 || battery.current > 500) {  // current in 0A to 50A
+    if (battery.current < 0 || battery.current > 150 ) {  // current in 0A to 15A
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d current out of range: %d", i, battery.current);
       return false;
     }
 
-    if (battery.average_temperature < 10
-        || battery.average_temperature > 60) {  // temperature in 10C to 60C
+    if (battery.average_temperature < 0
+        || battery.average_temperature > 80) {  // temperature in 0C to 80C
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d temperature out of range: %d", i,
                  battery.average_temperature);
@@ -148,34 +148,34 @@ bool BmsManager::batteriesInRange()
   // check HP
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
     auto &battery = batteries_.high_power_batteries[i];      // reference batteries individually
-    if (battery.voltage < 1000 || battery.voltage > 1296) {  // voltage in 100V to 129.6V
+    if (battery.voltage < 33 || battery.voltage > 42) {  // voltage in 3.3V to 4.2V
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d voltage out of range: %d", i, battery.voltage);
       return false;
     }
 
-    if (battery.current < 0 || battery.current > 3500) {  // current in 0A to 350A
+    if (battery.current < 0 || battery.current > 4000) {  // current in 0A to 400A
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d current out of range: %d", i, battery.current);
       return false;
     }
 
-    if (battery.average_temperature < 10
-        || battery.average_temperature > 65) {  // temperature in 10C to 65C
+    if (battery.average_temperature < 0
+        || battery.average_temperature > 80) {  // temperature in 0C to 80C
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i,
                  battery.average_temperature);
       return false;
     }
 
-    if (battery.low_temperature < 10) {
+    if (battery.low_temperature < 0) {
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i,
                  battery.low_temperature);
       return false;
     }
 
-    if (battery.high_temperature > 65) {
+    if (battery.high_temperature > 80) {
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS HP %d temperature out of range: %d", i,
                  battery.high_temperature);

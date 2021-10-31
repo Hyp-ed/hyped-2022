@@ -23,35 +23,13 @@ Controller::Controller(utils::Logger &log, uint8_t id)
   nmt_message_.id       = kNmtReceive;
   nmt_message_.extended = false;
   nmt_message_.len      = 2;
-
-  // Initialse arrays of message data:
-  FileReader::readFileData(configMessages_, kConfigMsgFile);
-  FileReader::readFileData(enterOperationalMessages_, kEnterOpMsgFile);
-  FileReader::readFileData(enterPreOperationalMessage_, kEnterPreOpMsgFile);
-  FileReader::readFileData(checkStateMessage_, kCheckStateMsgFile);
-  FileReader::readFileData(sendTargetVelocityMessage_, kSendTargetVelMsgFile);
-  FileReader::readFileData(sendTargetTorqueMessage_, kSendTargetTorqMsgFile);
-  FileReader::readFileData(updateActualVelocityMessage_, kUpdateActualVelMsgFile);
-  FileReader::readFileData(updateActualTorqueMessage_, kUpdateActualTorqMsgFile);
-  FileReader::readFileData(quickStopMessage_, kQuickStopMsgFile);
-  FileReader::readFileData(healthCheckMessages_, kHealthCheckMsgFile);
-  FileReader::readFileData(updateActualTorqueMessage_, kUpdateMotorTempFile);
-  FileReader::readFileData(updateControllerTemperatureMessage_, kUpdateContrTempFile);
-  FileReader::readFileData(autoAlignMessage_, kAutoAlignMsgFile);
 }
 
 bool Controller::sendControllerMessage(const ControllerMessage message_template)
 {
-  for (int i = 0; i < message_template.len; i++) {
-    sdo_message_.data[i] = message_template.message_data[i];
-  }
-
+  std::copy(message_template.begin(), message_template.end(), sdo_message_.data);
   sendSdoMessage(sdo_message_);
-
-  log_.DBG1("MOTOR", message_template.logger_output, node_id_);
-
-  if (critical_failure_) { return true; }
-  return false;
+  return critical_failure_;
 }
 
 void Controller::registerController()
@@ -62,8 +40,8 @@ void Controller::registerController()
 void Controller::configure()
 {
   log_.INFO("MOTOR", "Controller %d: Configuring...", node_id_);
-  for (int i = 0; i < 24; i++) {
-    if (sendControllerMessage(configMessages_[i])) return;
+  for (constexpr auto &message : kConfigurationMessages) {
+    if (sendControllerMessage(message)) return;
     Thread::sleep(100);
   }
   log_.INFO("MOTOR", "Controller %d: Configured.", node_id_);
@@ -82,26 +60,22 @@ void Controller::enterOperational()
   Thread::sleep(100);
 
   // enables velocity mode
-  if (sendControllerMessage(enterOperationalMessages_[0])) return;
+  if (sendControllerMessage(kEnterOperationalMessages.at(0))) return;
 
   // set the velocity to zero
   sendTargetVelocity(0);
 
   // apply break
-  // if (sendControllerMessage(enterOperationalMessages_[1])) return;
+  if (sendControllerMessage(kEnterOperationalMessages.at(1))) return;
 
   // send shutdown message to transition to Ready to Switch On state
-  for (int i = 0; i < 8; i++) {
-    sdo_message_.data[i] = enterOperationalMessages_[2].message_data[i];
-  }
-  log_.DBG1("MOTOR", enterOperationalMessages_[2].logger_output, node_id_);
+  constexpr auto &shutdown_message = kEnterOperationalMessages.at(2);
+  std::copy(shutdown_message.begin(), shutdown_message.end(), sdo_message_.data);
   requestStateTransition(sdo_message_, kReadyToSwitchOn);
 
   // Send enter operational message to transition to the Operation Enabled state
-  for (int i = 0; i < 8; i++) {
-    sdo_message_.data[i] = enterOperationalMessages_[3].message_data[i];
-  }
-  log_.DBG1("MOTOR", enterOperationalMessages_[3].logger_output, node_id_);
+  constexpr auto &operational_message = kEnterOperationalMessages.at(3);
+  std::copy(operational_message.begin(), operational_message.end(), sdo_message_.data);
   requestStateTransition(sdo_message_, kOperationEnabled);
 }
 
@@ -110,80 +84,80 @@ void Controller::enterPreOperational()
   checkState();
   if (state_ != kReadyToSwitchOn) {
     // send shutdown command
-    if (sendControllerMessage(enterPreOperationalMessage_[0])) return;
+    sendControllerMessage(kEnterPreOperationalMessage);
   }
 }
 
 void Controller::checkState()
 {
-  // Check Statusword in object dictionary
-  if (sendControllerMessage(checkStateMessage_[0])) return;
+  log_.DBG("MOTOR", "Controller %d: Checking state", node_id_);
+  sendControllerMessage(kCheckStateMessage);
 }
 
 void Controller::sendTargetVelocity(const int32_t target_velocity)
 {
+  log_.INFO("MOTOR", "Controller %d: Setting target velocity to %d", node_id_, target_velocity);
+  std::copy(kSendTargetVelocityMessage.begin(), kSendTargetVelocityMessage.end(),
+            sdo_message_.data);
+
   // Send 32 bit integer in Little Edian bytes
-  for (int i = 0; i < 8; i++) {
-    sdo_message_.data[i] = sendTargetVelocityMessage_[0].message_data[i];
-  }
   sdo_message_.data[4] = target_velocity & 0xFF;
   sdo_message_.data[5] = (target_velocity >> 8) & 0xFF;
   sdo_message_.data[6] = (target_velocity >> 16) & 0xFF;
   sdo_message_.data[7] = (target_velocity >> 24) & 0xFF;
 
-  log_.DBG2("MOTOR", sendTargetVelocityMessage_[0].logger_output, node_id_, target_velocity);
   sender_.sendMessage(sdo_message_);
 }
 
 void Controller::sendTargetTorque(const int16_t target_torque)
 {
+  log_.INFO("MOTOR", "Controller %d: Setting target torque to %d", node_id_, target_torque);
+  std::copy(kSendTargetTorqueMessage.begin(), kSendTargetTorqueMessage.end(), sdo_message_.data);
+
   // Send 16 bit integer in Little Edian bytes
-  for (int i = 0; i < 8; i++) {
-    sdo_message_.data[i] = sendTargetTorqueMessage_[0].message_data[i];
-  }
   sdo_message_.data[4] = target_torque & 0xFF;
   sdo_message_.data[5] = (target_torque >> 8) & 0xFF;
 
-  log_.DBG2("MOTOR", sendTargetTorqueMessage_[0].logger_output, node_id_, target_torque);
   sendSdoMessage(sdo_message_);
 }
 
 void Controller::updateActualVelocity()
 {
-  // Check actual velocity in object dictionary
-  if (sendControllerMessage(updateActualVelocityMessage_[0])) return;
+  log_.INFO("MOTOR", "Controller %d: Updating actual velocity", node_id_);
+  sendControllerMessage(kUpdateActualVelocityMessage);
 }
 
 void Controller::updateActualTorque()
 {
-  // Check actual torque in object dictionary
-  if (sendControllerMessage(updateActualTorqueMessage_[0])) return;
+  log_.INFO("MOTOR", "Controller %d: Updating actual torque", node_id_);
+  sendControllerMessage(kUpdateActualTorqueMessage);
 }
 
 void Controller::quickStop()
 {
-  // Send quickStop command
-  if (sendControllerMessage(quickStopMessage_[0])) return;
+  log_.INFO("MOTOR", "Controller %d: Sending quick stop command", node_id_);
+  sendControllerMessage(kQuickStopMessage);
 }
 
 void Controller::healthCheck()
 {
-  // Check warning status & Check error status
-  for (int i = 0; i < 2; i++) {
-    if (sendControllerMessage(healthCheckMessages_[i])) return;
+  log_.INFO("MOTOR", "Controller %d: Checking warnings and errors", node_id_);
+  for (constexpr auto &message : kHealthCheckMessages) {
+    if (sendControllerMessage(message)) return;
   }
 }
 
 void Controller::updateMotorTemp()
 {
-  // Check motor temp in object dictionary
-  if (sendControllerMessage(updateMotorTemperatueMessage_[0])) return;
+  log_.INFO("MOTOR", "Controller %d: Updating motor temperature", node_id_);
+  sendControllerMessage(kMotorTemperatureMessage);
 }
 
 void Controller::updateControllerTemp()
 {
   // Check controller temp in object dictionary
-  if (sendControllerMessage(updateControllerTemperatureMessage_[0])) return;
+  log_.INFO("MOTOR", "Controller %d: Updating controller temperature", node_id_);
+  sendControllerMessage(kControllerTemperatureMessage);
 }
 
 void Controller::sendSdoMessage(utils::io::can::Frame &message)
@@ -226,7 +200,8 @@ void Controller::autoAlignMotorPosition()
   nmt_message_.data[1] = node_id_;
   sendSdoMessage(nmt_message_);
   Thread::sleep(100);
-  if (sendControllerMessage(autoAlignMessage_[0])) return;
+  log_.INFO("MOTOR", "Controller %d: Auto aligning motor position", node_id_);
+  sendControllerMessage(kAutoAlignMessage);
 }
 
 void Controller::processEmergencyMessage(utils::io::can::Frame &message)

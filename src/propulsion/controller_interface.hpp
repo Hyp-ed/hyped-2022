@@ -18,12 +18,6 @@ enum ControllerState {
   kFault,
 };
 
-struct ControllerMessage {
-  uint8_t message_data[8];
-  int len = 8;
-  char logger_output[250];
-};
-
 class ControllerInterface {
  public:
   virtual void registerController()                                                          = 0;

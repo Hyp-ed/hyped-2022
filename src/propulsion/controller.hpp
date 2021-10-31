@@ -1,7 +1,7 @@
 #pragma once
 
 #include "controller_interface.hpp"
-#include "file_reader.hpp"
+#include "messages.hpp"
 
 #include <atomic>
 
@@ -183,37 +183,6 @@ class Controller : public ControllerInterface {
 
   // Network management CAN commands:
   const uint8_t kNmtOperational = 0x01;
-
-  // Paths to the different files of message data.
-  const char *kConfigMsgFile           = "data/in/controllerConfigFiles/configure.txt";
-  const char *kEnterOpMsgFile          = "data/in/controllerConfigFiles/enter_operational.txt";
-  const char *kEnterPreOpMsgFile       = "data/in/controllerConfigFiles/enter_preOperational.txt";
-  const char *kCheckStateMsgFile       = "data/in/controllerConfigFiles/check_state.txt";
-  const char *kSendTargetVelMsgFile    = "data/in/controllerConfigFiles/send_target_velocity.txt";
-  const char *kSendTargetTorqMsgFile   = "data/in/controllerConfigFiles/send_target_torque.txt";
-  const char *kUpdateActualVelMsgFile  = "data/in/controllerConfigFiles/update_actual_velocity.txt";
-  const char *kUpdateActualTorqMsgFile = "data/in/controllerConfigFiles/update_actual_torque.txt";
-  const char *kQuickStopMsgFile        = "data/in/controllerConfigFiles/quick_stop.txt";
-  const char *kHealthCheckMsgFile      = "data/in/controllerConfigFiles/health_check.txt";
-  const char *kUpdateMotorTempFile     = "data/in/controllerConfigFiles/update_motor_temp.txt";
-  const char *kUpdateContrTempFile     = "data/in/controllerConfigFiles/update_contr_temp.txt";
-  const char *kAutoAlignMsgFile        = "data/in/controllerConfigFiles/auto_align.txt";
-
- public:
-  // Arrays of messages sent to controller (see config files for details about message contents)
-  ControllerMessage configMessages_[24];
-  ControllerMessage enterOperationalMessages_[4];
-  ControllerMessage enterPreOperationalMessage_[1];
-  ControllerMessage checkStateMessage_[1];
-  ControllerMessage sendTargetVelocityMessage_[1];
-  ControllerMessage sendTargetTorqueMessage_[1];
-  ControllerMessage updateActualVelocityMessage_[1];
-  ControllerMessage updateActualTorqueMessage_[1];
-  ControllerMessage quickStopMessage_[1];
-  ControllerMessage healthCheckMessages_[2];
-  ControllerMessage updateMotorTemperatueMessage_[1];
-  ControllerMessage updateControllerTemperatureMessage_[1];
-  ControllerMessage autoAlignMessage_[1];
 };
 }  // namespace motor_control
 }  // namespace hyped

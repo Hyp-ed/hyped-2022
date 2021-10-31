@@ -1,8 +1,10 @@
 #pragma once
 
+#include <stdint.h>
+
 #include <array>
 
-namespace hyped::propulsion {
+namespace hyped::motor_control {
 
 using ControllerMessage = std::array<uint8_t, 8>;
 
@@ -65,7 +67,7 @@ static constexpr std::array<ControllerMessage, 24> kConfigurationMessages = {{
   {0x23, 0x94, 0x60, 0x02, 0x1E, 0x00, 0x00, 0x00},
 }};
 
-static constexpr std::array<ControllerMessage, 4> kEnterOperationalMessage = {{
+static constexpr std::array<ControllerMessage, 4> kEnterOperationalMessages = {{
   // Enable velocity mode
   {0x2F, 0x60, 0x60, 0x00, 0x09, 0x00, 0x00, 0x00},
   // Apply brake
@@ -115,4 +117,4 @@ static constexpr ControllerMessage kMotorTemperatureMessage
   // Check motor temperature in object dictionary
   = {0x40, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-}  // namespace hyped::propulsion
+}  // namespace hyped::motor_control

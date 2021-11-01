@@ -36,9 +36,9 @@ void ImuDataLogger::setupKalman(const int imu_id, const int run_id)
 void ImuDataLogger::dataToFileSimulation(const data::NavigationVector &acceleration,
                                          const uint32_t timestamp)
 {
-  *outfile_ << acceleration[0] << ",";
-  *outfile_ << acceleration[1] << ",";
-  *outfile_ << acceleration[2] << ",";
+  for (std::size_t i = 0; i < 3; i++) {
+    *outfile_ << acceleration[i] << ",";
+  }
   *outfile_ << timestamp << std::endl;
 }
 
@@ -46,12 +46,12 @@ void ImuDataLogger::dataToFile(const data::NavigationVector &raw_acceleration,
                                const data::NavigationVector &calibrated_acceleration,
                                const uint32_t timestamp)
 {
-  *outfile_ << raw_acceleration[0] << ",";
-  *outfile_ << raw_acceleration[1] << ",";
-  *outfile_ << raw_acceleration[2] << ",";
-  *outfile_ << calibrated_acceleration[0] << ",";
-  *outfile_ << calibrated_acceleration[1] << ",";
-  *outfile_ << calibrated_acceleration[2] << ",";
+  for (std::size_t i = 0; i < 3; i++) {
+    *outfile_ << raw_acceleration[i] << ",";
+  }
+  for (std::size_t i = 0; i < 3; i++) {
+    *outfile_ << calibrated_acceleration[i] << ",";
+  }
   *outfile_ << timestamp << std::endl;
 }
 
@@ -59,15 +59,15 @@ void ImuDataLogger::dataToFileKalman(const data::NavigationVector &raw_accelerat
                                      const data::NavigationVector &calibrated_acceleration,
                                      const data::NavigationVector &x, const uint32_t timestamp)
 {
-  *outfile_ << raw_acceleration[0] << ",";
-  *outfile_ << raw_acceleration[1] << ",";
-  *outfile_ << raw_acceleration[2] << ",";
-  *outfile_ << calibrated_acceleration[0] << ",";
-  *outfile_ << calibrated_acceleration[1] << ",";
-  *outfile_ << calibrated_acceleration[2] << ",";
-  *outfile_ << x[0] << ",";
-  *outfile_ << x[1] << ",";
-  *outfile_ << x[2] << ",";
+  for (std::size_t i = 0; i < 3; i++) {
+    *outfile_ << raw_acceleration[i] << ",";
+  }
+  for (std::size_t i = 0; i < 3; i++) {
+    *outfile_ << calibrated_acceleration[i] << ",";
+  }
+  for (std::size_t i = 0; i < 3; i++) {
+    *outfile_ << x[i] << ",";
+  }
   *outfile_ << timestamp << std::endl;
 }
 

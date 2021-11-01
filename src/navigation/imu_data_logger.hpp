@@ -15,6 +15,10 @@ namespace navigation {
 
 class ImuDataLogger {
  public:
+  /**
+   * @brief Construct a new Imu Data Logger object
+   * 
+   */
   ImuDataLogger();
   ~ImuDataLogger();
 

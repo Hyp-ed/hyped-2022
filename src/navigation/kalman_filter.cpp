@@ -66,21 +66,6 @@ const data::nav_t KalmanFilter::filter(data::nav_t z)
   data::nav_t estimate = getEstimate();
   return estimate;
 }
-/*
-data::nav_t KalmanFilter::filter(data::nav_t u, data::nav_t z)
-{
-  Eigen::VectorXf vu(k_);
-  vu(0) = u;
-
-  Eigen::VectorXf vz(m_);
-  vz(0) = z;
-
-  kalmanFilter_.filter(vu, vz);
-
-  data::nav_t estimate = getEstimate();
-  return estimate;
-}
-*/
 
 const Eigen::MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix() const
 {
@@ -89,7 +74,7 @@ const Eigen::MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix() const
 }
 
 // TODO: (Max) look into kalman filter and look at what's happening here exactly
-Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt)
+Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(const double dt) const
 {
   Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n_, n_);
   double acc_ddt    = 0.5 * dt * dt;
@@ -114,7 +99,7 @@ Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(double dt)
   return A;
 }
 
-const Eigen::MatrixXf KalmanFilter::createMeasurementMatrix() const
+Eigen::MatrixXf KalmanFilter::createMeasurementMatrix() const
 {
   Eigen::MatrixXf H = Eigen::MatrixXf::Zero(m_, n_);
   for (std::size_t i = 0; i < m_; ++i) {
@@ -146,7 +131,7 @@ const Eigen::MatrixXf KalmanFilter::createStationaryMeasurementCovarianceMatrix(
   return R;
 }
 
-const data::nav_t KalmanFilter::getEstimate()
+data::nav_t KalmanFilter::getEstimate()
 {
   Eigen::VectorXf x    = kalmanFilter_.getStateEstimate();
   data::nav_t estimate = x(0);

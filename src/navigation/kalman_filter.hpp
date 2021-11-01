@@ -19,7 +19,7 @@ class KalmanFilter {
   const data::nav_t filter(data::nav_t z);
   const data::nav_t filter(data::nav_t u, data::nav_t z);
   // transfer estimate to NavigationVector
-  const data::nav_t getEstimate();
+  data::nav_t getEstimate();
   // transfer estimate variances to NavigationVector
   const data::nav_t getEstimateVariance();
 
@@ -43,10 +43,10 @@ class KalmanFilter {
   const Eigen::MatrixXf createInitialErrorCovarianceMatrix() const;
 
   // create state transition matrix A
-  Eigen::MatrixXf createStateTransitionMatrix(double dt);
+  Eigen::MatrixXf createStateTransitionMatrix(double dt) const;
 
   // create measurement matrix H
-  const Eigen::MatrixXf createMeasurementMatrix() const;
+  Eigen::MatrixXf createMeasurementMatrix() const;
 
   // create state transition coveriance matrix Q
   const Eigen::MatrixXf createStateTransitionCovarianceMatrix() const;

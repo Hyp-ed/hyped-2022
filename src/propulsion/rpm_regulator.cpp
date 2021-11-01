@@ -19,8 +19,7 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
     return actual_rpm;
   }
   const int32_t target = actual_rpm + step(optimal_rpm, actual_rpm);
-  if (target < 0) { return 0; }
-  return target;
+  return std::max(target,0);
 }
 
 int32_t RpmRegulator::calculateOptimalRpm(const data::nav_t actual_velocity)

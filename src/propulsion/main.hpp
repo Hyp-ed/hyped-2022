@@ -14,7 +14,7 @@ namespace motor_control {
 
 constexpr int32_t kNumMotors = 4;
 
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
   Main(uint8_t id, utils::Logger &log);
 

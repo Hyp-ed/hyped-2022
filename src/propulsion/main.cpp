@@ -34,8 +34,8 @@ void Main::run()
   data::Motors motor_data = data.getMotorData();
 
   // Initialise states
-  current_state_  = data.getStateMachineData().current_state;
-  previous_state_ = data::State::kInvalid;
+  data::State current_state_  = data.getStateMachineData().current_state;
+  data::State previous_state_ = data::State::kInvalid;
 
   // kInit for SM transition
   motor_data.module_status = data::ModuleStatus::kInit;
@@ -44,8 +44,8 @@ void Main::run()
 
   while (is_running_ && sys.running_) {
     // Get the current state of the system from the state machine's data
-    motor_data                  = data.getMotorData();
-    current_state_              = data.getStateMachineData().current_state;
+    data::Motors motor_data     = data.getMotorData();
+    data::State current_state_  = data.getStateMachineData().current_state;
     bool encountered_transition = handleTransition();
 
     switch (current_state_) {

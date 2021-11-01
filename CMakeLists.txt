@@ -24,10 +24,9 @@ endfunction()
 
 
 # -------------------------------------------------- #
-# CONFIGURE CLANG                                    #
+# CONFIGURE COMPILER                                 #
 # -------------------------------------------------- #
 
-set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -61,11 +60,49 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread ${COVERAGE_FLAGS} ${OPTIMISATION_FLAGS} ${WARN_FLAGS}")
 set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -stdlib=libc++ -lpthread ${WARN_FLAGS}")
 
+
+# -------------------------------------------------- #
+# GET CROSS COMPILER                                 #
+# -------------------------------------------------- #
+
+option(CROSS "Cross compile for the BBB")
+if(CROSS)
+  message("cross:     ON")
+  set(CMAKE_SYSTEM_NAME "Linux")
+  if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+    message("Cross compiling from x86 Linux to BBB")
+    set(CC "arm-none-linux-gnueabihf")
+    set(CC_DIRECTORY "${CMAKE_BINARY_DIR}/gcc-arm-10.3-2021.07-x86_64-${CC}")
+    set(CMAKE_CXX_COMPILER "${CC_DIRECTORY}/bin/${CC}-c++")
+    set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -static")
+  elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
+    set(CC_DIRECTORY "${CMAKE_BINARY_DIR}/mac-crosscompiler")
+    set(CMAKE_CXX_COMPILER "${CC_DIRECTORY}/prebuilt/bin/clang++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --target=arm-linux-gnueabihf                                                    \
+                                            --sysroot=${CC_DIRECTORY}/sysroot                                               \
+                                            -I${CC_DIRECTORY}/sysroot/usr/include/c++/6.3.0                                 \
+                                            -I${CC_DIRECTORY}/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0             \
+                                            --gcc-toolchain=${CC_DIRECTORY}/prebuilt/bin")
+    set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} --target=arm-linux-gnueabihf                                      \
+                                                          -L${CC_DIRECTORY}/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0   \
+                                                          --sysroot=${CC_DIRECTORY}/sysroot")
+  endif()
+else()
+  message("cross:     OFF")
+  set(CMAKE_SYSTEM_NAME "${CMAKE_HOST_SYSTEM_NAME}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DARCH_64")
+endif()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINUX")
+endif()
+
+message("host system:    ${CMAKE_HOST_SYSTEM_NAME}")
+message("target system:  ${CMAKE_SYSTEM_NAME}")
 message("compile flags: ${CMAKE_CXX_FLAGS}")
 message("link flags:    ${CMAKE_CXX_LINKER_FLAGS}")
+message("compiler:       ${CMAKE_CXX_COMPILER}")
 
-add_compile_definitions(ARCH_64)
-add_compile_definitions(LINUX)
 
 # -------------------------------------------------- #
 # BUILD LIBS                                         #
@@ -77,7 +114,7 @@ include(${CMAKE_SOURCE_DIR}/lib/eigen.cmake)
 include(${CMAKE_SOURCE_DIR}/lib/gtest.cmake)
 
 set(project hyped)
-project(${project})
+project(${project} CXX)
 
 # defining where the third party headers can be found
 include_directories(
@@ -95,8 +132,11 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
-add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
+if (CROSS)
+else()
+  add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+endif()
 # -------------------------------------------------- #
 # BUILD EXECUTABLES                                  #
 # -------------------------------------------------- #

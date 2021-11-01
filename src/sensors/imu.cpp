@@ -144,7 +144,7 @@ void Imu::enableFifo()
   kFrameSize_ = 6;
 }
 
-bool Imu::whoAmI()
+bool Imu::whoAmI() // Check if IMU is powered, and SPI bus live
 {
   uint8_t data;
   int send_counter;
@@ -179,14 +179,14 @@ void Imu::selectBank(uint8_t switch_bank)
   log_.DBG1("Imu", "User bank switched to %u", user_bank_);
 }
 
-void Imu::writeByte(uint8_t write_reg, uint8_t write_data)
+void Imu::writeByte(uint8_t write_reg, uint8_t write_data) //MISO data shift
 {
   // ',' instead of ';' is to inform the compiler not to reorder function calls
   // chip selects signals must have exact ordering with respect to the spi access
   select(), spi_.write(write_reg, &write_data, 1), deSelect();
 }
 
-void Imu::readByte(uint8_t read_reg, uint8_t *read_data)
+void Imu::readByte(uint8_t read_reg, uint8_t *read_data) //MOSI data shift
 {
   select(), spi_.read(read_reg | kReadFlag, read_data, 1), deSelect();
 }

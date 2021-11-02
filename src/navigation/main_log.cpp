@@ -12,7 +12,7 @@ MainLog::MainLog(const uint8_t id, Logger &log)
     : Thread(id, log),
       log_(log),
       sys_(System::getSystem()),
-      data_(Data::getInstance())
+      data_(data::Data::getInstance())
 {
   log_.INFO("NAV", "Logging initialising");
   calibrateGravity();
@@ -54,11 +54,14 @@ void MainLog::run()
     DataPoint<ImuDataArray> sensor_readings = data_.getSensorsImuData();
     for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
       // Apply calibrated correction
-      NavigationVector acc     = sensor_readings.value[i].acc;
-      NavigationVector acc_cor = acc - gravity_calibration_[i];
-      log_.DBG("NAV", "%.3f %.3f %.3f / %.3f %.3f %.3f", acc[0], acc[1], acc[2], acc_cor[0],
-               acc_cor[1], acc_cor[2]);
-      imu_loggers_[i].dataToFile(acc_cor, acc, sensor_readings.timestamp);
+      NavigationVector acceleration
+        = sensor_readings.value[i].acc;  // TODO: .acc should be renamed to acceleration, but must
+                                         // be changed in data.hpp and other areas as
+      NavigationVector calibrated_acceleration = acceleration - gravity_calibration_[i];
+      log_.DBG("NAV", "%.3f %.3f %.3f / %.3f %.3f %.3f", acceleration[0], acceleration[1],
+               acceleration[2], calibrated_acceleration[0], calibrated_acceleration[1],
+               calibrated_acceleration[2]);
+      imu_loggers_[i].dataToFile(calibrated_acceleration, acceleration, sensor_readings.timestamp);
     }
   }
 }

@@ -18,7 +18,6 @@
 
 namespace hyped {
 
-using data::Data;
 using data::ImuData;
 using data::NavigationVector;
 using navigation::ImuDataLogger;
@@ -29,8 +28,14 @@ using utils::math::OnlineStatistics;
 
 namespace navigation {
 
-class MainLog : public Thread {
+class MainLog : public utils::concurrent::Thread {
  public:
+  /**
+   * @brief Construct a new Main Log object
+   *
+   * @param id log ID
+   * @param log Logger object
+   */
   explicit MainLog(uint8_t id, Logger &log);
   void run() override;
 
@@ -39,7 +44,7 @@ class MainLog : public Thread {
 
   Logger &log_;
   System &sys_;
-  Data &data_;
+  data::Data &data_;
   std::array<NavigationVector, data::Sensors::kNumImus> gravity_calibration_;
 
   std::array<ImuDataLogger, data::Sensors::kNumImus> imu_loggers_;

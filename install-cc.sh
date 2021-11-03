@@ -11,8 +11,6 @@ if [ $SYSTEM = "Linux" ]; then
     printf "DONE\nExtracting $ARCHIVE..."
     tar xf $ARCHIVE
     printf "DONE\n"
-elif [ $SYSTEM = "Darwin" ]; then
-    git clone git@github.com:Hyp-ed/mac-crosscompiler.git
 else
     printf "Unsupported kernel name %s\n" $SYSTEM 
 fi

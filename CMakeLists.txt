@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 
 # -------------------------------------------------- #
 # LIB HELPER                                         #
@@ -76,16 +76,7 @@ if(CROSS)
     set(CMAKE_CXX_COMPILER "${CC_DIRECTORY}/bin/${CC}-c++")
     set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -static")
   elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-    set(CC_DIRECTORY "${CMAKE_BINARY_DIR}/mac-crosscompiler")
-    set(CMAKE_CXX_COMPILER "${CC_DIRECTORY}/prebuilt/bin/clang++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --target=arm-linux-gnueabihf                                                    \
-                                            --sysroot=${CC_DIRECTORY}/sysroot                                               \
-                                            -I${CC_DIRECTORY}/sysroot/usr/include/c++/6.3.0                                 \
-                                            -I${CC_DIRECTORY}/sysroot/usr/include/arm-linux-gnueabihf/c++/6.3.0             \
-                                            --gcc-toolchain=${CC_DIRECTORY}/prebuilt/bin")
-    set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} --target=arm-linux-gnueabihf                                      \
-                                                          -L${CC_DIRECTORY}/sysroot/usr/lib/gcc/arm-linux-gnueabihf/6.3.0   \
-                                                          --sysroot=${CC_DIRECTORY}/sysroot")
+    message(FATAL_ERROR "Cross compilation is not supported for MacOS")
   endif()
 else()
   message("cross:     OFF")

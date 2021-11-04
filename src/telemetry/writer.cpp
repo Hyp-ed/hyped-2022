@@ -25,9 +25,26 @@ void Writer::packAdditionalData()
   json_writer_.Key("additional_data");
   json_writer_.StartArray();
 
-  // Edit below
+  // Navigation
+  data::Navigation nav_data  = data_.getNavigationData();
+  add("braking_distance", 0.0, 1250.0, "m", nav_data.braking_distance);
+  add("displacement", 0.0, 1250.0, "m", nav_data.displacement);
+  add("emergency_braking_distance", 0.0, 1250.0, "m", nav_data.emergency_braking_distance);
+  add("braking_buffer_(const)", 20.0, 20.0, "m", nav_data.kBrakingBuffer);
+  add("max_velocity_(const)", 100.0, 100.0, "m/s", nav_data.kMaximumVelocity);
+  add("run_length_(const)", 0.0, 1250.0, "m", nav_data.kRunLength);
+  
+  // Sensors (emergency brakes and batteries included) TODO
+  
 
-  // Edit above
+  // Motors
+  data::Motors motor_data  = data_.getMotorData();
+  add("motor_rpm_1", motor_data.rpms[0]);
+  add("motor_rpm_2", motor_data.rpms[1]);
+  add("motor_rpm_3", motor_data.rpms[2]);
+  add("motor_rpm_4", motor_data.rpms[3]);
+
+  // State machine TODO
 
   json_writer_.EndArray();
 }
@@ -56,7 +73,19 @@ void Writer::packStatusData()
   json_writer_.Key("status_data");
   json_writer_.StartArray();
 
-  // TODO(everyone): add all required data points
+  // Module statuses
+  data::Navigation nav_data = data_.getNavigationData();
+  add("nav_status", nav_data.module_status);
+  data::Motors motors_data = data_.getMotorData();
+  add("motors_status", motors_data.module_status);
+  data::Sensors sensors_data = data_.getSensorsData();
+  add("sensors_status", sensors_data.module_status);
+  data::Telemetry telemetry_data = data_.getTelemetryData();
+  add("telemetry_status", telemetry_data.module_status);
+  data::EmergencyBrakes brakes_data = data_.getEmergencyBrakesData();
+  add("emergency_brakes_status", brakes_data.module_status);
+  data::Batteries batteries_data = data_.getBatteriesData();
+  add("batteries_status", batteries_data.module_status);
 
   json_writer_.EndArray();
 }

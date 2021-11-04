@@ -3,7 +3,7 @@
 namespace hyped {
 
 namespace motor_control {
-Main::Main(uint8_t id, utils::Logger &log)
+Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),

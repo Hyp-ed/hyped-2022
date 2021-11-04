@@ -16,7 +16,7 @@ constexpr int32_t kNumMotors = 4;
 
 class Main : public utils::concurrent::Thread {
  public:
-  Main(uint8_t id, utils::Logger &log);
+  Main(const uint8_t id, utils::Logger &log);
 
   /**
    * @brief {This function is the entrypoint to the propulsion module and reacts to the certain

@@ -18,7 +18,6 @@ MainLog::MainLog(uint8_t id, Logger &log)
   calibrateGravity();
 
   for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
-    imu_loggers_[i] = ImuDataLogger();
     imu_loggers_[i].setup(i, sys_.run_id);
   }
   data::Navigation nav_data = data_.getNavigationData();

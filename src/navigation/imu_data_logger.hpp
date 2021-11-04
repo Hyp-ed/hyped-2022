@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <fstream>
 #include <string>
 
 #include <data/data.hpp>
@@ -17,7 +18,7 @@ class ImuDataLogger {
  public:
   /**
    * @brief Construct a new Imu Data Logger object
-   * 
+   *
    */
   ImuDataLogger();
   ~ImuDataLogger();
@@ -72,7 +73,7 @@ class ImuDataLogger {
 
  private:
   std::string file_path_;
-  std::ofstream *outfile_;
+  std::ofstream outfile_;
 };
 }  // namespace navigation
 }  // namespace hyped

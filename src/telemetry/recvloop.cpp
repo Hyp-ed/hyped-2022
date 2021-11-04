@@ -70,5 +70,5 @@ data_.setTelemetryData(telemetry_data);
 log_.DBG("Telemetry", "Exiting Telemetry RecvLoop thread");
 }  // namespace hyped
 
-}  // namespace telemetry
-}  // namespace hyped
+
+

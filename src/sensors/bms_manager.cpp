@@ -131,7 +131,7 @@ bool BmsManager::batteriesInRange()
     }
 
     if (battery.average_temperature < 0
-        || battery.average_temperature > 80) {  // temperature in 0C to 80C
+        || battery.average_temperature > 70) {  // temperature in 0C to 70C (70C is the upper safe limit; 80 is the shutdown temperature)
       if (batteries_.module_status != previous_status_)
         log_.ERR("BMS-MANAGER", "BMS LP %d temperature out of range: %d", i,
                  battery.average_temperature);

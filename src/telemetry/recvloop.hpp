@@ -9,13 +9,13 @@ namespace hyped {
 
 namespace telemetry {
 
-class RecvLoop : public utils::concurrent::Thread {
+class RecieveLoop : public utils::concurrent::Thread {
  public:
-  explicit RecvLoop(Logger &log, data::Data &data, Main *main_pointer);
+  explicit RecieveLoop(Logger &log, data::Data &data, Client &client);
   void run() override;
 
  private:
-  Main &main_ref_;
+  Client &client_;
   data::Data &data_;
 };
 

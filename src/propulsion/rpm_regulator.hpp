@@ -60,7 +60,6 @@ class RpmRegulator {
    */
   int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);
 
-  int32_t current_index_;
   bool failure_;
 };
 

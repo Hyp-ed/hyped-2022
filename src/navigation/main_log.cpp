@@ -50,7 +50,6 @@ void MainLog::run()
   log_.INFO("NAV", "Logging starting");
 
   while (sys_.running_) {
-    DataPoint<ImuDataArray> sensor_readings = data_.getSensorsImuData();
     data::DataPoint<ImuDataArray> sensor_readings = data_.getSensorsImuData();
     for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
       // Apply calibrated correction

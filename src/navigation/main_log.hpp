@@ -26,9 +26,9 @@ class MainLog : public utils::concurrent::Thread {
    * @brief Construct a new Main Log object
    *
    * @param id log ID
-   * @param log Logger object
+   * @param log System logger
    */
-  explicit MainLog(uint8_t id, utils::Logger &log);
+  explicit MainLog(const uint8_t id, utils::Logger &log);
   void run() override;
 
  private:

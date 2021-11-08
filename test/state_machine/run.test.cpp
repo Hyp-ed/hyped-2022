@@ -84,7 +84,7 @@ class RunTest : public Test {
    * If tests are failing for no apparent reason, try increasing the sleep duration to be sure this
    * is not the source of the problem.
    */
-  void waitForUpdate() { Thread::sleep(10); }
+  void waitForUpdate() { Thread::sleep(20); }
 
   // ---- Run steps --------------
 

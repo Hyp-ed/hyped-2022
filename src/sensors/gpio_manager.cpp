@@ -78,6 +78,7 @@ void GpioManager::run()
         case data::State::kIdle:
         case data::State::kAccelerating:
         case data::State::kCruising:
+        case data::State::kCalibrating:
         case data::State::kNominalBraking:
           break;
         case data::State::kEmergencyBraking:

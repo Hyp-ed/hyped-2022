@@ -25,26 +25,101 @@ void Writer::packAdditionalData()
   json_writer_.Key("additional_data");
   json_writer_.StartArray();
 
+  // Telemetry
+  data::Telemetry tel_data = data_.getTelemetryData();
+  startList("Telemetry");
+  add("calibrate", tel_data.calibrate_command);
+  add("emergency_stop", tel_data.emergency_stop_command);
+  add("launch", tel_data.launch_command);
+  add("nominal_braking", tel_data.nominal_braking_command);
+  add("service_propulsion_go", tel_data.service_propulsion_go);
+  add("shutdown", tel_data.shutdown_command);
+  endList();
+
   // Navigation
-  data::Navigation nav_data  = data_.getNavigationData();
+  data::Navigation nav_data = data_.getNavigationData();
+  startList("Navigation");
   add("braking_distance", 0.0, 1250.0, "m", nav_data.braking_distance);
   add("displacement", 0.0, 1250.0, "m", nav_data.displacement);
   add("emergency_braking_distance", 0.0, 1250.0, "m", nav_data.emergency_braking_distance);
   add("braking_buffer_(const)", 20.0, 20.0, "m", nav_data.kBrakingBuffer);
   add("max_velocity_(const)", 100.0, 100.0, "m/s", nav_data.kMaximumVelocity);
   add("run_length_(const)", 0.0, 1250.0, "m", nav_data.kRunLength);
-  
-  // Sensors (emergency brakes and batteries included) TODO
-  
+  endList();
+
+  // Sensors (emergency brakes and batteries included)
+  data::Sensors sensors_data        = data_.getSensorsData();
+  data::Batteries batteries_data    = data_.getBatteriesData();
+  data::EmergencyBrakes brakes_data = data_.getEmergencyBrakesData();
+  startList("Sensors");
+  add("brakes_retracted", brakes_data.brakes_retracted);
+  add("temperature", data_.getTemperature());
+
+  startList("Low Power Batteries");
+  for (int i = 0; i < batteries_data.kNumLPBatteries; i++) {
+    std::string battery_num = std::to_string(i);
+    startList("Low Power Battery " + battery_num);
+    add("lp_battery_" + battery_num + "_ave_temp",
+        batteries_data.low_power_batteries[i].average_temperature);
+    add("lp_battery_" + battery_num + "_volt", batteries_data.low_power_batteries[i].voltage);
+    add("lp_battery_" + battery_num + "_current", batteries_data.low_power_batteries[i].current);
+    add("lp_battery_" + battery_num + "_charge", batteries_data.low_power_batteries[i].charge);
+    add("lp_battery_" + battery_num + "_low_temp",
+        batteries_data.low_power_batteries[i].low_temperature);
+    add("lp_battery_" + battery_num + "_high_temp",
+        batteries_data.low_power_batteries[i].high_temperature);
+    add("lp_battery_" + battery_num + "_low_volt_cell",
+        batteries_data.low_power_batteries[i].low_voltage_cell);
+    add("lp_battery_" + battery_num + "_high_volt_cell",
+        batteries_data.low_power_batteries[i].high_voltage_cell);
+    add("lp_battery_" + battery_num + "_imd_fault",
+        batteries_data.low_power_batteries[i].imd_fault);
+    endList();
+  }
+  endList();
+
+  startList("High Power Batteries");
+  for (int i = 0; i < batteries_data.kNumHPBatteries; i++) {
+    std::string battery_num = std::to_string(i);
+    startList("High Power Battery " + battery_num);
+    add("lp_battery_" + battery_num + "_ave_temp",
+        batteries_data.high_power_batteries[i].average_temperature);
+    add("lp_battery_" + battery_num + "_volt", batteries_data.high_power_batteries[i].voltage);
+    add("lp_battery_" + battery_num + "_current", batteries_data.high_power_batteries[i].current);
+    add("lp_battery_" + battery_num + "_charge", batteries_data.high_power_batteries[i].charge);
+    add("lp_battery_" + battery_num + "_low_temp",
+        batteries_data.high_power_batteries[i].low_temperature);
+    add("lp_battery_" + battery_num + "_high_temp",
+        batteries_data.high_power_batteries[i].high_temperature);
+    add("lp_battery_" + battery_num + "_low_volt_cell",
+        batteries_data.high_power_batteries[i].low_voltage_cell);
+    add("lp_battery_" + battery_num + "_high_volt_cell",
+        batteries_data.high_power_batteries[i].high_voltage_cell);
+    add("lp_battery_" + battery_num + "_imd_fault",
+        batteries_data.high_power_batteries[i].imd_fault);
+    endList();
+  }
+  endList();
+
+  // ImuData, EncoderData, StripeCounter data types not currently supported by json writer
+
+  endList();
 
   // Motors
-  data::Motors motor_data  = data_.getMotorData();
+  data::Motors motor_data = data_.getMotorData();
+  startList("Motors");
   add("motor_rpm_1", motor_data.rpms[0]);
   add("motor_rpm_2", motor_data.rpms[1]);
   add("motor_rpm_3", motor_data.rpms[2]);
   add("motor_rpm_4", motor_data.rpms[3]);
+  endList();
 
   // State machine TODO
+  data::StateMachine sm_data = data_.getStateMachineData();
+  startList("State Machine");
+  add("critical_failure", sm_data.critical_failure);
+  add("current_state", sm_data.current_state);
+  endList();
 
   json_writer_.EndArray();
 }

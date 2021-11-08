@@ -53,7 +53,7 @@ void Writer::packAdditionalData()
   add("temperature", data_.getTemperature());
 
   startList("Low Power Batteries");
-  for (int i = 0; i < batteries_data.kNumLPBatteries; i++) {
+  for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
     std::string battery_num = std::to_string(i);
     startList("Low Power Battery " + battery_num);
     add("lp_battery_" + battery_num + "_ave_temp",
@@ -76,7 +76,7 @@ void Writer::packAdditionalData()
   endList();
 
   startList("High Power Batteries");
-  for (int i = 0; i < batteries_data.kNumHPBatteries; i++) {
+  for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
     std::string battery_num = std::to_string(i);
     startList("High Power Battery " + battery_num);
     add("lp_battery_" + battery_num + "_ave_temp",

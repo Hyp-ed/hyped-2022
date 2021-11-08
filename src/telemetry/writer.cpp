@@ -42,9 +42,6 @@ void Writer::packAdditionalData()
   add("braking_distance", 0.0, 1250.0, "m", nav_data.braking_distance);
   add("displacement", 0.0, 1250.0, "m", nav_data.displacement);
   add("emergency_braking_distance", 0.0, 1250.0, "m", nav_data.emergency_braking_distance);
-  add("braking_buffer_(const)", 20.0, 20.0, "m", nav_data.kBrakingBuffer);
-  add("max_velocity_(const)", 100.0, 100.0, "m/s", nav_data.kMaximumVelocity);
-  add("run_length_(const)", 0.0, 1250.0, "m", nav_data.kRunLength);
   endList();
 
   // Sensors (emergency brakes and batteries included)

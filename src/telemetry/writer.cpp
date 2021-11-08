@@ -47,7 +47,7 @@ void Writer::packAdditionalData()
   // Sensors (emergency brakes and batteries included)
   data::Sensors sensors_data        = data_.getSensorsData();
   data::Batteries batteries_data    = data_.getBatteriesData();
-  data::EmergencyBrakes brakes_data = data_.getEmergencyBrakesData();
+  const auto brakes_data = data_.getEmergencyBrakesData();
   startList("Sensors");
   add("brakes_retracted", brakes_data.brakes_retracted);
   add("temperature", data_.getTemperature());

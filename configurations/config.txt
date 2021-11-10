@@ -20,7 +20,7 @@
 $ telemetry.txt
 $ state_machine.txt
 $ sensors.txt
-$ brakes.txt
+$ embrakes.txt
 $ motor_control.txt
 
 > InterfaceFactory

@@ -7,26 +7,23 @@
 
 namespace hyped {
 
-using utils::Config;
-using utils::Logger;
-
 namespace telemetry {
 
 class Client {
  public:
-  explicit Client(Logger &log);
+  explicit Client(utils::Logger &log);
   ~Client();
   bool connect();
   bool sendData(std::string message);
   std::string receiveData();
 
  private:
-  Client(Logger &log, const utils::Config &config);
+  Client(utils::Logger &log, const utils::Config &config);
 
-  Logger &log_;
-  int sockfd_;
-  const char *kPort;
-  const char *kServerIP;
+  utils::Logger &log_;
+  int socket_;
+  const std::string port_;
+  const std::string server_ip_;
 };
 
 }  // namespace telemetry

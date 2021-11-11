@@ -36,11 +36,13 @@ void Main::run()
 
     switch (current_state) {
       case State::kIdle:
-      case State::kReady:
         break;
 
       case State::kCalibrating:
         if (nav_.getModuleStatus() == ModuleStatus::kInit) { nav_.calibrateGravity(); }
+        break;
+
+      case State::kReady:
         break;
 
       case State::kAccelerating:
@@ -49,15 +51,21 @@ void Main::run()
           nav_.setHasInit();
         }
 
-      case State::kNominalBraking:
       case State::kCruising:
+      case State::kNominalBraking:
       case State::kEmergencyBraking:
         nav_.navigate();
         break;
-
-      default:
+      
+      //This is the default state for all the other states
+      case data::State::kFailureStopped:
+      case data::State::kFinished:
         navigation_complete = true;
         break;
+
+      case data::State::kInvalid:
+        nav_.module_status = ModuleStatus::kCriticalFailure;
+
     }
   }
 }

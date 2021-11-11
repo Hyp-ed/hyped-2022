@@ -26,7 +26,7 @@ void Writer::packAdditionalData()
   json_writer_.StartArray();
 
   // Telemetry
-  data::Telemetry tel_data = data_.getTelemetryData();
+  const auto tel_data = data_.getTelemetryData();
   startList("Telemetry");
   add("calibrate", tel_data.calibrate_command);
   add("emergency_stop", tel_data.emergency_stop_command);
@@ -37,7 +37,7 @@ void Writer::packAdditionalData()
   endList();
 
   // Navigation
-  data::Navigation nav_data = data_.getNavigationData();
+  const auto nav_data = data_.getNavigationData();
   startList("Navigation");
   add("braking_distance", 0.0, 1250.0, "m", nav_data.braking_distance);
   add("displacement", 0.0, 1250.0, "m", nav_data.displacement);
@@ -45,8 +45,8 @@ void Writer::packAdditionalData()
   endList();
 
   // Sensors (emergency brakes and batteries included)
-  data::Sensors sensors_data        = data_.getSensorsData();
-  data::Batteries batteries_data    = data_.getBatteriesData();
+  const auto sensors_data        = data_.getSensorsData();
+  const auto batteries_data    = data_.getBatteriesData();
   const auto brakes_data = data_.getEmergencyBrakesData();
   startList("Sensors");
   add("brakes_retracted", brakes_data.brakes_retracted);
@@ -103,7 +103,7 @@ void Writer::packAdditionalData()
   endList();
 
   // Motors
-  data::Motors motor_data = data_.getMotorData();
+  const auto motor_data = data_.getMotorData();
   startList("Motors");
   add("motor_rpm_1", motor_data.rpms[0]);
   add("motor_rpm_2", motor_data.rpms[1]);
@@ -112,7 +112,7 @@ void Writer::packAdditionalData()
   endList();
 
   // State machine TODO
-  data::StateMachine sm_data = data_.getStateMachineData();
+  const auto sm_data = data_.getStateMachineData();
   startList("State Machine");
   add("critical_failure", sm_data.critical_failure);
   add("current_state", sm_data.current_state);
@@ -128,8 +128,8 @@ void Writer::packCrucialData()
   json_writer_.Key("crucial_data");
   json_writer_.StartArray();
 
-  data::Navigation nav_data  = data_.getNavigationData();
-  data::StateMachine sm_data = data_.getStateMachineData();
+  const auto nav_data  = data_.getNavigationData();
+  const auto sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
   add("acceleration", -50.0, 50.0, "m/s^2", nav_data.acceleration);
@@ -146,17 +146,17 @@ void Writer::packStatusData()
   json_writer_.StartArray();
 
   // Module statuses
-  data::Navigation nav_data = data_.getNavigationData();
+  const auto nav_data = data_.getNavigationData();
   add("nav_status", nav_data.module_status);
-  data::Motors motors_data = data_.getMotorData();
+  const auto motors_data = data_.getMotorData();
   add("motors_status", motors_data.module_status);
-  data::Sensors sensors_data = data_.getSensorsData();
+  const auto sensors_data = data_.getSensorsData();
   add("sensors_status", sensors_data.module_status);
-  data::Telemetry telemetry_data = data_.getTelemetryData();
+  const auto telemetry_data = data_.getTelemetryData();
   add("telemetry_status", telemetry_data.module_status);
-  data::EmergencyBrakes brakes_data = data_.getEmergencyBrakesData();
+  const auto brakes_data = data_.getEmergencyBrakesData();
   add("emergency_brakes_status", brakes_data.module_status);
-  data::Batteries batteries_data = data_.getBatteriesData();
+  const auto batteries_data = data_.getBatteriesData();
   add("batteries_status", batteries_data.module_status);
 
   json_writer_.EndArray();

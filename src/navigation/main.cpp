@@ -55,8 +55,13 @@ void Main::run()
         nav_.navigate();
         break;
 
-      default:
+      //Default for all the other states
+      case State::kFailureStopped:
+      case State::kFinished:
         navigation_complete = true;
+        break;
+
+      case State::kInvalid:
         break;
     }
   }

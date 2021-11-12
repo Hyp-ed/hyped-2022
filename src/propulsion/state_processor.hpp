@@ -67,12 +67,12 @@ class StateProcessor : public StateProcessorInterface {
 
   /**
    * @brief Exits the tube with low velocity
-   */
+   * */
   void servicePropulsion() override;
 
   /**
    * @brief Returns if a critical error ocurred
-   */
+   * */
   bool isCriticalFailure() override;
 
   /**

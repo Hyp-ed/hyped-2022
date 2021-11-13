@@ -115,12 +115,9 @@ void Main::run()
           f_brake_->checkAccFailure();
         }
         break;
-
-      //Default for all the other states
       case data::State::kReady:
       case data::State::kFailureStopped:
         break;
-
       case data::State::kInvalid:
         brakes_               = data_.getEmergencyBrakesData();
         brakes_.module_status = ModuleStatus::kCriticalFailure;

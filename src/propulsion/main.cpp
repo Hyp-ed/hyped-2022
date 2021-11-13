@@ -73,8 +73,6 @@ void Main::run()
       case data::State::kEmergencyBraking:
         state_processor_->quickStopAll();
         break;
-
-      //Default for all the other states
       case data::State::kFailureStopped:
       case data::State::kFinished:
       case data::State::kInvalid:

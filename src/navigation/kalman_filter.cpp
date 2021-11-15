@@ -29,7 +29,7 @@ void KalmanFilter::setup()
   // check system navigation run for R setup
   const auto &sys   = utils::System::getSystem();
   Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m_, m_);
-  ;
+  
   if (sys.official_run || sys.outside_run)
     R = createTrackMeasurementCovarianceMatrix();
   else if (sys.elevator_run)
@@ -45,19 +45,19 @@ void KalmanFilter::setup()
   kalmanFilter_.setInitial(x, P);
 }
 
-void KalmanFilter::updateStateTransitionMatrix(double dt)
+void KalmanFilter::updateStateTransitionMatrix(const double dt)
 {
   Eigen::MatrixXf A = createStateTransitionMatrix(dt);
   kalmanFilter_.updateA(A);
 }
 
-void KalmanFilter::updateMeasurementCovarianceMatrix(double var)
+void KalmanFilter::updateMeasurementCovarianceMatrix(const data::nav_t var)
 {
   Eigen::MatrixXf R = Eigen::MatrixXf::Constant(m_, m_, var);
   kalmanFilter_.updateR(R);
 }
 
-const data::nav_t KalmanFilter::filter(data::nav_t z)
+data::nav_t KalmanFilter::filter(const data::nav_t z)
 {
   Eigen::VectorXf vz(m_);
   vz(0) = z;

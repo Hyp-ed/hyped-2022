@@ -15,9 +15,8 @@ class KalmanFilter {
   KalmanFilter(uint32_t n = 3, uint32_t m = 1, uint32_t k = 0);
   void setup();
   void updateStateTransitionMatrix(double dt);
-  void updateMeasurementCovarianceMatrix(double var);
-  const data::nav_t filter(data::nav_t z);
-  const data::nav_t filter(data::nav_t u, data::nav_t z);
+  void updateMeasurementCovarianceMatrix(const data::nav_t var);
+  data::nav_t filter(data::nav_t z);
   // transfer estimate to NavigationVector
   data::nav_t getEstimate();
   // transfer estimate variances to NavigationVector

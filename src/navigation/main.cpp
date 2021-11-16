@@ -38,17 +38,14 @@ void Main::run()
       case State::kIdle:
       case State::kReady:
         break;
-
       case State::kCalibrating:
         if (nav_.getModuleStatus() == ModuleStatus::kInit) { nav_.calibrateGravity(); }
         break;
-
       case State::kAccelerating:
         if (!nav_.getHasInit()) {
           nav_.initialiseTimestamps();
           nav_.setHasInit();
         }
-
       case State::kNominalBraking:
       case State::kCruising:
       case State::kEmergencyBraking:
@@ -56,9 +53,8 @@ void Main::run()
         break;
       case State::kFailureStopped:
       case State::kFinished:
-        navigation_complete = true;
-        break;
       case State::kInvalid:
+        navigation_complete = true;
         break;
     }
   }

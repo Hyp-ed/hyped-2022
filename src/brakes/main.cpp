@@ -87,6 +87,7 @@ void Main::run()
         break;
       case data::State::kNominalBraking:
       case data::State::kEmergencyBraking:
+      case data::State::kInvalid:
         if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
         if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }
         Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
@@ -117,10 +118,6 @@ void Main::run()
         break;
       case data::State::kReady:
       case data::State::kFailureStopped:
-        break;
-      case data::State::kInvalid:
-        brakes_               = data_.getEmergencyBrakesData();
-        brakes_.module_status = ModuleStatus::kCriticalFailure;
         break;
     }
   }

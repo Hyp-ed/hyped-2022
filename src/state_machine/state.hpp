@@ -84,6 +84,7 @@ MAKE_STATE(Finished)        // State after the run
 MAKE_STATE(FailureBraking)  // Entered upon failure during the run
 MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
                             // FailureBraking
+MAKE_STATE(PreCalibrating)  // Sub-state between Idle and Calibrating
 
 #undef MAKE_STATE
 

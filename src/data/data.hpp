@@ -141,6 +141,7 @@ struct Telemetry : public Module {
 // -------------------------------------------------------------------------------------------------
 enum State {
   kIdle,
+  kPreCalibrating,
   kCalibrating,
   kReady,
   kAccelerating,

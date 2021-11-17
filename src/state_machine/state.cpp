@@ -38,12 +38,31 @@ State *Idle::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool calibrate_command = checkCalibrateCommand(telemetry_data_);
-  if (!calibrate_command) { return nullptr; }
-
   bool all_initialised = checkModulesInitialised(log, brakes_data_, nav_data_, batteries_data_,
                                                  telemetry_data_, sensors_data_, motors_data_);
-  if (all_initialised) { return Calibrating::getInstance(); }
+  if (all_initialised) { return PreCalibrating::getInstance(); }
+
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  PreCalibrating
+//--------------------------------------------------------------------------------------
+
+PreCalibrating PreCalibrating::instance_;
+data::State PreCalibrating::enum_value_       = data::kPreCalibrating;
+char PreCalibrating::string_representation_[] = "PreCalibrating";
+
+State *PreCalibrating::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+  if (emergency) { return FailureStopped::getInstance(); }
+
+  bool calibrate_command = checkCalibrateCommand(telemetry_data_);
+  if (calibrate_command) { return Calibrating::getInstance(); }
 
   return nullptr;
 }

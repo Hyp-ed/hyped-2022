@@ -91,7 +91,7 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, false) << "falsely detected emergency";
     disableOutput();
@@ -124,7 +124,7 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect brake emergency";
     disableOutput();
@@ -157,7 +157,7 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Navigation";
     disableOutput();
@@ -190,7 +190,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Batteries";
     disableOutput();
@@ -223,7 +223,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Telemetry";
     disableOutput();
@@ -256,7 +256,7 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Sensors";
     disableOutput();
@@ -289,7 +289,7 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
     motors_data.module_status             = data::ModuleStatus::kCriticalFailure;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in motors";
     disableOutput();
@@ -322,7 +322,7 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = true;
     const bool has_emergency              = state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to register stop command";
     disableOutput();
@@ -357,7 +357,7 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
     sensors_data.module_status   = goal;
     motors_data.module_status    = goal;
     const bool all_initialised   = state_machine::checkModulesInitialised(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_initialised, true) << "failed to detect all modules being initialised";
   }
 }
@@ -389,7 +389,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect uninitialised brakes";
     }
   }
@@ -422,7 +422,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Navigation not being initialised";
     }
   }
@@ -456,7 +456,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Batteries not being initialised";
     }
   }
@@ -490,7 +490,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Telemetry not being initialised";
     }
   }
@@ -524,7 +524,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
       sensors_data.module_status   = other;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Sensors not being initialised";
     }
   }
@@ -558,7 +558,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = other;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Motors not being initialise";
     }
   }
@@ -586,7 +586,7 @@ TEST_F(TransitionFunctionality, handlesAllReady)
   sensors_data.module_status   = data::ModuleStatus::kReady;
   motors_data.module_status    = data::ModuleStatus::kReady;
   const auto all_ready         = state_machine::checkModulesReady(
-    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+            log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
   ASSERT_EQ(all_ready, true) << "failed to detect that all modules are ready";
   disableOutput();
 }
@@ -616,7 +616,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Brakes not being ready";
     disableOutput();
   }
@@ -647,7 +647,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Navigation not being ready";
     disableOutput();
   }
@@ -678,7 +678,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Batteries not being ready";
   }
 }
@@ -707,7 +707,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Telemetry not being ready";
   }
 }
@@ -737,7 +737,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
     sensors_data.module_status   = other;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Sensors not being ready";
   }
 }
@@ -767,7 +767,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = other;
     const bool all_ready         = state_machine::checkModulesReady(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Motors not being ready";
     disableOutput();
   }

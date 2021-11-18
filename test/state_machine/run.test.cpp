@@ -113,7 +113,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency           = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                                  telemetry_data_, sensors_data_, motors_data_);
     bool has_calibrate_command   = checkCalibrateCommand(telemetry_data_);
     bool has_modules_initialised = checkModulesInitialised(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
@@ -162,7 +162,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency           = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                                  telemetry_data_, sensors_data_, motors_data_);
     bool has_calibrating_command = checkCalibrateCommand(telemetry_data_);
     bool has_modules_initialised = checkModulesInitialised(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
@@ -212,7 +212,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                               telemetry_data_, sensors_data_, motors_data_);
     bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -263,9 +263,9 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                             telemetry_data_, sensors_data_, motors_data_);
     bool has_modules_ready  = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
-                                               telemetry_data_, sensors_data_, motors_data_);
+                                                telemetry_data_, sensors_data_, motors_data_);
     bool has_launch_command = checkLaunchCommand(telemetry_data_);
 
     enableOutput();
@@ -310,7 +310,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                               telemetry_data_, sensors_data_, motors_data_);
     bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
 
     enableOutput();
@@ -367,7 +367,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     bool has_launch_command       = checkLaunchCommand(telemetry_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
@@ -415,7 +415,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                               telemetry_data_, sensors_data_, motors_data_);
     bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
 
     enableOutput();
@@ -468,7 +468,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_stopped              = checkPodStopped(log_, nav_data_);
 
@@ -525,7 +525,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
 
@@ -621,7 +621,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency            = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     bool has_stopped              = checkPodStopped(log_, nav_data_);
 
@@ -716,7 +716,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+                                               telemetry_data_, sensors_data_, motors_data_);
     bool has_stopped          = checkPodStopped(log_, nav_data_);
     bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
 

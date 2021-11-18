@@ -1,10 +1,9 @@
 #pragma once
 
+#include "condition_variable.hpp"
 #include "lock.hpp"
 
 #include <cstdint>
-
-#include "condition_variable.hpp"
 
 namespace hyped {
 namespace utils {

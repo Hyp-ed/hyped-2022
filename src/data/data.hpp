@@ -1,10 +1,11 @@
 #pragma once
 
+#include "data_point.hpp"
+
 #include <array>
 #include <cstdint>
 #include <vector>
 
-#include "data_point.hpp"
 #include <utils/concurrent/lock.hpp>
 #include <utils/math/vector.hpp>
 

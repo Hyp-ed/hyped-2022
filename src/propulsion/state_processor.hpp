@@ -1,11 +1,12 @@
 #pragma once
 
+#include "RPM_regulator.hpp"
 #include "controller.hpp"
-
 #include "controller_interface.hpp"
 #include "fake_controller.hpp"
 #include "rpm_regulator.hpp"
 #include "state_processor_interface.hpp"
+
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>

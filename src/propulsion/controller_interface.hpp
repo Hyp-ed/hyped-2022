@@ -4,8 +4,6 @@
 
 #include <utils/io/can.hpp>
 
-using hyped::utils::io::can::Frame;
-
 namespace hyped {
 
 namespace motor_control {
@@ -18,12 +16,6 @@ enum ControllerState {
   kQuickStopActive,
   kFaultReactionActive,
   kFault,
-};
-
-struct ControllerMessage {
-  uint8_t message_data[8];
-  int len = 8;
-  char logger_output[250];
 };
 
 class ControllerInterface {

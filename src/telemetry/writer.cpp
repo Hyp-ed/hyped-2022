@@ -18,6 +18,12 @@ void Writer::packTime()
                         .count());
 }
 
+void Writer::packID(uint16_t id)
+{
+  json_writer_.Key("id");
+  add("package_num", id);
+}
+
 // Additional data points that are displayed in the GUI data section
 // FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
 void Writer::packAdditionalData()

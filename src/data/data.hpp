@@ -134,7 +134,6 @@ struct Telemetry : public Module {
   bool service_propulsion_go   = false;
   bool emergency_stop_command  = false;
   bool nominal_braking_command = true;
-  uint16_t num_packages_sent = 0;
 };
 
 // -------------------------------------------------------------------------------------------------

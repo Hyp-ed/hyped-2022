@@ -1,8 +1,9 @@
 #include "sendloop.hpp"
 #include "writer.hpp"
-#include "data/data.hpp"
 
 #include <string>
+
+#include "data/data.hpp"
 
 namespace hyped {
 namespace telemetry {
@@ -36,7 +37,7 @@ void SendLoop::run()
 
     if (!main_ref_.client_.sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");
-      telemetry_data.module_status   = data::ModuleStatus::kCriticalFailure;
+      telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
 
       break;

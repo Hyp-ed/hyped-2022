@@ -8,7 +8,7 @@ using data::ModuleStatus;
 
 namespace telemetry {
 
-RecvLoop::RecvLoop(Logger &log, data::Data &data, Main *main_pointer)
+RecvLoop::RecvLoop(utils::Logger &log, data::Data &data, Main *main_pointer)
     : Thread{log},
       main_ref_{*main_pointer},
       data_{data}

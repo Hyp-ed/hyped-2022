@@ -64,7 +64,7 @@ void CanSender::processNewData(utils::io::can::Frame &message)
   }
 }
 
-bool CanSender::hasId(uint32_t id, bool extended)
+bool CanSender::hasId(uint32_t id, bool)
 {
   for (uint32_t cobId : canIds) {
     if (cobId + node_id_ == id) { return true; }

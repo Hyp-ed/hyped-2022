@@ -58,7 +58,7 @@ class Can : public concurrent::Thread {
     return can;
   }
 
-  NO_COPY_ASSIGN(Can);
+  NO_COPY_ASSIGN(Can)
 
   /**
    * @param  frame data to be sent

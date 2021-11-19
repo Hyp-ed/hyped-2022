@@ -104,7 +104,7 @@ class System {
   static System *system_;
 
   // macro to help implemet singleton
-  NO_COPY_ASSIGN(System);
+  NO_COPY_ASSIGN(System)
 };
 
 }  // namespace utils

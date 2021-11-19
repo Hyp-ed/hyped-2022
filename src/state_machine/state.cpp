@@ -169,7 +169,7 @@ Finished Finished::instance_;
 data::State Finished::enum_value_       = data::kFinished;
 char Finished::string_representation_[] = "Finished";
 
-State *Finished::checkTransition(Logger &log)
+State *Finished::checkTransition(Logger &)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
@@ -205,7 +205,7 @@ FailureStopped FailureStopped::instance_;
 data::State FailureStopped::enum_value_       = data::kFailureStopped;
 char FailureStopped::string_representation_[] = "FailureStopped";
 
-State *FailureStopped::checkTransition(Logger &log)
+State *FailureStopped::checkTransition(Logger &)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();

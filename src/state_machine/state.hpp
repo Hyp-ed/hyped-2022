@@ -102,7 +102,7 @@ class Off : public State {
     sys.running_       = false;
   }
 
-  void exit(Logger &log)
+  void exit(Logger &)
   {  // We never exit this state
   }
 

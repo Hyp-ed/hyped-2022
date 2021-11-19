@@ -35,7 +35,7 @@ struct ModuleEntry {
 
 ModuleEntry module_map[] = {MODULE_LIST(MAP_ENTRY)};
 
-void Config::parseNoModule(char *line)
+void Config::parseNoModule(char *)
 {
   // does nothing
 }

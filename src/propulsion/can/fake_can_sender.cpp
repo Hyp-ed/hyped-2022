@@ -2,13 +2,13 @@
 
 namespace hyped {
 namespace motor_control {
-FakeCanSender::FakeCanSender(Logger &log_, uint8_t node_id) : log_(log_)
+FakeCanSender::FakeCanSender(Logger &log_, uint8_t) : log_(log_)
 {
   isSending = false;
   endpoint  = new FakeCanEndpoint(this);
 }
 
-bool FakeCanSender::sendMessage(utils::io::can::Frame &message)
+bool FakeCanSender::sendMessage(utils::io::can::Frame &)
 {
   log_.INFO("MOTOR", "sending");
 
@@ -25,13 +25,13 @@ void FakeCanSender::registerController()
 {
 }
 
-void FakeCanSender::processNewData(utils::io::can::Frame &message)
+void FakeCanSender::processNewData(utils::io::can::Frame &)
 {
   log_.INFO("MOTOR", "processNewData");
   isSending = false;
 }
 
-bool FakeCanSender::hasId(uint32_t id, bool extended)
+bool FakeCanSender::hasId(uint32_t, bool)
 {
   return true;
 }

@@ -73,7 +73,9 @@ void Main::run()
       case data::State::kEmergencyBraking:
         state_processor_->quickStopAll();
         break;
-      default:
+      case data::State::kFailureStopped:
+      case data::State::kFinished:
+      case data::State::kInvalid:
         handleCriticalFailure(data, motor_data);
         break;
     }

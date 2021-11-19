@@ -53,7 +53,9 @@ void Main::run()
       case State::kEmergencyBraking:
         nav_.navigate();
         break;
-      default:
+      case State::kFailureStopped:
+      case State::kFinished:
+      case State::kInvalid:
         navigation_complete = true;
         break;
     }

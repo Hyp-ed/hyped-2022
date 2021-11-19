@@ -9,7 +9,6 @@ namespace utils {
 
 class Timer {
  public:
-
   static uint64_t getTimeMicros();
 
   Timer();

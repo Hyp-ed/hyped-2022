@@ -80,19 +80,19 @@ class FakeController : public ControllerInterface {
   uint8_t getMotorTemp() override;
 
   // empty functions from interface not used in the fake controller
-  void processEmergencyMessage(utils::io::can::Frame &message) override
+  void processEmergencyMessage(utils::io::can::Frame &) override
   { /*EMPTY*/
   }
-  void processErrorMessage(uint16_t error_message) override
+  void processErrorMessage(uint16_t) override
   { /*EMPTY*/
   }
-  void processSdoMessage(utils::io::can::Frame &message) override
+  void processSdoMessage(utils::io::can::Frame &) override
   { /*EMPTY*/
   }
-  void processNmtMessage(utils::io::can::Frame &message) override
+  void processNmtMessage(utils::io::can::Frame &) override
   { /*EMPTY*/
   }
-  void requestStateTransition(utils::io::can::Frame &message, ControllerState state) override
+  void requestStateTransition(utils::io::can::Frame &, ControllerState) override
   { /*EMPTY*/
   }
   void updateMotorTemp() override

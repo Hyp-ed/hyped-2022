@@ -18,7 +18,7 @@ void Writer::packTime()
                         .count());
 }
 
-void Writer::packID(uint16_t id)
+void Writer::packId(const uint16_t id)
 {
   json_writer_.Key("id");
   add("package_num", id);

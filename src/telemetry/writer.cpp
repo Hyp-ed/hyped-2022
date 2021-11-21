@@ -45,9 +45,9 @@ void Writer::packAdditionalData()
   endList();
 
   // Sensors (emergency brakes and batteries included)
-  const auto sensors_data        = data_.getSensorsData();
-  const auto batteries_data    = data_.getBatteriesData();
-  const auto brakes_data = data_.getEmergencyBrakesData();
+  const auto sensors_data   = data_.getSensorsData();
+  const auto batteries_data = data_.getBatteriesData();
+  const auto brakes_data    = data_.getEmergencyBrakesData();
   startList("Sensors");
   add("brakes_retracted", brakes_data.brakes_retracted);
   add("temperature", data_.getTemperature());
@@ -87,11 +87,11 @@ void Writer::packAdditionalData()
   json_writer_.EndArray();
 }
 
-void Writer::packBatteryData(const auto battery)
+void Writer::packBatteryData(data::BatteryData battery)
 {
   add("average_temp", battery.average_temperature);
   add("voltage", battery.voltage);
-  add("current", battery.currrent);
+  add("current", battery.current);
   add("charge", battery.charge);
   add("low_temp", battery.low_temperature);
   add("high_temp", battery.high_temperature);
@@ -107,7 +107,7 @@ void Writer::packCrucialData()
   json_writer_.Key("crucial_data");
   json_writer_.StartArray();
 
-  const auto nav_data  = data_.getNavigationData();
+  const auto nav_data = data_.getNavigationData();
   const auto sm_data = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);

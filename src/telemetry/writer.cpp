@@ -54,47 +54,13 @@ void Writer::packAdditionalData()
 
   startList("Low Power Batteries");
   for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
-    std::string battery_num = std::to_string(i);
-    startList("Low Power Battery " + battery_num);
-    add("lp_battery_" + battery_num + "_ave_temp",
-        batteries_data.low_power_batteries[i].average_temperature);
-    add("lp_battery_" + battery_num + "_volt", batteries_data.low_power_batteries[i].voltage);
-    add("lp_battery_" + battery_num + "_current", batteries_data.low_power_batteries[i].current);
-    add("lp_battery_" + battery_num + "_charge", batteries_data.low_power_batteries[i].charge);
-    add("lp_battery_" + battery_num + "_low_temp",
-        batteries_data.low_power_batteries[i].low_temperature);
-    add("lp_battery_" + battery_num + "_high_temp",
-        batteries_data.low_power_batteries[i].high_temperature);
-    add("lp_battery_" + battery_num + "_low_volt_cell",
-        batteries_data.low_power_batteries[i].low_voltage_cell);
-    add("lp_battery_" + battery_num + "_high_volt_cell",
-        batteries_data.low_power_batteries[i].high_voltage_cell);
-    add("lp_battery_" + battery_num + "_imd_fault",
-        batteries_data.low_power_batteries[i].imd_fault);
-    endList();
+    packBatteryData(batteries_data.low_power_batteries[i]);
   }
   endList();
 
   startList("High Power Batteries");
   for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
-    std::string battery_num = std::to_string(i);
-    startList("High Power Battery " + battery_num);
-    add("lp_battery_" + battery_num + "_ave_temp",
-        batteries_data.high_power_batteries[i].average_temperature);
-    add("lp_battery_" + battery_num + "_volt", batteries_data.high_power_batteries[i].voltage);
-    add("lp_battery_" + battery_num + "_current", batteries_data.high_power_batteries[i].current);
-    add("lp_battery_" + battery_num + "_charge", batteries_data.high_power_batteries[i].charge);
-    add("lp_battery_" + battery_num + "_low_temp",
-        batteries_data.high_power_batteries[i].low_temperature);
-    add("lp_battery_" + battery_num + "_high_temp",
-        batteries_data.high_power_batteries[i].high_temperature);
-    add("lp_battery_" + battery_num + "_low_volt_cell",
-        batteries_data.high_power_batteries[i].low_voltage_cell);
-    add("lp_battery_" + battery_num + "_high_volt_cell",
-        batteries_data.high_power_batteries[i].high_voltage_cell);
-    add("lp_battery_" + battery_num + "_imd_fault",
-        batteries_data.high_power_batteries[i].imd_fault);
-    endList();
+    packBatteryData(batteries_data.high_power_batteries[i]);
   }
   endList();
 
@@ -119,6 +85,19 @@ void Writer::packAdditionalData()
   endList();
 
   json_writer_.EndArray();
+}
+
+void Writer::packBatteryData(const auto battery)
+{
+  add("average_temp", battery.average_temperature);
+  add("voltage", battery.voltage)
+  add("current", battery.currrent)
+  add("charge", battery.charge)
+  add("low_temp", battery.low_temperature)
+  add("high_temp", battery.high_temperature)
+  add("low_voltage_cell", battery.low_voltage_cell)
+  add("high_voltage_cell", battery.high_voltage_cell)
+  add("imd_fault", battery.imd_fault)
 }
 
 // Crucial data points that are displayed in various fixed GUI points

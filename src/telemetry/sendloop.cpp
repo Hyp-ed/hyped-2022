@@ -24,7 +24,6 @@ void SendLoop::run()
 
   while (true) {
     Writer writer(data_);
-
     writer.start();
     writer.packTime();
     writer.packId(num_packages_sent);
@@ -32,9 +31,7 @@ void SendLoop::run()
     writer.packStatusData();
     writer.packAdditionalData();
     writer.end();
-
     data::Telemetry telemetry_data = data_.getTelemetryData();
-
     if (!main_ref_.client_.sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
@@ -42,9 +39,7 @@ void SendLoop::run()
 
       break;
     }
-
-    num_packages_sent += 1;
-
+    ++num_packages_sent;
     utils::concurrent::Thread::sleep(100);
   }
 

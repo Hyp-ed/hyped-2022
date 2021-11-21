@@ -54,13 +54,13 @@ void Writer::packAdditionalData()
 
   startList("Low Power Batteries");
   for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
-    packBatteryData(batteries_data.low_power_batteries[i]);
+    packBattery(batteries_data.low_power_batteries[i]);
   }
   endList();
 
   startList("High Power Batteries");
   for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
-    packBatteryData(batteries_data.high_power_batteries[i]);
+    packBattery(batteries_data.high_power_batteries[i]);
   }
   endList();
 
@@ -87,7 +87,7 @@ void Writer::packAdditionalData()
   json_writer_.EndArray();
 }
 
-void Writer::packBatteryData(data::BatteryData battery)
+void Writer::packBattery(const data::BatteryData battery)
 {
   add("average_temp", battery.average_temperature);
   add("voltage", battery.voltage);
@@ -108,7 +108,7 @@ void Writer::packCrucialData()
   json_writer_.StartArray();
 
   const auto nav_data = data_.getNavigationData();
-  const auto sm_data = data_.getStateMachineData();
+  const auto sm_data  = data_.getStateMachineData();
   add("distance", 0.0, 1250.0, "m", nav_data.displacement);
   add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
   add("acceleration", -50.0, 50.0, "m/s^2", nav_data.acceleration);

@@ -34,7 +34,7 @@ class Writer {
   void packCrucialData();
   void packStatusData();
   void packAdditionalData();
-  void packBatteryData(data::BatteryData battery);
+  void packBattery(const data::BatteryData battery);
 
   // before starting adding data points, this function must be called to start the main JSON object
   void start() { json_writer_.StartObject(); }

@@ -90,14 +90,14 @@ void Writer::packAdditionalData()
 void Writer::packBatteryData(const auto battery)
 {
   add("average_temp", battery.average_temperature);
-  add("voltage", battery.voltage)
-  add("current", battery.currrent)
-  add("charge", battery.charge)
-  add("low_temp", battery.low_temperature)
-  add("high_temp", battery.high_temperature)
-  add("low_voltage_cell", battery.low_voltage_cell)
-  add("high_voltage_cell", battery.high_voltage_cell)
-  add("imd_fault", battery.imd_fault)
+  add("voltage", battery.voltage);
+  add("current", battery.currrent);
+  add("charge", battery.charge);
+  add("low_temp", battery.low_temperature);
+  add("high_temp", battery.high_temperature);
+  add("low_voltage_cell", battery.low_voltage_cell);
+  add("high_voltage_cell", battery.high_voltage_cell);
+  add("imd_fault", battery.imd_fault);
 }
 
 // Crucial data points that are displayed in various fixed GUI points

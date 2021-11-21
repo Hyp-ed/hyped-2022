@@ -20,14 +20,14 @@ void SendLoop::run()
 {
   log_.DBG("Telemetry", "Telemetry SendLoop thread started");
 
-  uint16_t num_packs_sent = 0;
+  uint16_t num_packages_sent = 0;
 
   while (true) {
     Writer writer(data_);
 
     writer.start();
     writer.packTime();
-    writer.packID(num_packs_sent);
+    writer.packId(num_packages_sent);
     writer.packCrucialData();
     writer.packStatusData();
     writer.packAdditionalData();
@@ -43,7 +43,7 @@ void SendLoop::run()
       break;
     }
 
-    num_packs_sent += 1;
+    num_packages_sent += 1;
 
     utils::concurrent::Thread::sleep(100);
   }

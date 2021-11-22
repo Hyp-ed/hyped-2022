@@ -75,6 +75,7 @@ class Messages;
  */
 
 MAKE_STATE(Idle)            // State on startup
+MAKE_STATE(PreCalibrating)  // Sub-state between Idle and Calibrating
 MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
 MAKE_STATE(Ready)           // After calibration has finished
 MAKE_STATE(Accelerating)    // First phase of the run
@@ -84,7 +85,6 @@ MAKE_STATE(Finished)        // State after the run
 MAKE_STATE(FailureBraking)  // Entered upon failure during the run
 MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
                             // FailureBraking
-MAKE_STATE(PreCalibrating)  // Sub-state between Idle and Calibrating
 
 #undef MAKE_STATE
 

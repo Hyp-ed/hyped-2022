@@ -54,13 +54,13 @@ void Writer::packAdditionalData()
 
   startList("Low Power Batteries");
   for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
-    packBattery(batteries_data.low_power_batteries[i]);
+    add("lp_battery", batteries_data.low_power_batteries[i]);
   }
   endList();
 
   startList("High Power Batteries");
   for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
-    packBattery(batteries_data.high_power_batteries[i]);
+    add("hp_battery", batteries_data.high_power_batteries[i]);
   }
   endList();
 
@@ -85,19 +85,6 @@ void Writer::packAdditionalData()
   endList();
 
   json_writer_.EndArray();
-}
-
-void Writer::packBattery(const data::BatteryData battery)
-{
-  add("average_temp", battery.average_temperature);
-  add("voltage", battery.voltage);
-  add("current", battery.current);
-  add("charge", battery.charge);
-  add("low_temp", battery.low_temperature);
-  add("high_temp", battery.high_temperature);
-  add("low_voltage_cell", battery.low_voltage_cell);
-  add("high_voltage_cell", battery.high_voltage_cell);
-  add("imd_fault", battery.imd_fault);
 }
 
 // Crucial data points that are displayed in various fixed GUI points
@@ -219,6 +206,36 @@ void Writer::add(const std::string name, data::ModuleStatus value)
   json_writer_.String(name.c_str());
   json_writer_.Key("value");
   json_writer_.String(convertModuleStatus(value).c_str());
+  json_writer_.EndObject();
+}
+
+void Writer::add(const std::string name, data::BatteryData battery)
+{
+  json_writer_.StartObject();
+  json_writer_.Key("name");
+  json_writer_.String(name.c_str());
+  json_writer_.Key("average_temp");
+  json_writer_.Int(battery.average_temperature);
+  json_writer_.Key("voltage");
+  json_writer_.Int(battery.voltage);
+  json_writer_.Key("voltage");
+  json_writer_.Int(battery.voltage);
+  json_writer_.Key("current");
+  json_writer_.Int(battery.current);
+  json_writer_.Key("current");
+  json_writer_.Int(battery.current);
+  json_writer_.Key("charge");
+  json_writer_.Int(battery.charge);
+  json_writer_.Key("low_temp");
+  json_writer_.Int(battery.low_temperature);
+  json_writer_.Key("high_temp");
+  json_writer_.Int(battery.high_temperature);
+  json_writer_.Key("low_voltage_cell");
+  json_writer_.Int(battery.low_voltage_cell);
+  json_writer_.Key("high_voltage_cell");
+  json_writer_.Int(battery.high_voltage_cell);
+  json_writer_.Key("imd_fault");
+  json_writer_.Bool(battery.imd_fault);
   json_writer_.EndObject();
 }
 

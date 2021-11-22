@@ -58,6 +58,7 @@ class Writer {
   void add(const std::string name, const std::string value);
   void add(const std::string name, data::State value);
   void add(const std::string name, data::ModuleStatus value);
+  void add(const std::string name, data::BatteryData battery);
 
   // starts and ends lists, which allow to structure the data
   void startList(const std::string name);

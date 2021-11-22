@@ -45,7 +45,7 @@ void KalmanFilter::setup()
   kalmanFilter_.setInitial(x, P);
 }
 
-void KalmanFilter::updateStateTransitionMatrix(const double dt)
+void KalmanFilter::updateStateTransitionMatrix(const data::nav_t dt)
 {
   Eigen::MatrixXf A = createStateTransitionMatrix(dt);
   kalmanFilter_.updateA(A);
@@ -74,10 +74,10 @@ const Eigen::MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix() const
 }
 
 // TODO: (Max) look into kalman filter and look at what's happening here exactly
-Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(const double dt) const
+Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(const data::nav_t dt) const
 {
   Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n_, n_);
-  double acc_ddt    = 0.5 * dt * dt;
+  data::nav_t acc_ddt    = 0.5 * dt * dt;
   //  number of values for each acc, vel, pos: usually 1 or 3
   uint32_t num_values = n_ / 3;
 

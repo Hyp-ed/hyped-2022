@@ -14,7 +14,7 @@ class KalmanFilter {
  public:
   KalmanFilter(uint32_t n = 3, uint32_t m = 1, uint32_t k = 0);
   void setup();
-  void updateStateTransitionMatrix(double dt);
+  void updateStateTransitionMatrix(data::nav_t dt);
   void updateMeasurementCovarianceMatrix(const data::nav_t var);
   data::nav_t filter(data::nav_t z);
   // transfer estimate to NavigationVector
@@ -42,7 +42,7 @@ class KalmanFilter {
   const Eigen::MatrixXf createInitialErrorCovarianceMatrix() const;
 
   // create state transition matrix A
-  Eigen::MatrixXf createStateTransitionMatrix(double dt) const;
+  Eigen::MatrixXf createStateTransitionMatrix(data::nav_t dt) const;
 
   // create measurement matrix H
   Eigen::MatrixXf createMeasurementMatrix() const;

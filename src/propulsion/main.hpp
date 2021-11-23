@@ -9,22 +9,14 @@
 #include <utils/timer.hpp>
 
 namespace hyped {
-using data::Data;
-using data::ModuleStatus;
-using data::Motors;
-using data::State;
-using data::Telemetry;
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
 
 namespace motor_control {
 
 constexpr int32_t kNumMotors = 4;
 
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
-  Main(uint8_t id, Logger &log);
+  Main(const uint8_t id, utils::Logger &log);
 
   /**
    * @brief {This function is the entrypoint to the propulsion module and reacts to the certain
@@ -34,16 +26,16 @@ class Main : public Thread {
 
  private:
   bool is_running_;
-  Logger &log_;
+  utils::Logger &log_;
   StateProcessor *state_processor_;
-  State current_state_;
-  State previous_state_;
+  data::State current_state_;
+  data::State previous_state_;
   /**
-   * @brief   Returns true iff the pod state has changed since the last check.
+   * @brief   Returns true if the pod state has changed since the last check.
    */
   bool handleTransition();
 
-  void handleCriticalFailure(Data &data, Motors &motor_data);
+  void handleCriticalFailure(data::Data &data, data::Motors &motor_data);
 };
 
 }  // namespace motor_control

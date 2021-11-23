@@ -117,7 +117,7 @@ TEST_F(IdleTest, handlesCalibrateCommand)
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
+      const bool calibrate_command = checkCalibrateCommand(telemetry_data_);
       const auto new_state         = state->checkTransition(log_);
 
       if (!calibrate_command) {
@@ -142,7 +142,7 @@ TEST_F(IdleTest, handlesAllInitialised)
     const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
-    const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
+    const bool calibrate_command = checkCalibrateCommand(telemetry_data_);
 
     if (!has_emergency && calibrate_command) {
       const bool all_initialised
@@ -281,7 +281,7 @@ TEST_F(ReadyTest, handlesLaunchCommand)
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool received_launch_command = checkLaunchCommand(log_, telemetry_data_);
+      const bool received_launch_command = checkLaunchCommand(telemetry_data_);
       const auto new_state               = state->checkTransition(log_);
 
       enableOutput();
@@ -458,7 +458,7 @@ TEST_F(FinishedTest, handlesShutdownCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
+    const bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
     enableOutput();
@@ -530,7 +530,7 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
+    const bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
     enableOutput();

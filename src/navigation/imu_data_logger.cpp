@@ -1,52 +1,74 @@
 #include "imu_data_logger.hpp"
 
+#include <fstream>
+#include <sstream>
+
 namespace hyped {
 namespace navigation {
 
-ImuDataLogger::ImuDataLogger() : file_path_(), outfile_(new std::ofstream())
+ImuDataLogger::ImuDataLogger() : file_path_()
 {
 }
 
 ImuDataLogger::~ImuDataLogger()
 {
-  outfile_->close();
+  outfile_.close();
 }
 
-void ImuDataLogger::setup(int imu_id, int run_id)
+void ImuDataLogger::setup(const int imu_id, const int run_id)
 {
-  char buff[100];
-  snprintf(buff, sizeof(buff), "test_data/run%d/imu%d/data.csv", run_id, imu_id);
-  file_path_ = buff;
-  outfile_->open(file_path_);
-  *outfile_ << "arx,ary,arz,acx,acy,acz,t\n";
+  std::ostringstream stream;
+  stream << "test_data/run" << run_id << "/imu" << imu_id << "/data.csv";
+  file_path_ = stream.str();
+  outfile_.open(file_path_);
+  outfile_ << "arx,ary,arz,acx,acy,acz,t" << std::endl;
 }
 
-void ImuDataLogger::setupKalman(int imu_id, int run_id)
+void ImuDataLogger::setupKalman(const int imu_id, const int run_id)
 {
-  char buff[100];
-  snprintf(buff, sizeof(buff), "test_data/run%d/imu%d/data.csv", run_id, imu_id);
-  file_path_ = buff;
-  outfile_->open(file_path_);
-  *outfile_ << "arx,ary,arz,acx,acy,acz,afx,afy,afz,t\n";
+  std::ostringstream stream;
+  stream << "test_data/run" << run_id << "/imu" << imu_id << "/data.csv";
+  file_path_ = stream.str();
+  outfile_.open(file_path_);
+  outfile_ << "arx,ary,arz,acx,acy,acz,afx,afy,afz,t" << std::endl;
 }
 
-void ImuDataLogger::dataToFileSimulation(NavigationVector &acc, uint32_t timestamp)
+void ImuDataLogger::dataToFileSimulation(const data::NavigationVector &acceleration,
+                                         const uint32_t timestamp)
 {
-  *outfile_ << acc[0] << "," << acc[1] << "," << acc[2] << "," << timestamp << "\n";
+  for (std::size_t i = 0; i < 3; i++) {
+    outfile_ << acceleration[i] << ",";
+  }
+  outfile_ << timestamp << std::endl;
 }
 
-void ImuDataLogger::dataToFile(NavigationVector &accR, NavigationVector &accC, uint32_t timestamp)
+void ImuDataLogger::dataToFile(const data::NavigationVector &raw_acceleration,
+                               const data::NavigationVector &calibrated_acceleration,
+                               const uint32_t timestamp)
 {
-  *outfile_ << accR[0] << "," << accR[1] << "," << accR[2] << "," << accC[0] << "," << accC[1]
-            << "," << accC[2] << "," << timestamp << "\n";
+  for (std::size_t i = 0; i < 3; i++) {
+    outfile_ << raw_acceleration[i] << ",";
+  }
+  for (std::size_t i = 0; i < 3; i++) {
+    outfile_ << calibrated_acceleration[i] << ",";
+  }
+  outfile_ << timestamp << std::endl;
 }
 
-void ImuDataLogger::dataToFileKalman(NavigationVector &accR, NavigationVector &accC,
-                                     NavigationVector &x, uint32_t timestamp)
+void ImuDataLogger::dataToFileKalman(const data::NavigationVector &raw_acceleration,
+                                     const data::NavigationVector &calibrated_acceleration,
+                                     const data::NavigationVector &x, const uint32_t timestamp)
 {
-  *outfile_ << accR[0] << "," << accR[1] << "," << accR[2] << "," << accC[0] << "," << accC[1]
-            << "," << accC[2] << "," << x[0] << "," << x[1] << "," << x[2] << "," << timestamp
-            << "\n";
+  for (std::size_t i = 0; i < 3; i++) {
+    outfile_ << raw_acceleration[i] << ",";
+  }
+  for (std::size_t i = 0; i < 3; i++) {
+    outfile_ << calibrated_acceleration[i] << ",";
+  }
+  for (std::size_t i = 0; i < 3; i++) {
+    outfile_ << x[i] << ",";
+  }
+  outfile_ << timestamp << std::endl;
 }
 
 }  // namespace navigation

@@ -78,6 +78,7 @@ void GpioManager::run()
         case data::State::kIdle:
         case data::State::kAccelerating:
         case data::State::kCruising:
+        case data::State::kCalibrating:
         case data::State::kNominalBraking:
           break;
         case data::State::kEmergencyBraking:
@@ -93,7 +94,7 @@ void GpioManager::run()
           setHP();
           log_.INFO("GPIO-MANAGER", "kReady...HP SSR set and HP on");
           break;
-        default:      // undefied behaviour, e.g. kInvalid
+        case data::State::kInvalid:
           clearHP();  // shutting down HP asap
           log_.ERR("GPIO-MANAGER", "Unknown State! HP SSR cleared, shutting down!");
 

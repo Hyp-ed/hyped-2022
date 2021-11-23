@@ -53,8 +53,9 @@ void MainLog::run()
     data::DataPoint<ImuDataArray> sensor_readings = data_.getSensorsImuData();
     for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
       // Apply calibrated correction
-      data::NavigationVector acceleration 
-        = sensor_readings.value.at(i).acc; // TODO: .acc should be renamed to acceleration, but must be changed in data.hpp and other areas
+      data::NavigationVector acceleration
+        = sensor_readings.value.at(i).acc;  // TODO: .acc should be renamed to acceleration, but
+                                            // must be changed in data.hpp and other areas
       data::NavigationVector calibrated_acceleration = acceleration - gravity_calibration_.at(i);
       log_.DBG("NAV", "%.3f %.3f %.3f / %.3f %.3f %.3f", acceleration[0], acceleration[1],
                acceleration[2], calibrated_acceleration[0], calibrated_acceleration[1],

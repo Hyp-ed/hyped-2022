@@ -29,7 +29,7 @@ void KalmanFilter::setup()
   // check system navigation run for R setup
   const auto &sys   = utils::System::getSystem();
   Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m_, m_);
-  
+
   if (sys.official_run || sys.outside_run)
     R = createTrackMeasurementCovarianceMatrix();
   else if (sys.elevator_run)
@@ -76,8 +76,8 @@ const Eigen::MatrixXf KalmanFilter::createInitialErrorCovarianceMatrix() const
 // TODO: (Max) look into kalman filter and look at what's happening here exactly
 Eigen::MatrixXf KalmanFilter::createStateTransitionMatrix(const data::nav_t dt) const
 {
-  Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n_, n_);
-  data::nav_t acc_ddt    = 0.5 * dt * dt;
+  Eigen::MatrixXf A   = Eigen::MatrixXf::Zero(n_, n_);
+  data::nav_t acc_ddt = 0.5 * dt * dt;
   //  number of values for each acc, vel, pos: usually 1 or 3
   uint32_t num_values = n_ / 3;
 

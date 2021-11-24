@@ -104,9 +104,8 @@ TEST_F(IdleTest, handlesEmergency)
 }
 
 /**
- * Ensures that if no module reports an emergency and if
- * the calibrate command is not received and if every module
- * is initialised, the state changes to the calibrating state.
+ * Ensures that if no module reports an emergency and if every module
+ * is initialised, the state changes to the PreCalibrating state.
  */
 TEST_F(IdleTest, handlesAllInitialised)
 {
@@ -170,8 +169,8 @@ TEST_F(PreCalibratingTest, handlesEmergency)
 
 /**
  * Ensures that if no module reports an emergency and if
- * the calibrate command is not received, a null pointer
- * is returned.
+ * the calibrate command is received, the state changes
+ * to the Calibrating state.
  */
 
 TEST_F(PreCalibratingTest, handlesCalibrateCommand)

@@ -55,15 +55,8 @@ class Writer {
   static const std::string convertModuleStatus(data::ModuleStatus module_status);
 
  private:
+  // functions to pack internal CDS structs/types
   void packBattery(std::string name, const data::BatteryData battery);
-  // calls RapidJSON functions to add a value of specific type to JSON
-  void add(const std::string name, int min, int max, const std::string unit, int value);
-  void add(const std::string name, float min, float max, const std::string unit, float value);
-  void add(const std::string name, bool value);
-  void add(const std::string name, const std::string value);
-  void add(const std::string name, data::State value);
-  void add(const std::string name, data::ModuleStatus value);
-  void add(const std::string name, data::BatteryData battery);
 
   // starts and ends lists, which allow to structure the data
   void startList(const std::string name);

@@ -9,6 +9,10 @@
 namespace hyped {
 namespace telemetry {
 
+Writer::Writer(data::Data &data) : json_writer_(string_buffer_), data_{data}
+{
+}
+
 // The current time in milliseconds that will be used later
 void Writer::packTime()
 {

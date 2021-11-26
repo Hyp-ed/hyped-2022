@@ -27,10 +27,13 @@ void SendLoop::run()
     writer.start();
     writer.packTime();
     writer.packId(num_packages_sent);
-    writer.packCrucialData();
-    writer.packStatusData();
-    writer.packAdditionalData();
+    writer.packTelemetryData();
+    writer.packSensorsData();
+    writer.packMotorData();
+    writer.packStateMachineData();
+    writer.packNavigationData();
     writer.end();
+
     data::Telemetry telemetry_data = data_.getTelemetryData();
     if (!main_ref_.client_.sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");

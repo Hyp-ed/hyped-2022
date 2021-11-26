@@ -29,13 +29,16 @@ class Writer {
  public:
   explicit Writer(data::Data &data);
 
-  // separate functions that allow to better manage data points based on their purpose
+  // functions to pack timestamp and number of package
   void packTime();
   void packId(uint16_t id);
-  void packCrucialData();
-  void packStatusData();
-  void packAdditionalData();
-  void packBattery(const data::BatteryData battery);
+
+  // specific functions that allow packing of structs in central data structure
+  void packTelemetryData();
+  void packSensorsData();
+  void packMotorData();
+  void packStateMachineData();
+  void packNavigationData();
 
   // before starting adding data points, this function must be called to start the main JSON object
   void start() { json_writer_.StartObject(); }
@@ -52,6 +55,7 @@ class Writer {
   static const std::string convertModuleStatus(data::ModuleStatus module_status);
 
  private:
+  void packBattery(std::string name, const data::BatteryData battery);
   // calls RapidJSON functions to add a value of specific type to JSON
   void add(const std::string name, int min, int max, const std::string unit, int value);
   void add(const std::string name, float min, float max, const std::string unit, float value);

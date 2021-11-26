@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "data/data.hpp"
+
 namespace hyped {
 namespace telemetry {
 
@@ -18,25 +20,26 @@ void SendLoop::run()
 {
   log_.DBG("Telemetry", "Telemetry SendLoop thread started");
 
+  uint16_t num_packages_sent = 0;
+
   while (true) {
     Writer writer(data_);
-
     writer.start();
     writer.packTime();
+    writer.packId(num_packages_sent);
     writer.packCrucialData();
     writer.packStatusData();
     writer.packAdditionalData();
     writer.end();
-
+    data::Telemetry telemetry_data = data_.getTelemetryData();
     if (!main_ref_.client_.sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");
-      data::Telemetry telemetry_data = data_.getTelemetryData();
-      telemetry_data.module_status   = data::ModuleStatus::kCriticalFailure;
+      telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
 
       break;
     }
-
+    ++num_packages_sent;
     utils::concurrent::Thread::sleep(100);
   }
 

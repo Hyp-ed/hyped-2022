@@ -115,7 +115,7 @@ class GPIO {
   uint32_t pin_mask_;         // mask for register access to this pin
   int fd_;                    // file pointer to /sys/class/gpio/gpioXX/value
 
-  NO_COPY_ASSIGN(GPIO);
+  NO_COPY_ASSIGN(GPIO)
 };
 
 }  // namespace io

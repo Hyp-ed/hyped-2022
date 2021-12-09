@@ -25,7 +25,7 @@ void Main::run()
   if (sys_.fake_keyence) nav_.setKeyenceFake();
   if (sys_.enable_nav_write) nav_.logWrite();
 
-  // Setting module status for STM transition
+  // Setting module status for state machine transition
   data::Navigation nav_data = data.getNavigationData();
   nav_data.module_status    = ModuleStatus::kInit;
   data.setNavigationData(nav_data);
@@ -46,6 +46,8 @@ void Main::run()
           nav_.initialiseTimestamps();
           nav_.setHasInit();
         }
+        nav_.navigate();
+        break;
       case State::kNominalBraking:
       case State::kCruising:
       case State::kEmergencyBraking:

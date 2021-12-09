@@ -80,8 +80,8 @@ class System {
 
   // barriers
   /**
-   * @brief Barrier used by navigation and motor control modules on stm transition to accelerating
-   *        state. Navigation must finish calibration before motors start spinning.
+   * @brief Barrier used by navigation and motor control modules on state machine transition
+   *        to accelerating state. Navigation must finish calibration before motors start spinning.
    */
   Barrier navigation_motors_sync_ = Barrier(2);
   bool running_;
@@ -104,7 +104,7 @@ class System {
   static System *system_;
 
   // macro to help implemet singleton
-  NO_COPY_ASSIGN(System);
+  NO_COPY_ASSIGN(System)
 };
 
 }  // namespace utils

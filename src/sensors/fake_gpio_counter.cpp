@@ -116,7 +116,7 @@ void FakeGpioCounter::checkData()
   }
 }
 
-void FakeGpioCounter::readFromFile(std::vector<StripeCounter> &data)
+void FakeGpioCounter::readFromFile(std::vector<StripeCounter> &)
 {
   std::ifstream data_file(file_path_, std::ifstream::in);
   float count;

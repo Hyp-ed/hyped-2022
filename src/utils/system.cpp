@@ -420,7 +420,7 @@ Logger &System::getLogger()
   return *sys.log_;
 }
 
-static void gracefulExit(int x)
+static void gracefulExit(int)
 {
   System &sys  = System::getSystem();
   sys.running_ = false;
@@ -430,7 +430,7 @@ static void gracefulExit(int x)
   exit(0);
 }
 
-static void segfaultHandler(int x)
+static void segfaultHandler(int)
 {
   // start turning the system off
   System &sys  = System::getSystem();

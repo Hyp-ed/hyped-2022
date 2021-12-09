@@ -29,20 +29,20 @@ void Main::handleCriticalFailure(data::Data &data, data::Motors &motor_data)
 
 void Main::run()
 {
-  utils::System &sys      = utils::System::getSystem();
-  data::Data &data        = data::Data::getInstance();
-  data::Motors motor_data = data.getMotorData();
+  const auto &system = utils::System::getSystem();
+  auto &data         = data::Data::getInstance();
+  auto motor_data    = data.getMotorData();
 
   // Initialise states
-  data::State current_state_  = data.getStateMachineData().current_state;
-  data::State previous_state_ = data::State::kInvalid;
+  current_state_  = data.getStateMachineData().current_state;
+  previous_state_ = data::State::kInvalid;
 
-  // kInit for SM transition
+  // kInit for state machine transition
   motor_data.module_status = data::ModuleStatus::kInit;
   data.setMotorData(motor_data);
   log_.INFO("Motor", "Initialisation complete");
 
-  while (is_running_ && sys.running_) {
+  while (is_running_ && system.running_) {
     // Get the current state of the system from the state machine's data
     data::Motors motor_data     = data.getMotorData();
     data::State current_state_  = data.getStateMachineData().current_state;

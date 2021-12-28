@@ -258,7 +258,7 @@ NavigationVector FakeImuFromFile::addNoiseToData(NavigationVector value, float n
   static std::default_random_engine generator;
 
   for (int i = 0; i < 3; i++) {
-    std::normal_distribution<nav_t> distribution(value[i], noise);
+    std::normal_distribution<data::nav_t> distribution(value[i], noise);
     temp[i] = distribution(generator);
   }
   return temp;

@@ -8,9 +8,7 @@
 #include "imu_manager.hpp"
 #include <utils/system.hpp>
 
-namespace hyped {
-
-namespace sensors {
+namespace hyped::sensors {
 
 /**
  * @brief Initialise sensors, data instances to be pulled in managers
@@ -63,14 +61,13 @@ class Main : public Thread {
   /**
    * @brief update this from GpioCounter::getStripeCounter();
    */
-  array<data::StripeCounter, data::Sensors::kNumKeyence> keyence_stripe_counter_arr_;
+  std::array<data::StripeCounter, data::Sensors::kNumKeyence> keyence_stripe_counter_arr_;
 
   /**
    * @brief use this to compare with keyence_stripe_counter_arr_
    *        update when keyenceUpdated() == true
    */
-  array<data::StripeCounter, data::Sensors::kNumKeyence> prev_keyence_stripe_count_arr_;
+  std::array<data::StripeCounter, data::Sensors::kNumKeyence> prev_keyence_stripe_count_arr_;
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

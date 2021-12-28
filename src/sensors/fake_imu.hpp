@@ -7,14 +7,7 @@
 
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-using data::DataPoint;
-using data::ImuData;
-using data::nav_t;
-using data::NavigationVector;
-
-namespace sensors {
+namespace hyped::sensors {
 
 /*
  * @brief    This class is to imitate an IMU. This works by calling the constructor once
@@ -146,20 +139,4 @@ class FakeImuFromFile : public ImuInterface {
   data::Data &data_;
 };
 
-// todo - implement different options for fake imus
-
-// class FakeAccurateImu: public ImuInterface {
-//  public:
-//   explicit FakeAccurateImu(utils::Logger& log_);
-
-//   bool isOnline() override { return true; }
-//   void getData(ImuData* imu) override;
-
-//  private:
-//   data::Data&    data_;
-//   NavigationVector acc_noise_;
-//   utils::Logger& log_;
-// };
-
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

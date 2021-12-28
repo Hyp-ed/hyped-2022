@@ -19,7 +19,7 @@ namespace sensors {
  *
  */
 class ImuManager : public Thread {
-  typedef data::DataPoint<array<ImuData, data::Sensors::kNumImus>> DataArray;
+  typedef data::DataPoint<std::array<ImuData, data::Sensors::kNumImus>> DataArray;
 
  public:
   /**

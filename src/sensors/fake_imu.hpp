@@ -29,7 +29,7 @@ class FakeImuFromFile : public ImuInterface {
    *               for accelerometer. You must include every timestamp from 0 to the last timestamp
    *               which will be a multiple of 250.
    *
-   * @param log_
+   * @param log
    * @param acc_file_path
    * @param dec_file_path
    * @param em_file_path
@@ -37,7 +37,7 @@ class FakeImuFromFile : public ImuInterface {
    * @param is_fail_dec
    * @param noise
    */
-  FakeImuFromFile(utils::Logger &log_, std::string acc_file_path, std::string dec_file_path,
+  FakeImuFromFile(utils::Logger &log, std::string acc_file_path, std::string dec_file_path,
                   std::string em_file_path, bool is_fail_acc, bool is_fail_dec, float noise = 0.2);
 
   bool isOnline() override { return true; }
@@ -63,10 +63,10 @@ class FakeImuFromFile : public ImuInterface {
  private:
   utils::Logger &log_;
   const uint64_t kAccTimeInterval = 50;
-  void startCal();
-  void startAcc();
-  void startDec();
-  void startEm();
+  void startCalibrating();
+  void startAccelerating();
+  void startBraking();
+  void startEmergency();
 
   void handleCalibrating(bool &operational);
   void handleAccelerating(bool &operational);
@@ -129,7 +129,7 @@ class FakeImuFromFile : public ImuInterface {
   bool cal_started_;
   bool acc_started_;
   bool dec_started_;
-  bool em_started_;
+  bool emergency_started_;
   bool is_fail_acc_;
   bool is_fail_dec_;
   bool failure_happened_;

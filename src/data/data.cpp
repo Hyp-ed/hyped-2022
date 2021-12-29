@@ -7,10 +7,26 @@ using utils::concurrent::ScopedLock;
 
 namespace data {
 
-const char *states[num_states] = {
-  "Idle",           "PreCalibrating",   "Calibrating",    "Ready",    "Accelerating", "Cruising",
-  "NominalBraking", "EmergencyBraking", "FailureStopped", "Finished", "Invalid",
+const std::unordered_map<State, const char *> states = {
+  {State::kIdle, "Idle"},
+  {State::kPreCalibrating, "PreCalibrating"},
+  {State::kCalibrating, "Calibrating"},
+  {State::kReady, "Ready"},
+  {State::kAccelerating, "Accelerating"},
+  {State::kCruising, "Cruising"},
+  {State::kNominalBraking, "NominalBraking"},
+  {State::kEmergencyBraking, "EmergencyBraking"},
+  {State::kFailureStopped, "FailureStopped"},
+  {State::kFinished, "Finished"},
+  {State::kInvalid, "Invalid"},
 };
+
+std::optional<const char *> stateToString(const State state)
+{
+  const auto it = states.find(state);
+  if (it == states.end()) { return std::nullopt; }
+  return it->second;
+}
 
 Data &Data::getInstance()
 {

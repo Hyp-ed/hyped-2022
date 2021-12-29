@@ -2,9 +2,11 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "data_point.hpp"
+#include <unordered_map>
 #include <utils/concurrent/lock.hpp>
 #include <utils/math/vector.hpp>
 
@@ -130,7 +132,7 @@ struct Telemetry : public Module {
 // -------------------------------------------------------------------------------------------------
 // State Machine States
 // -------------------------------------------------------------------------------------------------
-enum State {
+enum class State {
   kIdle,
   kPreCalibrating,
   kCalibrating,
@@ -141,11 +143,12 @@ enum State {
   kEmergencyBraking,
   kFailureStopped,
   kFinished,
-  kInvalid,
-  num_states
+  kInvalid
 };
 
-extern const char *states[num_states];
+constexpr int num_states = static_cast<int>(State::kInvalid);
+
+std::optional<const char *> stateToString(const State state);
 
 struct StateMachine {
   bool critical_failure;

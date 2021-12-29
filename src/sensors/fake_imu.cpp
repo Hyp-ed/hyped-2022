@@ -32,7 +32,7 @@ FakeImuFromFile::FakeImuFromFile(utils::Logger &log, std::string acc_file_path,
       cal_started_(false),
       acc_started_(false),
       dec_started_(false),
-      em_started_(false),
+      emergency_started_(false),
       is_fail_acc_(is_fail_acc),
       is_fail_dec_(is_fail_dec),
       failure_happened_(false),
@@ -54,25 +54,25 @@ FakeImuFromFile::FakeImuFromFile(utils::Logger &log, std::string acc_file_path,
   }
 }
 
-void FakeImuFromFile::startCal()
+void FakeImuFromFile::startCalibrating()
 {
   imu_ref_time_ = utils::Timer::getTimeMicros();
   acc_count_    = 0;
 }
 
-void FakeImuFromFile::startAcc()
+void FakeImuFromFile::startAccelerating()
 {
   imu_ref_time_ = utils::Timer::getTimeMicros();
   acc_count_    = 0;
 }
 
-void FakeImuFromFile::startDec()
+void FakeImuFromFile::startBraking()
 {
   imu_ref_time_ = utils::Timer::getTimeMicros();
   acc_count_    = 0;
 }
 
-void FakeImuFromFile::startEm()
+void FakeImuFromFile::startEmergency()
 {
   imu_ref_time_ = utils::Timer::getTimeMicros();
   acc_count_    = 0;
@@ -98,7 +98,7 @@ void FakeImuFromFile::handleCalibrating(bool &operational)
   if (!cal_started_) {
     log_.INFO("Fake-IMU", "Start calibrating ...");
     cal_started_ = true;
-    startCal();
+    startCalibrating();
   }
 
   // pod stationary
@@ -115,7 +115,7 @@ void FakeImuFromFile::handleAccelerating(bool &operational)
   if (!acc_started_) {
     log_.INFO("Fake-IMU", "Start accelerating ...");
     acc_started_ = true;
-    startAcc();
+    startAccelerating();
   }
 
   if (accCheckTime()) {
@@ -156,7 +156,7 @@ void FakeImuFromFile::handleNominalBraking(bool &operational)
   if (!dec_started_) {
     log_.INFO("Fake-IMU", "Start decelerating...");
     dec_started_ = true;
-    startDec();
+    startBraking();
   }
 
   if (accCheckTime()) {
@@ -180,19 +180,19 @@ void FakeImuFromFile::handleNominalBraking(bool &operational)
       }
     }
 
-    float vel = data_.getNavigationData().velocity;
-    log_.DBG3("Fake-IMU", "velocity: %f", vel);
+    const auto velocity = data_.getNavigationData().velocity;
+    log_.DBG3("Fake-IMU", "velocity: %f", velocity);
     // prevent acc from becoming significantly non-zero once stopped
-    if (vel < 0.01) { prev_acc_ = getZeroAcc(); }
+    if (velocity < 0.01) { prev_acc_ = getZeroAcc(); }
   }
 }
 
 void FakeImuFromFile::handleEmergencyBraking(bool &operational)
 {
-  if (!em_started_) {
+  if (!emergency_started_) {
     log_.INFO("Fake-IMU", "Start emergency breaking...");
-    em_started_ = true;
-    startEm();
+    emergency_started_ = true;
+    startEmergency();
   }
 
   if (accCheckTime()) {
@@ -205,10 +205,10 @@ void FakeImuFromFile::handleEmergencyBraking(bool &operational)
       prev_acc_ = em_val_read_.at(acc_count_);
     }
 
-    float vel = data_.getNavigationData().velocity;
-    log_.DBG3("Fake-IMU", "velocity: %f", vel);
+    const auto velocity = data_.getNavigationData().velocity;
+    log_.DBG3("Fake-IMU", "velocity: %f", velocity);
     // prevent acc from becoming significantly non-zero once stopped
-    if (vel < 0.01) { prev_acc_ = getZeroAcc(); }
+    if (velocity < 0.01) { prev_acc_ = getZeroAcc(); }
   }
 
   // Failures cannot occur during EmergencyBraking so we're

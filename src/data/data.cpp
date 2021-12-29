@@ -7,7 +7,7 @@ using utils::concurrent::ScopedLock;
 
 namespace data {
 
-const std::unordered_map<State, const char *> states = {
+static const std::unordered_map<State, const char *> states = {
   {State::kIdle, "Idle"},
   {State::kPreCalibrating, "PreCalibrating"},
   {State::kCalibrating, "Calibrating"},

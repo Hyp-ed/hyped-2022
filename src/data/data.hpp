@@ -146,8 +146,6 @@ enum class State {
   kInvalid
 };
 
-constexpr int num_states = static_cast<int>(State::kInvalid);
-
 std::optional<const char *> stateToString(const State state);
 
 struct StateMachine {

@@ -106,4 +106,9 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
   return last_trajectory_;
 }
 
+const FakeTrajectory::Config &FakeTrajectory::getConfig() const
+{
+  return config_;
+}
+
 }  // namespace hyped::sensors

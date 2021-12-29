@@ -1,0 +1,5 @@
+{
+  "maximum_acceleration": 1.0,
+  "braking_deceleration": 2.0,
+  "cruising_deceleration": 0.01
+}

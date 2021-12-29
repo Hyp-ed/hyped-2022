@@ -11,20 +11,21 @@ namespace hyped::sensors {
 
 class FakeTrajectory {
  public:
-  struct Trajectory {
-    data::nav_t acceleration;
-    data::nav_t velocity;
-    data::nav_t displacement;
-  };
-  FakeTrajectory::Trajectory getTrajectory();
-  static std::optional<FakeTrajectory> fromFile(utils::Logger &log, const std::string &path);
-
- private:
   struct Config {
     data::nav_t maximum_acceleration;
     data::nav_t braking_deceleration;
     data::nav_t cruising_deceleration;
   };
+  struct Trajectory {
+    data::nav_t acceleration;
+    data::nav_t velocity;
+    data::nav_t displacement;
+  };
+  Trajectory getTrajectory();
+  const Config &getConfig() const;
+  static std::optional<FakeTrajectory> fromFile(utils::Logger &log, const std::string &path);
+
+ private:
   const Config config_;
   data::Data &data_;
   uint64_t last_update_;

@@ -30,8 +30,8 @@ struct Module {
 // -------------------------------------------------------------------------------------------------
 // Navigation
 // -------------------------------------------------------------------------------------------------
-typedef float nav_t;
-typedef utils::math::Vector<nav_t, 3> NavigationVector;
+using nav_t            = float;
+using NavigationVector = utils::math::Vector<nav_t, 3>;
 struct Navigation : public Module {
   static constexpr nav_t kMaximumVelocity = 100;     // m/s
   static constexpr nav_t kRunLength       = 1250.0;  // m

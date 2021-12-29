@@ -1,13 +1,14 @@
 #pragma once
 
+#include "kalman_filter.hpp"
+#include "stripe_handler.hpp"
+
 #include <math.h>
 
 #include <array>
 #include <cstdint>
 #include <fstream>
 
-#include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 #include <data/data.hpp>
 #include <data/data_point.hpp>
 #include <sensors/imu.hpp>
@@ -210,7 +211,6 @@ class Navigation {
   StripeHandler stripe_counter_;
   // Flags if keyences are used and if real
   bool is_keyence_used_;
-  bool is_keyence_real_;
 
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity

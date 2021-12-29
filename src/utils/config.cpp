@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "interface_factory.hpp"
 #include "logger.hpp"
 #include "system.hpp"
 
@@ -7,8 +8,6 @@
 #include <sstream>
 #include <string>  // redundant includes to make linter stop complaining
 #include <vector>
-
-#include "interface_factory.hpp"
 
 namespace hyped {
 namespace utils {

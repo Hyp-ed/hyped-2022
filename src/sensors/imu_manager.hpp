@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fake_trajectory.hpp"
 #include "interface.hpp"
 
 #include <cstdint>
@@ -8,26 +9,18 @@
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
-
-using utils::Logger;
-using utils::concurrent::Thread;
-
-namespace sensors {
+namespace hyped::sensors {
 /**
  * @brief creates class to hold multiple IMUs and respective data.
  *
  */
-class ImuManager : public Thread {
-  typedef data::DataPoint<std::array<ImuData, data::Sensors::kNumImus>> DataArray;
+class ImuManager : public utils::concurrent::Thread {
+  using DataArray = data::DataPoint<std::array<ImuData, data::Sensors::kNumImus>>;
 
  public:
-  /**
-   * @brief Construct a new Imu Manager object
-   *
-   * @param log
-   */
-  explicit ImuManager(Logger &log);
+  ImuManager(utils::Logger &log);
+
+  ImuManager(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
   /**
    * @brief Calibrate IMUs then begin collecting data.
@@ -35,20 +28,7 @@ class ImuManager : public Thread {
   void run() override;
 
  private:
-  utils::System &sys_;
-
-  /**
-   * @brief DataPoint array for all kNumImus
-   */
-  DataArray sensors_imu_;
-
-  /**
-   * @brief needs to be references because run() passes directly to data struct
-   */
-  data::Data &data_;
-
-  ImuInterface *imu_[data::Sensors::kNumImus];
+  std::array<std::unique_ptr<ImuInterface>, data::Sensors::kNumImus> imus_;
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

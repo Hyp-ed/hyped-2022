@@ -77,9 +77,8 @@ System::System(int argc, char *argv[])
       debug_state(DEFAULT_DEBUG),
       debug_tlm(DEFAULT_DEBUG),
       debug_brakes(DEFAULT_VERBOSE),
-      fake_imu(false),
+      fake_trajectory(false),
       fake_batteries(false),
-      fake_keyence(false),
       fake_temperature(false),
       fake_brakes(false),
       fake_motors(false),
@@ -122,9 +121,8 @@ System::System(int argc, char *argv[])
          {"debug_tlm", optional_argument, 0, 'g'},
          {"debug_brakes", optional_argument, 0, 'O'},
          {"help", no_argument, 0, 'h'},
-         {"fake_imu", no_argument, 0, 'i'},
+         {"fake_trajectory", no_argument, 0, 'i'},
          {"fake_batteries", no_argument, 0, 'j'},
-         {"fake_keyence", no_argument, 0, 'k'},
          {"fake_temperature", no_argument, 0, 'l'},
          {"fake_motors", no_argument, 0, 'm'},
          {"fake_brakes", no_argument, 0, 'n'},
@@ -243,21 +241,15 @@ System::System(int argc, char *argv[])
         break;
       case 'i':  // fake_imu
         if (optarg)
-          fake_imu = atoi(optarg);
+          fake_trajectory = atoi(optarg);
         else
-          fake_imu = 1;
+          fake_trajectory = 1;
         break;
       case 'j':  // fake batteries
         if (optarg)
           fake_batteries = atoi(optarg);
         else
           fake_batteries = 1;
-        break;
-      case 'k':  // fake_keyence
-        if (optarg)
-          fake_keyence = atoi(optarg);
-        else
-          fake_keyence = 1;
         break;
       case 'l':  // fake_temeperature
         if (optarg)

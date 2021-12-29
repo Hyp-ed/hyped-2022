@@ -1,6 +1,7 @@
 #pragma once
 
 #include "state_processor.hpp"
+
 #include <data/data.hpp>
 #include <utils/concurrent/barrier.hpp>
 #include <utils/concurrent/thread.hpp>

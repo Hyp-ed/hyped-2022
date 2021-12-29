@@ -36,7 +36,7 @@ class StripeHandler {
    * @param velocity Current velocity
    * @param real Whether or not the sensors are real
    */
-  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity, const bool real);
+  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity);
   /**
    * @brief Checks if submodule should enter kCriticalFailure
    *

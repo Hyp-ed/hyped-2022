@@ -1,10 +1,11 @@
 #pragma once
 
+#include "fake_can_endpoint.hpp"
+#include "sender_interface.hpp"
+
 #include <atomic>
 #include <iostream>
 
-#include "fake_can_endpoint.hpp"
-#include "sender_interface.hpp"
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 

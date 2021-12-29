@@ -1,7 +1,9 @@
 #pragma once
 
+#include "fake_trajectory.hpp"
 #include "interface.hpp"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -9,36 +11,10 @@
 
 namespace hyped::sensors {
 
-/*
- * @brief    This class is to imitate an IMU. This works by calling the constructor once
- *           and calling getData function multiple times at different time periods to produce
- *           reading that will be used by other classes.
- */
-class FakeImuFromFile : public ImuInterface {
+class FakeImu : public ImuInterface {
  public:
-  /**
-   * @brief A constructor for the fake IMU class by reading from file
-   *
-   * The line format of the input file would be the following
-   *
-   *               timestamp value_x
-   *               value_y = 9.8 and value_z = 0 set by class
-   *
-   *               Sample of the format is located at 'src/fake_imu_input_xxx.txt'. Note that the
-   *               timestamp for accelerometer has to start with 0 and must be multiples of 250
-   *               for accelerometer. You must include every timestamp from 0 to the last timestamp
-   *               which will be a multiple of 250.
-   *
-   * @param log
-   * @param acc_file_path
-   * @param dec_file_path
-   * @param em_file_path
-   * @param is_fail_acc
-   * @param is_fail_dec
-   * @param noise
-   */
-  FakeImuFromFile(utils::Logger &log, std::string acc_file_path, std::string dec_file_path,
-                  std::string em_file_path, bool is_fail_acc, bool is_fail_dec, float noise = 0.2);
+  FakeImu(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory,
+          const data::nav_t noise);
 
   bool isOnline() override { return true; }
 
@@ -58,85 +34,21 @@ class FakeImuFromFile : public ImuInterface {
    *
    * @return    Returns random data point value
    */
-  static NavigationVector addNoiseToData(NavigationVector value, float noise);
+  static NavigationVector addNoiseToData(const data::NavigationVector value,
+                                         const data::nav_t noise);
 
  private:
   utils::Logger &log_;
-  const uint64_t kAccTimeInterval = 50;
-  void startCalibrating();
-  void startAccelerating();
-  void startBraking();
-  void startEmergency();
-
-  void handleCalibrating(bool &operational);
-  void handleAccelerating(bool &operational);
-  void handleCruising(bool &operational);
-  void handleNominalBraking(bool &operational);
-  void handleEmergencyBraking(bool &operational);
-
-  /**
-   * @brief sets failure time for acc or dec configuration
-   * @param state current state
-   */
-  void setFailure(data::State &state);
+  data::Data &data_;
+  std::shared_ptr<FakeTrajectory> fake_trajectory_;
+  const data::nav_t noise_;
 
   /**
    * @return NavigationVector zero acceleration as a vector
    */
-  NavigationVector getZeroAcc();
+  NavigationVector getZeroAcc() const;
 
-  /*
-   * @brief     A function that reads data from file directory. This function also validates them
-   *            by checking if
-   *              1) The timestamp values are valid. Multiples of 250.
-   *              2) The file follows the format given in the comments of the constructor above.
-   *              3) The file exists.
-   *
-   * @param[in]    The file format is as stated in the constructor comments
-   */
-  void readDataFromFile(std::string acc_file_path, std::string dec_file_path,
-                        std::string em_file_path);
-
-  /*
-   * @brief     Checks to see if sufficient time has pass for the sensor to be updated and checks if
-   *            some data points need to be skipped
-   */
-  bool accCheckTime();
-
-  NavigationVector acc_noise_;
-  NavigationVector prev_acc_;
-  NavigationVector acc_fail_;
-
-  std::vector<NavigationVector> acc_val_read_;
-  std::vector<bool> acc_val_operational_;
-  std::vector<NavigationVector> dec_val_read_;
-  std::vector<bool> dec_val_operational_;
-  std::vector<NavigationVector> em_val_read_;
-  std::vector<bool> em_val_operational_;
-
-  /**
-   * @brief used in accCheckTime()
-   */
-  int64_t acc_count_;
-
-  /**
-   * @brief scales time based on getTimeMicros() and timestamps from file
-   */
-  uint64_t imu_ref_time_;
-  std::string acc_file_path_;
-  std::string dec_file_path_;
-  std::string em_file_path_;
-  bool cal_started_;
-  bool acc_started_;
-  bool dec_started_;
-  bool emergency_started_;
-  bool is_fail_acc_;
-  bool is_fail_dec_;
-  bool failure_happened_;
-  uint64_t failure_time_acc_;
-  uint64_t failure_time_dec_;
-  float noise_;
-  data::Data &data_;
+  NavigationVector getAccurateAcceleration();
 };
 
 }  // namespace hyped::sensors

@@ -16,39 +16,58 @@ using utils::System;
 
 namespace sensors {
 
-Main::Main(uint8_t id, utils::Logger &log)
+Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
-      data_(data::Data::getInstance()),
       sys_(utils::System::getSystem()),
+      data_(data::Data::getInstance()),
       log_(log),
-      pins_{static_cast<uint8_t>(sys_.config->sensors.keyence_l),
-            static_cast<uint8_t>(sys_.config->sensors.keyence_r)},  // NOLINT
-      imu_manager_(new ImuManager(log)),
-      battery_manager_(new BmsManager(log))
+      keyence_pins_{static_cast<uint8_t>(sys_.config->sensors.keyence_l),
+                    static_cast<uint8_t>(sys_.config->sensors.keyence_r)}
 {
-  if (!(sys_.fake_keyence || sys_.fake_keyence_fail)) {
+  battery_manager_ = std::make_unique<BmsManager>(log);
+  if (sys_.fake_trajectory) {
+    auto fake_trajectory_optional
+      = FakeTrajectory::fromFile(log, "configurations/fake_trajectory.json");
+    if (!fake_trajectory_optional) {
+      log.ERR("SENSORS", "failed to initialise fake trajectory");
+      sys_.running_ = false;
+      return;
+    }
+    auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
+    if (sys_.fake_keyence_fail) {
+      for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+        // miss four stripes in a row after 20th, 2000 micros during peak velocity
+        keyences_[i]
+          = std::make_unique<FakeGpioCounter>(log_, true, "data/in/gpio_counter_fail_run.txt");
+      }
+    } else {
+      for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+        keyences_[i]
+          = std::make_unique<FakeGpioCounter>(log_, false, "data/in/gpio_counter_normal_run.txt");
+      }
+    }
+    if (sys_.fake_imu_fail) {
+      // TODO(miltfra): Implement failure mode for fake IMU
+    } else {
+      imu_manager_ = std::make_unique<ImuManager>(log, fake_trajectory);
+    }
+  } else {
+    // Real trajectory sensors
     for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      GpioCounter *keyence = new GpioCounter(log_, pins_[i]);
+      auto keyence = std::make_unique<GpioCounter>(log_, keyence_pins_[i]);
       keyence->start();
-      keyences_[i] = keyence;
+      keyences_[i] = std::move(keyence);
     }
-  } else if (sys_.fake_keyence_fail) {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      // miss four stripes in a row after 20th, 2000 micros during peak velocity
-      keyences_[i] = new FakeGpioCounter(log_, true, "data/in/gpio_counter_fail_run.txt");
-    }
-  } else {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      keyences_[i] = new FakeGpioCounter(log_, false, "data/in/gpio_counter_normal_run.txt");
-    }
+    imu_manager_ = std::make_unique<ImuManager>(log);
   }
-  if (!(sys_.fake_temperature || sys_.fake_temperature_fail)) {
-    temperature_ = new Temperature(log_, sys_.config->sensors.thermistor);
-  } else if (sys_.fake_temperature_fail) {
-    // fake temperature fail case
-    temperature_ = new FakeTemperature(log_, true);
+
+  // Temperature
+  if (sys_.fake_temperature_fail) {
+    temperature_ = std::make_unique<FakeTemperature>(log_, true);
+  } else if (sys_.fake_temperature) {
+    temperature_ = std::make_unique<FakeTemperature>(log_, false);
   } else {
-    temperature_ = new FakeTemperature(log_, false);
+    temperature_ = std::make_unique<Temperature>(log_, sys_.config->sensors.thermistor);
   }
 
   // kReady for state machine transition

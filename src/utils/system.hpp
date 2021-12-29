@@ -45,9 +45,8 @@ class System {
   int8_t debug_brakes;
 
   // Fake System variables below
-  bool fake_imu;
+  bool fake_trajectory;
   bool fake_batteries;
-  bool fake_keyence;
   bool fake_temperature;
   bool fake_brakes;
   bool fake_motors;

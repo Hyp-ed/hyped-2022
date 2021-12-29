@@ -1,12 +1,13 @@
 #pragma once
 
+#include "data_point.hpp"
+
 #include <array>
 #include <cstdint>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
-#include "data_point.hpp"
-#include <unordered_map>
 #include <utils/concurrent/lock.hpp>
 #include <utils/math/vector.hpp>
 

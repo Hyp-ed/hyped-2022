@@ -1,11 +1,11 @@
 #pragma once
 
+#include "bms_manager.hpp"
+#include "imu_manager.hpp"
 #include "interface.hpp"
 
 #include <cstdint>
 
-#include "bms_manager.hpp"
-#include "imu_manager.hpp"
 #include <utils/system.hpp>
 
 namespace hyped::sensors {
@@ -42,8 +42,8 @@ class Main : public Thread {
    */
   void checkTemperature();
 
-  data::Data &data_;
   utils::System &sys_;
+  data::Data &data_;
   utils::Logger &log_;
 
   // master data structures
@@ -51,11 +51,11 @@ class Main : public Thread {
   data::Batteries batteries_;
   data::StripeCounter stripe_counter_;
 
-  uint8_t pins_[data::Sensors::kNumKeyence];
-  GpioInterface *keyences_[data::Sensors::kNumKeyence];  // 0 L and 1 R
-  ImuManager *imu_manager_;
-  BmsManager *battery_manager_;
-  TemperatureInterface *temperature_;
+  std::array<uint8_t, data::Sensors::kNumKeyence> keyence_pins_;
+  std::array<std::unique_ptr<GpioInterface>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
+  std::unique_ptr<ImuManager> imu_manager_;
+  std::unique_ptr<BmsManager> battery_manager_;
+  std::unique_ptr<TemperatureInterface> temperature_;
   bool log_error_ = false;
 
   /**

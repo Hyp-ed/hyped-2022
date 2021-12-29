@@ -28,7 +28,6 @@ Navigation::Navigation(utils::Logger &log, uint32_t axis /*=0*/)
       stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
                       kStripeDistance),
       is_keyence_used_(true),
-      is_keyence_real_(true),
       acceleration_integrator_(&velocity_),
       velocity_integrator_(&displacement_)
 {
@@ -296,11 +295,6 @@ void Navigation::disableKeyenceUsage()
   is_keyence_used_ = false;
 }
 
-void Navigation::setKeyenceFake()
-{
-  is_keyence_real_ = false;
-}
-
 bool Navigation::getHasInit()
 {
   return has_initial_time_;
@@ -428,7 +422,7 @@ void Navigation::navigate()
 {
   queryImus();
   if (is_keyence_used_) {
-    stripe_counter_.queryKeyence(displacement_.value, velocity_.value, is_keyence_real_);
+    stripe_counter_.queryKeyence(displacement_.value, velocity_.value);
     if (stripe_counter_.checkFailure(displacement_.value))
       status_ = data::ModuleStatus::kCriticalFailure;
   }

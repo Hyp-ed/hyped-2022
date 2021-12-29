@@ -75,7 +75,7 @@ void StripeHandler::updateNavData(data::nav_t &displacement, data::nav_t &veloci
   displacement -= displacement_offset;
 }
 
-void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocity, const bool real)
+void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocity)
 {
   for (std::size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
     // Check new readings and ensure new stripe has been hit
@@ -87,7 +87,6 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
 
     ++stripe_counter_.value;
     stripe_counter_.timestamp = readings_.at(i).count.timestamp;
-    if (!real) stripe_counter_.timestamp = utils::Timer::getTimeMicros();
 
     const data::nav_t allowed_uncertainty = std::max(displacement_uncertainty_, kStripeUncertainty);
     data::nav_t displacement_offset       = getDisplacementOffset(displacement);

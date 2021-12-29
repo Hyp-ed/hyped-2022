@@ -5,50 +5,40 @@
 #include <utils/config.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::Data;
-using data::Sensors;
-using utils::System;
-
-namespace sensors {
-ImuManager::ImuManager(Logger &log)
-    : Thread(log),
-      sys_(System::getSystem()),
-      data_(Data::getInstance()),
-      imu_{0}
+ImuManager::ImuManager(utils::Logger &log) : Thread(log)
 {
-  if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
-    utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
+  utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
 
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {  // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], false);
-    }
-  } else if (sys_.fake_imu_fail) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      // change params to fail in kAcccelerating or kNominalBraking states
-      imu_[i] = new FakeImuFromFile(log, "data/in/acc_state.txt", "data/in/decel_state.txt",
-                                    "data/in/decel_state.txt", (i % 2 == 0), false);
-    }
-  } else {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      imu_[i] = new FakeImuFromFile(log, "data/in/acc_state.txt", "data/in/decel_state.txt",
-                                    "data/in/decel_state.txt", false, false);
-    }
+  auto &sys = utils::System::getSystem();
+  for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
+    imus_[i] = std::make_unique<Imu>(log, sys.config->sensors.chip_select[i], false);
   }
-  log_.INFO("IMU-MANAGER", "imu manager has been initialised");
+  log_.INFO("IMU-MANAGER", "initialisation complete");
+}
+
+ImuManager::ImuManager(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory)
+    : Thread(log)
+{
+  for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
+    imus_[i] = std::make_unique<FakeImu>(log, fake_trajectory, 0.2);
+  }
+  log_.INFO("IMU-MANAGER", "initialisation complete");
 }
 
 void ImuManager::run()
 {
+  auto &sys  = utils::System::getSystem();
+  auto &data = data::Data::getInstance();
+  DataArray imu_data;
   // collect real data while system is running
-  while (sys_.running_) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      if (imu_[i]) imu_[i]->getData(&(sensors_imu_.value[i]));
+  while (sys.running_) {
+    for (size_t i = 0; i < imus_.size(); i++) {
+      imus_.at(i)->getData(&(imu_data.value[i]));
     }
-    sensors_imu_.timestamp = utils::Timer::getTimeMicros();
-    data_.setSensorsImuData(sensors_imu_);
+    imu_data.timestamp = utils::Timer::getTimeMicros();
+    data.setSensorsImuData(imu_data);
   }
 }
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

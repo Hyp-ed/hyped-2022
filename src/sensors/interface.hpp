@@ -16,6 +16,11 @@ class SensorInterface {
 class ImuInterface : public SensorInterface {
  public:
   /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~ImuInterface() {}
+
+  /**
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
@@ -24,6 +29,11 @@ class ImuInterface : public SensorInterface {
 
 class GpioInterface : public SensorInterface {
  public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~GpioInterface() {}
+
   /**
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
@@ -34,6 +44,11 @@ class GpioInterface : public SensorInterface {
 class BmsInterface : public SensorInterface {
  public:
   /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~BmsInterface() {}
+
+  /**
    * @brief Get Battery data
    * @param battery - output pointer to be filled by this sensor
    */
@@ -42,6 +57,11 @@ class BmsInterface : public SensorInterface {
 
 class TemperatureInterface {
  public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~TemperatureInterface() {}
+
   /**
    * @brief not a thread, checks temperature
    */

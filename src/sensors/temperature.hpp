@@ -7,11 +7,7 @@
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-using utils::Logger;
-
-namespace sensors {
+namespace hyped::sensors {
 
 class Temperature : public TemperatureInterface {
  public:
@@ -57,5 +53,4 @@ class Temperature : public TemperatureInterface {
   data::TemperatureData temp_;
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

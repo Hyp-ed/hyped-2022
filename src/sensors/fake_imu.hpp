@@ -38,7 +38,6 @@ class FakeImu : public ImuInterface {
                                                const data::nav_t noise);
 
  private:
-  utils::Logger &log_;
   data::Data &data_;
   std::shared_ptr<FakeTrajectory> fake_trajectory_;
   const data::nav_t noise_;

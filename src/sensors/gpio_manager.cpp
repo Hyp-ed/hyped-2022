@@ -49,6 +49,7 @@ void GpioManager::run()
     if (state != previous_state_) {
       switch (state) {
         case data::State::kIdle:
+        case data::State::kPreCalibrating:
         case data::State::kAccelerating:
         case data::State::kCruising:
         case data::State::kCalibrating:

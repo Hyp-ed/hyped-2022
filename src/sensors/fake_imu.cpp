@@ -6,8 +6,7 @@ namespace hyped::sensors {
 
 FakeImu::FakeImu(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory,
                  const data::nav_t noise)
-    : log_(log),
-      data_(data::Data::getInstance()),
+    : data_(data::Data::getInstance()),
       fake_trajectory_(fake_trajectory),
       noise_(noise)
 {

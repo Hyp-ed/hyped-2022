@@ -24,7 +24,7 @@ class FakeImu : public ImuInterface {
    *            will also skip a couple of data points if the time since the last call has been
    *            sufficiently long.
    */
-  void getData(ImuData *imu) override;
+  void getData(data::ImuData &imu_data) override;
 
   /*
    * @brief     A function that adds noise to the imu data using normal distribution
@@ -34,8 +34,8 @@ class FakeImu : public ImuInterface {
    *
    * @return    Returns random data point value
    */
-  static NavigationVector addNoiseToData(const data::NavigationVector value,
-                                         const data::nav_t noise);
+  static data::NavigationVector addNoiseToData(const data::NavigationVector value,
+                                               const data::nav_t noise);
 
  private:
   utils::Logger &log_;
@@ -46,9 +46,9 @@ class FakeImu : public ImuInterface {
   /**
    * @return NavigationVector zero acceleration as a vector
    */
-  NavigationVector getZeroAcc() const;
+  data::NavigationVector getZeroAcc() const;
 
-  NavigationVector getAccurateAcceleration();
+  data::NavigationVector getAccurateAcceleration();
 };
 
 }  // namespace hyped::sensors

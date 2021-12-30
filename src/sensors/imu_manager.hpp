@@ -15,7 +15,7 @@ namespace hyped::sensors {
  *
  */
 class ImuManager : public utils::concurrent::Thread {
-  using DataArray = data::DataPoint<std::array<ImuData, data::Sensors::kNumImus>>;
+  using DataArray = data::DataPoint<std::array<data::ImuData, data::Sensors::kNumImus>>;
 
  public:
   ImuManager(utils::Logger &log);

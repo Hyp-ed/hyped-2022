@@ -5,14 +5,7 @@
 #include <utils/io/gpio.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
-
-using data::Data;
-using data::StripeCounter;
-using hyped::utils::Logger;
-using utils::io::GPIO;
-
-namespace sensors {
+namespace hyped::sensors {
 
 GpioCounter::GpioCounter(utils::Logger &log, int pin)
     : pin_(pin),
@@ -23,8 +16,8 @@ GpioCounter::GpioCounter(utils::Logger &log, int pin)
 
 void GpioCounter::run()
 {
-  GPIO thepin(pin_, utils::io::gpio::kIn);          // exports pin
-  uint8_t val                     = thepin.wait();  // Ignore first reading
+  utils::io::GPIO thepin(pin_, utils::io::gpio::kIn);  // exports pin
+  uint8_t val                     = thepin.wait();     // Ignore first reading
   stripe_counter_.count.value     = 0;
   stripe_counter_.count.timestamp = utils::Timer::getTimeMicros();
 
@@ -39,15 +32,13 @@ void GpioCounter::run()
   }
 }
 
-void GpioCounter::getData(StripeCounter *stripe_counter)
+void GpioCounter::getData(data::StripeCounter &stripe_counter)
 {
-  stripe_counter->count       = stripe_counter_.count;
-  stripe_counter->operational = stripe_counter_.operational;
+  stripe_counter = stripe_counter_;
 }
 
 bool GpioCounter::isOnline()
 {
   return stripe_counter_.operational;
 }
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

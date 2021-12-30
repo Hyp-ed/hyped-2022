@@ -116,7 +116,7 @@ void Main::run()
       prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
     }
     for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
+      keyences_[i]->getData(keyence_stripe_counter_arr_[i]);
     }
     Thread::sleep(10);  // Sleep for 10ms
     temp_count++;

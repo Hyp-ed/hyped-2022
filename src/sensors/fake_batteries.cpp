@@ -4,9 +4,7 @@
 
 #include <utils/timer.hpp>
 
-namespace hyped {
-
-namespace sensors {
+namespace hyped::sensors {
 
 FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
     : data_(Data::getInstance()),
@@ -44,7 +42,7 @@ FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
   }
 }
 
-void FakeBatteries::getData(BatteryData *battery)
+void FakeBatteries::getData(data::BatteryData &battery_data)
 {
   // We want to fail after we start accelerating
   // We can make it random from 0 to 20 seconds
@@ -58,15 +56,7 @@ void FakeBatteries::getData(BatteryData *battery)
     }
   }
   checkFailure();
-  battery->voltage             = local_data_.voltage;
-  battery->current             = local_data_.current;
-  battery->charge              = local_data_.charge;
-  battery->low_temperature     = local_data_.low_temperature;  // 0 for LP
-  battery->average_temperature = local_data_.average_temperature;
-  battery->high_temperature    = local_data_.high_temperature;   // 0 for LP
-  battery->low_voltage_cell    = local_data_.low_voltage_cell;   // 0 for LP
-  battery->high_voltage_cell   = local_data_.high_voltage_cell;  // 0 for LP
-  battery->imd_fault           = local_data_.imd_fault;
+  battery_data = local_data_;
 }
 
 void FakeBatteries::checkFailure()
@@ -98,5 +88,4 @@ bool FakeBatteries::isOnline()
   return true;
 }
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

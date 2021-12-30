@@ -1,18 +1,8 @@
 #pragma once
 
-#include <string>
-
 #include <data/data.hpp>
 
-namespace hyped {
-
-using data::BatteryData;
-using data::ImuData;
-using data::NavigationVector;
-using data::StripeCounter;
-using data::TemperatureData;
-
-namespace sensors {
+namespace hyped::sensors {
 
 class SensorInterface {
  public:
@@ -29,7 +19,7 @@ class ImuInterface : public SensorInterface {
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
-  virtual void getData(ImuData *imu) = 0;
+  virtual void getData(data::ImuData &imu_data) = 0;
 };
 
 class GpioInterface : public SensorInterface {
@@ -38,16 +28,16 @@ class GpioInterface : public SensorInterface {
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
    */
-  virtual void getData(StripeCounter *stripe_counter) = 0;
+  virtual void getData(data::StripeCounter &stripe_counter) = 0;
 };
 
-class BMSInterface : public SensorInterface {
+class BmsInterface : public SensorInterface {
  public:
   /**
    * @brief Get Battery data
    * @param battery - output pointer to be filled by this sensor
    */
-  virtual void getData(BatteryData *battery) = 0;
+  virtual void getData(data::BatteryData &battery_data) = 0;
 };
 
 class TemperatureInterface {
@@ -63,5 +53,4 @@ class TemperatureInterface {
    */
   virtual int getData() = 0;
 };
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

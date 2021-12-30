@@ -14,9 +14,9 @@ using utils::Logger;
 
 namespace sensors {
 
-class FakeBatteries : public BMSInterface {
-  typedef std::array<uint16_t, 8> BatteryInformation;
-  typedef std::array<BatteryInformation, 4> BatteryCases;
+class FakeBatteries : public BmsInterface {
+  using BatteryInformation = std::array<uint16_t, 8>;
+  using BatteryCases       = std::array<BatteryInformation, 4>;
 
  public:
   /**
@@ -26,17 +26,17 @@ class FakeBatteries : public BMSInterface {
    * @param is_lp
    * @param is_fail
    */
-  FakeBatteries(Logger &log, bool is_lp, bool is_fail);
+  FakeBatteries(utils::Logger &log, bool is_lp, bool is_fail);
 
   /**
    * @brief waits for accelerating state, generate random time for error
    * @param battery BatteryData pointer
    */
-  void getData(BatteryData *battery) override;
+  void getData(data::BatteryData &battery) override;
   bool isOnline() override;
 
  private:
-  Data &data_;
+  data::Data &data_;
   utils::Logger &log_;
 
   /**
@@ -60,7 +60,7 @@ class FakeBatteries : public BMSInterface {
   bool is_fail_;
   int case_index_;  // handle for array of values for both hp/lp
 
-  BatteryData local_data_;
+  data::BatteryData local_data_;
 
   uint64_t acc_start_time_;
   bool acc_started_;

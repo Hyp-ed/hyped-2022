@@ -35,7 +35,7 @@ void ImuManager::run()
   // collect real data while system is running
   while (sys.running_) {
     for (size_t i = 0; i < imus_.size(); i++) {
-      imus_.at(i)->getData(&(imu_data.value[i]));
+      imus_.at(i)->getData(imu_data.value[i]);
     }
     imu_data.timestamp = utils::Timer::getTimeMicros();
     data.setSensorsImuData(imu_data);

@@ -7,13 +7,7 @@
 
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-using data::Data;
-using data::StripeCounter;
-using utils::Logger;
-
-namespace sensors {
+namespace hyped::sensors {
 
 class FakeGpioCounter : public GpioInterface {
  public:
@@ -23,7 +17,7 @@ class FakeGpioCounter : public GpioInterface {
    * @param log
    * @param miss_stripe
    */
-  FakeGpioCounter(utils::Logger &log, bool miss_stripe);
+  FakeGpioCounter(utils::Logger &log, const bool miss_stripe);
 
   /**
    * @brief Construct a new Fake Gpio Counter object from file
@@ -32,14 +26,14 @@ class FakeGpioCounter : public GpioInterface {
    * @param miss_stripe
    * @param file_path
    */
-  FakeGpioCounter(utils::Logger &log, bool miss_stripe, std::string file_path);
+  FakeGpioCounter(utils::Logger &log, const bool miss_stripe, const std::string file_path);
 
   /**
    * @brief returns stripe counter
    *
    * @param stripe_counter data
    */
-  void getData(StripeCounter *stripe_counter) override;
+  void getData(data::StripeCounter &stripe_counter) override;
 
   bool isOnline() override;
 
@@ -48,26 +42,24 @@ class FakeGpioCounter : public GpioInterface {
    * @brief turns sensor offline if max time reached between stripes by analysing timestamps
    */
   void checkData();
-  void readFromFile(std::vector<StripeCounter> &);
-  Logger &log_;
-  Data &data_;
+  void readFromFile(const std::string file_path);
+  utils::Logger &log_;
+  data::Data &data_;
 
   /**
    * @brief current stripe data
    */
-  StripeCounter stripe_count_;
+  data::StripeCounter stripe_counter_;
 
   /**
    * @brief if missed single stripe, set true if does not match navigation data
    */
   bool miss_stripe_;
 
-  std::string file_path_;
-
   /**
    * @brief vector of StripeCounter data read from file
    */
-  std::vector<StripeCounter> stripe_data_;
+  std::vector<data::StripeCounter> stripe_data_;
   bool is_from_file_;
   uint64_t accel_start_time_;
   bool acc_ref_init_;
@@ -78,5 +70,4 @@ class FakeGpioCounter : public GpioInterface {
   uint64_t stripe_file_timestamp_;
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

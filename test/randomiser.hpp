@@ -143,7 +143,7 @@ class Randomiser {
     // Generates an average temperature data between 0 and 99 C.
     battery_data.average_temperature = static_cast<int8_t>(rand() % 100);
 
-    // Below only for BMSHP! Value for BMSLP = 0
+    // Below only for HighPowerBms! Value for BMSLP = 0
     // Generates a cell voltage data between 0 and 50000 mV.
     for (int i = 0; i < 36; i++) {
       battery_data.cell_voltage[i] = static_cast<uint16_t>((rand() % 500) * 100);

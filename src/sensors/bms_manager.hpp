@@ -22,7 +22,7 @@ class BmsManager : public Thread {
   void run() override;
 
  private:
-  BMSInterface *bms_[data::Batteries::kNumLPBatteries + data::Batteries::kNumHPBatteries];
+  BmsInterface *bms_[data::Batteries::kNumLPBatteries + data::Batteries::kNumHPBatteries];
   utils::System &sys_;
 
   /**

@@ -5,8 +5,7 @@
 #include <utils/config.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
-namespace sensors {
+namespace hyped::sensors {
 
 BmsManager::BmsManager(Logger &log)
     : Thread(log),
@@ -17,7 +16,7 @@ BmsManager::BmsManager(Logger &log)
   if (!(sys_.fake_batteries || sys_.fake_batteries_fail)) {
     // create BMS LP
     for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
-      BMS *bms = new BMS(i, log_);
+      Bms *bms = new Bms(i, log_);
       bms->start();
       bms_[i] = bms;
     }
@@ -25,7 +24,7 @@ BmsManager::BmsManager(Logger &log)
     if (!sys_.fake_highpower) {
       // create BMS HP
       for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-        bms_[i + data::Batteries::kNumLPBatteries] = new BMSHP(i, log_);
+        bms_[i + data::Batteries::kNumLPBatteries] = new HighPowerBms(i, log_);
       }
     } else {
       // fake HP battery only
@@ -79,11 +78,11 @@ void BmsManager::run()
 
     // keep updating data_ based on values read from sensors
     for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
-      bms_[i]->getData(&batteries_.low_power_batteries[i]);
+      bms_[i]->getData(batteries_.low_power_batteries[i]);
       if (!bms_[i]->isOnline()) batteries_.low_power_batteries[i].voltage = 0;
     }
     for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      bms_[i + data::Batteries::kNumLPBatteries]->getData(&batteries_.high_power_batteries[i]);
+      bms_[i + data::Batteries::kNumLPBatteries]->getData(batteries_.high_power_batteries[i]);
       if (!bms_[i + data::Batteries::kNumLPBatteries]->isOnline())
         batteries_.high_power_batteries[i].voltage = 0;
     }
@@ -192,5 +191,4 @@ bool BmsManager::batteriesInRange()
   return true;
 }
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

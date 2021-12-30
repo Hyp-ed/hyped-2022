@@ -488,7 +488,7 @@ void Controller::processSdoMessage(utils::io::can::Frame &message)
           log_.ERR("MOTOR", "Controller %d warning: Max velocity exceeded");
           break;
         case 0x80:
-          log_.ERR("MOTOR", "Controller %d warning: BMS proposed power");
+          log_.ERR("MOTOR", "Controller %d warning: Bms proposed power");
           break;
         case 0x100:
           log_.ERR("MOTOR", "Controller %d warning: Capacitor temperature exceeded");

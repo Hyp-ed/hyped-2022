@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include <data/data.hpp>
@@ -9,14 +10,7 @@
 #include <utils/io/gpio.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
-
-using data::Data;
-using utils::Logger;
-using utils::concurrent::Thread;
-using utils::io::GPIO;
-
-namespace sensors {
+namespace hyped::sensors {
 /**
  * Please see wiki for high-level description of this shared class for our system.
  * For new hardware devices, you must add: (vector of) GPIO*, previous_<module>_status_, and
@@ -25,41 +19,34 @@ namespace sensors {
  * check data directly from data.hpp.g
  */
 
-class GpioManager : public Thread {
+class GpioManager : public utils::concurrent::Thread {
  public:
-  explicit GpioManager(Logger &log);
+  explicit GpioManager(utils::Logger &log);
   void run() override;
 
  private:
-  void clearHP();
+  void clearHighPower();
 
-  void setHP();
+  void setHighPower();
 
   utils::System &sys_;
   data::Data &data_;
   /**
    * @brief master switch to keep pod on, signal held high at startup
    */
-  GPIO *master_;
+  std::unique_ptr<utils::io::GPIO> master_;
 
   /**
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<GPIO *> hp_ssr_;
+  std::vector<std::unique_ptr<utils::io::GPIO>> high_power_ssr_;
 
   /**
    * @brief stores the previous state when switch statement checks state machine
    *        conditional statement prevents repetitive actuation
    */
   data::State previous_state_;
-
-  /**
-   * @brief stores the previous state when switch statement checks state machine
-   *        conditional statement prevents repetitive actuation
-   */
-  data::ModuleStatus previous_battery_status_;
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

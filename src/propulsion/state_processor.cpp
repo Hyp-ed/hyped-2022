@@ -22,7 +22,7 @@ StateProcessor::StateProcessor(int motorAmount, Logger &log)
 
   navigationData = data_.getNavigationData();
 
-  controllers = new ControllerInterface *[motorAmount];
+  controllers = new IController *[motorAmount];
 
   if (useFakeController) {  // Use the test controllers implementation
     log_.INFO("Motor", "Intializing with fake controller");
@@ -137,7 +137,7 @@ void StateProcessor::accelerate()
   }
 }
 
-int32_t StateProcessor::calculateAverageRpm(ControllerInterface **controllers)
+int32_t StateProcessor::calculateAverageRpm(IController **controllers)
 {
   int32_t total = 0;
   for (int i = 0; i < motorAmount; i++) {
@@ -158,7 +158,7 @@ int16_t StateProcessor::calculateMaxCurrent()
   return max_current;
 }
 
-int32_t StateProcessor::calculateMaxTemp(ControllerInterface **controllers)
+int32_t StateProcessor::calculateMaxTemp(IController **controllers)
 {
   int32_t max_temp = 0;
   for (int i = 0; i < motorAmount; i++) {

@@ -26,7 +26,7 @@ struct ControllerMessage {
   char logger_output[250];
 };
 
-class ControllerInterface {
+class IController {
  public:
   virtual void registerController()                                                          = 0;
   virtual void configure()                                                                   = 0;

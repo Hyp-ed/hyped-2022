@@ -8,7 +8,7 @@
 
 namespace hyped::sensors {
 
-class FakeTemperature : public TemperatureInterface {
+class FakeTemperature : public ITemperature {
  public:
   /**
    * @brief Construct a new Fake Temperature object

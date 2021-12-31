@@ -28,7 +28,7 @@ class ImuManager : public utils::concurrent::Thread {
   void run() override;
 
  private:
-  std::array<std::unique_ptr<ImuInterface>, data::Sensors::kNumImus> imus_;
+  std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus_;
 };
 
 }  // namespace hyped::sensors

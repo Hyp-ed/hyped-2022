@@ -23,7 +23,7 @@ using utils::Logger;
 using utils::System;
 using utils::Timer;
 
-class StateProcessor : public StateProcessorInterface {
+class StateProcessor : public IStateProcessor {
  public:
   /**
    * @brief {Initializes the state processors with the amount of motors and the logger}
@@ -102,7 +102,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calculateAverageRpm(ControllerInterface **controllers);
+  int32_t calculateAverageRpm(IController **controllers);
 
   /**
    * @brief calculate the max Current drawn out of all the motors
@@ -118,7 +118,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calculateMaxTemp(ControllerInterface **controllers);
+  int32_t calculateMaxTemp(IController **controllers);
 
   bool useFakeController;
   Logger &log_;
@@ -130,7 +130,7 @@ class StateProcessor : public StateProcessorInterface {
   bool criticalError;
   int32_t servicePropulsionSpeed;
   float speed;
-  ControllerInterface **controllers;
+  IController **controllers;
   RpmRegulator regulator;
   float velocity;
   Navigation navigationData;

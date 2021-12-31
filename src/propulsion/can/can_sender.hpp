@@ -21,7 +21,7 @@ using utils::concurrent::Thread;
 using utils::io::Can;
 using utils::io::CanProccesor;
 
-class CanSender : public CanProccesor, public SenderInterface {
+class CanSender : public CanProccesor, public ISender {
  public:
   /**
    * @brief { Initialise the CanSender with the logger and the id }
@@ -32,7 +32,7 @@ class CanSender : public CanProccesor, public SenderInterface {
    * @brief { Initialise the CanSender with the logger, the id and the controller as an attribute,
    * to access it's attributes }
    */
-  CanSender(ControllerInterface *controller, uint8_t node_id, Logger &log_);
+  CanSender(IController *controller, uint8_t node_id, Logger &log_);
 
   /**
    * @brief { Sends CAN messages }
@@ -64,7 +64,7 @@ class CanSender : public CanProccesor, public SenderInterface {
   uint8_t node_id_;
   Can &can_;
   std::atomic<bool> isSending;
-  ControllerInterface *controller_;
+  IController *controller_;
   Timer timer;
   uint64_t messageTimestamp;
 

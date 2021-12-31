@@ -50,7 +50,7 @@ struct Data {
 
 }  // namespace bms
 
-class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, public BmsInterface {
+class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, public IBms {
   friend utils::io::Can;
 
  public:
@@ -69,7 +69,7 @@ class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, pu
    */
   void run() override;
 
-  // From BmsInterface
+  // From IBms
   bool isOnline() override;
   void getData(data::BatteryData &battery) override;
 
@@ -106,7 +106,7 @@ class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, pu
   NO_COPY_ASSIGN(Bms)
 };
 
-class HighPowerBms : public utils::io::CanProccesor, public BmsInterface {
+class HighPowerBms : public utils::io::CanProccesor, public IBms {
   friend utils::io::Can;
 
  public:
@@ -117,7 +117,7 @@ class HighPowerBms : public utils::io::CanProccesor, public BmsInterface {
    */
   HighPowerBms(uint16_t id, utils::Logger &log = utils::System::getLogger());
 
-  // from BmsInterface
+  // from IBms
   bool isOnline() override;
   void getData(data::BatteryData &battery) override;
 

@@ -19,7 +19,7 @@ struct MotorVelocity {
   int32_t velocity_6;
 };
 
-class StateProcessorInterface {
+class IStateProcessor {
  public:
   /**
    * @brief { Sends the desired settings to the motors }

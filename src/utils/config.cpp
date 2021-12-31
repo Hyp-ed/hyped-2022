@@ -12,7 +12,8 @@
 namespace hyped {
 namespace utils {
 
-#define BUFFER_SIZE 250  // max length of a line in the confix file in characters
+// max length of a line in the confix file in characters
+static constexpr size_t kBufferSize = 250;
 
 typedef void (Config::*Parser)(char *line);
 struct ModuleEntry {
@@ -200,8 +201,8 @@ constexpr char config_dir_name[]    = "configurations/";
 constexpr auto config_dir_name_size = sizeof(config_dir_name);
 void Config::readFile(char *config_file)
 {
-  static_assert(config_dir_name_size < BUFFER_SIZE, "configuration directory name is too long");
-  char file_name[BUFFER_SIZE];
+  static_assert(config_dir_name_size < kBufferSize, "configuration directory name is too long");
+  char file_name[kBufferSize];
   std::snprintf(file_name, config_dir_name_size, config_dir_name);
   std::snprintf(file_name + config_dir_name_size - 1,      // account for dir_name
                 sizeof(file_name) - config_dir_name_size,  // calculate remaining buffer space
@@ -216,7 +217,7 @@ void Config::readFile(char *config_file)
   log_.INFO("CONFIG", "loading configuration file %s", file_name);
 
   // allocate line buffer, read and parse file line by line
-  char line[BUFFER_SIZE];
+  char line[kBufferSize];
   ModuleEntry *current_module = &module_map[0];
 
   while (fgets(line, sizeof(line), file) != NULL) {
@@ -235,7 +236,7 @@ void Config::readFile(char *config_file)
       case '>': {
         ModuleEntry *prev_module = current_module;
         for (ModuleEntry &entry : module_map) {
-          if (strncmp(entry.name, line + 2, BUFFER_SIZE) == 0) {
+          if (strncmp(entry.name, line + 2, kBufferSize) == 0) {
             current_module = &entry;
             break;
           }

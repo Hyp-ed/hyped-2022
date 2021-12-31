@@ -43,10 +43,10 @@ class Main : public Thread {
   data::StateMachine sm_data_;
   data::EmergencyBrakes brakes_;
   data::Telemetry tlm_data_;
-  uint8_t command_pins_[2];    // GPIO pin numbers for sending commands to brakes
-  uint8_t button_pins_[2];     // GPIO pin numbers for retrieving brake status
-  StepperInterface *m_brake_;  // Stepper for electromagnetic brakes
-  StepperInterface *f_brake_;  // Stepper for friction brakes
+  uint8_t command_pins_[2];  // GPIO pin numbers for sending commands to brakes
+  uint8_t button_pins_[2];   // GPIO pin numbers for retrieving brake status
+  IStepper *m_brake_;        // Stepper for electromagnetic brakes
+  IStepper *f_brake_;        // Stepper for friction brakes
 };
 
 }  // namespace brakes

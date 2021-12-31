@@ -14,7 +14,7 @@ using utils::Logger;
 
 namespace sensors {
 
-class FakeBatteries : public BmsInterface {
+class FakeBatteries : public IBms {
   using BatteryInformation = std::array<uint16_t, 8>;
   using BatteryCases       = std::array<BatteryInformation, 4>;
 

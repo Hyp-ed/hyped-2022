@@ -9,7 +9,7 @@
 
 namespace hyped::sensors {
 
-class FakeGpioCounter : public GpioInterface {
+class FakeGpioCounter : public IGpio {
  public:
   /**
    * @brief Construct a new Fake Gpio Counter dynamic object

@@ -9,7 +9,7 @@
 
 namespace hyped::sensors {
 
-class Temperature : public TemperatureInterface {
+class Temperature : public ITemperature {
  public:
   /**
    * @brief Construct a new Temperature object

@@ -12,7 +12,7 @@ CanSender::CanSender(Logger &log, uint8_t node_id)
   can_.start();
 }
 
-CanSender::CanSender(ControllerInterface *controller, uint8_t node_id, Logger &log)
+CanSender::CanSender(IController *controller, uint8_t node_id, Logger &log)
     : log_(log),
       node_id_(node_id),
       can_(Can::getInstance()),

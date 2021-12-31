@@ -15,10 +15,7 @@
 
 // use format REGISTER(module/namespace, class)
 // e.g.       REGISTER(utils::config::fancy::typed::here, MyFancyInterface)
-#define INTERFACE_LIST(REGISTER)                                                                   \
-  REGISTER(sensors, ImuInterface)                                                                  \
-  REGISTER(demo, DemoInterface)                                                                    \
-  REGISTER(telemetry, ClientInterface)
+#define INTERFACE_LIST(REGISTER) REGISTER(sensors, IImu)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Below is some supporting code, no need to touch this when adding new interfaces

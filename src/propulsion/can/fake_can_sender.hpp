@@ -15,7 +15,7 @@ using utils::Logger;
 using utils::io::Can;
 using utils::io::CanProccesor;
 
-class FakeCanSender : public CanProccesor, public SenderInterface {
+class FakeCanSender : public CanProccesor, public ISender {
  public:
   FakeCanSender(Logger &log_, uint8_t id);
 

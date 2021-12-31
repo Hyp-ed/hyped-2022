@@ -15,7 +15,7 @@ using utils::concurrent::Thread;
 
 namespace brakes {
 
-class FakeStepper : public StepperInterface {
+class FakeStepper : public IStepper {
  public:
   /**
    * @brief Construct a new Stepper object
@@ -24,7 +24,7 @@ class FakeStepper : public StepperInterface {
   FakeStepper(Logger &log, uint8_t id);
 
   /**
-   * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
+   * @brief Deconstruct a Stepper object even if behind `IStepper *`
    */
   ~FakeStepper() {}
 

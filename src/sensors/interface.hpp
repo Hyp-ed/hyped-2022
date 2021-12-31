@@ -4,7 +4,7 @@
 
 namespace hyped::sensors {
 
-class SensorInterface {
+class ISensor {
  public:
   /**
    * @brief Check if sensor is responding, i.e. connected to the system
@@ -13,12 +13,12 @@ class SensorInterface {
   virtual bool isOnline() = 0;
 };
 
-class ImuInterface : public SensorInterface {
+class IImu : public ISensor {
  public:
   /**
    * @brief empty virtual deconstructor for proper deletion of derived classes
    */
-  virtual ~ImuInterface() {}
+  virtual ~IImu() {}
 
   /**
    * @brief Get IMU data
@@ -27,12 +27,12 @@ class ImuInterface : public SensorInterface {
   virtual void getData(data::ImuData &imu_data) = 0;
 };
 
-class GpioInterface : public SensorInterface {
+class IGpio : public ISensor {
  public:
   /**
    * @brief empty virtual deconstructor for proper deletion of derived classes
    */
-  virtual ~GpioInterface() {}
+  virtual ~IGpio() {}
 
   /**
    * @brief Get GPIO data
@@ -41,12 +41,12 @@ class GpioInterface : public SensorInterface {
   virtual void getData(data::StripeCounter &stripe_counter) = 0;
 };
 
-class BmsInterface : public SensorInterface {
+class IBms : public ISensor {
  public:
   /**
    * @brief empty virtual deconstructor for proper deletion of derived classes
    */
-  virtual ~BmsInterface() {}
+  virtual ~IBms() {}
 
   /**
    * @brief Get Battery data
@@ -55,12 +55,12 @@ class BmsInterface : public SensorInterface {
   virtual void getData(data::BatteryData &battery_data) = 0;
 };
 
-class TemperatureInterface {
+class ITemperature {
  public:
   /**
    * @brief empty virtual deconstructor for proper deletion of derived classes
    */
-  virtual ~TemperatureInterface() {}
+  virtual ~ITemperature() {}
 
   /**
    * @brief not a thread, checks temperature

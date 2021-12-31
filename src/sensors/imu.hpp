@@ -10,7 +10,7 @@
 
 namespace hyped::sensors {
 
-class Imu : public ImuInterface {
+class Imu : public IImu {
  public:
   Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo);
   ~Imu();

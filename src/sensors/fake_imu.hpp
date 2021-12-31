@@ -11,7 +11,7 @@
 
 namespace hyped::sensors {
 
-class FakeImu : public ImuInterface {
+class FakeImu : public IImu {
  public:
   FakeImu(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory,
           const data::nav_t noise);

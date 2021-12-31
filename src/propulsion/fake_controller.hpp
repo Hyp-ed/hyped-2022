@@ -17,7 +17,7 @@ using utils::Logger;
 using utils::Timer;
 using utils::concurrent::Thread;
 
-class FakeController : public ControllerInterface {
+class FakeController : public IController {
  public:
   /**
    * @brief  Construct a new Fake Controller object

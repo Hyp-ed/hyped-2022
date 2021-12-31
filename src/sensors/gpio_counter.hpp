@@ -10,7 +10,7 @@
 
 namespace hyped::sensors {
 
-class GpioCounter : public GpioInterface, public utils::concurrent::Thread {
+class GpioCounter : public IGpio, public utils::concurrent::Thread {
  public:
   GpioCounter(utils::Logger &log, int pin);
   ~GpioCounter() {}

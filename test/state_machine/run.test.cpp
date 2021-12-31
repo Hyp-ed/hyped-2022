@@ -20,15 +20,15 @@ class RunTest : public Test {
 
   // ---- Data -----------------
 
-  Data &data_ = Data::getInstance();
+  data::Data &data_ = data::Data::getInstance();
 
-  EmergencyBrakes brakes_data_;
-  Navigation nav_data_;
-  Batteries batteries_data_;
-  Telemetry telemetry_data_;
-  Sensors sensors_data_;
-  Motors motors_data_;
-  StateMachine stm_data_;
+  data::EmergencyBrakes brakes_data_;
+  data::Navigation nav_data_;
+  data::Batteries batteries_data_;
+  data::Telemetry telemetry_data_;
+  data::Sensors sensors_data_;
+  data::Motors motors_data_;
+  data::StateMachine stm_data_;
 
   void randomiseInternally()
   {
@@ -112,10 +112,10 @@ class RunTest : public Test {
     telemetry_data_.calibrate_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_calibrate_command   = checkCalibrateCommand(telemetry_data_);
-    const bool has_modules_initialised = checkModulesInitialised(
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_calibrate_command   = state_machine::checkCalibrateCommand(telemetry_data_);
+    const bool has_modules_initialised = state_machine::checkModulesInitialised(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     enableOutput();
@@ -159,13 +159,13 @@ class RunTest : public Test {
     batteries_data_.module_status     = ModuleStatus::kInit;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_calibrating_command = checkCalibrateCommand(telemetry_data_);
-    const bool has_modules_initialised = checkModulesInitialised(
+    const bool has_emergency = state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
-    const bool has_modules_ready = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
+    const bool has_calibrating_command = state_machine::checkCalibrateCommand(telemetry_data_);
+    const bool has_modules_initialised = state_machine::checkModulesInitialised(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_modules_ready = state_machine::checkModulesReady(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -209,9 +209,9 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
@@ -262,13 +262,13 @@ class RunTest : public Test {
     // >> No work required due to the above
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_calibrating_command = checkCalibrateCommand(telemetry_data_);
-    const bool has_modules_initialised = checkModulesInitialised(
+    const bool has_emergency = state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
-    const bool has_modules_ready = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
+    const bool has_calibrating_command = state_machine::checkCalibrateCommand(telemetry_data_);
+    const bool has_modules_initialised = state_machine::checkModulesInitialised(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_modules_ready = state_machine::checkModulesReady(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -312,9 +312,9 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
@@ -363,11 +363,11 @@ class RunTest : public Test {
     telemetry_data_.launch_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency     = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                  telemetry_data_, sensors_data_, motors_data_);
-    const bool has_modules_ready = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
-    const bool has_launch_command = checkLaunchCommand(telemetry_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_modules_ready = state_machine::checkModulesReady(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_launch_command = state_machine::checkLaunchCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -410,9 +410,9 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -464,14 +464,14 @@ class RunTest : public Test {
     nav_data_.braking_distance = 0;
 
     // Prevent Accelerating -> Cruising
-    nav_data_.velocity = Navigation::kMaximumVelocity / 2;
+    nav_data_.velocity = data::Navigation::kMaximumVelocity / 2;
 
     // Verify transition conditions are as intended
-    const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                   telemetry_data_, sensors_data_, motors_data_);
-    const bool has_launch_command = checkLaunchCommand(telemetry_data_);
-    const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_launch_command       = state_machine::checkLaunchCommand(telemetry_data_);
+    const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_reached_max_velocity = state_machine::checkReachedMaxVelocity(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -515,9 +515,9 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -562,16 +562,16 @@ class RunTest : public Test {
 
     // Enforce Accelerating -> NominalBraking
     nav_data_.braking_distance = 1000;
-    nav_data_.displacement     = Navigation::kRunLength - nav_data_.braking_distance;
+    nav_data_.displacement     = data::Navigation::kRunLength - nav_data_.braking_distance;
 
     // Prevent NominalBraking -> Finished
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_stopped              = checkPodStopped(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_stopped              = state_machine::checkPodStopped(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -622,13 +622,13 @@ class RunTest : public Test {
     nav_data_.displacement     = 0;
 
     // Enforce Accelerating -> Cruising
-    nav_data_.velocity = Navigation::kMaximumVelocity;
+    nav_data_.velocity = data::Navigation::kMaximumVelocity;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_reached_max_velocity = state_machine::checkReachedMaxVelocity(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -671,9 +671,9 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_stopped   = checkPodStopped(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_stopped = state_machine::checkPodStopped(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -715,16 +715,16 @@ class RunTest : public Test {
 
     // Enforce Cruising -> NominalBraking
     nav_data_.braking_distance = 1000;
-    nav_data_.displacement     = Navigation::kRunLength - nav_data_.braking_distance;
+    nav_data_.displacement     = data::Navigation::kRunLength - nav_data_.braking_distance;
 
     // Prevent NominalBraking -> Finished
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_stopped              = checkPodStopped(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_stopped              = state_machine::checkPodStopped(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -763,9 +763,9 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_stopped   = checkPodStopped(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_stopped = state_machine::checkPodStopped(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -816,10 +816,10 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_emergency        = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                                     telemetry_data_, sensors_data_, motors_data_);
-    const bool has_stopped          = checkPodStopped(log_, nav_data_);
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_stopped          = state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
@@ -862,9 +862,9 @@ class RunTest : public Test {
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const bool has_stopped   = checkPodStopped(log_, nav_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_stopped = state_machine::checkPodStopped(log_, nav_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
@@ -903,7 +903,7 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = true;
 
     // Verify transition conditions are as intended
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_shutdown_command);
@@ -943,8 +943,8 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_stopped          = checkPodStopped(log_, nav_data_);
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_stopped          = state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_stopped);
@@ -982,7 +982,7 @@ class RunTest : public Test {
     telemetry_data_.shutdown_command = true;
 
     // Verify transition conditions are as intended
-    const bool has_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_shutdown_command);
@@ -1012,7 +1012,7 @@ TEST_F(RunTest, nominalRunWithoutCruising)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1041,7 +1041,7 @@ TEST_F(RunTest, nominalRunWithCruising)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1071,7 +1071,7 @@ TEST_F(RunTest, idleEmergency)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1095,7 +1095,7 @@ TEST_F(RunTest, calibratingEmergency)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1121,7 +1121,7 @@ TEST_F(RunTest, readyEmergency)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1148,7 +1148,7 @@ TEST_F(RunTest, acceleratingEmergency)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1177,7 +1177,7 @@ TEST_F(RunTest, cruisingEmergency)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1208,7 +1208,7 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();
@@ -1239,7 +1239,7 @@ TEST_F(RunTest, brakingEmergencyWithCruising)
 
     initialiseData();
 
-    Thread *state_machine = new Main(0, log_);
+    Thread *state_machine = new state_machine::Main(0, log_);
     state_machine->start();
 
     waitForUpdate();

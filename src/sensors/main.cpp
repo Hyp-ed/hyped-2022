@@ -6,15 +6,7 @@
 #include <sensors/temperature.hpp>
 #include <utils/config.hpp>
 
-namespace hyped {
-
-using data::Data;
-using data::Sensors;
-using data::StripeCounter;
-using hyped::utils::concurrent::Thread;
-using utils::System;
-
-namespace sensors {
+namespace hyped::sensors {
 
 Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
@@ -77,15 +69,6 @@ Main::Main(const uint8_t id, utils::Logger &log)
   log_.INFO("Sensors", "Sensors have been initialised");
 }
 
-bool Main::keyencesUpdated()
-{
-  for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-    if (prev_keyence_stripe_count_arr_[i].count.value != keyence_stripe_counter_arr_[i].count.value)
-      return true;
-  }
-  return false;
-}
-
 void Main::checkTemperature()
 {
   temperature_->run();  // not a thread
@@ -98,37 +81,31 @@ void Main::checkTemperature()
 
 void Main::run()
 {
-  // start all managers
   battery_manager_->start();
   imu_manager_->start();
 
-  // Initalise the keyence arrays
-  keyence_stripe_counter_arr_    = data_.getSensorsData().keyence_stripe_counter;
-  prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
+  auto keyence_stripe_counters          = data_.getSensorsData().keyence_stripe_counters;
+  auto previous_keyence_stripe_counters = keyence_stripe_counters;
 
   int temp_count = 0;
   while (sys_.running_) {
-    // We need to read the gpio counters and write to the data structure
-    // If previous is not equal to the new data then update
-    if (keyencesUpdated()) {
-      // Update data structure, make prev reading same as this reading
-      data_.setSensorsKeyenceData(keyence_stripe_counter_arr_);
-      prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
+    if (keyence_stripe_counters.timestamp > previous_keyence_stripe_counters.timestamp) {
+      data_.setSensorsKeyenceData(keyence_stripe_counters);
+      previous_keyence_stripe_counters = keyence_stripe_counters;
     }
     for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      keyences_[i]->getData(keyence_stripe_counter_arr_[i]);
+      keyences_[i]->getData(keyence_stripe_counters.value.at(i));
     }
-    Thread::sleep(10);  // Sleep for 10ms
+    Thread::sleep(10);
     temp_count++;
-    if (temp_count % 20 == 0) {  // check every 20 cycles of main
+    // only check every 20 cycles
+    if (temp_count % 20 == 0) {
       checkTemperature();
-      // So that temp_count does not get huge
+      // avoid overflow
       temp_count = 0;
     }
   }
-
   imu_manager_->join();
   battery_manager_->join();
 }
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

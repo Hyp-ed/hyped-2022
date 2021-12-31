@@ -38,7 +38,7 @@ class IGpio : public ISensor {
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
    */
-  virtual void getData(data::StripeCounter &stripe_counter) = 0;
+  virtual void getData(data::CounterData &stripe_counter) = 0;
 };
 
 class IBms : public ISensor {

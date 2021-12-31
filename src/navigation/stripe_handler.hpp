@@ -13,7 +13,7 @@ namespace navigation {
 
 class StripeHandler {
  public:
-  using KeyenceDataArray = std::array<data::StripeCounter, data::Sensors::kNumKeyence>;
+  using KeyenceDataArray = std::array<data::CounterData, data::Sensors::kNumKeyence>;
 
   /**
    * @brief Construct a new Stripe Counter object

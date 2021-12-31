@@ -46,25 +46,20 @@ struct Navigation : public Module {
 // -------------------------------------------------------------------------------------------------
 // Raw Sensor data
 // -------------------------------------------------------------------------------------------------
-struct Sensor {
+struct SensorData {
   bool operational;
 };
 
-struct ImuData : public Sensor {
+struct ImuData : public SensorData {
   NavigationVector acc;
-
   std::vector<NavigationVector> fifo;
 };
 
-struct EncoderData : public Sensor {
-  nav_t disp;
-};
-
-struct StripeCounter : public Sensor {
+struct CounterData : public SensorData {
   DataPoint<uint32_t> count;
 };
 
-struct TemperatureData : public Sensor {
+struct TemperatureData : public SensorData {
   int temp;  // C
 };
 
@@ -74,8 +69,8 @@ struct Sensors : public Module {
   static constexpr int kNumKeyence  = 2;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
-  DataPoint<std::array<EncoderData, kNumEncoders>> encoder;
-  std::array<StripeCounter, kNumKeyence> keyence_stripe_counter;
+  DataPoint<std::array<CounterData, kNumEncoders>> wheel_encoders;
+  DataPoint<std::array<CounterData, kNumKeyence>> keyence_stripe_counters;
 };
 
 struct BatteryData {
@@ -215,30 +210,34 @@ class Data {
   /**
    * @brief retrieves encoder data from Sensors
    */
-  DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> getSensorsEncoderData();
+  DataPoint<std::array<CounterData, Sensors::kNumEncoders>> getSensorsWheelEncoderData();
 
   /**
    * @brief retrieves gpio_counter data from Sensors
    */
-  std::array<StripeCounter, Sensors::kNumKeyence> getSensorsKeyenceData();
+  DataPoint<std::array<CounterData, Sensors::kNumKeyence>> getSensorsKeyenceData();
 
   /**
    * @brief      Should be called to update sensor data.
    */
   void setSensorsData(const Sensors &sensors_data);
+
   /**
    * @brief      Should be called to update sensor imu data.
    */
   void setSensorsImuData(const DataPoint<std::array<ImuData, Sensors::kNumImus>> &imu);
+
   /**
    * @brief      Should be called to update sensor encoder data.
    */
-  void setSensorsEncoderData(const DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> &imu);
+  void setSensorsWheelEncoderData(
+    const DataPoint<std::array<CounterData, Sensors::kNumEncoders>> &imu);
+
   /**
    * @brief      Should be called to update sensor keyence data.
    */
   void setSensorsKeyenceData(
-    const std::array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter);  // NOLINT
+    const DataPoint<std::array<CounterData, Sensors::kNumKeyence>> &keyence_stripe_counter);
 
   /**
    * @brief      Retrieves data from the batteries.

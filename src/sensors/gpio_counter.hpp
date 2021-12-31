@@ -14,7 +14,7 @@ class GpioCounter : public IGpio, public utils::concurrent::Thread {
  public:
   GpioCounter(utils::Logger &log, int pin);
   ~GpioCounter() {}
-  void getData(data::StripeCounter &stripe_counter) override;
+  void getData(data::CounterData &counter_data) override;
   bool isOnline() override;
   void run() override;
 
@@ -22,6 +22,6 @@ class GpioCounter : public IGpio, public utils::concurrent::Thread {
   int pin_;
   utils::System &sys_;
   utils::Logger &log_;
-  data::StripeCounter stripe_counter_;
+  data::CounterData counter_data_;
 };
 }  // namespace hyped::sensors

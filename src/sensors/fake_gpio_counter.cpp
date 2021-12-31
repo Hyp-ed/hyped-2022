@@ -50,7 +50,7 @@ FakeGpioCounter::FakeGpioCounter(utils::Logger &log, const bool miss_stripe,
   }
 }
 
-void FakeGpioCounter::getData(data::StripeCounter &stripe_count)  // returns incorrect stripe count
+void FakeGpioCounter::getData(data::CounterData &stripe_count)  // returns incorrect stripe count
 {
   data::State state = data_.getStateMachineData().current_state;
   if (!acc_ref_init_ && state == data::State::kAccelerating) {
@@ -65,7 +65,7 @@ void FakeGpioCounter::getData(data::StripeCounter &stripe_count)  // returns inc
         && acc_ref_init_) {
       uint64_t time_now_micro = (utils::Timer::getTimeMicros() - accel_start_time_);
 
-      for (data::StripeCounter stripe : stripe_data_) {
+      for (data::CounterData stripe : stripe_data_) {
         if (stripe.count.timestamp < time_now_micro) {
           stripe_counter_.count.value = stripe.count.value;
           // use system timestamp from file
@@ -118,7 +118,7 @@ void FakeGpioCounter::readFromFile(const std::string file_path)
   if (data_file.is_open()) {
     // read in pairs of stripe_count, timestamp
     while (data_file >> time && data_file >> count) {
-      data::StripeCounter this_line;
+      data::CounterData this_line;
       this_line.count.value = count;
       // save timestamps in Microseconds
       this_line.count.timestamp = time * 1000;

@@ -70,16 +70,16 @@ DataPoint<std::array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
   return sensors_.imu;
 }
 
-DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> Data::getSensorsEncoderData()
+DataPoint<std::array<CounterData, Sensors::kNumEncoders>> Data::getSensorsWheelEncoderData()
 {
   ScopedLock L(&lock_sensors_);
-  return sensors_.encoder;
+  return sensors_.wheel_encoders;
 }
 
-std::array<StripeCounter, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
+DataPoint<std::array<CounterData, Sensors::kNumKeyence>> Data::getSensorsKeyenceData()
 {
   ScopedLock L(&lock_sensors_);
-  return sensors_.keyence_stripe_counter;
+  return sensors_.keyence_stripe_counters;
 }
 
 int Data::getTemperature()
@@ -106,18 +106,18 @@ void Data::setSensorsImuData(const DataPoint<std::array<ImuData, Sensors::kNumIm
   sensors_.imu = imu;
 }
 
-void Data::setSensorsEncoderData(
-  const DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> &encoder)  // NOLINT
+void Data::setSensorsWheelEncoderData(
+  const DataPoint<std::array<CounterData, Sensors::kNumEncoders>> &encoder)
 {
   ScopedLock L(&lock_sensors_);
-  sensors_.encoder = encoder;
+  sensors_.wheel_encoders = encoder;
 }
 
 void Data::setSensorsKeyenceData(
-  const std::array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter)  // NOLINT
+  const DataPoint<std::array<CounterData, Sensors::kNumKeyence>> &keyence_stripe_counter)
 {
   ScopedLock L(&lock_sensors_);
-  sensors_.keyence_stripe_counter = keyence_stripe_counter;
+  sensors_.keyence_stripe_counters = keyence_stripe_counter;
 }
 
 Batteries Data::getBatteriesData()

@@ -21,14 +21,6 @@ class Main : public Thread {
 
  private:
   /**
-   * @brief as long as at least one keyence value is updated
-   *
-   * @return true
-   * @return false
-   */
-  bool keyencesUpdated();
-
-  /**
    * @brief checks range of pod temperature
    *
    * @return true if status is valid
@@ -49,7 +41,7 @@ class Main : public Thread {
   // master data structures
   data::Sensors sensors_;
   data::Batteries batteries_;
-  data::StripeCounter stripe_counter_;
+  data::CounterData stripe_counter_;
 
   std::array<uint8_t, data::Sensors::kNumKeyence> keyence_pins_;
   std::array<std::unique_ptr<IGpio>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
@@ -57,17 +49,6 @@ class Main : public Thread {
   std::unique_ptr<BmsManager> battery_manager_;
   std::unique_ptr<ITemperature> temperature_;
   bool log_error_ = false;
-
-  /**
-   * @brief update this from GpioCounter::getStripeCounter();
-   */
-  std::array<data::StripeCounter, data::Sensors::kNumKeyence> keyence_stripe_counter_arr_;
-
-  /**
-   * @brief use this to compare with keyence_stripe_counter_arr_
-   *        update when keyenceUpdated() == true
-   */
-  std::array<data::StripeCounter, data::Sensors::kNumKeyence> prev_keyence_stripe_count_arr_;
 };
 
 }  // namespace hyped::sensors

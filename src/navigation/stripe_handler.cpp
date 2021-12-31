@@ -23,14 +23,14 @@ StripeHandler::StripeHandler(utils::Logger &log, data::Data &data,
 void StripeHandler::updateReadings()
 {
   prev_readings_ = readings_;
-  readings_      = data_.getSensorsKeyenceData();
+  readings_      = data_.getSensorsKeyenceData().value;
 }
 
 void StripeHandler::setInit(const uint32_t init_time)
 {
   init_time_     = init_time;
-  readings_      = data_.getSensorsKeyenceData();
-  prev_readings_ = data_.getSensorsKeyenceData();
+  readings_      = data_.getSensorsKeyenceData().value;
+  prev_readings_ = data_.getSensorsKeyenceData().value;
 }
 
 uint32_t StripeHandler::getStripeCount() const

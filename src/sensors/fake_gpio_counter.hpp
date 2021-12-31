@@ -33,7 +33,7 @@ class FakeGpioCounter : public IGpio {
    *
    * @param stripe_counter data
    */
-  void getData(data::StripeCounter &stripe_counter) override;
+  void getData(data::CounterData &stripe_counter) override;
 
   bool isOnline() override;
 
@@ -49,7 +49,7 @@ class FakeGpioCounter : public IGpio {
   /**
    * @brief current stripe data
    */
-  data::StripeCounter stripe_counter_;
+  data::CounterData stripe_counter_;
 
   /**
    * @brief if missed single stripe, set true if does not match navigation data
@@ -59,7 +59,7 @@ class FakeGpioCounter : public IGpio {
   /**
    * @brief vector of StripeCounter data read from file
    */
-  std::vector<data::StripeCounter> stripe_data_;
+  std::vector<data::CounterData> stripe_data_;
   bool is_from_file_;
   uint64_t accel_start_time_;
   bool acc_ref_init_;

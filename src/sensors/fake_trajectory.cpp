@@ -51,12 +51,12 @@ std::optional<FakeTrajectory::Config> FakeTrajectory::readConfig(utils::Logger &
 
 std::optional<FakeTrajectory> FakeTrajectory::fromFile(utils::Logger &log, const std::string &path)
 {
-  const auto config = readConfig(log, path);
-  if (!config) {
+  const auto config_optional = readConfig(log, path);
+  if (!config_optional) {
     log.ERR("FAKE-TRAJECTORY", "Failed constructing");
     return std::nullopt;
   }
-  return FakeTrajectory(*config);
+  return FakeTrajectory(*config_optional);
 }
 
 FakeTrajectory::FakeTrajectory(const Config &config)

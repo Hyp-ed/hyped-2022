@@ -70,13 +70,13 @@ DataPoint<std::array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
   return sensors_.imu;
 }
 
-DataPoint<std::array<CounterData, Sensors::kNumEncoders>> Data::getSensorsWheelEncoderData()
+std::array<CounterData, Sensors::kNumEncoders> Data::getSensorsWheelEncoderData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.wheel_encoders;
 }
 
-DataPoint<std::array<CounterData, Sensors::kNumKeyence>> Data::getSensorsKeyenceData()
+std::array<CounterData, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.keyence_stripe_counters;
@@ -106,15 +106,14 @@ void Data::setSensorsImuData(const DataPoint<std::array<ImuData, Sensors::kNumIm
   sensors_.imu = imu;
 }
 
-void Data::setSensorsWheelEncoderData(
-  const DataPoint<std::array<CounterData, Sensors::kNumEncoders>> &encoder)
+void Data::setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNumEncoders> &encoder)
 {
   ScopedLock L(&lock_sensors_);
   sensors_.wheel_encoders = encoder;
 }
 
 void Data::setSensorsKeyenceData(
-  const DataPoint<std::array<CounterData, Sensors::kNumKeyence>> &keyence_stripe_counter)
+  const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter)
 {
   ScopedLock L(&lock_sensors_);
   sensors_.keyence_stripe_counters = keyence_stripe_counter;

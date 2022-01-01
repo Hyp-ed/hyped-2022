@@ -77,14 +77,15 @@ void BmsManager::run()
     batteries_ = data_.getBatteriesData();
 
     // keep updating data_ based on values read from sensors
-    for (int i = 0; i < data::Batteries::kNumLPBatteries; i++) {
-      bms_[i]->getData(batteries_.low_power_batteries[i]);
-      if (!bms_[i]->isOnline()) batteries_.low_power_batteries[i].voltage = 0;
+    for (size_t i = 0; i < data::Batteries::kNumLPBatteries; ++i) {
+      batteries_.low_power_batteries.at(i) = bms_[i]->getData();
+      if (!bms_[i]->isOnline()) { batteries_.low_power_batteries[i].voltage = 0; }
     }
-    for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
-      bms_[i + data::Batteries::kNumLPBatteries]->getData(batteries_.high_power_batteries[i]);
-      if (!bms_[i + data::Batteries::kNumLPBatteries]->isOnline())
+    for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
+      batteries_.high_power_batteries.at(i) = bms_[i + data::Batteries::kNumLPBatteries]->getData();
+      if (!bms_[i + data::Batteries::kNumLPBatteries]->isOnline()) {
         batteries_.high_power_batteries[i].voltage = 0;
+      }
     }
 
     // Check if BMS is ready at this point.

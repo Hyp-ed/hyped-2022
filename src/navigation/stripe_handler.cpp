@@ -23,14 +23,14 @@ StripeHandler::StripeHandler(utils::Logger &log, data::Data &data,
 void StripeHandler::updateReadings()
 {
   prev_readings_ = readings_;
-  readings_      = data_.getSensorsKeyenceData().value;
+  readings_      = data_.getSensorsKeyenceData();
 }
 
 void StripeHandler::setInit(const uint32_t init_time)
 {
   init_time_     = init_time;
-  readings_      = data_.getSensorsKeyenceData().value;
-  prev_readings_ = data_.getSensorsKeyenceData().value;
+  readings_      = data_.getSensorsKeyenceData();
+  prev_readings_ = data_.getSensorsKeyenceData();
 }
 
 uint32_t StripeHandler::getStripeCount() const
@@ -79,14 +79,14 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
 {
   for (std::size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
     // Check new readings and ensure new stripe has been hit
-    const bool same_as_previous = prev_readings_.at(i).count.value == readings_.at(i).count.value;
-    const bool no_new_readings  = readings_.at(i).count.timestamp - stripe_counter_.timestamp < 1e5;
+    const bool same_as_previous = prev_readings_.at(i).value == readings_.at(i).value;
+    const bool no_new_readings  = readings_.at(i).timestamp - stripe_counter_.timestamp < 1e5;
     if (no_new_readings || same_as_previous)
       // look at next sensor reading
       continue;
 
     ++stripe_counter_.value;
-    stripe_counter_.timestamp = readings_.at(i).count.timestamp;
+    stripe_counter_.timestamp = readings_.at(i).timestamp;
 
     const data::nav_t allowed_uncertainty = std::max(displacement_uncertainty_, kStripeUncertainty);
     data::nav_t displacement_offset       = getDisplacementOffset(displacement);

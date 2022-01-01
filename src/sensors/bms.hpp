@@ -71,7 +71,7 @@ class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, pu
 
   // From IBms
   bool isOnline() override;
-  void getData(data::BatteryData &battery) override;
+  data::BatteryData getData() override;
 
   // From CanProcessor interface
   bool hasId(uint32_t id, bool extended) override;
@@ -119,7 +119,7 @@ class HighPowerBms : public utils::io::CanProccesor, public IBms {
 
   // from IBms
   bool isOnline() override;
-  void getData(data::BatteryData &battery) override;
+  data::BatteryData getData() override;
 
   // from CanProcessor
   bool hasId(uint32_t id, bool extended) override;

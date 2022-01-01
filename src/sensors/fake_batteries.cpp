@@ -42,7 +42,7 @@ FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
   }
 }
 
-void FakeBatteries::getData(data::BatteryData &battery_data)
+data::BatteryData FakeBatteries::getData()
 {
   // We want to fail after we start accelerating
   // We can make it random from 0 to 20 seconds
@@ -56,7 +56,7 @@ void FakeBatteries::getData(data::BatteryData &battery_data)
     }
   }
   checkFailure();
-  battery_data = local_data_;
+  return local_data_;
 }
 
 void FakeBatteries::checkFailure()

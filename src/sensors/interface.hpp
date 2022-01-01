@@ -24,21 +24,21 @@ class IImu : public ISensor {
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
-  virtual void getData(data::ImuData &imu_data) = 0;
+  virtual data::ImuData getData() = 0;
 };
 
-class IGpio : public ISensor {
+class ICounter : public ISensor {
  public:
   /**
    * @brief empty virtual deconstructor for proper deletion of derived classes
    */
-  virtual ~IGpio() {}
+  virtual ~ICounter() {}
 
   /**
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
    */
-  virtual void getData(data::CounterData &stripe_counter) = 0;
+  virtual data::CounterData getData() = 0;
 };
 
 class IBms : public ISensor {
@@ -52,7 +52,7 @@ class IBms : public ISensor {
    * @brief Get Battery data
    * @param battery - output pointer to be filled by this sensor
    */
-  virtual void getData(data::BatteryData &battery_data) = 0;
+  virtual data::BatteryData getData() = 0;
 };
 
 class ITemperature {

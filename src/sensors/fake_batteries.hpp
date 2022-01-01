@@ -32,7 +32,7 @@ class FakeBatteries : public IBms {
    * @brief waits for accelerating state, generate random time for error
    * @param battery BatteryData pointer
    */
-  void getData(data::BatteryData &battery) override;
+  data::BatteryData getData() override;
   bool isOnline() override;
 
  private:

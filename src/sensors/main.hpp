@@ -44,7 +44,7 @@ class Main : public Thread {
   data::CounterData stripe_counter_;
 
   std::array<uint8_t, data::Sensors::kNumKeyence> keyence_pins_;
-  std::array<std::unique_ptr<IGpio>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
+  std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
   std::unique_ptr<ITemperature> temperature_;

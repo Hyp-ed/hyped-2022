@@ -36,11 +36,14 @@ struct Navigation : public Module {
   static constexpr nav_t kMaximumVelocity = 100;     // m/s
   static constexpr nav_t kRunLength       = 1250.0;  // m
   static constexpr nav_t kBrakingBuffer   = 20.0;    // m
-  nav_t displacement;                                // m
-  nav_t velocity;                                    // m/s
-  nav_t acceleration;                                // m/s^2
-  nav_t emergency_braking_distance;                  // m
-  nav_t braking_distance = 750;                      // m
+  // TODO(miltfra): Fix wheel and keyence distances
+  static constexpr nav_t kWheelCircumfrence = 3.14 * 0.1;  // m
+  static constexpr nav_t kStripeDistance    = 50;          // m
+  nav_t displacement;                                      // m
+  nav_t velocity;                                          // m/s
+  nav_t acceleration;                                      // m/s^2
+  nav_t emergency_braking_distance;                        // m
+  nav_t braking_distance = 750;                            // m
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -55,8 +58,7 @@ struct ImuData : public SensorData {
   std::vector<NavigationVector> fifo;
 };
 
-struct CounterData : public SensorData {
-  DataPoint<uint32_t> count;
+struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
@@ -69,8 +71,8 @@ struct Sensors : public Module {
   static constexpr int kNumKeyence  = 2;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
-  DataPoint<std::array<CounterData, kNumEncoders>> wheel_encoders;
-  DataPoint<std::array<CounterData, kNumKeyence>> keyence_stripe_counters;
+  std::array<CounterData, kNumEncoders> wheel_encoders;
+  std::array<CounterData, kNumKeyence> keyence_stripe_counters;
 };
 
 struct BatteryData {
@@ -210,12 +212,12 @@ class Data {
   /**
    * @brief retrieves encoder data from Sensors
    */
-  DataPoint<std::array<CounterData, Sensors::kNumEncoders>> getSensorsWheelEncoderData();
+  std::array<CounterData, Sensors::kNumEncoders> getSensorsWheelEncoderData();
 
   /**
    * @brief retrieves gpio_counter data from Sensors
    */
-  DataPoint<std::array<CounterData, Sensors::kNumKeyence>> getSensorsKeyenceData();
+  std::array<CounterData, Sensors::kNumKeyence> getSensorsKeyenceData();
 
   /**
    * @brief      Should be called to update sensor data.
@@ -230,14 +232,13 @@ class Data {
   /**
    * @brief      Should be called to update sensor encoder data.
    */
-  void setSensorsWheelEncoderData(
-    const DataPoint<std::array<CounterData, Sensors::kNumEncoders>> &imu);
+  void setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNumEncoders> &imu);
 
   /**
    * @brief      Should be called to update sensor keyence data.
    */
   void setSensorsKeyenceData(
-    const DataPoint<std::array<CounterData, Sensors::kNumKeyence>> &keyence_stripe_counter);
+    const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter);
 
   /**
    * @brief      Retrieves data from the batteries.

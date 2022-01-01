@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-#include <sensors/fake_gpio_counter.hpp>
+#include <sensors/fake_keyence.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
 #include <sensors/temperature.hpp>
@@ -27,15 +27,10 @@ Main::Main(const uint8_t id, utils::Logger &log)
     }
     auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
     if (sys_.fake_keyence_fail) {
-      for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-        // miss four stripes in a row after 20th, 2000 micros during peak velocity
-        keyences_[i]
-          = std::make_unique<FakeGpioCounter>(log_, true, "data/in/gpio_counter_fail_run.txt");
-      }
+      // TODO(miltfra): Implement failure mode for fake keyence
     } else {
-      for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-        keyences_[i]
-          = std::make_unique<FakeGpioCounter>(log_, false, "data/in/gpio_counter_normal_run.txt");
+      for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+        keyences_[i] = std::make_unique<FakeKeyence>(fake_trajectory, 0.1);
       }
     }
     if (sys_.fake_imu_fail) {
@@ -45,7 +40,7 @@ Main::Main(const uint8_t id, utils::Logger &log)
     }
   } else {
     // Real trajectory sensors
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
       auto keyence = std::make_unique<GpioCounter>(log_, keyence_pins_[i]);
       keyence->start();
       keyences_[i] = std::move(keyence);
@@ -84,17 +79,24 @@ void Main::run()
   battery_manager_->start();
   imu_manager_->start();
 
-  auto keyence_stripe_counters          = data_.getSensorsData().keyence_stripe_counters;
-  auto previous_keyence_stripe_counters = keyence_stripe_counters;
+  auto current_keyence  = data_.getSensorsKeyenceData();
+  auto previous_keyence = current_keyence;
 
   int temp_count = 0;
   while (sys_.running_) {
-    if (keyence_stripe_counters.timestamp > previous_keyence_stripe_counters.timestamp) {
-      data_.setSensorsKeyenceData(keyence_stripe_counters);
-      previous_keyence_stripe_counters = keyence_stripe_counters;
+    bool keyence_updated = false;
+    for (size_t i = 0; i < current_keyence.size(); ++i) {
+      if (current_keyence.at(i).timestamp > previous_keyence.at(i).timestamp) {
+        keyence_updated = true;
+        break;
+      }
     }
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      keyences_[i]->getData(keyence_stripe_counters.value.at(i));
+    if (keyence_updated) {
+      data_.setSensorsKeyenceData(current_keyence);
+      previous_keyence = current_keyence;
+    }
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+      current_keyence.at(i) = keyences_[i]->getData();
     }
     Thread::sleep(10);
     temp_count++;

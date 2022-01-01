@@ -87,8 +87,8 @@ class Randomiser {
   static void randomiseCounter(data::CounterData &stripe_counter)
   {
     // Generates a count timestamp and value between 0 and 10.
-    stripe_counter.count.timestamp = static_cast<uint32_t>(rand() % 11);
-    stripe_counter.count.value     = static_cast<uint32_t>(rand() % 11);
+    stripe_counter.timestamp = static_cast<uint32_t>(rand() % 11);
+    stripe_counter.value     = static_cast<uint32_t>(rand() % 11);
   }
 
   // Randomises the entries in a hyped::data::TemperatureData struct.
@@ -107,11 +107,10 @@ class Randomiser {
     for (auto &sensors_data : sensors_data.imu.value) {
       randomiseImuData(sensors_data);
     }
-    sensors_data.wheel_encoders.timestamp = static_cast<uint32_t>(rand() % 11);
-    for (auto &sensors_data : sensors_data.wheel_encoders.value) {
+    for (auto &sensors_data : sensors_data.wheel_encoders) {
       randomiseCounter(sensors_data);
     }
-    for (auto &sensors_data : sensors_data.keyence_stripe_counters.value) {
+    for (auto &sensors_data : sensors_data.keyence_stripe_counters) {
       randomiseCounter(sensors_data);
     }
   }

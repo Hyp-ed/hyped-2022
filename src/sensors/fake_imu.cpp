@@ -4,8 +4,7 @@
 
 namespace hyped::sensors {
 
-FakeImu::FakeImu(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory,
-                 const data::nav_t noise)
+FakeImu::FakeImu(std::shared_ptr<FakeTrajectory> fake_trajectory, const data::nav_t noise)
     : data_(data::Data::getInstance()),
       fake_trajectory_(fake_trajectory),
       noise_(noise)
@@ -22,20 +21,22 @@ data::NavigationVector FakeImu::getAccurateAcceleration()
   return value;
 }
 
-void FakeImu::getData(data::ImuData &imu_data)
+data::ImuData FakeImu::getData()
 {
+  data::ImuData imu_data;
   imu_data.operational = true;
-  imu_data.acc         = addNoiseToData(getAccurateAcceleration(), noise_);
+  imu_data.acc         = addNoiseToAcceleration(getAccurateAcceleration());
+  return imu_data;
 }
 
-data::NavigationVector FakeImu::addNoiseToData(const data::NavigationVector value,
-                                               const data::nav_t noise)
+data::NavigationVector FakeImu::addNoiseToAcceleration(
+  const data::NavigationVector acceleration) const
 {
   data::NavigationVector temp;
   static std::default_random_engine generator;
 
-  for (int i = 0; i < 3; i++) {
-    std::normal_distribution<data::nav_t> distribution(value[i], noise);
+  for (size_t i = 0; i < 3; ++i) {
+    std::normal_distribution<data::nav_t> distribution(acceleration[i], noise_);
     temp[i] = distribution(generator);
   }
   return temp;
@@ -47,7 +48,7 @@ data::NavigationVector FakeImu::getZeroAcc() const
   value[0] = 0.0;
   value[1] = 0.0;
   value[2] = 9.8;
-  return addNoiseToData(value, noise_);
+  return addNoiseToAcceleration(value);
 }
 
 }  // namespace hyped::sensors

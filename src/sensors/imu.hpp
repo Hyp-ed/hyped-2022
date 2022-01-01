@@ -23,7 +23,7 @@ class Imu : public IImu {
   /*
    *  @brief Get the Imu data and update the pointer
    */
-  void getData(data::ImuData &data) override;
+  data::ImuData getData() override;
 
   /**
    * @brief calculates number of bytes in FIFO and reads number of full sets (6 bytes) into vector

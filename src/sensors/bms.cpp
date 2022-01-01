@@ -127,8 +127,9 @@ bool Bms::isOnline()
   return (utils::Timer::getTimeMicros() - last_update_time_) < 1000000;
 }
 
-void Bms::getData(data::BatteryData &battery_data)
+data::BatteryData Bms::getData()
 {
+  data::BatteryData battery_data;
   battery_data.voltage = 0;
   for (uint16_t v : data_.voltage)
     battery_data.voltage += v;
@@ -160,6 +161,7 @@ void Bms::getData(data::BatteryData &battery_data)
   } else {  // constant low
     battery_data.charge = 0;
   }
+  return battery_data;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,9 +198,9 @@ bool HighPowerBms::isOnline()
   return (utils::Timer::getTimeMicros() - last_update_time_) < 1000000;
 }
 
-void HighPowerBms::getData(data::BatteryData &battery)
+data::BatteryData HighPowerBms::getData()
 {
-  battery = battery_data_;
+  return battery_data_;
 }
 
 bool HighPowerBms::hasId(uint32_t id, bool)

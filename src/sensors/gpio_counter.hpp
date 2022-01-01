@@ -10,11 +10,11 @@
 
 namespace hyped::sensors {
 
-class GpioCounter : public IGpio, public utils::concurrent::Thread {
+class GpioCounter : public ICounter, public utils::concurrent::Thread {
  public:
   GpioCounter(utils::Logger &log, int pin);
   ~GpioCounter() {}
-  void getData(data::CounterData &counter_data) override;
+  data::CounterData getData() override;
   bool isOnline() override;
   void run() override;
 

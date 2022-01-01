@@ -274,11 +274,12 @@ int Imu::readFifo(data::ImuData &data)
   }
 }
 
-void Imu::getData(data::ImuData &data)
+data::ImuData Imu::getData()
 {
+  data::ImuData imu_data;
   if (is_online_) {
     if (is_fifo_) {
-      int count = readFifo(data);
+      int count = readFifo(imu_data);
       if (count) {
         log_.DBG2("Imu", "Fifo filled");
       } else {
@@ -297,15 +298,12 @@ void Imu::getData(data::ImuData &data)
         value                   = static_cast<float>(bit_data);
         acceleration_data.at(i) = value / acc_divider_ * 9.80665;
       }
-      data.operational = is_online_;
-      data.acc[0]      = acceleration_data[0];
-      data.acc[1]      = acceleration_data[1];
-      data.acc[2]      = acceleration_data[2];
+      imu_data.operational = is_online_;
+      imu_data.acc         = acceleration_data;
     }
   } else {
-    // Try and turn the sensor on again
-    log_.ERR("Imu", "Sensor not operational, trying to turn on sensor");
-    init();
+    imu_data.operational = false;
+    return imu_data;
   }
 }
 

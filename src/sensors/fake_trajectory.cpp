@@ -63,7 +63,7 @@ FakeTrajectory::FakeTrajectory(const Config &config)
     : config_(config),
       data_(data::Data::getInstance()),
       last_update_(utils::Timer::getTimeMicros()),
-      last_trajectory_({0.0, 0.0, 0.0})
+      trajectory_({0.0, 0.0, 0.0})
 {
 }
 
@@ -71,9 +71,8 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
 {
   const auto stm_data              = data_.getStateMachineData();
   const uint64_t now               = utils::Timer::getTimeMicros();
-  const data::nav_t seconds_passed = static_cast<double>(last_update_ - now) / 1e6;
+  const data::nav_t seconds_passed = static_cast<double>(now - last_update_) / 1e6;
   last_update_                     = now;
-  data::nav_t current_acceleration;
   switch (stm_data.current_state) {
     case data::State::kIdle:
     case data::State::kPreCalibrating:
@@ -82,28 +81,26 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
     case data::State::kFailureStopped:
     case data::State::kFinished:
     case data::State::kInvalid:
-      last_trajectory_.acceleration = 0.0;
-      last_trajectory_.velocity     = 0.0;
-      return last_trajectory_;
+      trajectory_.acceleration = 0.0;
+      trajectory_.velocity     = 0.0;
+      return trajectory_;
     case data::State::kAccelerating:
-      current_acceleration = config_.maximum_acceleration;
+      trajectory_.acceleration = config_.maximum_acceleration;
       break;
     case data::State::kCruising:
-      current_acceleration = -config_.cruising_deceleration;
+      trajectory_.acceleration = -config_.cruising_deceleration;
       break;
     case data::State::kNominalBraking:
     case data::State::kEmergencyBraking:
-      current_acceleration = -config_.braking_deceleration;
+      trajectory_.acceleration = -config_.braking_deceleration;
       break;
   }
   // s = s0 + v0 * dt + 1/2 * a0 * dt^2
-  last_trajectory_.displacement += last_trajectory_.velocity * seconds_passed;
-  last_trajectory_.displacement += 0.5 * current_acceleration * seconds_passed * seconds_passed;
+  trajectory_.displacement += trajectory_.velocity * seconds_passed;
+  trajectory_.displacement += 0.5 * trajectory_.acceleration * seconds_passed * seconds_passed;
   // v = a0 * dt
-  last_trajectory_.velocity += last_trajectory_.acceleration * seconds_passed;
-  // a = a0
-  last_trajectory_.acceleration = current_acceleration;
-  return last_trajectory_;
+  trajectory_.velocity += trajectory_.acceleration * seconds_passed;
+  return trajectory_;
 }
 
 const FakeTrajectory::Config &FakeTrajectory::getConfig() const

@@ -29,7 +29,7 @@ class FakeTrajectory {
   const Config config_;
   data::Data &data_;
   uint64_t last_update_;
-  Trajectory last_trajectory_;
+  Trajectory trajectory_;
 
   FakeTrajectory(const Config &config);
   static std::optional<Config> readConfig(utils::Logger &log, const std::string &path);

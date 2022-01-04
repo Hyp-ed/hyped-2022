@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <sensors/fake_trajectory.hpp>
+#include <utils/concurrent/thread.hpp>
 
 namespace hyped::testing {
 
@@ -29,7 +30,7 @@ TEST_F(FakeTrajectoryTest, parsesConfig)
   disableOutput();
 }
 
-TEST_F(FakeTrajectoryTest, noMovementBeforeRun)
+TEST_F(FakeTrajectoryTest, noMovementWithZeroAcceleration)
 {
   const std::string path = "configurations/fake_trajectory.json";
   auto fake_trajectory   = sensors::FakeTrajectory::fromFile(log_, path);
@@ -44,6 +45,63 @@ TEST_F(FakeTrajectoryTest, noMovementBeforeRun)
     ASSERT_FLOAT_EQ(0.0, trajectory.velocity);
     ASSERT_FLOAT_EQ(0.0, trajectory.displacement);
     disableOutput();
+  }
+}
+
+TEST_F(FakeTrajectoryTest, expectedVelocities)
+{
+  const std::string path   = "configurations/fake_trajectory.json";
+  auto fake_trajectory     = sensors::FakeTrajectory::fromFile(log_, path);
+  auto &data               = data::Data::getInstance();
+  auto previous_trajectory = fake_trajectory->getTrajectory();
+  // Pre-run
+  {
+    for (const auto state : pre_run_states_) {
+      auto state_machine_data          = data.getStateMachineData();
+      state_machine_data.current_state = state;
+      data.setStateMachineData(state_machine_data);
+      const auto trajectory = fake_trajectory->getTrajectory();
+      enableOutput();
+      ASSERT_EQ(trajectory.velocity, 0.0);
+      disableOutput();
+      previous_trajectory = trajectory;
+    }
+  }
+  // Accelerating
+  {
+    auto state_machine_data          = data.getStateMachineData();
+    state_machine_data.current_state = data::State::kAccelerating;
+    data.setStateMachineData(state_machine_data);
+    enableOutput();
+    const auto trajectory = fake_trajectory->getTrajectory();
+    ASSERT_GT(trajectory.velocity, previous_trajectory.velocity);
+    disableOutput();
+    previous_trajectory = trajectory;
+  }
+  // Braking
+  {
+    for (const auto state : braking_states_) {
+      auto state_machine_data          = data.getStateMachineData();
+      state_machine_data.current_state = state;
+      data.setStateMachineData(state_machine_data);
+      const auto trajectory = fake_trajectory->getTrajectory();
+      enableOutput();
+      ASSERT_LT(trajectory.velocity, previous_trajectory.velocity);
+      disableOutput();
+      previous_trajectory = trajectory;
+    }
+  }
+  // Post-run
+  {
+    for (const auto state : post_run_states_) {
+      auto state_machine_data          = data.getStateMachineData();
+      state_machine_data.current_state = state;
+      data.setStateMachineData(state_machine_data);
+      const auto trajectory = fake_trajectory->getTrajectory();
+      enableOutput();
+      ASSERT_FLOAT_EQ(trajectory.velocity, 0.0);
+      disableOutput();
+    }
   }
 }
 

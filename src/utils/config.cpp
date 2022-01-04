@@ -1,5 +1,4 @@
 #include "config.hpp"
-#include "interface_factory.hpp"
 #include "logger.hpp"
 #include "system.hpp"
 
@@ -168,35 +167,6 @@ T *createDefault()
   return nullptr;
 }
 
-void Config::parseInterfaceFactory(char *line)
-{
-  // parse into key value pair, validate input line
-  char *key   = strtok(line, " ");
-  char *value = strtok(NULL, " ");
-  if (!key || !value) {
-    log_.ERR("CONFIG",
-             "lines for InterfaceFactory submodule must have format \"interface implementation\"");
-    return;
-  }
-
-  // if the implementation is not registered with the interface factory, we use the default
-  // creator function
-#define PARSE_FACTORY(module, interface)                                                           \
-  if (strcmp(key, #interface) == 0) {                                                              \
-    auto creator = utils::InterfaceFactory<module::interface>::getCreator(value);                  \
-    interfaceFactory.get##interface##Instance                                                      \
-      = creator ? creator : createDefault<module::interface>;                                      \
-    return;                                                                                        \
-  }
-  INTERFACE_LIST(PARSE_FACTORY)
-
-  // if we get here, the interface is probably not listed in INTERFACE_LIST
-  log_.ERR("CONFIG",
-           "Factory interface \"%s\" is not registered, you need to list it in "
-           "INTERFACE_LIST in 'src/utils/interfaces.hpp'",
-           key);
-}
-
 constexpr char config_dir_name[]    = "configurations/";
 constexpr auto config_dir_name_size = sizeof(config_dir_name);
 void Config::readFile(char *config_file)
@@ -289,10 +259,6 @@ void Config::readFile(char *config_file)
 
 Config::Config(char *config_file) : log_(System::getLogger())
 {
-#define INIT_CREATOR(module, interface)                                                            \
-  interfaceFactory.get##interface##Instance = createDefault<module::interface>;
-  INTERFACE_LIST(INIT_CREATOR)
-
   config_files_.push_back(config_file);
   readFile(config_file);
   config_files_.pop_back();

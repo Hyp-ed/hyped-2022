@@ -1,7 +1,5 @@
 #pragma once
 
-#include "interfaces.hpp"
-
 #include <string>
 #include <vector>
 
@@ -35,8 +33,7 @@ struct ModuleEntry;
   V(Telemetry)                                                                                     \
   V(Brakes)                                                                                        \
   V(Sensors)                                                                                       \
-  V(MotorControl)                                                                                  \
-  V(InterfaceFactory)
+  V(MotorControl)
 
 #define CREATE_ENUM(module) k##module,
 
@@ -78,13 +75,6 @@ class Config {
   struct MotorControl {
     int isFaulty;
   } motor_control;
-
-  struct InterfaceFactory {
-    // Module used in this context refers to the namespace containing the interface.
-#define CREATOR_FUNCTION_POINTERS(module, interface)                                               \
-  module::interface *(*get##interface##Instance)();
-    INTERFACE_LIST(CREATOR_FUNCTION_POINTERS)
-  } interfaceFactory;
 
 #define DECLARE_PARSE(module) void parse##module(char *line);
 

@@ -8,6 +8,7 @@ namespace hyped::testing {
 
 class FakeTrajectoryTest : public Test {
  public:
+  const std::string path_ = "configurations/test/fake_trajectory.json";
   const std::vector<data::State> pre_run_states_
     = {data::State::kIdle, data::State::kPreCalibrating, data::State::kCalibrating,
        data::State::kReady};
@@ -19,22 +20,20 @@ class FakeTrajectoryTest : public Test {
 
 TEST_F(FakeTrajectoryTest, parsesConfig)
 {
-  const std::string path     = "configurations/fake_trajectory.json";
-  const auto fake_trajectory = sensors::FakeTrajectory::fromFile(log_, path);
+  const auto fake_trajectory = sensors::FakeTrajectory::fromFile(log_, path_);
   enableOutput();
   ASSERT_TRUE(fake_trajectory);
   const auto &config = fake_trajectory->getConfig();
-  ASSERT_FLOAT_EQ(1.0, config.maximum_acceleration);
-  ASSERT_FLOAT_EQ(2.0, config.braking_deceleration);
+  ASSERT_FLOAT_EQ(1000.0, config.maximum_acceleration);
+  ASSERT_FLOAT_EQ(2000.0, config.braking_deceleration);
   ASSERT_FLOAT_EQ(0.01, config.cruising_deceleration);
   disableOutput();
 }
 
 TEST_F(FakeTrajectoryTest, noMovementWithZeroAcceleration)
 {
-  const std::string path = "configurations/fake_trajectory.json";
-  auto fake_trajectory   = sensors::FakeTrajectory::fromFile(log_, path);
-  auto &data             = data::Data::getInstance();
+  auto fake_trajectory = sensors::FakeTrajectory::fromFile(log_, path_);
+  auto &data           = data::Data::getInstance();
   for (const auto state : pre_run_states_) {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = state;
@@ -50,8 +49,7 @@ TEST_F(FakeTrajectoryTest, noMovementWithZeroAcceleration)
 
 TEST_F(FakeTrajectoryTest, expectedVelocities)
 {
-  const std::string path   = "configurations/fake_trajectory.json";
-  auto fake_trajectory     = sensors::FakeTrajectory::fromFile(log_, path);
+  auto fake_trajectory     = sensors::FakeTrajectory::fromFile(log_, path_);
   auto &data               = data::Data::getInstance();
   auto previous_trajectory = fake_trajectory->getTrajectory();
   // Pre-run
@@ -107,9 +105,8 @@ TEST_F(FakeTrajectoryTest, expectedVelocities)
 
 TEST_F(FakeTrajectoryTest, expectedAcclerations)
 {
-  const std::string path = "configurations/fake_trajectory.json";
-  auto fake_trajectory   = sensors::FakeTrajectory::fromFile(log_, path);
-  auto &data             = data::Data::getInstance();
+  auto fake_trajectory = sensors::FakeTrajectory::fromFile(log_, path_);
+  auto &data           = data::Data::getInstance();
   // Pre-run
   {
     for (const auto state : pre_run_states_) {

@@ -158,15 +158,6 @@ void Config::parseMotorControl(char *line)
   }
 }
 
-// if there is no creator configured to an interface, we use this one to prevent calling
-// a null pointer function
-template<class T>
-T *createDefault()
-{
-  printf("ERROOOR: no creator for %s found, creating NULL object\n", interfaceName<T>());
-  return nullptr;
-}
-
 constexpr char config_dir_name[]    = "configurations/";
 constexpr auto config_dir_name_size = sizeof(config_dir_name);
 void Config::readFile(char *config_file)

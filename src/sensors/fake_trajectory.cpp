@@ -24,28 +24,37 @@ std::optional<FakeTrajectory::Config> FakeTrajectory::readConfig(utils::Logger &
     log.ERR("FAKE-TRAJECTORY", "Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
+  if (!document.HasMember("fake_trajectory")) {
+    log.ERR("FAKE-TRAJECTORY",
+            "Missing required field 'fake_trajectory' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["fake_trajectory"].GetObject();
   FakeTrajectory::Config config;
-  if (!document.HasMember("maximum_acceleration")) {
-    log.ERR("FAKE-TRAJECTORY",
-            "Missing required field 'maximum_acceleration' in configuration file at %s",
-            path.c_str());
+  if (!config_object.HasMember("maximum_acceleration")) {
+    log.ERR(
+      "FAKE-TRAJECTORY",
+      "Missing required field 'fake_trajectory.maximum_acceleration' in configuration file at %s",
+      path.c_str());
     return std::nullopt;
   }
-  config.maximum_acceleration = document["maximum_acceleration"].GetDouble();
-  if (!document.HasMember("braking_deceleration")) {
-    log.ERR("FAKE-TRAJECTORY",
-            "Missing required field 'braking_deceleration' in configuration file at %s",
-            path.c_str());
+  config.maximum_acceleration = config_object["maximum_acceleration"].GetDouble();
+  if (!config_object.HasMember("braking_deceleration")) {
+    log.ERR(
+      "FAKE-TRAJECTORY",
+      "Missing required field 'fake_trajectory.braking_deceleration' in configuration file at %s",
+      path.c_str());
     return std::nullopt;
   }
-  config.braking_deceleration = document["braking_deceleration"].GetDouble();
-  if (!document.HasMember("cruising_deceleration")) {
-    log.ERR("FAKE-TRAJECTORY",
-            "Missing required field 'cruising_deceleration' in configuration file at %s",
-            path.c_str());
+  config.braking_deceleration = config_object["braking_deceleration"].GetDouble();
+  if (!config_object.HasMember("cruising_deceleration")) {
+    log.ERR(
+      "FAKE-TRAJECTORY",
+      "Missing required field 'fake_trajectory.cruising_deceleration' in configuration file at %s",
+      path.c_str());
     return std::nullopt;
   }
-  config.cruising_deceleration = document["cruising_deceleration"].GetDouble();
+  config.cruising_deceleration = config_object["cruising_deceleration"].GetDouble();
   return config;
 }
 

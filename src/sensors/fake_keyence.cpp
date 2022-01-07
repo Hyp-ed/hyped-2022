@@ -4,10 +4,10 @@
 
 namespace hyped::sensors {
 
-FakeKeyence::FakeKeyence(std::shared_ptr<FakeTrajectory> fake_trajectory, const data::nav_t noise)
-    : data_(data::Data::getInstance()),
-      fake_trajectory_(fake_trajectory),
-      noise_(noise)
+FakeKeyence::FakeKeyence(std::shared_ptr<FakeTrajectory> fake_trajectory, const Config config)
+    : config_(config),
+      data_(data::Data::getInstance()),
+      fake_trajectory_(fake_trajectory)
 {
   previous_data_.timestamp   = utils::Timer::getTimeMicros();
   previous_data_.value       = 0;  // start stripe count
@@ -30,7 +30,7 @@ data::CounterData FakeKeyence::getData()
 data::nav_t FakeKeyence::addNoiseToDisplacement(const data::nav_t displacement) const
 {
   static std::default_random_engine generator;
-  std::normal_distribution<data::nav_t> distribution(displacement, noise_);
+  std::normal_distribution<data::nav_t> distribution(displacement, config_.noise);
   return distribution(generator);
 }
 

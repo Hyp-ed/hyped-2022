@@ -20,10 +20,11 @@ TEST_F(FakeKeyenceTest, nonDecreasingData)
     state_machine_data.current_state = data::State::kIdle;
     data.setStateMachineData(state_machine_data);
   }
-  const std::string path = "configurations/fake_trajectory.json";
-  auto fake_trajectory
-    = std::make_shared<sensors::FakeTrajectory>(*sensors::FakeTrajectory::fromFile(log_, path));
-  sensors::FakeKeyence fake_keyence(fake_trajectory, 0.1);
+  enableOutput();
+  auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
+    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+  disableOutput();
+  sensors::FakeKeyence fake_keyence(fake_trajectory, {std::nullopt, 0.1});
   data::CounterData previous_count = fake_keyence.getData();
   {
     auto state_machine_data          = data.getStateMachineData();

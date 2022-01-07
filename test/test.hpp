@@ -1,12 +1,12 @@
 #include <fcntl.h>
-#include <gtest/gtest.h>
 #include <stdlib.h>
 
+#include <gtest/gtest.h>
 #include <utils/logger.hpp>
 
 namespace hyped::testing {
 
-using namespace hyped;
+const std::string kDefaultConfigPath = "configurations/test/config.json";
 
 class Test : public ::testing::Test {
  protected:

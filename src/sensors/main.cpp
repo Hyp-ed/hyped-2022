@@ -30,7 +30,8 @@ Main::Main(const uint8_t id, utils::Logger &log)
       // TODO(miltfra): Implement failure mode for fake keyence
     } else {
       for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
-        keyences_[i] = std::make_unique<FakeKeyence>(fake_trajectory, 0.1);
+        const FakeKeyence::Config config = {std::nullopt, 0.1};
+        keyences_[i]                     = std::make_unique<FakeKeyence>(fake_trajectory, config);
       }
     }
     if (sys_.fake_imu_fail) {

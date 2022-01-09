@@ -54,6 +54,15 @@ bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
                        const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
+// Sensors Command
+//--------------------------------------------------------------------------------------
+
+/*
+ * @brief   Returns true iff all SSRs have HP off.
+ */
+bool checkHPOff(const data::Sensors &sensors_data_struct);
+
+//--------------------------------------------------------------------------------------
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 

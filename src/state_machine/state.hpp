@@ -74,17 +74,19 @@ class Messages;
  * Generating structs for all the states
  */
 
-MAKE_STATE(Idle)            // State on startup
-MAKE_STATE(PreCalibrating)  // Sub-state between Idle and Calibrating
-MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
-MAKE_STATE(Ready)           // After calibration has finished
-MAKE_STATE(Accelerating)    // First phase of the run
-MAKE_STATE(Cruising)        // Intermediate phase to not exceed maximum velocity
-MAKE_STATE(NominalBraking)  // Second phase of the run
-MAKE_STATE(Finished)        // State after the run
-MAKE_STATE(FailureBraking)  // Entered upon failure during the run
-MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
-                            // FailureBraking
+MAKE_STATE(Idle)               // State on startup
+MAKE_STATE(PreCalibrating)     // Sub-state between Idle and Calibrating
+MAKE_STATE(Calibrating)        // Calibrating starts after user input is given
+MAKE_STATE(Ready)              // After calibration has finished
+MAKE_STATE(Accelerating)       // First phase of the run
+MAKE_STATE(Cruising)           // Intermediate phase to not exceed maximum velocity
+MAKE_STATE(PreBraking)         // Sub-state between Accelerating/Cruising and Nominal Braking
+MAKE_STATE(NominalBraking)     // Second phase of the run
+MAKE_STATE(Finished)           // State after the run
+MAKE_STATE(FailurePreBraking)  // Sub-state entered before FailureBraking
+MAKE_STATE(FailureBraking)     // Entered upon failure during the run
+MAKE_STATE(FailureStopped)     // Entered upon failure before the run or after
+                               // FailureBraking
 
 #undef MAKE_STATE
 

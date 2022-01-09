@@ -375,7 +375,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
 /**
  * Ensures that if no emergency is reported from any module and
  * if the pod is in the braking zone, the state changes to the
- * nominal braking state.
+ * pre-braking state.
  *
  * Time complexity: O(kTestSize)
  */
@@ -393,11 +393,181 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
 
       enableOutput();
       if (in_braking_zone) {
+        ASSERT_EQ(new_state, PreBraking::getInstance())
+          << "failed to enter PreBraking from Accelerating";
+      } else {
+        ASSERT_NE(new_state, PreBraking::getInstance())
+          << "falsely entered PreBraking from Accelerating";
+      }
+      disableOutput();
+    }
+  }
+}
+
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if the pod has reached maximum velocity, the state changes to the
+ * Cruising state.
+ *
+ * Time complexity: O(kTestSize)
+
+TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
+      const auto new_state            = state->checkTransition(log_);
+
+      enableOutput();
+      if (reached_max_velocity) {
+        ASSERT_EQ(new_state, Cruising::getInstance())
+          << "failed to enter Cruising from Accelerating";
+      } else {
+        ASSERT_NE(new_state, Cruising::getInstance())
+          << "falsely entered Cruising from Accelerating";
+      }
+      disableOutput();
+    }
+  }
+} */
+
+//---------------------------------------------------------------------------
+// Cruising Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing Cruising behaviour with respect to data
+ */
+struct CruisingTest : public StateTest {
+  Cruising *state = Cruising::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailureBraking.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(CruisingTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
+
+    enableOutput();
+    if (has_emergency) {
+      ASSERT_EQ(new_state, FailureBraking::getInstance())
+        << "failed to enter FailureBraking from Cruising";
+    } else {
+      ASSERT_NE(new_state, FailureBraking::getInstance())
+        << "falsely entered FailureBraking from Cruising";
+    }
+    disableOutput();
+  }
+}
+
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if the pod is in the braking zone, the state changes to the
+ * pre-braking state.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(CruisingTest, handlesInBrakingZone)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool in_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
+      const auto new_state       = state->checkTransition(log_);
+
+      enableOutput();
+      if (in_braking_zone) {
+        ASSERT_EQ(new_state, PreBraking::getInstance())
+          << "failed to enter PreBraking from Cruising";
+      } else {
+        ASSERT_NE(new_state, PreBraking::getInstance())
+          << "falsely entered PreBraking from Cruising";
+      }
+      disableOutput();
+    }
+  }
+}
+//---------------------------------------------------------------------------
+// Pre-Braking Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing PreBraking behaviour with respect to data
+ */
+struct PreBrakingTest : public StateTest {
+  PreBraking *state = PreBraking::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailureBraking.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreBrakingTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
+
+    enableOutput();
+    if (has_emergency) {
+      ASSERT_EQ(new_state, FailureBraking::getInstance())
+        << "failed to enter FailureBraking from PreBraking";
+    } else {
+      ASSERT_NE(new_state, FailureBraking::getInstance())
+        << "falsely entered FailureBraking from PreBraking";
+    }
+    disableOutput();
+  }
+}
+
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if all the SSRs are not in HP, the state changes to the nominal braking state.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreBrakingTest, handlesHPOff)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool HP_off    = checkHPOff(sensors_data_);
+      const auto new_state = state->checkTransition(log_);
+
+      enableOutput();
+      if (HP_off) {
         ASSERT_EQ(new_state, NominalBraking::getInstance())
-          << "failed to enter NominalBraking from Accelerating";
+          << "failed to enter NominalBraking from PreBraking";
       } else {
         ASSERT_NE(new_state, NominalBraking::getInstance())
-          << "falsely entered NominalBraking from Accelerating";
+          << "falsely entered NominalBraking from PreBraking";
       }
       disableOutput();
     }

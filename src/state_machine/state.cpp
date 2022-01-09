@@ -129,7 +129,7 @@ State *Accelerating::checkTransition(Logger &log)
   if (emergency) { return FailureBraking::getInstance(); }
 
   bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
-  if (in_braking_zone) { return NominalBraking::getInstance(); }
+  if (in_braking_zone) { return PreBraking::getInstance(); }
 
   bool reached_max_velocity = checkReachedMaxVelocity(log, nav_data_);
   if (reached_max_velocity) { return Cruising::getInstance(); }
@@ -154,8 +154,29 @@ State *Cruising::checkTransition(Logger &log)
   if (emergency) { return FailureBraking::getInstance(); }
 
   bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
-  if (in_braking_zone) { return NominalBraking::getInstance(); }
+  if (in_braking_zone) { return PreBraking::getInstance(); }
 
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  Pre-Braking
+//--------------------------------------------------------------------------------------
+
+PreBraking PreBraking::instance_;
+data::State PreBraking::enum_value_       = data::kPreBraking;
+char PreBraking::string_representation_[] = "PreBraking";
+
+State *PreBraking::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+  if (emergency) { return FailureBraking::getInstance(); }
+
+  bool hp_off = checkHPOff(sensors_data_);
+  if (hp_off) { return NominalBraking::getInstance(); }
   return nullptr;
 }
 

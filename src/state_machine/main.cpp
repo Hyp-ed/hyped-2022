@@ -33,7 +33,7 @@ void Main::run()
 
   data::StateMachine sm_data = data.getStateMachineData();
   const auto state_string    = ::hyped::data::stateToString(sm_data.current_state);
-  log_.INFO("STM", "exiting. current state: %s", *state_string);
+  log_.INFO("STM", "exiting. current state: %s", state_string->c_str());
 }
 
 }  // namespace state_machine

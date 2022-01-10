@@ -7,7 +7,7 @@ using utils::concurrent::ScopedLock;
 
 namespace data {
 
-static const std::unordered_map<State, const char *> states = {
+static const std::unordered_map<State, std::string> state_names = {
   {State::kIdle, "Idle"},
   {State::kPreCalibrating, "PreCalibrating"},
   {State::kCalibrating, "Calibrating"},
@@ -21,10 +21,31 @@ static const std::unordered_map<State, const char *> states = {
   {State::kInvalid, "Invalid"},
 };
 
-std::optional<const char *> stateToString(const State state)
+static const std::unordered_map<std::string, State> states_by_name = {
+  {"Idle", State::kIdle},
+  {"PreCalibrating", State::kPreCalibrating},
+  {"Calibrating", State::kCalibrating},
+  {"Ready", State::kReady},
+  {"Accelerating", State::kAccelerating},
+  {"Cruising", State::kCruising},
+  {"NominalBraking", State::kNominalBraking},
+  {"EmergencyBraking", State::kEmergencyBraking},
+  {"FailureStopped", State::kFailureStopped},
+  {"Finished", State::kFinished},
+  {"Invalid", State::kInvalid},
+};
+
+std::optional<std::string> stateToString(const State state)
 {
-  const auto it = states.find(state);
-  if (it == states.end()) { return std::nullopt; }
+  const auto it = state_names.find(state);
+  if (it == state_names.end()) { return std::nullopt; }
+  return it->second;
+}
+
+std::optional<State> stateFromString(const std::string &state_name)
+{
+  const auto it = states_by_name.find(state_name);
+  if (it == states_by_name.end()) { return std::nullopt; }
   return it->second;
 }
 

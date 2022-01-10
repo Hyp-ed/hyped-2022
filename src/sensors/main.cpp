@@ -16,23 +16,28 @@ Main::Main(const uint8_t id, utils::Logger &log)
       keyence_pins_{static_cast<uint8_t>(sys_.config->sensors.keyence_l),
                     static_cast<uint8_t>(sys_.config->sensors.keyence_r)}
 {
-  battery_manager_ = std::make_unique<BmsManager>(log);
+  static const std::string fake_config_path = "configurations/config.json";
+  battery_manager_                          = std::make_unique<BmsManager>(log);
   if (sys_.fake_trajectory) {
-    auto fake_trajectory_optional
-      = FakeTrajectory::fromFile(log, "configurations/fake_trajectory.json");
+    const auto fake_trajectory_optional = FakeTrajectory::fromFile(log, fake_config_path);
     if (!fake_trajectory_optional) {
       log.ERR("SENSORS", "failed to initialise fake trajectory");
       sys_.running_ = false;
       return;
     }
-    auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
+    const auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
     if (sys_.fake_keyence_fail) {
       // TODO(miltfra): Implement failure mode for fake keyence
     } else {
-      for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
-        const FakeKeyence::Config config = {std::nullopt, 0.1};
-        keyences_[i]                     = std::make_unique<FakeKeyence>(fake_trajectory, config);
+      const auto fake_keyences_optional
+        = FakeKeyence::fromFile(log, fake_config_path, fake_trajectory);
+      if (!fake_keyences_optional) {
+        log.ERR("SENSORS", "failed to initialise fake keyence");
+        sys_.running_ = false;
+        return;
       }
+      keyences_ = {std::make_unique<FakeKeyence>(fake_keyences_optional->at(0)),
+                   std::make_unique<FakeKeyence>(fake_keyences_optional->at(1))};
     }
     if (sys_.fake_imu_fail) {
       // TODO(miltfra): Implement failure mode for fake IMU

@@ -29,7 +29,7 @@ std::optional<FakeTrajectory::Config> FakeTrajectory::readConfig(utils::Logger &
             "Missing required field 'fake_trajectory' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_object = document["fake_trajectory"].GetObject();
+  const auto config_object = document["fake_trajectory"].GetObject();
   FakeTrajectory::Config config;
   if (!config_object.HasMember("maximum_acceleration")) {
     log.ERR(
@@ -62,7 +62,8 @@ std::optional<FakeTrajectory> FakeTrajectory::fromFile(utils::Logger &log, const
 {
   const auto config_optional = readConfig(log, path);
   if (!config_optional) {
-    log.ERR("FAKE-TRAJECTORY", "Failed constructing");
+    log.ERR("FAKE-TRAJECTORY", "Failed to read config at %s. Could not construct object.",
+            path.c_str());
     return std::nullopt;
   }
   return FakeTrajectory(*config_optional);

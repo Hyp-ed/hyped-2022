@@ -16,7 +16,7 @@ bool Main::handleTransition()
   if (current_state_ == previous_state_) return false;
   previous_state_ = current_state_;
 
-  log_.INFO("Motor", "Entered %s state", data::stateToString(current_state_));
+  log_.INFO("Motor", "Entered %s state", data::stateToString(current_state_)->c_str());
   return true;
 }
 

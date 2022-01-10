@@ -144,7 +144,8 @@ enum class State {
   kInvalid
 };
 
-std::optional<const char *> stateToString(const State state);
+std::optional<std::string> stateToString(const State state);
+std::optional<State> stateFromString(const std::string &state_name);
 
 struct StateMachine {
   bool critical_failure;

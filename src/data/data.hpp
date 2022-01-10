@@ -83,7 +83,7 @@ struct Sensors : public Module {
   DataPoint<array<EncoderData, kNumEncoders>> encoder;
   array<StripeCounter, kNumKeyence> keyence_stripe_counter;
 
-  bool HP_off = false;  // true if all SSRs are not in HP
+  bool high_power_off = false;  // true if all SSRs are not in HP
 };
 
 struct BatteryData {

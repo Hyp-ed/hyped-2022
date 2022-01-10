@@ -33,7 +33,7 @@ void GpioManager::clearHP()
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
     hp_ssr_[i]->clear();  // HP off until kReady State
   }
-  sensors_data_struct.HP_off = true;  // all SSRs in HP off
+  sensors_data_struct.high_power_off = true;  // all SSRs in HP off
   data_.setSensorsData(sensors_data_struct);
 }
 
@@ -45,7 +45,7 @@ void GpioManager::setHP()
     sleep(50);
   }
   master_->set();
-  sensors_data_struct.HP_off = false;  // all SSRs in HP on
+  sensors_data_struct.high_power_off = false;  // all SSRs in HP on
   data_.setSensorsData(sensors_data_struct);
 }
 

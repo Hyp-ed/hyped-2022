@@ -83,7 +83,7 @@ bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
 
 bool checkHighPowerOff(const data::Sensors &sensors_data_struct)
 {
-  if (!sensors_data_struct.HP_off) return false;
+  if (!sensors_data_struct.high_power_off) return false;
 
   return true;
 }

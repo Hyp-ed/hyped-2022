@@ -347,7 +347,7 @@ struct AcceleratingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to FailureBraking.
+ * the state changes to FailurePreBraking.
  *
  * Time complexity: O(kTestSize)
  */
@@ -362,11 +362,11 @@ TEST_F(AcceleratingTest, handlesEmergency)
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance())
-        << "failed to enter FailureBraking from Accelerating";
+      ASSERT_EQ(new_state, FailurePreBraking::getInstance())
+        << "failed to enter FailurePreBraking from Accelerating";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance())
-        << "falsely entered FailureBraking from Accelerating";
+      ASSERT_NE(new_state, FailurePreBraking::getInstance())
+        << "falsely entered FailurePreBraking from Accelerating";
     }
     disableOutput();
   }
@@ -410,8 +410,9 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
  * Cruising state.
  *
  * Time complexity: O(kTestSize)
+ */
 
-TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
+/* TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
@@ -449,7 +450,7 @@ struct CruisingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to FailureBraking.
+ * the state changes to FailurePreBraking.
  *
  * Time complexity: O(kTestSize)
  */
@@ -464,11 +465,11 @@ TEST_F(CruisingTest, handlesEmergency)
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance())
-        << "failed to enter FailureBraking from Cruising";
+      ASSERT_EQ(new_state, FailurePreBraking::getInstance())
+        << "failed to enter FailurePreBraking from Cruising";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance())
-        << "falsely entered FailureBraking from Cruising";
+      ASSERT_NE(new_state, FailurePreBraking::getInstance())
+        << "falsely entered FailurePreBraking from Cruising";
     }
     disableOutput();
   }
@@ -518,7 +519,7 @@ struct PreBrakingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to FailureBraking.
+ * the state changes to FailurePreBraking.
  *
  * Time complexity: O(kTestSize)
  */
@@ -533,11 +534,11 @@ TEST_F(PreBrakingTest, handlesEmergency)
 
     enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance())
-        << "failed to enter FailureBraking from PreBraking";
+      ASSERT_EQ(new_state, FailurePreBraking::getInstance())
+        << "failed to enter FailurePreBraking from PreBraking";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance())
-        << "falsely entered FailureBraking from PreBraking";
+      ASSERT_NE(new_state, FailurePreBraking::getInstance())
+        << "falsely entered FailurePreBraking from PreBraking";
     }
     disableOutput();
   }
@@ -549,7 +550,7 @@ TEST_F(PreBrakingTest, handlesEmergency)
  *
  * Time complexity: O(kTestSize)
  */
-TEST_F(PreBrakingTest, handlesHPOff)
+TEST_F(PreBrakingTest, handlesHighPowerOff)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
@@ -673,6 +674,43 @@ TEST_F(FinishedTest, handlesShutdownCommand)
       ASSERT_EQ(new_state, Off::getInstance()) << "failed to enter Off from Finished";
     } else {
       ASSERT_NE(new_state, Off::getInstance()) << "falsely entered Off from Finished";
+    }
+    disableOutput();
+  }
+}
+
+//---------------------------------------------------------------------------
+// Failure Pre-Braking Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing failure pre-braking behaviour with respect to data
+ */
+struct FailurePreBrakingTest : public StateTest {
+  FailurePreBraking *state = FailurePreBraking::getInstance();
+};
+
+/**
+ * Ensures that if SSRs are not in HP while in the failure
+ * pre-braking state, the state changes to FailureBraking.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_high_power_off = checkHighPowerOff(sensors_data_);
+    const auto new_state          = state->checkTransition(log_);
+
+    enableOutput();
+    if (has_high_power_off) {
+      ASSERT_EQ(new_state, FailureBraking::getInstance())
+        << "failed to enter FailureBraking from FailurePreBraking";
+    } else {
+      ASSERT_NE(new_state, FailureBraking::getInstance())
+        << "falsely entered FailureBraking from FailurePreBraking";
     }
     disableOutput();
   }

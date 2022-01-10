@@ -558,11 +558,11 @@ TEST_F(PreBrakingTest, handlesHPOff)
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool HP_off    = checkHPOff(sensors_data_);
-      const auto new_state = state->checkTransition(log_);
+      const bool has_high_power_off = checkHighPowerOff(sensors_data_);
+      const auto new_state          = state->checkTransition(log_);
 
       enableOutput();
-      if (HP_off) {
+      if (has_high_power_off) {
         ASSERT_EQ(new_state, NominalBraking::getInstance())
           << "failed to enter NominalBraking from PreBraking";
       } else {

@@ -8,19 +8,8 @@ using utils::concurrent::ScopedLock;
 namespace data {
 
 const char *states[num_states] = {
-  "Idle",
-  "PreCalibrating",
-  "Calibrating",
-  "Ready",
-  "Accelerating",
-  "Cruising",
-  "PreBraking",
-  "NominalBraking",
-  "FailurePreBraking",
-  "EmergencyBraking",
-  "FailureStopped",
-  "Finished",
-  "Invalid",
+  "Idle", "PreCalibrating", "Calibrating",  "Ready",  "Accelerating", "Cruising", "PreBraking",
+  "NominalBraking", "FailurePreBraking",  "EmergencyBraking", "FailureStopped", "Finished", "Invalid",
 };
 
 Data &Data::getInstance()

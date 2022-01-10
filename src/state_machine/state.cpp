@@ -175,8 +175,8 @@ State *PreBraking::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureBraking::getInstance(); }
 
-  bool hp_off = checkHPOff(sensors_data_);
-  if (hp_off) { return NominalBraking::getInstance(); }
+  bool has_high_power_off = checkHighPowerOff(sensors_data_);
+  if (has_high_power_off) { return NominalBraking::getInstance(); }
   return nullptr;
 }
 

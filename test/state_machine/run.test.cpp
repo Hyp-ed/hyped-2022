@@ -473,14 +473,14 @@ class RunTest : public Test {
     const bool has_launch_command = checkLaunchCommand(telemetry_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
-    const bool has_hp_off               = checkHPOff(sensors_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_launch_command);
     ASSERT_EQ(false, has_entered_braking_zone);
     ASSERT_EQ(false, has_reached_max_velocity);
-    ASSERT_EQ(false, has_hp_off);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -574,13 +574,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = checkPodStopped(log_, nav_data_);
-    const bool has_hp_off               = checkHPOff(sensors_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
-    ASSERT_EQ(false, has_hp_off);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -636,13 +636,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
-    const bool has_hp_off               = checkHPOff(sensors_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_entered_braking_zone);
     ASSERT_EQ(true, has_reached_max_velocity);
-    ASSERT_EQ(false, has_hp_off);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -737,13 +737,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = checkPodStopped(log_, nav_data_);
-    const bool has_hp_off               = checkHPOff(sensors_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
-    ASSERT_EQ(false, has_hp_off);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -884,13 +884,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = checkPodStopped(log_, nav_data_);
-    const bool has_hp_off               = checkHPOff(sensors_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
-    ASSERT_EQ(true, has_hp_off);
+    ASSERT_EQ(true, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing

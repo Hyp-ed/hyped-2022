@@ -60,7 +60,7 @@ bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
 /*
  * @brief   Returns true iff all SSRs have HP off.
  */
-bool checkHPOff(const data::Sensors &sensors_data_struct);
+bool checkHighPowerOff(const data::Sensors &sensors_data_struct);
 
 //--------------------------------------------------------------------------------------
 // Telemetry Commands

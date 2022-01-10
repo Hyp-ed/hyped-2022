@@ -81,7 +81,7 @@ bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
 // Sensors Command
 //--------------------------------------------------------------------------------------
 
-bool checkHPOff(const data::Sensors &sensors_data_struct)
+bool checkHighPowerOff(const data::Sensors &sensors_data_struct)
 {
   if (!sensors_data_struct.HP_off) return false;
 

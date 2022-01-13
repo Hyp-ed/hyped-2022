@@ -3,13 +3,10 @@
 #include "controller_interface.hpp"
 
 #include <data/data.hpp>
-#include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
-
-namespace propulsion {
+namespace hyped::propulsion {
 
 class FakeController : public ControllerInterface {
  public:
@@ -101,7 +98,6 @@ class FakeController : public ControllerInterface {
   void startTimer();
   utils::Logger &log_;
   data::Data &data_;
-  data::Motors motor_data_;
   ControllerState state_;
   utils::Timer timer_;
   uint8_t id_;
@@ -111,8 +107,7 @@ class FakeController : public ControllerInterface {
   uint64_t start_time_;
   bool timer_started_;
   uint64_t fail_time_;
-  uint8_t motor_temp_;
+  uint8_t motor_temperature_;
 };
 
-}  // namespace propulsion
-}  // namespace hyped
+}  // namespace hyped::propulsion

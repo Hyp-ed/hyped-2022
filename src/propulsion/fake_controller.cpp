@@ -1,19 +1,17 @@
 #include "fake_controller.hpp"
 
-namespace hyped {
-namespace propulsion {
+namespace hyped::propulsion {
 
 FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty)
     : log_(log),
       data_(data::Data::getInstance()),
-      motor_data_(data_.getMotorData()),
       id_(id),
       is_faulty_(is_faulty),
       critical_failure_(false),
       actual_velocity_(0),
       start_time_(0),
       timer_started_(false),
-      motor_temp_(60)
+      motor_temperature_(60)
 {
 }
 
@@ -23,27 +21,26 @@ void FakeController::registerController()
 
 void FakeController::configure()
 {
-  log_.INFO("MOTOR", "Controller %d: Configuring", id_);
+  log_.INFO("FAKE-CONTROLLER", "Controller %d: Configuring", id_);
 }
 
 void FakeController::startTimer()
 {
   start_time_    = utils::Timer::getTimeMicros();
   timer_started_ = true;
-  fail_time_
-    = std::rand() % 20000000 + 1000000;  // failure occurs between seconds 1 and 21 of the run
+  fail_time_     = std::rand() % 20000000 + 1000000;
 }
 
 void FakeController::enterOperational()
 {
   state_ = kOperationEnabled;
-  log_.DBG1("MOTOR", "Controller %d: Entering Operational", id_);
+  log_.DBG1("FAKE-CONTROLLER", "Controller %d: entering operational", id_);
 }
 
 void FakeController::enterPreOperational()
 {
   if (state_ != kSwitchOnDisabled) {
-    log_.DBG1("MOTOR", "Controller %d: Shutting down motor", id_);
+    log_.DBG1("FAKE-CONTROLLER", "Controller %d: shutting down motor", id_);
   }
   state_           = kSwitchOnDisabled;
   actual_velocity_ = 0;
@@ -51,13 +48,13 @@ void FakeController::enterPreOperational()
 
 void FakeController::checkState()
 {
-  log_.DBG1("MOTOR", "Controller %d: Checking status", id_);
+  log_.DBG1("FAKE-CONTROLLER", "Controller %d: checking status", id_);
 }
 
 void FakeController::sendTargetVelocity(const int32_t target_velocity)
 {
   if (!timer_started_) { startTimer(); }
-  log_.DBG2("MOTOR", "Controller %d: Updating target velocity to %d", id_, target_velocity);
+  log_.DBG2("FAKE-CONTROLLER", "Controller %d: updating target velocity to %d", id_, target_velocity);
   actual_velocity_ = target_velocity;
 }
 
@@ -72,7 +69,7 @@ int32_t FakeController::getVelocity()
 
 void FakeController::quickStop()
 {
-  log_.DBG1("MOTOR", "Controller %d: Sending quick stop command", id_);
+  log_.DBG1("FAKE-CONTROLLER", "Controller %d: sending quick stop command", id_);
 }
 
 void FakeController::healthCheck()
@@ -85,7 +82,7 @@ void FakeController::healthCheck()
   }
   if (fail_time_ <= (timer_.getMicros() - start_time_)) {
     critical_failure_ = true;
-    log_.ERR("FakeController", "Fake critical failure");
+    log_.ERR("FAKE-CONTROLLER", "fake critical failure");
   }
 }
 
@@ -101,7 +98,6 @@ ControllerState FakeController::getControllerState()
 
 uint8_t FakeController::getMotorTemp()
 {
-  return motor_temp_;
+  return motor_temperature_;
 }
-}  // namespace propulsion
-}  // namespace hyped
+}  // namespace hyped::propulsion

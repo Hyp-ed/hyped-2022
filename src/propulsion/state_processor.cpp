@@ -14,12 +14,12 @@ StateProcessor::StateProcessor(utils::Logger &log)
 {
   if (sys_.fake_motors) {
     log_.INFO("Motor", "Intializing with fake controller");
-    for (int i = 0; i < data::Motors::kNumMotors; i++) {
+    for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
     }
   } else {  // Use real controllers
     log_.INFO("Motor", "Intializing with real controller");
-    for (int i = 0; i < data::Motors::kNumMotors; i++) {
+    for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
   }
@@ -36,8 +36,8 @@ void StateProcessor::initialiseMotors()
     has_critical_error_ = true;
     return;
   }
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    if (controllers_.at(i)->getFailure()) {
+  for (auto &controller : controllers_) {
+    if (controller->getFailure()) {
       error = true;
       break;
     }
@@ -56,30 +56,30 @@ void StateProcessor::sendOperationalCommand()
 
 void StateProcessor::registerControllers()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->registerController();
+  for (auto &controller : controllers_) {
+    controller->registerController();
   }
 }
 
 void StateProcessor::configureControllers()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->configure();
+  for (auto &controller : controllers_) {
+    controller->configure();
   }
 }
 
 void StateProcessor::prepareMotors()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->enterOperational();
+  for (auto &controller : controllers_) {
+    controller->enterOperational();
   }
   previous_acceleration_time_ = 0;
 }
 
 void StateProcessor::enterPreOperational()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->enterPreOperational();
+  for (auto &controller : controllers_) {
+    controller->enterPreOperational();
   }
 }
 
@@ -87,7 +87,7 @@ void StateProcessor::accelerate()
 {
   if (is_initialised_) {
     auto motor_data = data_.getMotorData();
-    for (int i = 0; i < data::Motors::kNumMotors; i++) {
+    for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i)->updateActualVelocity();
       motor_data.rpms.at(i) = controllers_.at(i)->getVelocity();
     }
@@ -107,8 +107,8 @@ void StateProcessor::accelerate()
 
       log_.INFO("MOTOR", "Sending %d rpm as target", rpm);
 
-      for (int i = 0; i < data::Motors::kNumMotors; i++) {
-        controllers_.at(i)->sendTargetVelocity(rpm);
+      for (auto &controller : controllers_) {
+        controller->sendTargetVelocity(rpm);
       }
     }
   } else {
@@ -119,9 +119,9 @@ void StateProcessor::accelerate()
 int32_t StateProcessor::calculateAverageRpm()
 {
   int32_t total = 0;
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->updateActualVelocity();
-    total += controllers_.at(i)->getVelocity();
+  for (auto &controller : controllers_) {
+    controller->updateActualVelocity();
+    total += controller->getVelocity();
   }
   return std::round(total / data::Motors::kNumMotors);
 }
@@ -130,7 +130,7 @@ int16_t StateProcessor::calculateMaximumCurrent()
 {
   const auto hp_packs = data_.getBatteriesData();
   int16_t max_current = 0;
-  for (int i = 0; i < hp_packs.kNumHPBatteries; i++) {
+  for (size_t i = 0; i < hp_packs.kNumHPBatteries; ++i) {
     int16_t current = hp_packs.high_power_batteries.at(i).current;
     if (max_current < current) { max_current = current; }
   }
@@ -140,9 +140,9 @@ int16_t StateProcessor::calculateMaximumCurrent()
 int32_t StateProcessor::calculateMaximumTemperature()
 {
   int32_t max_temp = 0;
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->updateMotorTemp();
-    int32_t temp = controllers_.at(i)->getMotorTemp();
+  for (auto &controller : controllers_) {
+    controller->updateMotorTemp();
+    int32_t temp = controller->getMotorTemp();
     if (max_temp < temp) { max_temp = temp; }
   }
   return max_temp;
@@ -150,22 +150,22 @@ int32_t StateProcessor::calculateMaximumTemperature()
 
 void StateProcessor::quickStopAll()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->quickStop();
+  for (auto &controller : controllers_) {
+    controller->quickStop();
   }
 }
 
 void StateProcessor::healthCheck()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_.at(i)->healthCheck();
+  for (auto &controller : controllers_) {
+    controller->healthCheck();
   }
 }
 
 bool StateProcessor::getFailure()
 {
-  for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    if (controllers_.at(i)->getFailure()) { return true; }
+  for (auto &controller : controllers_) {
+    if (controller->getFailure()) { return true; }
   }
 
   return false;

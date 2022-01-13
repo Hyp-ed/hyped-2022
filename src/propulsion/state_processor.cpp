@@ -13,12 +13,12 @@ StateProcessor::StateProcessor(utils::Logger &log)
       rpm_regulator_()
 {
   if (sys_.fake_motors) {
-    log_.INFO("Motor", "Intializing with fake controller");
+    log_.INFO("STATE-PROCESSOR", "Intializing with fake controller");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
     }
   } else {  // Use real controllers
-    log_.INFO("Motor", "Intializing with real controller");
+    log_.INFO("STATE-PROCESSOR", "Intializing with real controller");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
@@ -29,7 +29,7 @@ void StateProcessor::initialiseMotors()
 {
   registerControllers();
   configureControllers();
-  log_.INFO("Motor", "Initialize Speed Calculator");
+  log_.INFO("STATE-PROCESSOR", "Initialize Speed Calculator");
   bool error = false;
   if (rpm_regulator_.isFaulty()) {
     error               = true;
@@ -95,7 +95,7 @@ void StateProcessor::accelerate()
 
     const auto now = utils::Timer::getTimeMicros();
     if (now - previous_acceleration_time_ > 5000) {
-      log_.DBG3("Motor", "Accelerate");
+      log_.DBG3("STATE-PROCESSOR", "Accelerate");
       previous_acceleration_time_ = now;
       const auto velocity         = data_.getNavigationData().velocity;
 
@@ -105,14 +105,14 @@ void StateProcessor::accelerate()
 
       int32_t rpm = rpm_regulator_.calculateRpm(velocity, act_rpm, act_current, act_temp);
 
-      log_.INFO("MOTOR", "Sending %d rpm as target", rpm);
+      log_.INFO("STATE-PROCESSOR", "Sending %d rpm as target", rpm);
 
       for (auto &controller : controllers_) {
         controller->sendTargetVelocity(rpm);
       }
     }
   } else {
-    log_.INFO("Motor", "State Processor not initialized");
+    log_.INFO("STATE-PROCESSOR", "State Processor not initialized");
   }
 }
 

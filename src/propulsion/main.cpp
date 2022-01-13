@@ -1,13 +1,12 @@
 #include "main.hpp"
 
-namespace hyped {
+namespace hyped::propulsion {
 
-namespace propulsion {
 Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),
-      state_processor_(new StateProcessor(log))
+      state_processor_(log)
 {
 }
 
@@ -52,26 +51,26 @@ void Main::run()
       case data::State::kIdle:
         break;
       case data::State::kCalibrating:
-        if (state_processor_->isInitialised()) {
+        if (state_processor_.isInitialised()) {
           if (motor_data.module_status != data::ModuleStatus::kReady) {
             motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);
           }
         } else {
-          state_processor_->initialiseMotors();
-          if (!state_processor_->isInitialised()) { handleCriticalFailure(data, motor_data); }
+          state_processor_.initialiseMotors();
+          if (!state_processor_.isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
         break;
       case data::State::kReady:
-        if (encountered_transition) { state_processor_->sendOperationalCommand(); }
+        if (encountered_transition) { state_processor_.sendOperationalCommand(); }
         break;
       case data::State::kAccelerating:
-        state_processor_->accelerate();
+        state_processor_.accelerate();
         break;
       case data::State::kCruising:
       case data::State::kNominalBraking:
       case data::State::kEmergencyBraking:
-        state_processor_->quickStopAll();
+        state_processor_.quickStopAll();
         break;
       case data::State::kFailureStopped:
       case data::State::kFinished:
@@ -83,5 +82,4 @@ void Main::run()
 
   log_.INFO("Motor", "Thread shutting down");
 }
-}  // namespace propulsion
-}  // namespace hyped
+}  // namespace hyped::propulsion

@@ -42,7 +42,7 @@ class StateProcessor {
   /**
    * @brief Checks if the motor controller's error registers
    */
-  bool getFailure();
+  bool hasControllerFailure();
 
   /**
    * @brief Tells the controllers to start accelerating the motors

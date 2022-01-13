@@ -150,7 +150,7 @@ void StateProcessor::healthCheck()
   }
 }
 
-bool StateProcessor::getFailure()
+bool StateProcessor::hasControllerFailure()
 {
   for (auto &controller : controllers_) {
     if (controller->getFailure()) { return true; }

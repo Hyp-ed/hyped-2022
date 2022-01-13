@@ -9,7 +9,6 @@ StateProcessor::StateProcessor(utils::Logger &log)
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
       is_initialised_(false),
-      has_critical_error_(false),
       rpm_regulator_()
 {
   if (sys_.fake_motors) {
@@ -30,23 +29,15 @@ void StateProcessor::initialiseMotors()
   registerControllers();
   configureControllers();
   log_.INFO("STATE-PROCESSOR", "Initialize Speed Calculator");
+  if (rpm_regulator_.isFaulty()) { return; }
   bool error = false;
-  if (rpm_regulator_.isFaulty()) {
-    error               = true;
-    has_critical_error_ = true;
-    return;
-  }
   for (auto &controller : controllers_) {
     if (controller->getFailure()) {
       error = true;
       break;
     }
   }
-  if (!error) {
-    is_initialised_ = true;
-  } else {
-    has_critical_error_ = true;
-  }
+  if (!error) { is_initialised_ = true; }
 }
 
 void StateProcessor::sendOperationalCommand()
@@ -174,11 +165,6 @@ bool StateProcessor::getFailure()
 bool StateProcessor::isInitialised()
 {
   return this->is_initialised_;
-}
-
-bool StateProcessor::hasCriticalFailure()
-{
-  return this->has_critical_error_;
 }
 
 }  // namespace hyped::propulsion

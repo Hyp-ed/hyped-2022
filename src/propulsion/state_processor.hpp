@@ -55,11 +55,6 @@ class StateProcessor {
   bool isInitialised();
 
   /**
-   * @brief Returns if a critical error ocurred
-   */
-  bool hasCriticalFailure();
-
-  /**
    * @brief sends the enter operational command
    */
   void sendOperationalCommand();
@@ -108,7 +103,6 @@ class StateProcessor {
   utils::System &sys_;
   data::Data &data_;
   bool is_initialised_;
-  bool has_critical_error_;
   std::array<std::unique_ptr<ControllerInterface>, data::Motors::kNumMotors> controllers_;
   RpmRegulator rpm_regulator_;
   uint64_t previous_acceleration_time_;

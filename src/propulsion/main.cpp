@@ -59,7 +59,7 @@ void Main::run()
           }
         } else {
           state_processor_->initialiseMotors();
-          if (state_processor_->hasCriticalFailure()) { handleCriticalFailure(data, motor_data); }
+          if (!state_processor_->isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
         break;
       case data::State::kReady:

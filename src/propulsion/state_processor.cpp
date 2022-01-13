@@ -89,15 +89,11 @@ void StateProcessor::accelerate()
       log_.DBG3("STATE-PROCESSOR", "Accelerate");
       previous_acceleration_time_ = now;
       const auto velocity         = data_.getNavigationData().velocity;
-
-      int32_t act_rpm     = calculateAverageRpm();
-      int32_t act_current = calculateMaximumCurrent();
-      int32_t act_temp    = calculateMaximumTemperature();
-
-      int32_t rpm = rpm_regulator_.calculateRpm(velocity, act_rpm, act_current, act_temp);
-
+      const auto act_rpm          = calculateAverageRpm();
+      const auto act_current      = calculateMaximumCurrent();
+      const auto act_temp         = calculateMaximumTemperature();
+      const auto rpm = rpm_regulator_.calculateRpm(velocity, act_rpm, act_current, act_temp);
       log_.INFO("STATE-PROCESSOR", "Sending %d rpm as target", rpm);
-
       for (auto &controller : controllers_) {
         controller->sendTargetVelocity(rpm);
       }
@@ -114,7 +110,8 @@ int32_t StateProcessor::calculateAverageRpm()
     controller->updateActualVelocity();
     total += controller->getVelocity();
   }
-  return std::round(total / data::Motors::kNumMotors);
+  // integer division should be good enough
+  return total / data::Motors::kNumMotors;
 }
 
 int16_t StateProcessor::calculateMaximumCurrent()
@@ -133,7 +130,7 @@ int32_t StateProcessor::calculateMaximumTemperature()
   int32_t max_temp = 0;
   for (auto &controller : controllers_) {
     controller->updateMotorTemp();
-    int32_t temp = controller->getMotorTemp();
+    const auto temp = controller->getMotorTemp();
     if (max_temp < temp) { max_temp = temp; }
   }
   return max_temp;
@@ -158,7 +155,6 @@ bool StateProcessor::getFailure()
   for (auto &controller : controllers_) {
     if (controller->getFailure()) { return true; }
   }
-
   return false;
 }
 

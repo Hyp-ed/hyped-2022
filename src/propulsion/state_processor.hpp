@@ -13,7 +13,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 using data::Batteries;
 using data::Data;
@@ -138,5 +138,5 @@ class StateProcessor : public StateProcessorInterface {
   Timer accelerationTimer;
 };
 
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

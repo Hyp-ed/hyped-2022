@@ -1,7 +1,7 @@
 #include "fake_can_sender.hpp"
 
 namespace hyped {
-namespace motor_control {
+namespace propulsion {
 FakeCanSender::FakeCanSender(Logger &log_, uint8_t) : log_(log_)
 {
   isSending = false;
@@ -40,5 +40,5 @@ bool FakeCanSender::getIsSending()
 {
   return isSending;
 }
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

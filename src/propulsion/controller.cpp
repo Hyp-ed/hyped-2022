@@ -1,7 +1,7 @@
 #include "controller.hpp"
 
 namespace hyped {
-namespace motor_control {
+namespace propulsion {
 
 Controller::Controller(utils::Logger &log, uint8_t id)
     : log_(log),
@@ -683,5 +683,5 @@ uint8_t Controller::getControllerTemp()
 {
   return controller_temperature_;
 }
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

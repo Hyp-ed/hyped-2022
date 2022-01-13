@@ -2,7 +2,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
@@ -83,5 +83,5 @@ void Main::run()
 
   log_.INFO("Motor", "Thread shutting down");
 }
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

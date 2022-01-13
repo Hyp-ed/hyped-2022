@@ -1,7 +1,7 @@
 #include "can_sender.hpp"
 
 namespace hyped {
-namespace motor_control {
+namespace propulsion {
 CanSender::CanSender(Logger &log, uint8_t node_id)
     : log_(log),
       node_id_(node_id),
@@ -77,5 +77,5 @@ bool CanSender::getIsSending()
 {
   return isSending;
 }
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

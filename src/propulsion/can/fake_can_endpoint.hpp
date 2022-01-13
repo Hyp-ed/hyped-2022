@@ -9,7 +9,7 @@ using utils::concurrent::Thread;
 using utils::io::CanProccesor;
 using utils::io::can::Frame;
 
-namespace motor_control {
+namespace propulsion {
 
 class FakeCanEndpoint : public Thread {
  public:
@@ -19,5 +19,5 @@ class FakeCanEndpoint : public Thread {
  private:
   CanProccesor *sender_;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

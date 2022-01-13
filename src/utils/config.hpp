@@ -77,7 +77,7 @@ class Config {
 
   struct MotorControl {
     int isFaulty;
-  } motor_control;
+  } propulsion;
 
   struct InterfaceFactory {
     // Module used in this context refers to the namespace containing the interface.

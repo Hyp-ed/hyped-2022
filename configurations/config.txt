@@ -21,7 +21,7 @@ $ telemetry.txt
 $ state_machine.txt
 $ sensors.txt
 $ embrakes.txt
-$ motor_control.txt
+$ propulsion.txt
 
 > InterfaceFactory
 ImuInterface Imu

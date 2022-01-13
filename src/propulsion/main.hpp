@@ -11,7 +11,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 constexpr int32_t kNumMotors = 4;
 
@@ -39,5 +39,5 @@ class Main : public utils::concurrent::Thread {
   void handleCriticalFailure(data::Data &data, data::Motors &motor_data);
 };
 
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

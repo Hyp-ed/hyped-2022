@@ -13,7 +13,7 @@ static constexpr int kMaximumCurrent     = 1500;  // mA
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 class RpmRegulator {
  public:
@@ -63,5 +63,5 @@ class RpmRegulator {
   bool failure_;
 };
 
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

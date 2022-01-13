@@ -9,7 +9,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 class FakeController : public ControllerInterface {
  public:
@@ -114,5 +114,5 @@ class FakeController : public ControllerInterface {
   uint8_t motor_temp_;
 };
 
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

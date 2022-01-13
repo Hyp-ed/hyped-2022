@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   // Initalise the threads here
   Thread *sensors       = new hyped::sensors::Main(0, log_sensor);
   Thread *brakes        = new hyped::brakes::Main(1, log_brakes);
-  Thread *motors        = new hyped::motor_control::Main(2, log_motor);
+  Thread *motors        = new hyped::propulsion::Main(2, log_motor);
   Thread *state_machine = new hyped::state_machine::Main(4, log_state);
   Thread *nav           = new hyped::navigation::Main(5, log_nav);
   Thread *tlm           = new hyped::telemetry::Main(3, log_tlm);

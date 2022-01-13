@@ -4,7 +4,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 RpmRegulator::RpmRegulator() : failure_(false)
 {
@@ -39,5 +39,5 @@ bool RpmRegulator::isFaulty()
 {
   return failure_;
 }
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

@@ -4,7 +4,7 @@
 
 #include <array>
 
-namespace hyped::motor_control {
+namespace hyped::propulsion {
 
 using ControllerMessage = std::array<uint8_t, 8>;
 
@@ -117,4 +117,4 @@ static constexpr ControllerMessage kMotorTemperatureMessage
   // Check motor temperature in object dictionary
   = {0x40, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-}  // namespace hyped::motor_control
+}  // namespace hyped::propulsion

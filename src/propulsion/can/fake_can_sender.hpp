@@ -10,7 +10,7 @@
 #include <utils/logger.hpp>
 
 namespace hyped {
-namespace motor_control {
+namespace propulsion {
 using utils::Logger;
 using utils::io::Can;
 using utils::io::CanProccesor;
@@ -35,5 +35,5 @@ class FakeCanSender : public CanProccesor, public SenderInterface {
   std::atomic<bool> isSending;
   FakeCanEndpoint *endpoint;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

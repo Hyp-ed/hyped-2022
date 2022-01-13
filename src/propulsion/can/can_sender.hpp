@@ -14,7 +14,7 @@
 #define TIMEOUT 70000
 
 namespace hyped {
-namespace motor_control {
+namespace propulsion {
 using utils::Logger;
 using utils::Timer;
 using utils::concurrent::Thread;
@@ -72,5 +72,5 @@ class CanSender : public CanProccesor, public SenderInterface {
   const uint32_t kSdoTransmit  = 0x580;
   const uint32_t kNmtTransmit  = 0x700;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

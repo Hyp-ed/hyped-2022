@@ -154,7 +154,7 @@ void Config::parseMotorControl(char *line)
   char *token = strtok(line, " ");
   if (strcmp(token, "isFaulty") == 0) {
     char *value = strtok(NULL, " ");
-    if (value) { motor_control.isFaulty = atoi(value); }
+    if (value) { propulsion.isFaulty = atoi(value); }
   }
 }
 

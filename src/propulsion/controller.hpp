@@ -15,7 +15,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 class Controller : public ControllerInterface {
  public:
@@ -184,5 +184,5 @@ class Controller : public ControllerInterface {
   // Network management CAN commands:
   const uint8_t kNmtOperational = 0x01;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

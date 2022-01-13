@@ -1,8 +1,6 @@
 #include "state_processor.hpp"
 
-namespace hyped {
-
-namespace motor_control {
+namespace hyped::propulsion {
 
 StateProcessor::StateProcessor(int motorAmount, Logger &log)
     : log_(log),
@@ -209,5 +207,4 @@ bool StateProcessor::isCriticalFailure()
   return this->criticalError;
 }
 
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

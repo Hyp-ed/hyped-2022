@@ -5,7 +5,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 using utils::Logger;
 using utils::System;
@@ -82,5 +82,5 @@ class StateProcessorInterface {
    */
   virtual void prepareMotors() = 0;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

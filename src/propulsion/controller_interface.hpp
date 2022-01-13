@@ -6,7 +6,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 enum ControllerState {
   kNotReadyToSwitchOn,
   kSwitchOnDisabled,
@@ -40,5 +40,5 @@ class ControllerInterface {
   virtual void processNmtMessage(utils::io::can::Frame &message)                             = 0;
   virtual void requestStateTransition(utils::io::can::Frame &message, ControllerState state) = 0;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

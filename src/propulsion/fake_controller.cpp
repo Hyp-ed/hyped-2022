@@ -1,7 +1,7 @@
 #include "fake_controller.hpp"
 
 namespace hyped {
-namespace motor_control {
+namespace propulsion {
 
 FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty)
     : log_(log),
@@ -103,5 +103,5 @@ uint8_t FakeController::getMotorTemp()
 {
   return motor_temp_;
 }
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

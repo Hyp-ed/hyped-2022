@@ -412,7 +412,7 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
  * Time complexity: O(kTestSize)
  */
 
-/* TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
+TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
@@ -421,11 +421,12 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
+      const bool in_braking_zone      = checkEnteredBrakingZone(log_, nav_data_);
       const bool reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
       const auto new_state            = state->checkTransition(log_);
 
       enableOutput();
-      if (reached_max_velocity) {
+      if (reached_max_velocity && !(in_braking_zone)) {
         ASSERT_EQ(new_state, Cruising::getInstance())
           << "failed to enter Cruising from Accelerating";
       } else {
@@ -435,7 +436,7 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
       disableOutput();
     }
   }
-} */
+}
 
 //---------------------------------------------------------------------------
 // Cruising Tests

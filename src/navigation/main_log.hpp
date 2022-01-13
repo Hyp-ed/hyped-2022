@@ -18,31 +18,28 @@
 
 namespace hyped {
 
-using data::Data;
-using data::ImuData;
-using data::NavigationVector;
-using navigation::ImuDataLogger;
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
-using utils::math::OnlineStatistics;
-
 namespace navigation {
 
-class MainLog : public Thread {
+class MainLog : public utils::concurrent::Thread {
  public:
-  explicit MainLog(uint8_t id, Logger &log);
+  /**
+   * @brief Construct a new Main Log object
+   *
+   * @param id log ID
+   * @param log System logger
+   */
+  explicit MainLog(const uint8_t id, utils::Logger &log);
   void run() override;
 
  private:
   static constexpr int kNumCalibrationQueries = 10000;
 
-  Logger &log_;
-  System &sys_;
-  Data &data_;
-  std::array<NavigationVector, data::Sensors::kNumImus> gravity_calibration_;
+  utils::Logger &log_;
+  utils::System &sys_;
+  data::Data &data_;
+  std::array<data::NavigationVector, data::Sensors::kNumImus> gravity_calibration_;
 
-  std::array<ImuDataLogger, data::Sensors::kNumImus> imu_loggers_;
+  std::array<navigation::ImuDataLogger, data::Sensors::kNumImus> imu_loggers_;
 
   /**
    * @brief Determine the value of gravitational acceleration measured by sensors at rest

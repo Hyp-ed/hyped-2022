@@ -104,35 +104,8 @@ TEST_F(IdleTest, handlesEmergency)
 }
 
 /**
- * Ensures that if no module reports an emergency and if
- * the calibrate command is not received, a null pointer
- * is returned.
- */
-TEST_F(IdleTest, handlesCalibrateCommand)
-{
-  for (int i = 0; i < kTestSize; i++) {
-    randomiseData();
-
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-
-    if (!has_emergency) {
-      const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
-      const auto new_state         = state->checkTransition(log_);
-
-      if (!calibrate_command) {
-        enableOutput();
-        ASSERT_EQ(new_state, nullptr) << "falsely transitioned from Idle";
-        disableOutput();
-      }
-    }
-  }
-}
-
-/**
- * Ensures that if no module reports an emergency and if
- * the calibrate command is not received and if every module
- * is initialised, the state changes to the calibrating state.
+ * Ensures that if no module reports an emergency and if every module
+ * is initialised, the state changes to the PreCalibrating state.
  */
 TEST_F(IdleTest, handlesAllInitialised)
 {
@@ -142,9 +115,7 @@ TEST_F(IdleTest, handlesAllInitialised)
     const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
-    const bool calibrate_command = checkCalibrateCommand(log_, telemetry_data_);
-
-    if (!has_emergency && calibrate_command) {
+    if (!has_emergency) {
       const bool all_initialised
         = checkModulesInitialised(log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
@@ -152,9 +123,75 @@ TEST_F(IdleTest, handlesAllInitialised)
 
       enableOutput();
       if (all_initialised) {
-        ASSERT_EQ(new_state, Calibrating::getInstance()) << "failed to enter Calibrating from Idle";
+        ASSERT_EQ(new_state, PreCalibrating::getInstance())
+          << "failed to enter PreCalibrating from Idle";
       } else {
-        ASSERT_NE(new_state, Calibrating::getInstance()) << "falsely entered Calibrating from Idle";
+        ASSERT_NE(new_state, PreCalibrating::getInstance())
+          << "falsely entered PreCalibrating from Idle";
+      }
+      disableOutput();
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
+// Pre- Calibrating Tests
+//---------------------------------------------------------------------------
+
+struct PreCalibratingTest : public StateTest {
+  PreCalibrating *state = PreCalibrating::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailureStopped.
+ */
+TEST_F(PreCalibratingTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state     = state->checkTransition(log_);
+
+    enableOutput();
+    if (has_emergency) {
+      ASSERT_EQ(new_state, FailureStopped::getInstance())
+        << "failed to enter FailureStopped from PreCalibrating";
+    } else {
+      ASSERT_NE(new_state, FailureStopped::getInstance())
+        << "falsely entered FailureStopped from PreCalibrating";
+    }
+    disableOutput();
+  }
+}
+
+/**
+ * Ensures that if no module reports an emergency and if
+ * the calibrate command is received, the state changes
+ * to the Calibrating state.
+ */
+
+TEST_F(PreCalibratingTest, handlesCalibrateCommand)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool calibrate_command = checkCalibrateCommand(telemetry_data_);
+      const auto new_state         = state->checkTransition(log_);
+
+      enableOutput();
+      if (calibrate_command) {
+        ASSERT_EQ(new_state, Calibrating::getInstance())
+          << "failed to enter Calibrating from PreCalibrating";
+      } else {
+        ASSERT_NE(new_state, Calibrating::getInstance())
+          << "falsely entered Calibrating from PreCalibrating";
       }
       disableOutput();
     }
@@ -281,7 +318,7 @@ TEST_F(ReadyTest, handlesLaunchCommand)
                                               telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool received_launch_command = checkLaunchCommand(log_, telemetry_data_);
+      const bool received_launch_command = checkLaunchCommand(telemetry_data_);
       const auto new_state               = state->checkTransition(log_);
 
       enableOutput();
@@ -458,7 +495,7 @@ TEST_F(FinishedTest, handlesShutdownCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
+    const bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
     enableOutput();
@@ -530,7 +567,7 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool received_shutdown_command = checkShutdownCommand(log_, telemetry_data_);
+    const bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
     enableOutput();

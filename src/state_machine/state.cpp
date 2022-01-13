@@ -38,12 +38,31 @@ State *Idle::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool calibrate_command = checkCalibrateCommand(log, telemetry_data_);
-  if (!calibrate_command) { return nullptr; }
-
   bool all_initialised = checkModulesInitialised(log, brakes_data_, nav_data_, batteries_data_,
                                                  telemetry_data_, sensors_data_, motors_data_);
-  if (all_initialised) { return Calibrating::getInstance(); }
+  if (all_initialised) { return PreCalibrating::getInstance(); }
+
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  PreCalibrating
+//--------------------------------------------------------------------------------------
+
+PreCalibrating PreCalibrating::instance_;
+data::State PreCalibrating::enum_value_       = data::kPreCalibrating;
+char PreCalibrating::string_representation_[] = "PreCalibrating";
+
+State *PreCalibrating::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+  if (emergency) { return FailureStopped::getInstance(); }
+
+  bool calibrate_command = checkCalibrateCommand(telemetry_data_);
+  if (calibrate_command) { return Calibrating::getInstance(); }
 
   return nullptr;
 }
@@ -87,7 +106,7 @@ State *Ready::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailureStopped::getInstance(); }
 
-  bool recieved_launch_command = checkLaunchCommand(log, telemetry_data_);
+  bool recieved_launch_command = checkLaunchCommand(telemetry_data_);
   if (recieved_launch_command) { return Accelerating::getInstance(); }
 
   return nullptr;
@@ -169,12 +188,12 @@ Finished Finished::instance_;
 data::State Finished::enum_value_       = data::kFinished;
 char Finished::string_representation_[] = "Finished";
 
-State *Finished::checkTransition(Logger &log)
+State *Finished::checkTransition(Logger &)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
 
-  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
   if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }
@@ -205,12 +224,12 @@ FailureStopped FailureStopped::instance_;
 data::State FailureStopped::enum_value_       = data::kFailureStopped;
 char FailureStopped::string_representation_[] = "FailureStopped";
 
-State *FailureStopped::checkTransition(Logger &log)
+State *FailureStopped::checkTransition(Logger &)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
 
-  bool received_shutdown_command = checkShutdownCommand(log, telemetry_data_);
+  bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
   if (received_shutdown_command) { return Off::getInstance(); }
   return nullptr;
 }

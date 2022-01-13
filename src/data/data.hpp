@@ -24,10 +24,10 @@ namespace data {
 // Global Module States
 // -------------------------------------------------------------------------------------------------
 enum class ModuleStatus {
-  kCriticalFailure,  // STM transitions to EmergencyBraking/FailureStopped
+  kCriticalFailure,  // state machine transitions to EmergencyBraking/FailureStopped
   kStart,            // Initial module state
-  kInit,             // STM transistions to Calibrating if all modules have Init or Ready status.
-  kReady,            // STM transistions to Ready if all modules have Ready status.
+  kInit,   // state machine transistions to Calibrating if all modules have Init or Ready status.
+  kReady,  // state machine transistions to Ready if all modules have Ready status.
 };
 
 struct Module {
@@ -102,8 +102,8 @@ struct BatteryData {
 };
 
 struct Batteries : public Module {
-  static constexpr int kNumLPBatteries = 3;
-  static constexpr int kNumHPBatteries = 2;
+  static constexpr int kNumLPBatteries = 2;
+  static constexpr int kNumHPBatteries = 1;
 
   array<BatteryData, kNumLPBatteries> low_power_batteries;
   array<BatteryData, kNumHPBatteries> high_power_batteries;
@@ -142,6 +142,7 @@ struct Telemetry : public Module {
 // -------------------------------------------------------------------------------------------------
 enum State {
   kIdle,
+  kPreCalibrating,
   kCalibrating,
   kReady,
   kAccelerating,

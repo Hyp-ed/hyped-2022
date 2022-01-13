@@ -165,7 +165,7 @@ void BMS::getData(BatteryData *battery)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // BMSHP
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-std::vector<uint16_t> BMSHP::existing_ids_;  // NOLINT [build/include_what_you_use]
+std::vector<uint16_t> BMSHP::existing_ids_;
 
 BMSHP::BMSHP(uint16_t id, Logger &log)
     : log_(log),
@@ -200,7 +200,7 @@ void BMSHP::getData(BatteryData *battery)
   *battery = local_data_;
 }
 
-bool BMSHP::hasId(uint32_t id, bool extended)
+bool BMSHP::hasId(uint32_t id, bool)
 {
   // HPBMS
   if (id == can_id_ || id == static_cast<uint16_t>(can_id_ + 1)) return true;

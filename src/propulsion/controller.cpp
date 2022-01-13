@@ -462,6 +462,18 @@ void Controller::processSdoMessage(utils::io::can::Frame &message)
         case 0x40:
           log_.ERR("MOTOR", "Controller %d warning: Max velocity exceeded");
           break;
+        case 0x80:
+          log_.ERR("MOTOR", "Controller %d warning: BMS proposed power");
+          break;
+        case 0x100:
+          log_.ERR("MOTOR", "Controller %d warning: Capacitor temperature exceeded");
+          break;
+        case 0x200:
+          log_.ERR("MOTOR", "Controller %d warning: I2T protection");
+          break;
+        case 0x400:
+          log_.ERR("MOTOR", "Controller %d warning: Field weakening active ");
+          break;
         default:
           log_.ERR("MOTOR", "Controller %d warning: Warning code %d", node_id_, warning_message);
       }

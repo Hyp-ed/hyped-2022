@@ -52,7 +52,7 @@ class CanSender : public CanProccesor, public SenderInterface {
   /**
    * @brief { If this function returns true, the CAN message is ment for this CAN node }
    */
-  bool hasId(uint32_t id, bool extended) override;
+  bool hasId(uint32_t id, bool) override;
 
   /**
    * @brief { Return if the can_sender is sending a CAN message right now }

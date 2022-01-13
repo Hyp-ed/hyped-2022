@@ -9,7 +9,6 @@ namespace utils {
 
 class Timer {
  public:
-  // static uint64_t getTimeMillis();
   static uint64_t getTimeMicros();
 
   Timer();
@@ -26,7 +25,7 @@ class Timer {
   uint64_t start_;
   uint64_t stop_;
   static uint64_t time_start_;
-  NO_COPY_ASSIGN(Timer);
+  NO_COPY_ASSIGN(Timer)
 };
 
 class ScopedTimer {
@@ -37,7 +36,7 @@ class ScopedTimer {
 
  private:
   Timer *timer_;
-  NO_COPY_ASSIGN(ScopedTimer);
+  NO_COPY_ASSIGN(ScopedTimer)
 };
 
 }  // namespace utils

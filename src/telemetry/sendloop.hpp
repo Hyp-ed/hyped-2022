@@ -8,19 +8,13 @@
 #include <rapidjson/writer.h>
 #include <utils/concurrent/thread.hpp>
 
-using rapidjson::StringBuffer;
-using rapidjson::Writer;
-
 namespace hyped {
-
-using utils::Logger;
-using utils::concurrent::Thread;
 
 namespace telemetry {
 
-class SendLoop : public Thread {
+class SendLoop : public utils::concurrent::Thread {
  public:
-  explicit SendLoop(Logger &log, data::Data &data, Main *main_pointer);
+  explicit SendLoop(utils::Logger &log, data::Data &data, Main &main_ref);
   void run() override;
 
  private:

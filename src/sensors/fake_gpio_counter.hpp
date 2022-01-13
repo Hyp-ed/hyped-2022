@@ -48,7 +48,7 @@ class FakeGpioCounter : public GpioInterface {
    * @brief turns sensor offline if max time reached between stripes by analysing timestamps
    */
   void checkData();
-  void readFromFile(std::vector<StripeCounter> &data);
+  void readFromFile(std::vector<StripeCounter> &);
   Logger &log_;
   Data &data_;
 

@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "interface_factory.hpp"
 #include "logger.hpp"
 #include "system.hpp"
 
@@ -7,8 +8,6 @@
 #include <sstream>
 #include <string>  // redundant includes to make linter stop complaining
 #include <vector>
-
-#include "interface_factory.hpp"
 
 namespace hyped {
 namespace utils {
@@ -155,7 +154,7 @@ void Config::parseMotorControl(char *line)
   char *token = strtok(line, " ");
   if (strcmp(token, "isFaulty") == 0) {
     char *value = strtok(NULL, " ");
-    if (value) { motor_control.isFaulty = atoi(value); }
+    if (value) { propulsion.isFaulty = atoi(value); }
   }
 }
 

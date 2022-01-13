@@ -63,11 +63,11 @@ SpacesInSquareBrackets: 'false'
 Standard: Cpp11
 UseTab: Never
 IncludeCategories:
-  - Regex:           '"[[:alnum:].]+"'
+  - Regex:           '"[[:alnum:]._]+"'
     Priority:        0
-  - Regex:           '<[[:alnum:].]+.h>'
+  - Regex:           '<[[:alnum:]._]+.h>'
     Priority:        1
-  - Regex:           '<[[:alnum:]]+>'
+  - Regex:           '<[[:alnum:]_]+>'
     Priority:        2
   - Regex:           '*'
     Priority:        4

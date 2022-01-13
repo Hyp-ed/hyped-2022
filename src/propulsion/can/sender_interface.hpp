@@ -4,7 +4,7 @@
 
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 
 // Types of CANopen messages, these are used for CAN ID's
 constexpr uint32_t kEmgyTransmit = 0x80;
@@ -42,5 +42,5 @@ class SenderInterface {
   virtual bool getIsSending() = 0;
 };
 
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

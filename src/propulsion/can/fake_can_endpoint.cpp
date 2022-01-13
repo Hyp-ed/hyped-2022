@@ -1,16 +1,15 @@
 #include "fake_can_endpoint.hpp"
 
-namespace hyped {
-namespace motor_control {
-FakeCanEndpoint::FakeCanEndpoint(CanProccesor *sender) : sender_(sender)
+namespace hyped::propulsion {
+FakeCanEndpoint::FakeCanEndpoint(utils::io::CanProccesor &sender) : sender_(sender)
 {
 }
 
 void FakeCanEndpoint::run()
 {
-  sleep(1000);
-  Frame frame;
-  sender_->processNewData(frame);
+  utils::concurrent::Thread::sleep(1000);
+  utils::io::can::Frame frame;
+  sender_.processNewData(frame);
 }
-}  // namespace motor_control
-}  // namespace hyped
+
+}  // namespace hyped::propulsion

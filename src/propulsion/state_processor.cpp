@@ -29,7 +29,6 @@ void StateProcessor::initialiseMotors()
   registerControllers();
   configureControllers();
   log_.INFO("STATE-PROCESSOR", "initialising");
-  if (rpm_regulator_.isFaulty()) { return; }
   bool error = false;
   for (auto &controller : controllers_) {
     if (controller->getFailure()) {

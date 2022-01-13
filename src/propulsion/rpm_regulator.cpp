@@ -1,12 +1,9 @@
 #include "rpm_regulator.hpp"
+#include <cmath>
 
-#include <vector>
+namespace hyped::propulsion {
 
-namespace hyped {
-
-namespace propulsion {
-
-RpmRegulator::RpmRegulator() : failure_(false)
+RpmRegulator::RpmRegulator()
 {
 }
 
@@ -35,9 +32,4 @@ int32_t RpmRegulator::step(const int32_t optimal_rpm, const int32_t actual_rpm)
   return std::round(optimal_rpm * -0.05);
 }
 
-bool RpmRegulator::isFaulty()
-{
-  return failure_;
-}
-}  // namespace propulsion
-}  // namespace hyped
+}  // namespace hyped::propulsion

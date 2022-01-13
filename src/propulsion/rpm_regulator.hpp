@@ -1,19 +1,8 @@
 #pragma once
 
-#include "controller.hpp"
+#include <data/data.hpp>
 
-#include <cstdlib>
-#include <vector>
-
-#include <utils/logger.hpp>
-#include <utils/system.hpp>
-
-static constexpr int kMaximumTemperature = 150;
-static constexpr int kMaximumCurrent     = 1500;  // mA
-
-namespace hyped {
-
-namespace propulsion {
+namespace hyped::propulsion {
 
 class RpmRegulator {
  public:
@@ -34,15 +23,9 @@ class RpmRegulator {
   int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm,
                        const int32_t actual_current, const int32_t actual_temperature);
 
-  /**
-   * @brief Get the Failure boolean
-   *
-   * @return true - if failure has occured
-   * @return false - if no failure has occured
-   */
-  bool isFaulty();
-
  private:
+  static constexpr int kMaximumTemperature = 150;
+  static constexpr int kMaximumCurrent     = 1500;  // mA
   /**
    * @brief calculates the optimal rpm based off of the current velocity.
    *
@@ -59,9 +42,6 @@ class RpmRegulator {
    * @return int32_t - the step with which to increase the rpm
    */
   int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);
-
-  bool failure_;
 };
 
-}  // namespace propulsion
-}  // namespace hyped
+}  // namespace hyped::propulsion

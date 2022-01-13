@@ -14,7 +14,7 @@ class StateProcessor {
   /**
    * @brief Initializes the state processors with the amount of motors and the logger
    * */
-  StateProcessor(int motorAmount, utils::Logger &log);
+  StateProcessor(utils::Logger &log);
 
   /**
    * @brief Sends the desired settings to the motors
@@ -49,19 +49,19 @@ class StateProcessor {
   /**
    * @brief Returns if the motors are initialised already
    */
-  bool isInitialized();
+  bool isInitialised();
 
   /**
    * @brief Returns if a critical error ocurred
    */
-  bool isCriticalFailure();
+  bool hasCriticalFailure();
 
   /**
    * @brief sends the enter operational command
    */
   void sendOperationalCommand();
 
- protected:
+ private:
   /**
    * @brief Registers the controllers to handle CAN transmissions
    */
@@ -83,7 +83,7 @@ class StateProcessor {
    * @param controllers
    * @return int32_t
    */
-  int32_t calculateAverageRpm(ControllerInterface **controllers);
+  int32_t calculateAverageRpm();
 
   /**
    * @brief calculate the max Current drawn out of all the motors
@@ -91,7 +91,7 @@ class StateProcessor {
    * @param controllers
    * @return int32_t
    */
-  int16_t calculateMaxCurrent();
+  int16_t calculateMaximumCurrent();
 
   /**
    * @brief Calculate the max temperature out of all the motors
@@ -99,24 +99,16 @@ class StateProcessor {
    * @param controllers
    * @return int32_t
    */
-  int32_t calculateMaxTemp(ControllerInterface **controllers);
+  int32_t calculateMaximumTemperature();
 
-  bool useFakeController;
   utils::Logger &log_;
   utils::System &sys_;
   data::Data &data_;
-  data::Motors motor_data_;
-  int motorAmount;
-  bool initialized;
-  bool criticalError;
-  int32_t servicePropulsionSpeed;
-  float speed;
-  ControllerInterface **controllers;
-  RpmRegulator regulator;
-  float velocity;
-  data::Navigation navigationData;
-  uint64_t accelerationTimestamp;
-  utils::Timer accelerationTimer;
+  bool is_initialised_;
+  bool has_critical_error_;
+  ControllerInterface **controllers_;
+  RpmRegulator rpm_regulator_;
+  uint64_t previous_acceleration_time_;
 };
 
 }  // namespace hyped::propulsion

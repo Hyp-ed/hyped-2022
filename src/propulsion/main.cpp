@@ -7,7 +7,7 @@ Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),
-      state_processor_(new StateProcessor(data::Motors::kNumMotors, log))
+      state_processor_(new StateProcessor(log))
 {
 }
 
@@ -52,14 +52,14 @@ void Main::run()
       case data::State::kIdle:
         break;
       case data::State::kCalibrating:
-        if (state_processor_->isInitialized()) {
+        if (state_processor_->isInitialised()) {
           if (motor_data.module_status != data::ModuleStatus::kReady) {
             motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);
           }
         } else {
           state_processor_->initialiseMotors();
-          if (state_processor_->isCriticalFailure()) { handleCriticalFailure(data, motor_data); }
+          if (state_processor_->hasCriticalFailure()) { handleCriticalFailure(data, motor_data); }
         }
         break;
       case data::State::kReady:

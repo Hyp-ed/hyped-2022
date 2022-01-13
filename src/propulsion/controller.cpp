@@ -1,7 +1,6 @@
 #include "controller.hpp"
 
-namespace hyped {
-namespace propulsion {
+namespace hyped::propulsion {
 
 Controller::Controller(utils::Logger &log, uint8_t id)
     : log_(log),
@@ -14,7 +13,7 @@ Controller::Controller(utils::Logger &log, uint8_t id)
       actual_torque_(0),
       motor_temperature_(0),
       controller_temperature_(0),
-      sender_(this, node_id_, log)
+      sender_(log, node_id_, *this)
 {
   sdo_message_.id       = kSdoReceive + node_id_;
   sdo_message_.extended = false;
@@ -42,7 +41,7 @@ void Controller::configure()
   log_.INFO("MOTOR", "Controller %d: Configuring...", node_id_);
   for (const auto &message : kConfigurationMessages) {
     if (sendControllerMessage(message)) return;
-    Thread::sleep(100);
+    utils::concurrent::Thread::sleep(100);
   }
   log_.INFO("MOTOR", "Controller %d: Configured.", node_id_);
 }
@@ -57,7 +56,7 @@ void Controller::enterOperational()
   log_.INFO("MOTOR", "Controller %d: Sending NMT Operational command", node_id_);
   sender_.sendMessage(nmt_message_);
   // leave time for the controller to enter NMT Operational
-  Thread::sleep(100);
+  utils::concurrent::Thread::sleep(100);
 
   // enables velocity mode
   if (sendControllerMessage(kEnterOperationalMessages.at(0))) return;
@@ -183,7 +182,7 @@ void Controller::requestStateTransition(utils::io::can::Frame &message, Controll
   // If it hasn't changed by the end then throw critical failure.
   for (state_count = 0; state_count < 3; state_count++) {
     sender_.sendMessage(message);
-    Thread::sleep(1000);
+    utils::concurrent::Thread::sleep(1000);
     checkState();
     if (state_ == state) { return; }
   }
@@ -199,7 +198,7 @@ void Controller::autoAlignMotorPosition()
   nmt_message_.data[0] = kNmtOperational;
   nmt_message_.data[1] = node_id_;
   sendSdoMessage(nmt_message_);
-  Thread::sleep(100);
+  utils::concurrent::Thread::sleep(100);
   log_.INFO("MOTOR", "Controller %d: Auto aligning motor position", node_id_);
   sendControllerMessage(kAutoAlignMessage);
 }
@@ -683,5 +682,5 @@ uint8_t Controller::getControllerTemp()
 {
   return controller_temperature_;
 }
-}  // namespace propulsion
-}  // namespace hyped
+
+}  // namespace hyped::propulsion

@@ -49,6 +49,7 @@ void Main::run()
 
     switch (current_state_) {
       case data::State::kIdle:
+      case data::State::kPreCalibrating:
         break;
       case data::State::kCalibrating:
         if (state_processor_.isInitialised()) {

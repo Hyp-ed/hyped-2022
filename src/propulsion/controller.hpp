@@ -7,15 +7,12 @@
 
 #include <data/data.hpp>
 #include <propulsion/can/can_sender.hpp>
-#include <utils/concurrent/thread.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
-
-namespace propulsion {
+namespace hyped::propulsion {
 
 class Controller : public ControllerInterface {
  public:
@@ -184,5 +181,4 @@ class Controller : public ControllerInterface {
   // Network management CAN commands:
   const uint8_t kNmtOperational = 0x01;
 };
-}  // namespace propulsion
-}  // namespace hyped
+}  // namespace hyped::propulsion

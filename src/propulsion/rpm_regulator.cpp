@@ -1,4 +1,5 @@
 #include "rpm_regulator.hpp"
+
 #include <cmath>
 
 namespace hyped::propulsion {

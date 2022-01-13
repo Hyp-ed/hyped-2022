@@ -54,7 +54,8 @@ void FakeController::checkState()
 void FakeController::sendTargetVelocity(const int32_t target_velocity)
 {
   if (!timer_started_) { startTimer(); }
-  log_.DBG2("FAKE-CONTROLLER", "Controller %d: updating target velocity to %d", id_, target_velocity);
+  log_.DBG2("FAKE-CONTROLLER", "Controller %d: updating target velocity to %d", id_,
+            target_velocity);
   actual_velocity_ = target_velocity;
 }
 

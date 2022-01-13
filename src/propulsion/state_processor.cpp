@@ -12,16 +12,15 @@ StateProcessor::StateProcessor(utils::Logger &log)
       has_critical_error_(false),
       rpm_regulator_()
 {
-  controllers_ = new ControllerInterface *[data::Motors::kNumMotors];
   if (sys_.fake_motors) {
     log_.INFO("Motor", "Intializing with fake controller");
     for (int i = 0; i < data::Motors::kNumMotors; i++) {
-      controllers_[i] = new FakeController(log_, i, false);
+      controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
     }
   } else {  // Use real controllers
     log_.INFO("Motor", "Intializing with real controller");
     for (int i = 0; i < data::Motors::kNumMotors; i++) {
-      controllers_[i] = new Controller(log_, i);
+      controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
   }
 }
@@ -38,7 +37,7 @@ void StateProcessor::initialiseMotors()
     return;
   }
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    if (controllers_[i]->getFailure()) {
+    if (controllers_.at(i)->getFailure()) {
       error = true;
       break;
     }
@@ -58,21 +57,21 @@ void StateProcessor::sendOperationalCommand()
 void StateProcessor::registerControllers()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->registerController();
+    controllers_.at(i)->registerController();
   }
 }
 
 void StateProcessor::configureControllers()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->configure();
+    controllers_.at(i)->configure();
   }
 }
 
 void StateProcessor::prepareMotors()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->enterOperational();
+    controllers_.at(i)->enterOperational();
   }
   previous_acceleration_time_ = 0;
 }
@@ -80,7 +79,7 @@ void StateProcessor::prepareMotors()
 void StateProcessor::enterPreOperational()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->enterPreOperational();
+    controllers_.at(i)->enterPreOperational();
   }
 }
 
@@ -89,8 +88,8 @@ void StateProcessor::accelerate()
   if (is_initialised_) {
     auto motor_data = data_.getMotorData();
     for (int i = 0; i < data::Motors::kNumMotors; i++) {
-      controllers_[i]->updateActualVelocity();
-      motor_data.rpms[i] = controllers_[i]->getVelocity();
+      controllers_.at(i)->updateActualVelocity();
+      motor_data.rpms.at(i) = controllers_.at(i)->getVelocity();
     }
     data_.setMotorData(motor_data);
 
@@ -109,7 +108,7 @@ void StateProcessor::accelerate()
       log_.INFO("MOTOR", "Sending %d rpm as target", rpm);
 
       for (int i = 0; i < data::Motors::kNumMotors; i++) {
-        controllers_[i]->sendTargetVelocity(rpm);
+        controllers_.at(i)->sendTargetVelocity(rpm);
       }
     }
   } else {
@@ -121,8 +120,8 @@ int32_t StateProcessor::calculateAverageRpm()
 {
   int32_t total = 0;
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->updateActualVelocity();
-    total += controllers_[i]->getVelocity();
+    controllers_.at(i)->updateActualVelocity();
+    total += controllers_.at(i)->getVelocity();
   }
   return std::round(total / data::Motors::kNumMotors);
 }
@@ -132,7 +131,7 @@ int16_t StateProcessor::calculateMaximumCurrent()
   const auto hp_packs = data_.getBatteriesData();
   int16_t max_current = 0;
   for (int i = 0; i < hp_packs.kNumHPBatteries; i++) {
-    int16_t current = hp_packs.high_power_batteries[i].current;
+    int16_t current = hp_packs.high_power_batteries.at(i).current;
     if (max_current < current) { max_current = current; }
   }
   return max_current;
@@ -142,8 +141,8 @@ int32_t StateProcessor::calculateMaximumTemperature()
 {
   int32_t max_temp = 0;
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->updateMotorTemp();
-    int32_t temp = controllers_[i]->getMotorTemp();
+    controllers_.at(i)->updateMotorTemp();
+    int32_t temp = controllers_.at(i)->getMotorTemp();
     if (max_temp < temp) { max_temp = temp; }
   }
   return max_temp;
@@ -152,21 +151,21 @@ int32_t StateProcessor::calculateMaximumTemperature()
 void StateProcessor::quickStopAll()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->quickStop();
+    controllers_.at(i)->quickStop();
   }
 }
 
 void StateProcessor::healthCheck()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    controllers_[i]->healthCheck();
+    controllers_.at(i)->healthCheck();
   }
 }
 
 bool StateProcessor::getFailure()
 {
   for (int i = 0; i < data::Motors::kNumMotors; i++) {
-    if (controllers_[i]->getFailure()) { return true; }
+    if (controllers_.at(i)->getFailure()) { return true; }
   }
 
   return false;

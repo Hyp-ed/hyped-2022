@@ -3,6 +3,9 @@
 #include "controller_interface.hpp"
 #include "rpm_regulator.hpp"
 
+#include <array>
+#include <memory>
+
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
@@ -106,7 +109,7 @@ class StateProcessor {
   data::Data &data_;
   bool is_initialised_;
   bool has_critical_error_;
-  ControllerInterface **controllers_;
+  std::array<std::unique_ptr<ControllerInterface>, data::Motors::kNumMotors> controllers_;
   RpmRegulator rpm_regulator_;
   uint64_t previous_acceleration_time_;
 };

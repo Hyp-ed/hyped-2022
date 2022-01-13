@@ -2,7 +2,6 @@
 
 #include "controller_interface.hpp"
 #include "rpm_regulator.hpp"
-#include "state_processor_interface.hpp"
 
 #include <data/data.hpp>
 #include <utils/logger.hpp>
@@ -10,7 +9,7 @@
 
 namespace hyped::propulsion {
 
-class StateProcessor : public StateProcessorInterface {
+class StateProcessor {
  public:
   /**
    * @brief Initializes the state processors with the amount of motors and the logger
@@ -20,42 +19,42 @@ class StateProcessor : public StateProcessorInterface {
   /**
    * @brief Sends the desired settings to the motors
    */
-  void initialiseMotors() override;
+  void initialiseMotors();
 
   /**
    * @brief Changes the state of the motor controller to preOperational
    */
-  void enterPreOperational() override;
+  void enterPreOperational();
 
   /**
    * @brief Stops all motors
    */
-  void quickStopAll() override;
+  void quickStopAll();
 
   /**
    * @brief Checks the motor controller's health
    */
-  void healthCheck() override;
+  void healthCheck();
 
   /**
    * @brief Checks if the motor controller's error registers
    */
-  bool getFailure() override;
+  bool getFailure();
 
   /**
    * @brief Tells the controllers to start accelerating the motors
    */
-  void accelerate() override;
+  void accelerate();
 
   /**
    * @brief Returns if the motors are initialised already
    */
-  bool isInitialized() override;
+  bool isInitialized();
 
   /**
    * @brief Returns if a critical error ocurred
    */
-  bool isCriticalFailure() override;
+  bool isCriticalFailure();
 
   /**
    * @brief sends the enter operational command
@@ -66,17 +65,17 @@ class StateProcessor : public StateProcessorInterface {
   /**
    * @brief Registers the controllers to handle CAN transmissions
    */
-  void registerControllers() override;
+  void registerControllers();
 
   /**
    * @brief Configures the controllers
    */
-  void configureControllers() override;
+  void configureControllers();
 
   /**
    * @brief Send settings data to the motors
    */
-  void prepareMotors() override;
+  void prepareMotors();
 
   /**
    * @brief Calculate the Average rpm of all motors

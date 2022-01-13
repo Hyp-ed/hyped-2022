@@ -7,7 +7,7 @@ Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),
-      state_processor_(new StateProcessor(Motors::kNumMotors, log))
+      state_processor_(new StateProcessor(data::Motors::kNumMotors, log))
 {
 }
 
@@ -58,7 +58,7 @@ void Main::run()
             data.setMotorData(motor_data);
           }
         } else {
-          state_processor_->initMotors();
+          state_processor_->initialiseMotors();
           if (state_processor_->isCriticalFailure()) { handleCriticalFailure(data, motor_data); }
         }
         break;

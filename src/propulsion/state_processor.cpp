@@ -1,11 +1,13 @@
+#include "controller.hpp"
+#include "fake_controller.hpp"
 #include "state_processor.hpp"
 
 namespace hyped::propulsion {
 
-StateProcessor::StateProcessor(int motorAmount, Logger &log)
+StateProcessor::StateProcessor(int motorAmount, utils::Logger &log)
     : log_(log),
-      sys_(System::getSystem()),
-      data_(Data::getInstance()),
+      sys_(utils::System::getSystem()),
+      data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
       motorAmount(motorAmount),
       initialized(false),
@@ -14,14 +16,9 @@ StateProcessor::StateProcessor(int motorAmount, Logger &log)
       speed(0),
       regulator()
 {
-  // rpmCalculator = new CalculateRpm(log);
-
   useFakeController = sys_.fake_motors;
-
-  navigationData = data_.getNavigationData();
-
-  controllers = new ControllerInterface *[motorAmount];
-
+  navigationData    = data_.getNavigationData();
+  controllers       = new ControllerInterface *[motorAmount];
   if (useFakeController) {  // Use the test controllers implementation
     log_.INFO("Motor", "Intializing with fake controller");
     for (int i = 0; i < motorAmount; i++) {
@@ -35,24 +32,17 @@ StateProcessor::StateProcessor(int motorAmount, Logger &log)
   }
 }
 
-void StateProcessor::initMotors()
+void StateProcessor::initialiseMotors()
 {
-  // Register controllers on CAN bus
   registerControllers();
-
-  // Configure controllers parameters
   configureControllers();
-
   log_.INFO("Motor", "Initialize Speed Calculator");
-
   bool error = false;
-
   if (regulator.isFaulty()) {
     error         = true;
     criticalError = true;
     return;
   }
-
   for (int i = 0; i < motorAmount; i++) {
     if (controllers[i]->getFailure()) {
       error = true;
@@ -147,7 +137,7 @@ int32_t StateProcessor::calculateAverageRpm(ControllerInterface **controllers)
 
 int16_t StateProcessor::calculateMaxCurrent()
 {
-  Batteries hp_packs  = data_.getBatteriesData();
+  const auto hp_packs = data_.getBatteriesData();
   int16_t max_current = 0;
   for (int i = 0; i < hp_packs.kNumHPBatteries; i++) {
     int16_t current = hp_packs.high_power_batteries[i].current;
@@ -188,13 +178,6 @@ bool StateProcessor::getFailure()
   }
 
   return false;
-}
-
-void StateProcessor::servicePropulsion()
-{
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->sendTargetVelocity(servicePropulsionSpeed);
-  }
 }
 
 bool StateProcessor::isInitialized()

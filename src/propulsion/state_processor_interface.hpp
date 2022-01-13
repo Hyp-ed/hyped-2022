@@ -24,7 +24,7 @@ class StateProcessorInterface {
   /**
    * @brief { Sends the desired settings to the motors }
    */
-  virtual void initMotors() = 0;
+  virtual void initialiseMotors() = 0;
 
   /**
    * @brief { Changes the state of the motor controller to preOperational }
@@ -50,11 +50,6 @@ class StateProcessorInterface {
    * @brief { Tells the controllers to start accelerating the motors }
    */
   virtual void accelerate() = 0;
-
-  /**
-   * @brief Exits the tube with low velocity
-   * */
-  virtual void servicePropulsion() = 0;
 
   /**
    * @brief { Returns if the motors are initialised already }

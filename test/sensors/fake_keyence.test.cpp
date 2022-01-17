@@ -20,7 +20,7 @@ class FakeKeyenceTest : public Test {
 
 TEST_F(FakeKeyenceTest, defaultParsesConfig)
 {
-  auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
+  const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
   const auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
@@ -43,10 +43,8 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
     state_machine_data.current_state = data::State::kIdle;
     data.setStateMachineData(state_machine_data);
   }
-  enableOutput();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  disableOutput();
   auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
   enableOutput();

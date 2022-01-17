@@ -66,9 +66,9 @@ struct TemperatureData : public SensorData {
 };
 
 struct Sensors : public Module {
-  static constexpr int kNumImus     = 4;
-  static constexpr int kNumEncoders = 4;
-  static constexpr int kNumKeyence  = 2;
+  static constexpr size_t kNumImus     = 4;
+  static constexpr size_t kNumEncoders = 4;
+  static constexpr size_t kNumKeyence  = 2;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;

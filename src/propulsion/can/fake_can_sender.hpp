@@ -9,15 +9,11 @@
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
-namespace motor_control {
-using utils::Logger;
-using utils::io::Can;
-using utils::io::CanProccesor;
+namespace hyped::propulsion {
 
-class FakeCanSender : public CanProccesor, public ISender {
+class FakeCanSender : public utils::io::CanProccesor, public ISender {
  public:
-  FakeCanSender(Logger &log_, uint8_t id);
+  FakeCanSender(utils::Logger &log_, uint8_t id);
 
   bool sendMessage(utils::io::can::Frame &message) override;
 
@@ -30,10 +26,10 @@ class FakeCanSender : public CanProccesor, public ISender {
   bool getIsSending() override;
 
  private:
-  Logger log_;
+  utils::Logger log_;
   // Can& can_;
-  std::atomic<bool> isSending;
-  FakeCanEndpoint *endpoint;
+  std::atomic<bool> is_sending_;
+  FakeCanEndpoint can_endpoint_;
 };
-}  // namespace motor_control
-}  // namespace hyped
+
+}  // namespace hyped::propulsion

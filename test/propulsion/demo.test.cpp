@@ -17,7 +17,7 @@ TEST_F(PropulsionDemoTest, handlesSysNotRunning)
 {
   utils::System &sys = utils::System::getSystem();
   sys.running_       = false;
-  auto sensors       = std::make_unique<motor_control::Main>(0, log_);
+  auto sensors       = std::make_unique<propulsion::Main>(0, log_);
   sensors->start();
   sensors->join();
 }

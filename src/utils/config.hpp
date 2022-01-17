@@ -74,7 +74,7 @@ class Config {
 
   struct MotorControl {
     int isFaulty;
-  } motor_control;
+  } propulsion;
 
 #define DECLARE_PARSE(module) void parse##module(char *line);
 

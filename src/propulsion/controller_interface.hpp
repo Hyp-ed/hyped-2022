@@ -4,11 +4,9 @@
 
 #include <utils/io/can.hpp>
 
-using hyped::utils::io::can::Frame;
-
 namespace hyped {
 
-namespace motor_control {
+namespace propulsion {
 enum ControllerState {
   kNotReadyToSwitchOn,
   kSwitchOnDisabled,
@@ -18,12 +16,6 @@ enum ControllerState {
   kQuickStopActive,
   kFaultReactionActive,
   kFault,
-};
-
-struct ControllerMessage {
-  uint8_t message_data[8];
-  int len = 8;
-  char logger_output[250];
 };
 
 class IController {
@@ -48,5 +40,5 @@ class IController {
   virtual void processNmtMessage(utils::io::can::Frame &message)                             = 0;
   virtual void requestStateTransition(utils::io::can::Frame &message, ControllerState state) = 0;
 };
-}  // namespace motor_control
+}  // namespace propulsion
 }  // namespace hyped

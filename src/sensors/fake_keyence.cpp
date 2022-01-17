@@ -14,22 +14,34 @@ FakeKeyence::FakeKeyence(const Config &config, std::shared_ptr<FakeTrajectory> f
       data_(data::Data::getInstance()),
       fake_trajectory_(fake_trajectory)
 {
-  previous_data_.timestamp   = utils::Timer::getTimeMicros();
-  previous_data_.value       = 0;  // start stripe count
-  previous_data_.operational = true;
+  internal_data_.timestamp   = utils::Timer::getTimeMicros();
+  internal_data_.value       = 0;  // start stripe count
+  internal_data_.operational = true;
 }
 
 data::CounterData FakeKeyence::getData()
 {
+  if (config_.failure_in_state) {
+    const auto current_state = data_.getStateMachineData().current_state;
+    if (current_state == *config_.failure_in_state) { internal_data_.operational = false; }
+  }
+  if (!internal_data_.operational) {
+    internal_data_.operational = false;
+    internal_data_.timestamp   = utils::Timer::getTimeMicros();
+    // Randomise data to make sure this is not being used anywhere
+    internal_data_.value = static_cast<uint32_t>(std::rand());
+    return internal_data_;
+  }
+  // No failure (...yet)
   const auto trajectory   = fake_trajectory_->getTrajectory();
   const auto displacement = addNoiseToDisplacement(trajectory.displacement);
   const auto implied_count
     = static_cast<uint32_t>(displacement / data::Navigation::kStripeDistance);
-  if (previous_data_.value < implied_count) {
-    previous_data_.timestamp = utils::Timer::getTimeMicros();
-    previous_data_.value     = implied_count;
+  if (internal_data_.value < implied_count) {
+    internal_data_.timestamp = utils::Timer::getTimeMicros();
+    internal_data_.value     = implied_count;
   }
-  return previous_data_;
+  return internal_data_;
 }
 
 const FakeKeyence::Config &FakeKeyence::getConfig() const

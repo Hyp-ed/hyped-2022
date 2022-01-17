@@ -6,7 +6,6 @@
   },
   "fake_wheel_encoder": [
     {
-      "failure_in_state": "Accelerating",
       "noise": 0.1
     },
     {
@@ -21,7 +20,6 @@
   ],
   "fake_keyence": [
     {
-      "failure_in_state": "NominalBraking",
       "noise": 0.1
     },
     {

@@ -28,7 +28,7 @@ class FakeKeyence : public ICounter {
   data::Data &data_;
   std::shared_ptr<FakeTrajectory> fake_trajectory_;
 
-  data::CounterData previous_data_;
+  data::CounterData internal_data_;
 
   FakeKeyence(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
   static std::optional<std::array<Config, data::Sensors::kNumKeyence>> readConfigs(

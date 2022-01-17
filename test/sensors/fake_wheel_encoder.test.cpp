@@ -31,11 +31,11 @@ TEST_F(FakeWheelEncoderTest, nonDecreasingData)
   }
   for (size_t i = 0; i < kNumIterations; ++i) {
     utils::concurrent::Thread::sleep(kSleepMillis);
-    const auto current_count = fake_wheel_encoder.getData();
+    const auto current_counter_data = fake_wheel_encoder.getData();
     enableOutput();
-    ASSERT_GE(current_count.value, previous_count.value);
+    ASSERT_GE(current_counter_data.value, previous_count.value);
     disableOutput();
-    previous_count = current_count;
+    previous_count = current_counter_data;
   }
   {
     auto state_machine_data          = data.getStateMachineData();
@@ -44,11 +44,11 @@ TEST_F(FakeWheelEncoderTest, nonDecreasingData)
   }
   for (size_t i = 0; i < kNumIterations; ++i) {
     utils::concurrent::Thread::sleep(kSleepMillis);
-    const auto current_count = fake_wheel_encoder.getData();
+    const auto current_counter_data = fake_wheel_encoder.getData();
     enableOutput();
-    ASSERT_GE(current_count.value, previous_count.value);
+    ASSERT_GE(current_counter_data.value, previous_count.value);
     disableOutput();
-    previous_count = current_count;
+    previous_count = current_counter_data;
   }
   {
     auto state_machine_data          = data.getStateMachineData();
@@ -57,11 +57,11 @@ TEST_F(FakeWheelEncoderTest, nonDecreasingData)
   }
   for (size_t i = 0; i < kNumIterations; ++i) {
     utils::concurrent::Thread::sleep(kSleepMillis);
-    const auto current_count = fake_wheel_encoder.getData();
+    const auto current_counter_data = fake_wheel_encoder.getData();
     enableOutput();
-    ASSERT_GE(current_count.value, previous_count.value);
+    ASSERT_GE(current_counter_data.value, previous_count.value);
     disableOutput();
-    previous_count = current_count;
+    previous_count = current_counter_data;
   }
   {
     auto state_machine_data          = data.getStateMachineData();
@@ -70,11 +70,11 @@ TEST_F(FakeWheelEncoderTest, nonDecreasingData)
   }
   for (size_t i = 0; i < kNumIterations; ++i) {
     utils::concurrent::Thread::sleep(kSleepMillis);
-    const auto current_count = fake_wheel_encoder.getData();
+    const auto current_counter_data = fake_wheel_encoder.getData();
     enableOutput();
-    ASSERT_GE(current_count.value, previous_count.value);
+    ASSERT_GE(current_counter_data.value, previous_count.value);
     disableOutput();
-    previous_count = current_count;
+    previous_count = current_counter_data;
   }
 }
 

@@ -6,7 +6,7 @@
 
 namespace hyped::testing {
 
-const std::string kDefaultConfigPath = "configurations/test/config.json";
+const std::string kDefaultConfigPath = "configurations/test/default_config.json";
 
 class Test : public ::testing::Test {
  protected:

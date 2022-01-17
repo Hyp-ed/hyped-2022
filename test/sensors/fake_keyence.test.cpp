@@ -24,60 +24,72 @@ TEST_F(FakeKeyenceTest, nonDecreasingData)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
   disableOutput();
-  auto fake_keyences = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
-  for (auto fake_keyence : *fake_keyences) {
-    data::CounterData previous_count = fake_keyence.getData();
-    {
-      auto state_machine_data          = data.getStateMachineData();
-      state_machine_data.current_state = data::State::kAccelerating;
-      data.setStateMachineData(state_machine_data);
-    }
-    for (size_t i = 0; i < kNumIterations; ++i) {
-      utils::concurrent::Thread::sleep(kSleepMillis);
-      const auto current_count = fake_keyence.getData();
+  auto fake_keyences_optional
+    = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+  ASSERT_TRUE(fake_keyences_optional);
+  auto fake_keyences = *fake_keyences_optional;
+  {
+    auto state_machine_data          = data.getStateMachineData();
+    state_machine_data.current_state = data::State::kAccelerating;
+    data.setStateMachineData(state_machine_data);
+  }
+  std::array<data::CounterData, fake_keyences.size()> previous_counts;
+  for (size_t i = 0; i < fake_keyences.size(); ++i) {
+    previous_counts.at(i) = fake_keyences.at(i).getData();
+  }
+  for (size_t i = 0; i < kNumIterations; ++i) {
+    utils::concurrent::Thread::sleep(kSleepMillis);
+    for (size_t i = 0; i < fake_keyences.size(); ++i) {
+      const auto current_count = fake_keyences.at(i).getData();
       enableOutput();
-      ASSERT_GE(current_count.value, previous_count.value);
+      ASSERT_GE(current_count.value, previous_counts.at(i).value);
       disableOutput();
-      previous_count = current_count;
+      previous_counts.at(i) = current_count;
     }
-    {
-      auto state_machine_data          = data.getStateMachineData();
-      state_machine_data.current_state = data::State::kCruising;
-      data.setStateMachineData(state_machine_data);
-    }
-    for (size_t i = 0; i < kNumIterations; ++i) {
-      utils::concurrent::Thread::sleep(kSleepMillis);
-      const auto current_count = fake_keyence.getData();
+  }
+  {
+    auto state_machine_data          = data.getStateMachineData();
+    state_machine_data.current_state = data::State::kCruising;
+    data.setStateMachineData(state_machine_data);
+  }
+  for (size_t i = 0; i < kNumIterations; ++i) {
+    utils::concurrent::Thread::sleep(kSleepMillis);
+    for (size_t i = 0; i < fake_keyences.size(); ++i) {
+      const auto current_count = fake_keyences.at(i).getData();
       enableOutput();
-      ASSERT_GE(current_count.value, previous_count.value);
+      ASSERT_GE(current_count.value, previous_counts.at(i).value);
       disableOutput();
-      previous_count = current_count;
+      previous_counts.at(i) = current_count;
     }
-    {
-      auto state_machine_data          = data.getStateMachineData();
-      state_machine_data.current_state = data::State::kNominalBraking;
-      data.setStateMachineData(state_machine_data);
-    }
-    for (size_t i = 0; i < kNumIterations; ++i) {
-      utils::concurrent::Thread::sleep(kSleepMillis);
-      const auto current_count = fake_keyence.getData();
+  }
+  {
+    auto state_machine_data          = data.getStateMachineData();
+    state_machine_data.current_state = data::State::kNominalBraking;
+    data.setStateMachineData(state_machine_data);
+  }
+  for (size_t i = 0; i < kNumIterations; ++i) {
+    utils::concurrent::Thread::sleep(kSleepMillis);
+    for (size_t i = 0; i < fake_keyences.size(); ++i) {
+      const auto current_count = fake_keyences.at(i).getData();
       enableOutput();
-      ASSERT_GE(current_count.value, previous_count.value);
+      ASSERT_GE(current_count.value, previous_counts.at(i).value);
       disableOutput();
-      previous_count = current_count;
+      previous_counts.at(i) = current_count;
     }
-    {
-      auto state_machine_data          = data.getStateMachineData();
-      state_machine_data.current_state = data::State::kEmergencyBraking;
-      data.setStateMachineData(state_machine_data);
-    }
-    for (size_t i = 0; i < kNumIterations; ++i) {
-      utils::concurrent::Thread::sleep(kSleepMillis);
-      const auto current_count = fake_keyence.getData();
+  }
+  {
+    auto state_machine_data          = data.getStateMachineData();
+    state_machine_data.current_state = data::State::kEmergencyBraking;
+    data.setStateMachineData(state_machine_data);
+  }
+  for (size_t i = 0; i < kNumIterations; ++i) {
+    utils::concurrent::Thread::sleep(kSleepMillis);
+    for (size_t i = 0; i < fake_keyences.size(); ++i) {
+      const auto current_count = fake_keyences.at(i).getData();
       enableOutput();
-      ASSERT_GE(current_count.value, previous_count.value);
+      ASSERT_GE(current_count.value, previous_counts.at(i).value);
       disableOutput();
-      previous_count = current_count;
+      previous_counts.at(i) = current_count;
     }
   }
 }

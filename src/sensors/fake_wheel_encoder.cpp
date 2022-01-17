@@ -112,7 +112,7 @@ std::optional<std::array<FakeWheelEncoder::Config, data::Sensors::kNumEncoders>>
         log.ERR("FAKE-WHEEL-ENCODER",
                 "Unknown state name '%s' in field 'fake_wheel_encoder[%d].failure_in_state' in "
                 "configuration file at %s",
-                state_name, i, path.c_str());
+                state_name.c_str(), i, path.c_str());
         return std::nullopt;
       }
       config.failure_in_state = state_optional;

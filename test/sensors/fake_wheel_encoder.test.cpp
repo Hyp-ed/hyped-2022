@@ -20,9 +20,14 @@ TEST_F(FakeWheelEncoderTest, nonDecreasingData)
     state_machine_data.current_state = data::State::kIdle;
     data.setStateMachineData(state_machine_data);
   }
-  auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
+  const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  sensors::FakeWheelEncoder fake_wheel_encoder(fake_trajectory, 0.1);
+  auto fake_wheel_encoders_optional
+    = sensors::FakeWheelEncoder::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+  enableOutput();
+  ASSERT_TRUE(fake_wheel_encoders_optional);
+  disableOutput();
+  auto fake_wheel_encoder          = fake_wheel_encoders_optional->at(0);
   data::CounterData previous_count = fake_wheel_encoder.getData();
   {
     auto state_machine_data          = data.getStateMachineData();

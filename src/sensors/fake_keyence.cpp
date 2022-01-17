@@ -26,8 +26,7 @@ data::CounterData FakeKeyence::getData()
     if (current_state == *config_.failure_in_state) { internal_data_.operational = false; }
   }
   if (!internal_data_.operational) {
-    internal_data_.operational = false;
-    internal_data_.timestamp   = utils::Timer::getTimeMicros();
+    internal_data_.timestamp = utils::Timer::getTimeMicros();
     // Randomise data to make sure this is not being used anywhere
     internal_data_.value = static_cast<uint32_t>(std::rand());
     return internal_data_;

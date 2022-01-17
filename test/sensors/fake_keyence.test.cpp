@@ -49,7 +49,9 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
   disableOutput();
   auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+  enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
+  disableOutput();
   auto fake_keyences = *fake_keyences_optional;
   {
     auto state_machine_data          = data.getStateMachineData();

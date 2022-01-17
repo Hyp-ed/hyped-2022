@@ -88,7 +88,7 @@ std::optional<std::array<FakeKeyence::Config, data::Sensors::kNumKeyence>> FakeK
               path.c_str());
       return std::nullopt;
     }
-    config.noise = config_object["noise"].GetDouble();
+    config.noise = static_cast<data::nav_t>(config_object["noise"].GetDouble());
     if (config_object.HasMember("failure_in_state")) {
       const auto state_name     = std::string(config_object["failure_in_state"].GetString());
       const auto state_optional = data::stateFromString(state_name);
@@ -102,6 +102,7 @@ std::optional<std::array<FakeKeyence::Config, data::Sensors::kNumKeyence>> FakeK
       config.failure_in_state = state_optional;
     }
     configs.at(i) = config;
+    ++i;
   }
   return configs;
 }

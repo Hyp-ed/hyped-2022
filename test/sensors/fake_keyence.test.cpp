@@ -82,4 +82,21 @@ TEST_F(FakeKeyenceTest, nonDecreasingData)
   }
 }
 
+TEST_F(FakeKeyenceTest, parsesConfig)
+{
+  auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
+    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+  const auto fake_keyences_optional
+    = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+  enableOutput();
+  ASSERT_TRUE(fake_keyences_optional);
+  const auto fake_keyences = *fake_keyences_optional;
+  ASSERT_EQ(data::Sensors::kNumKeyence, fake_keyences.size());
+  ASSERT_FLOAT_EQ(0.1, fake_keyences.at(0).getConfig().noise);
+  ASSERT_EQ(data::State::kNominalBraking, *fake_keyences.at(0).getConfig().failure_in_state);
+  ASSERT_FLOAT_EQ(0.2, fake_keyences.at(1).getConfig().noise);
+  ASSERT_FALSE(fake_keyences.at(1).getConfig().failure_in_state);
+  disableOutput();
+}
+
 }  // namespace hyped::testing

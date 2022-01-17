@@ -22,7 +22,9 @@ TEST_F(FakeTrajectoryTest, parsesConfig)
   const auto fake_trajectory = sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath);
   enableOutput();
   ASSERT_TRUE(fake_trajectory);
+  disableOutput();
   const auto &config = fake_trajectory->getConfig();
+  enableOutput();
   ASSERT_FLOAT_EQ(1000.0, config.maximum_acceleration);
   ASSERT_FLOAT_EQ(2000.0, config.braking_deceleration);
   ASSERT_FLOAT_EQ(0.01, config.cruising_deceleration);

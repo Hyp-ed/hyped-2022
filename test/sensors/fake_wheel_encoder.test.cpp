@@ -56,8 +56,12 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     state_machine_data.current_state = data::State::kAccelerating;
     data.setStateMachineData(state_machine_data);
   }
-  std::array<data::CounterData, fake_wheel_encoders.size()> previous_counter_data
-    = {fake_wheel_encoders.at(0).getData(), fake_wheel_encoders.at(1).getData()};
+  std::array<data::CounterData, fake_wheel_encoders.size()> previous_counter_data = {
+    fake_wheel_encoders.at(0).getData(),
+    fake_wheel_encoders.at(1).getData(),
+    fake_wheel_encoders.at(2).getData(),
+    fake_wheel_encoders.at(3).getData(),
+  };
   for (size_t i = 0; i < kNumIterations; ++i) {
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumEncoders> current_counter_data = {

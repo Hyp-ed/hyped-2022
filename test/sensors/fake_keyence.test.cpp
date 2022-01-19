@@ -15,7 +15,7 @@ class FakeKeyenceTest : public Test {
 };
 
 //---------------------------------------------------------------------------
-// Both operational
+// All operational
 //---------------------------------------------------------------------------
 
 TEST_F(FakeKeyenceTest, defaultParsesConfig)

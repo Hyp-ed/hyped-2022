@@ -5,8 +5,7 @@
 
 #include "data/data.hpp"
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
 Sender::Sender(utils::Logger &log, data::Data &data, Client &client)
     : utils::concurrent::Thread{log},
@@ -46,5 +45,4 @@ void Sender::run()
   log_.DBG("Telemetry", "Exiting Telemetry Sender thread");
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

@@ -8,9 +8,7 @@
 #include <rapidjson/writer.h>
 #include <utils/concurrent/thread.hpp>
 
-namespace hyped {
-
-namespace telemetry {
+namespace hyped::telemetry {
 
 class Sender : public utils::concurrent::Thread {
  public:
@@ -24,5 +22,4 @@ class Sender : public utils::concurrent::Thread {
   std::string convertModuleStatus(data::ModuleStatus module_status);
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

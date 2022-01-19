@@ -4,9 +4,8 @@
 
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::telemetry {
 
-namespace telemetry {
 
 Main::Main(const uint8_t id, utils::Logger &log)
     : utils::concurrent::Thread{id, log},
@@ -57,5 +56,4 @@ void Main::run()
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }
 
-}  // namespace telemetry
 }  // namespace hyped

@@ -5,9 +5,7 @@
 #include "data/data.hpp"
 #include "utils/concurrent/thread.hpp"
 
-namespace hyped {
-
-namespace telemetry {
+namespace hyped::telemetry {
 
 class Receiver : public utils::concurrent::Thread {
  public:
@@ -19,5 +17,4 @@ class Receiver : public utils::concurrent::Thread {
   data::Data &data_;
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

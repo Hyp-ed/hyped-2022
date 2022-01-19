@@ -6,8 +6,7 @@
 
 #include <data/data.hpp>
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
 // The current time in milliseconds that will be used later
 void Writer::packTime()
@@ -192,5 +191,4 @@ const std::string Writer::convertModuleStatus(data::ModuleStatus module_status)
   }
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

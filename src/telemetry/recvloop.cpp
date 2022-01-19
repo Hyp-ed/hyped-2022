@@ -14,10 +14,9 @@ ReceiveLoop::ReceiveLoop(utils::Logger &log, data::Data &data, Client &client)
 
 void ReceiveLoop::run()
 {
+  log_.DBG("Telemetry", "Telemetry RecvLoop thread started");
   while (true) {
-    log_.DBG("Telemetry", "Telemetry RecvLoop thread started");
-
-    data::Telemetry telemetry_data = data_.getTelemetryData();
+    auto telemetry_data = data_.getTelemetryData();
     std::string message;
     try {
       message = client_.receiveData();

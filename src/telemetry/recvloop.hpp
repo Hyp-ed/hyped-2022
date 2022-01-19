@@ -9,9 +9,9 @@ namespace hyped {
 
 namespace telemetry {
 
-class RecieveLoop : public utils::concurrent::Thread {
+class ReceiveLoop : public utils::concurrent::Thread {
  public:
-  explicit RecieveLoop(utils::Logger &log, data::Data &data, Client &client);
+  explicit ReceiveLoop(utils::Logger &log, data::Data &data, Client &client);
   void run() override;
 
  private:

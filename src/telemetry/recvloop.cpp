@@ -4,7 +4,7 @@
 
 namespace hyped::telemetry {
 
-RecieveLoop::RecieveLoop(utils::Logger &log, data::Data &data, Client &client)
+ReceiveLoop::ReceiveLoop(utils::Logger &log, data::Data &data, Client &client)
     : utils::concurrent::Thread{log},
       client_{client},
       data_{data}
@@ -12,7 +12,7 @@ RecieveLoop::RecieveLoop(utils::Logger &log, data::Data &data, Client &client)
   log_.DBG("Telemetry", "Telemetry RecvLoop thread object created");
 }
 
-void RecieveLoop::run()
+void ReceiveLoop::run()
 {
   while (true) {
     log_.DBG("Telemetry", "Telemetry RecvLoop thread started");

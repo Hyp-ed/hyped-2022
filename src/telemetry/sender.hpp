@@ -12,16 +12,16 @@ namespace hyped {
 
 namespace telemetry {
 
-class SendLoop : public utils::concurrent::Thread {
+class Sender : public utils::concurrent::Thread {
  public:
-  explicit SendLoop(utils::Logger &log, data::Data &data, Main &main_ref);
+  explicit Sender(utils::Logger &log, data::Data &data, Client &client);
   void run() override;
 
  private:
+  data::Data &data_;
+  Client &client_;
   std::string convertStateMachineState(data::State state);
   std::string convertModuleStatus(data::ModuleStatus module_status);
-  Main &main_ref_;
-  data::Data &data_;
 };
 
 }  // namespace telemetry

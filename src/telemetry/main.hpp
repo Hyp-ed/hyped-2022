@@ -15,8 +15,6 @@ class Main : public utils::concurrent::Thread {
   void run() override;
 
  private:
-  friend class SendLoop;
-  friend class RecvLoop;
   data::Data &data_;
   Client client_;
 };

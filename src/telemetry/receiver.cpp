@@ -1,10 +1,10 @@
-#include "recvloop.hpp"
+#include "receiver.hpp"
 
 #include <string>
 
 namespace hyped::telemetry {
 
-ReceiveLoop::ReceiveLoop(utils::Logger &log, data::Data &data, Client &client)
+Receiver::Receiver(utils::Logger &log, data::Data &data, Client &client)
     : utils::concurrent::Thread{log},
       client_{client},
       data_{data}
@@ -12,7 +12,7 @@ ReceiveLoop::ReceiveLoop(utils::Logger &log, data::Data &data, Client &client)
   log_.DBG("RECEIVE-LOOP", "constructed");
 }
 
-void ReceiveLoop::run()
+void Receiver::run()
 {
   log_.DBG("RECEIVE-LOOP", "thread started");
   while (true) {

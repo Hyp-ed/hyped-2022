@@ -7,59 +7,53 @@
 #include <utils/math/kalman_multivariate.hpp>
 #include <utils/system.hpp>
 
-using Eigen::MatrixXf;
-using Eigen::VectorXf;
-
 namespace hyped {
-using data::nav_t;
-using data::NavigationVector;
-using utils::System;
-using utils::math::KalmanMultivariate;
-
 namespace navigation {
 
 class KalmanFilter {
  public:
-  KalmanFilter(unsigned int n = 3, unsigned int m = 1, unsigned int k = 0);
+  KalmanFilter(uint32_t n = 3, uint32_t m = 1, uint32_t k = 0);
   void setup();
-  void updateStateTransitionMatrix(double dt);
-  void updateMeasurementCovarianceMatrix(double var);
-  const nav_t filter(nav_t z);
-  const nav_t filter(nav_t u, nav_t z);
+  void updateStateTransitionMatrix(data::nav_t dt);
+  void updateMeasurementCovarianceMatrix(const data::nav_t var);
+  data::nav_t filter(data::nav_t z);
   // transfer estimate to NavigationVector
-  const nav_t getEstimate();
+  data::nav_t getEstimate();
   // transfer estimate variances to NavigationVector
-  const nav_t getEstimateVariance();
+  const data::nav_t getEstimateVariance();
 
  private:
-  unsigned int n_;
-  unsigned int m_;
-  unsigned int k_;
-  KalmanMultivariate kalmanFilter_;
+  // state dimensionality
+  uint32_t n_;
+  // measurement dimensionality
+  uint32_t m_;
+  // control dimensionality default = 0
+  uint32_t k_;
+  utils::math::KalmanMultivariate kalmanFilter_;
 
   // covariance matrix variances
-  static constexpr float kInitialErrorVar          = 0.5;
-  static constexpr float kStateTransitionVar       = 0.02;
-  static constexpr float kTrackMeasurementVar      = 0.001;
-  static constexpr float kElevatorMeasurementVar   = 0.12;
-  static constexpr float kStationaryMeasurementVar = 0.04;
+  static constexpr float kInitialErrorVariance          = 0.5;
+  static constexpr float kStateTransitionVariance       = 0.02;
+  static constexpr float kTrackMeasurementVariance      = 0.001;
+  static constexpr float kElevatorMeasurementVariance   = 0.12;
+  static constexpr float kStationaryMeasurementVariance = 0.04;
 
   // create initial error covariance matrix P
-  const MatrixXf createInitialErrorCovarianceMatrix();
+  const Eigen::MatrixXf createInitialErrorCovarianceMatrix() const;
 
   // create state transition matrix A
-  const MatrixXf createStateTransitionMatrix(double dt);
+  Eigen::MatrixXf createStateTransitionMatrix(data::nav_t dt) const;
 
   // create measurement matrix H
-  const MatrixXf createMeasurementMatrix();
+  Eigen::MatrixXf createMeasurementMatrix() const;
 
   // create state transition coveriance matrix Q
-  const MatrixXf createStateTransitionCovarianceMatrix();
+  const Eigen::MatrixXf createStateTransitionCovarianceMatrix() const;
 
   // create measurement covariance matrices R
-  const MatrixXf createTrackMeasurementCovarianceMatrix();
-  const MatrixXf createElevatorMeasurementCovarianceMatrix();
-  const MatrixXf createStationaryMeasurementCovarianceMatrix();
+  const Eigen::MatrixXf createTrackMeasurementCovarianceMatrix() const;
+  const Eigen::MatrixXf createElevatorMeasurementCovarianceMatrix() const;
+  const Eigen::MatrixXf createStationaryMeasurementCovarianceMatrix() const;
 };
 }  // namespace navigation
 }  // namespace hyped

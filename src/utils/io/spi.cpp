@@ -178,9 +178,9 @@ void SPI::setClock(Clock clk)
   }
 }
 
+#if SPI_FS
 void SPI::transfer(uint8_t *tx, uint8_t *rx, uint16_t len)
 {
-#if SPI_FS
   if (spi_fd_ < 0) return;  // early exit if no spi device present
   spi_ioc_transfer message = {};
 
@@ -191,8 +191,10 @@ void SPI::transfer(uint8_t *tx, uint8_t *rx, uint16_t len)
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(1), &message) < 0) {
     log_.ERR("SPI", "could not submit TRANSFER message");
   }
+}
 #else
-
+void SPI::transfer(uint8_t *tx, uint8_t *, uint16_t len)
+{
   if (hw_ == 0) return;  // early exit if no spi mapped
 
   for (uint16_t x = 0; x < len; x++) {

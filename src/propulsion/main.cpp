@@ -1,13 +1,12 @@
 #include "main.hpp"
 
-namespace hyped {
+namespace hyped::propulsion {
 
-namespace motor_control {
-Main::Main(uint8_t id, Logger &log)
+Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),
-      state_processor_(new StateProcessor(Motors::kNumMotors, log))
+      state_processor_(log)
 {
 }
 
@@ -20,60 +19,63 @@ bool Main::handleTransition()
   return true;
 }
 
-void Main::handleCriticalFailure(Data &data, Motors &motor_data)
+void Main::handleCriticalFailure(data::Data &data, data::Motors &motor_data)
 {
   is_running_              = false;
-  motor_data.module_status = ModuleStatus::kCriticalFailure;
+  motor_data.module_status = data::ModuleStatus::kCriticalFailure;
   data.setMotorData(motor_data);
 }
 
 void Main::run()
 {
-  utils::System &sys      = utils::System::getSystem();
-  data::Data &data        = data::Data::getInstance();
-  data::Motors motor_data = data.getMotorData();
+  const auto &system = utils::System::getSystem();
+  auto &data         = data::Data::getInstance();
+  auto motor_data    = data.getMotorData();
 
   // Initialise states
   current_state_  = data.getStateMachineData().current_state;
-  previous_state_ = State::kInvalid;
+  previous_state_ = data::State::kInvalid;
 
-  // kInit for SM transition
-  motor_data.module_status = ModuleStatus::kInit;
+  // kInit for state machine transition
+  motor_data.module_status = data::ModuleStatus::kInit;
   data.setMotorData(motor_data);
   log_.INFO("Motor", "Initialisation complete");
 
-  while (is_running_ && sys.running_) {
+  while (is_running_ && system.running_) {
     // Get the current state of the system from the state machine's data
-    motor_data                  = data.getMotorData();
-    current_state_              = data.getStateMachineData().current_state;
+    data::Motors motor_data     = data.getMotorData();
+    data::State current_state_  = data.getStateMachineData().current_state;
     bool encountered_transition = handleTransition();
 
     switch (current_state_) {
-      case State::kIdle:
+      case data::State::kIdle:
+      case data::State::kPreCalibrating:
         break;
-      case State::kCalibrating:
-        if (state_processor_->isInitialized()) {
-          if (motor_data.module_status != ModuleStatus::kReady) {
-            motor_data.module_status = ModuleStatus::kReady;
+      case data::State::kCalibrating:
+        if (state_processor_.isInitialised()) {
+          if (motor_data.module_status != data::ModuleStatus::kReady) {
+            motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);
           }
         } else {
-          state_processor_->initMotors();
-          if (state_processor_->isCriticalFailure()) { handleCriticalFailure(data, motor_data); }
+          state_processor_.initialiseMotors();
+          if (!state_processor_.isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
         break;
-      case State::kReady:
-        if (encountered_transition) { state_processor_->sendOperationalCommand(); }
+      case data::State::kReady:
+        if (encountered_transition) { state_processor_.sendOperationalCommand(); }
         break;
-      case State::kAccelerating:
-        state_processor_->accelerate();
+      case data::State::kAccelerating:
+        state_processor_.accelerate();
         break;
-      case State::kCruising:
-      case State::kNominalBraking:
-      case State::kEmergencyBraking:
-        state_processor_->quickStopAll();
+      case data::State::kCruising:
+      case data::State::kNominalBraking:
+      case data::State::kEmergencyBraking:
+        state_processor_.quickStopAll();
         break;
-      default:
+      case data::State::kFailureStopped:
+      case data::State::kFinished:
+      case data::State::kInvalid:
         handleCriticalFailure(data, motor_data);
         break;
     }
@@ -81,5 +83,4 @@ void Main::run()
 
   log_.INFO("Motor", "Thread shutting down");
 }
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

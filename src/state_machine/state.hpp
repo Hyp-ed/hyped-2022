@@ -75,6 +75,7 @@ class Messages;
  */
 
 MAKE_STATE(Idle)            // State on startup
+MAKE_STATE(PreCalibrating)  // Sub-state between Idle and Calibrating
 MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
 MAKE_STATE(Ready)           // After calibration has finished
 MAKE_STATE(Accelerating)    // First phase of the run
@@ -102,7 +103,7 @@ class Off : public State {
     sys.running_       = false;
   }
 
-  void exit(Logger &log)
+  void exit(Logger &)
   {  // We never exit this state
   }
 

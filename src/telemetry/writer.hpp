@@ -31,6 +31,7 @@ class Writer {
 
   // separate functions that allow to better manage data points based on their purpose
   void packTime();
+  void packId(uint16_t id);
   void packCrucialData();
   void packStatusData();
   void packAdditionalData();

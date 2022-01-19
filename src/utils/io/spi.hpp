@@ -58,7 +58,7 @@ class SPI {
   SPI_CH *ch_;
   Logger &log_;
 
-  NO_COPY_ASSIGN(SPI);
+  NO_COPY_ASSIGN(SPI)
 };
 
 }  // namespace io

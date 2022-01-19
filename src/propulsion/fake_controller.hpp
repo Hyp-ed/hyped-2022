@@ -1,27 +1,19 @@
 #pragma once
 
 #include "controller_interface.hpp"
+
 #include <data/data.hpp>
-#include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
-namespace utils {
-class Logger;
-}
-namespace motor_control {
-
-using utils::Logger;
-using utils::Timer;
-using utils::concurrent::Thread;
+namespace hyped::propulsion {
 
 class FakeController : public ControllerInterface {
  public:
   /**
    * @brief  Construct a new Fake Controller object
    */
-  FakeController(Logger &log, uint8_t id, bool isFaulty);
+  FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty);
   /**
    * @brief  Registers controller to recieve and transmit CAN messages.
    *         note: empty implementation.
@@ -47,7 +39,7 @@ class FakeController : public ControllerInterface {
    * @brief  Sets actual velocity = target velocity
    * @param[in]  target_velocity in rpm (Calculated in speed calculator).
    */
-  void sendTargetVelocity(int32_t target_velocity) override;
+  void sendTargetVelocity(const int32_t target_velocity) override;
   /**
    * @brief  Send a request to the motor controller to get the actual velocity.
    *         note: empty implementation.
@@ -80,19 +72,19 @@ class FakeController : public ControllerInterface {
   uint8_t getMotorTemp() override;
 
   // empty functions from interface not used in the fake controller
-  void processEmergencyMessage(utils::io::can::Frame &message) override
+  void processEmergencyMessage(utils::io::can::Frame &) override
   { /*EMPTY*/
   }
-  void processErrorMessage(uint16_t error_message) override
+  void processErrorMessage(uint16_t) override
   { /*EMPTY*/
   }
-  void processSdoMessage(utils::io::can::Frame &message) override
+  void processSdoMessage(utils::io::can::Frame &) override
   { /*EMPTY*/
   }
-  void processNmtMessage(utils::io::can::Frame &message) override
+  void processNmtMessage(utils::io::can::Frame &) override
   { /*EMPTY*/
   }
-  void requestStateTransition(utils::io::can::Frame &message, ControllerState state) override
+  void requestStateTransition(utils::io::can::Frame &, ControllerState) override
   { /*EMPTY*/
   }
   void updateMotorTemp() override
@@ -104,20 +96,18 @@ class FakeController : public ControllerInterface {
    * @brief Times the duration of the run. Starts when we enter the accelerating state.
    */
   void startTimer();
-  Logger &log_;
+  utils::Logger &log_;
   data::Data &data_;
-  data::Motors motor_data_;
   ControllerState state_;
-  Timer timer;
+  utils::Timer timer_;
   uint8_t id_;
-  bool isFaulty_;
+  bool is_faulty_;
   bool critical_failure_;
   int32_t actual_velocity_;
   uint64_t start_time_;
   bool timer_started_;
   uint64_t fail_time_;
-  uint8_t motor_temp_;
+  uint8_t motor_temperature_;
 };
 
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

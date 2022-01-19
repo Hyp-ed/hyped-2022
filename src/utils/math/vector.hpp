@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include <array>
-
 #include <initializer_list>
 namespace hyped {
 namespace utils {

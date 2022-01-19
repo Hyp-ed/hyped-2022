@@ -1,13 +1,14 @@
 #pragma once
 
+#include "kalman_filter.hpp"
+#include "stripe_handler.hpp"
+
 #include <math.h>
 
 #include <array>
 #include <cstdint>
 #include <fstream>
 
-#include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 #include <data/data.hpp>
 #include <data/data_point.hpp>
 #include <sensors/imu.hpp>
@@ -20,7 +21,7 @@ namespace navigation {
 
 class Navigation {
  public:
-  using ImuDataArray             = std::array<data::ImuData, Sensors::kNumImus>;
+  using ImuDataArray             = std::array<data::ImuData, data::Sensors::kNumImus>;
   using ImuDataPointArray        = data::DataPoint<ImuDataArray>;
   using NavigationVectorArray    = std::array<data::NavigationVector, data::Sensors::kNumImus>;
   using ImuAxisData              = std::array<std::array<data::nav_t, data::Sensors::kNumImus>, 3>;
@@ -152,9 +153,9 @@ class Navigation {
   static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
 
   // System communication
-  Logger &log_;
-  Data &data_;
-  ModuleStatus status_;
+  utils::Logger &log_;
+  data::Data &data_;
+  data::ModuleStatus status_;
 
   uint32_t log_counter_;
   uint32_t movement_axis_;
@@ -178,9 +179,9 @@ class Navigation {
   FilterArray filters_;
 
   // Counter for consecutive outlier output from each IMU
-  std::array<uint32_t, Sensors::kNumImus> imu_outlier_counter_;
+  std::array<uint32_t, data::Sensors::kNumImus> imu_outlier_counter_;
   // Array of booleans to signify which IMUs are reliable or faulty
-  std::array<bool, Sensors::kNumImus> is_imu_reliable_;
+  std::array<bool, data::Sensors::kNumImus> is_imu_reliable_;
   // Counter of how many IMUs have failed
   uint32_t num_outlier_imus_;
 

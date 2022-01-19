@@ -11,7 +11,7 @@ namespace telemetry {
 
 class RecieveLoop : public utils::concurrent::Thread {
  public:
-  explicit RecieveLoop(Logger &log, data::Data &data, Client &client);
+  explicit RecieveLoop(utils::Logger &log, data::Data &data, Client &client);
   void run() override;
 
  private:

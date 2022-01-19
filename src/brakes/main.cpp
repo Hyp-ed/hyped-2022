@@ -27,7 +27,7 @@ Main::Main(uint8_t id, Logger &log)
 
 void Main::run()
 {
-  // Setting module status for STM transition
+  // Setting module status for state machine transition
   brakes_               = data_.getEmergencyBrakesData();
   brakes_.module_status = ModuleStatus::kInit;
   data_.setEmergencyBrakesData(brakes_);
@@ -87,6 +87,7 @@ void Main::run()
         break;
       case data::State::kNominalBraking:
       case data::State::kEmergencyBraking:
+      case data::State::kInvalid:
         if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
         if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }
         Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
@@ -115,7 +116,8 @@ void Main::run()
           f_brake_->checkAccFailure();
         }
         break;
-      default:
+      case data::State::kReady:
+      case data::State::kFailureStopped:
         break;
     }
   }

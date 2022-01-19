@@ -48,7 +48,7 @@ void Main::run()
   data_.setTelemetryData(telemetry_data);
 
   SendLoop send_loop_thread{log_, data_, *this};
-  RecvLoop receive_loop_thread{log_, data_, this->client_};
+  RecieveLoop receive_loop_thread{log_, data_, this->client_};
   send_loop_thread.start();
   receive_loop_thread.start();
   send_loop_thread.join();

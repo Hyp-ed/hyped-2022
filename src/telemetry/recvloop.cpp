@@ -2,9 +2,7 @@
 
 #include <string>
 
-namespace hyped {
-
-namespace telemetry {
+namespace hyped::telemetry {
 
 RecieveLoop::RecieveLoop(utils::Logger &log, data::Data &data, Client &client)
     : utils::concurrent::Thread{log},
@@ -35,40 +33,35 @@ void RecieveLoop::run()
       log_.INFO("Telemetry", "FROM SERVER: ACK");
     } else if (message == "STOP") {
       log_.INFO("Telemetry", "FROM SERVER: STOP");
-      telem_data_struct.emergency_stop_command = true;
+      telemetry_data.emergency_stop_command = true;
     } else if (message == "CALIBRATE") {
       log_.INFO("Telemetry", "FROM SERVER: CALIBRATE");
-      telem_data_struct.calibrate_command = true;
+      telemetry_data.calibrate_command = true;
     } else if (message == "LAUNCH") {
       log_.INFO("Telemetry", "FROM SERVER: LAUNCH");
-      telem_data_struct.launch_command = true;
+      telemetry_data.launch_command = true;
     } else if (message == "SHUTDOWN") {
       log_.INFO("Telemetry", "FROM SERVER: SHUTDOWN");
-      telem_data_struct.shutdown_command = true;
+      telemetry_data.shutdown_command = true;
     } else if (message == "SERVER_PROPULSION_GO") {
       log_.INFO("Telemetry", "FROM SERVER: SERVICE_PROPULSION_GO");
-      telem_data_struct.service_propulsion_go = true;
+      telemetry_data.service_propulsion_go = true;
     } else if (message == "SERVER_PROPULSION_STOP") {
       log_.INFO("Telemetry", "FROM SERVER: SERVICE_PROPULSION_STOP");
-      telem_data_struct.service_propulsion_go = false;
+      telemetry_data.service_propulsion_go = false;
     } else if (message == "NOMINAL_BRAKING") {
       log_.INFO("Telemetry", "FROM SERVER: NOMINAL_BRAKING");
-      telem_data_struct.nominal_braking_command = true;
+      telemetry_data.nominal_braking_command = true;
     } else if (message == "NOMINAL_RETRACT") {
       log_.INFO("Telemetry", "FROM SERVER: NOMINAL_RETRACT");
-      telem_data_struct.nominal_braking_command = false;
+      telemetry_data.nominal_braking_command = false;
     } else {
       log_.ERR("Telemetry", "Unrecognized input from server, ENTERING CRITICAL FAILURE");
-      telem_data_struct.module_status = ModuleStatus::kCriticalFailure;
+      telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
     }
+    data_.setTelemetryData(telemetry_data);
   }
+  log_.DBG("Telemetry", "Exiting Telemetry RecvLoop thread");
 }
 
-data_.setTelemetryData(telemetry_data);
-}  // namespace telemetry
-
-log_.DBG("Telemetry", "Exiting Telemetry RecvLoop thread");
-}  // namespace hyped
-
-
-
+}  // namespace hyped::telemetry

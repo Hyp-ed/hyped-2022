@@ -10,8 +10,7 @@
 #include <sys/types.h>
 #include <utils/system.hpp>
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
 Client::Client(utils::Logger &log) : Client{log, *utils::System::getSystem().config}
 {
@@ -108,4 +107,3 @@ std::string Client::receiveData()
 }
 
 }  // namespace telemetry
-}  // namespace hyped

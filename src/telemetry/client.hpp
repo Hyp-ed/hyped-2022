@@ -5,9 +5,7 @@
 #include <utils/config.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-namespace telemetry {
+namespace hyped::telemetry {
 
 class Client {
  public:
@@ -26,5 +24,4 @@ class Client {
   const std::string server_ip_;
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

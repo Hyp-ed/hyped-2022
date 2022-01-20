@@ -302,8 +302,8 @@ data::ImuData Imu::getData()
     }
   } else {
     imu_data.operational = false;
-    return imu_data;
   }
+  return imu_data;
 }
 
 }  // namespace hyped::sensors

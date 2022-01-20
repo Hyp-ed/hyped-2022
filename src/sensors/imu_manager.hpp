@@ -10,17 +10,15 @@
 #include <utils/system.hpp>
 
 namespace hyped::sensors {
-/**
- * @brief creates class to hold multiple IMUs and respective data.
- *
- */
+
 class ImuManager : public utils::concurrent::Thread {
   using DataArray = data::DataPoint<std::array<data::ImuData, data::Sensors::kNumImus>>;
 
  public:
   ImuManager(utils::Logger &log);
 
-  ImuManager(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory);
+  static std::optional<std::unique_ptr<ImuManager>> fromFile(
+    utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
   /**
    * @brief Calibrate IMUs then begin collecting data.
@@ -29,6 +27,7 @@ class ImuManager : public utils::concurrent::Thread {
 
  private:
   std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus_;
+  ImuManager(utils::Logger &log, std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus);
 };
 
 }  // namespace hyped::sensors

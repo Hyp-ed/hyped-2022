@@ -1,8 +1,11 @@
 #include "imu_manager.hpp"
 
+#include <memory>
+
 #include <sensors/fake_imu.hpp>
 #include <sensors/imu.hpp>
 #include <utils/config.hpp>
+#include <utils/system.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
@@ -18,15 +21,28 @@ ImuManager::ImuManager(utils::Logger &log) : Thread(log)
   log_.INFO("IMU-MANAGER", "initialisation complete");
 }
 
-ImuManager::ImuManager(utils::Logger &log, std::shared_ptr<FakeTrajectory> fake_trajectory)
-    : Thread(log)
+ImuManager::ImuManager(utils::Logger &log,
+                       std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus)
+    : imus_(std::move(imus))
 {
-  // TODO(miltfra): Test noise value
-  constexpr data::nav_t kNoise = 0.2;
-  for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
-    imus_[i] = std::make_unique<FakeImu>(fake_trajectory, kNoise);
+  log.INFO("IMU-MANAGER", "initialisation complete");
+}
+
+std::optional<std::unique_ptr<ImuManager>> ImuManager::fromFile(
+  utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
+{
+  const auto fake_imus_optional = FakeImu::fromFile(log, path, fake_trajectory);
+  if (!fake_imus_optional) {
+    log.ERR("IMU-MANAGER", "failed to initialise fake imus");
+    auto &system    = utils::System::getSystem();
+    system.running_ = false;
+    return std::nullopt;
   }
-  log_.INFO("IMU-MANAGER", "initialisation complete");
+  std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus;
+  for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
+    imus.at(i) = std::move(std::make_unique<FakeImu>(fake_imus_optional->at(i)));
+  }
+  return std::make_unique<ImuManager>(ImuManager(log, std::move(imus)));
 }
 
 void ImuManager::run()

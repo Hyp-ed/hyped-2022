@@ -6,6 +6,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
+
 namespace hyped::sensors {
 
 FakeWheelEncoder::FakeWheelEncoder(const Config &config,

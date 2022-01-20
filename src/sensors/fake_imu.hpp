@@ -13,28 +13,26 @@ namespace hyped::sensors {
 
 class FakeImu : public IImu {
  public:
-  FakeImu(std::shared_ptr<FakeTrajectory> fake_trajectory, const data::nav_t noise);
-
-  bool isOnline() override { return true; }
-
-  /*
-   * @brief     A function that gets the imu data at the time of call. The function will return
-   *            the same data point if the time period since the last update isn't long enough. It
-   *            will also skip a couple of data points if the time since the last call has been
-   *            sufficiently long.
-   */
+  struct Config {
+    std::optional<data::State> failure_in_state;
+    data::nav_t noise;
+  };
   data::ImuData getData() override;
+  bool isOnline() override { return true; }
+  const Config &getConfig() const;
+  static std::optional<std::array<FakeImu, data::Sensors::kNumImus>> fromFile(
+    utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
  private:
+  const Config config_;
   data::Data &data_;
   std::shared_ptr<FakeTrajectory> fake_trajectory_;
-  const data::nav_t noise_;
 
-  /**
-   * @return NavigationVector zero acceleration as a vector
-   */
+  FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
+  static std::optional<std::array<Config, data::Sensors::kNumImus>> readConfigs(
+    utils::Logger &log, const std::string &path);
+
   data::NavigationVector getZeroAcc() const;
-
   data::NavigationVector getAccurateAcceleration();
   data::NavigationVector addNoiseToAcceleration(const data::NavigationVector acceleration) const;
 };

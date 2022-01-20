@@ -26,24 +26,23 @@ Main::Main(const uint8_t id, utils::Logger &log)
       return;
     }
     const auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
-    if (sys_.fake_keyence_fail) {
-      // TODO(miltfra): Implement failure mode for fake keyence
-    } else {
-      const auto fake_keyences_optional
-        = FakeKeyence::fromFile(log, fake_config_path, fake_trajectory);
-      if (!fake_keyences_optional) {
-        log.ERR("SENSORS", "failed to initialise fake keyence");
-        sys_.running_ = false;
-        return;
-      }
-      keyences_ = {std::make_unique<FakeKeyence>(fake_keyences_optional->at(0)),
-                   std::make_unique<FakeKeyence>(fake_keyences_optional->at(1))};
+    const auto fake_keyences_optional
+      = FakeKeyence::fromFile(log, fake_config_path, fake_trajectory);
+    if (!fake_keyences_optional) {
+      log.ERR("SENSORS", "failed to initialise fake keyence");
+      sys_.running_ = false;
+      return;
     }
-    if (sys_.fake_imu_fail) {
-      // TODO(miltfra): Implement failure mode for fake IMU
-    } else {
-      imu_manager_ = std::make_unique<ImuManager>(log, fake_trajectory);
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+      keyences_.at(i) = std::move(std::make_unique<FakeKeyence>(fake_keyences_optional->at(i)));
     }
+    auto imu_manager_optional = ImuManager::fromFile(log, fake_config_path, fake_trajectory);
+    if (!imu_manager_optional) {
+      log.ERR("SENSORS", "failed to initialise fake imus");
+      sys_.running_ = false;
+      return;
+    }
+    imu_manager_ = std::move(*imu_manager_optional);
   } else {
     // Real trajectory sensors
     for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {

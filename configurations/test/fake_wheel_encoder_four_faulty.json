@@ -1,16 +1,19 @@
 {
   "fake_wheel_encoder": [
     {
+      "failure_in_state": "EmergencyBraking",
+      "noise": 0.1
+    },
+    {
+      "failure_in_state": "Accelerating",
+      "noise": 0.2
+    },
+    {
+      "failure_in_state": "Cruising",
       "noise": 0.1
     },
     {
       "failure_in_state": "NominalBraking",
-      "noise": 0.2
-    },
-    {
-      "noise": 0.1
-    },
-    {
       "noise": 0.01
     }
   ]

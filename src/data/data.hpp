@@ -87,7 +87,7 @@ namespace hyped
 
     struct PressureData : public Sensor
     {
-      int pressure; //mbar
+      int pressure; //bar
     };
 
     struct Sensors : public Module

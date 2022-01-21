@@ -10,8 +10,10 @@ class FakeKeyenceTest : public Test {
  public:
   static constexpr uint64_t kSleepMillis = 100;
   static constexpr size_t kNumIterations = 10;
-  const std::string kOneFaultyConfigPath = "configurations/test/fake_keyence_one_faulty.json";
-  const std::string kTwoFaultyConfigPath = "configurations/test/fake_keyence_two_faulty.json";
+  inline static const std::string kOneFaultyConfigPath
+    = "configurations/test/fake_keyence_one_faulty.json";
+  inline static const std::string kTwoFaultyConfigPath
+    = "configurations/test/fake_keyence_two_faulty.json";
 };
 
 //---------------------------------------------------------------------------

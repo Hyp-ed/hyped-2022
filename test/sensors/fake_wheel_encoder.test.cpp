@@ -10,8 +10,9 @@ class FakeWheelEncoderTest : public Test {
  public:
   static constexpr uint64_t kSleepMillis = 100;
   static constexpr size_t kNumIterations = 10;
-  const std::string kOneFaultyConfigPath = "configurations/test/fake_wheel_encoder_one_faulty.json";
-  const std::string kFourFaultyConfigPath
+  inline static const std::string kOneFaultyConfigPath
+    = "configurations/test/fake_wheel_encoder_one_faulty.json";
+  inline static const std::string kFourFaultyConfigPath
     = "configurations/test/fake_wheel_encoder_four_faulty.json";
 };
 
@@ -39,6 +40,7 @@ TEST_F(FakeWheelEncoderTest, defaultParsesConfig)
   ASSERT_FALSE(fake_wheel_encoders.at(3).getConfig().failure_in_state);
   disableOutput();
 }
+
 TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
 {
   auto &data = data::Data::getInstance();

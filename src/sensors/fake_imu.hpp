@@ -27,12 +27,12 @@ class FakeImu : public IImu {
   const Config config_;
   data::Data &data_;
   std::shared_ptr<FakeTrajectory> fake_trajectory_;
+  bool is_operational_;
 
   FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
   static std::optional<std::array<Config, data::Sensors::kNumImus>> readConfigs(
     utils::Logger &log, const std::string &path);
 
-  data::NavigationVector getZeroAcc() const;
   data::NavigationVector getAccurateAcceleration();
   data::NavigationVector addNoiseToAcceleration(const data::NavigationVector acceleration) const;
 };

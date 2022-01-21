@@ -12,7 +12,8 @@ namespace hyped::sensors {
 FakeImu::FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory)
     : config_(config),
       data_(data::Data::getInstance()),
-      fake_trajectory_(fake_trajectory)
+      fake_trajectory_(fake_trajectory),
+      is_operational_(true)
 {
 }
 
@@ -28,9 +29,21 @@ data::NavigationVector FakeImu::getAccurateAcceleration()
 
 data::ImuData FakeImu::getData()
 {
+  if (config_.failure_in_state) {
+    const auto current_state = data_.getStateMachineData().current_state;
+    if (current_state == *config_.failure_in_state) { is_operational_ = false; }
+  }
   data::ImuData imu_data;
-  imu_data.operational = true;
-  imu_data.acc         = addNoiseToAcceleration(getAccurateAcceleration());
+  imu_data.operational = is_operational_;
+  if (is_operational_) {
+    imu_data.acc = addNoiseToAcceleration(getAccurateAcceleration());
+  } else {
+    static std::default_random_engine generator;
+    std::uniform_real_distribution<data::nav_t> distribution;
+    for (size_t i = 0; i < 3; ++i) {
+      imu_data.acc[i] = distribution(generator);
+    }
+  }
   return imu_data;
 }
 
@@ -121,15 +134,6 @@ data::NavigationVector FakeImu::addNoiseToAcceleration(
     temp[i] = distribution(generator);
   }
   return temp;
-}
-
-data::NavigationVector FakeImu::getZeroAcc() const
-{
-  data::NavigationVector value;
-  value[0] = 0.0;
-  value[1] = 0.0;
-  value[2] = 9.8;
-  return addNoiseToAcceleration(value);
 }
 
 }  // namespace hyped::sensors

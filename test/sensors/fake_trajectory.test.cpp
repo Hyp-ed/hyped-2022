@@ -8,12 +8,12 @@ namespace hyped::testing {
 
 class FakeTrajectoryTest : public Test {
  public:
-  const std::vector<data::State> pre_run_states_
+  inline static const std::vector<data::State> pre_run_states_
     = {data::State::kIdle, data::State::kPreCalibrating, data::State::kCalibrating,
        data::State::kReady};
-  const std::vector<data::State> braking_states_
+  inline static const std::vector<data::State> braking_states_
     = {data::State::kCruising, data::State::kNominalBraking, data::State::kEmergencyBraking};
-  const std::vector<data::State> post_run_states_
+  inline static const std::vector<data::State> post_run_states_
     = {data::State::kFailureStopped, data::State::kFinished};
 };
 

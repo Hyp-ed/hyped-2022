@@ -6,7 +6,6 @@
 
 namespace hyped
 {
-
   using data::BatteryData;
   using data::ImuData;
   using data::NavigationVector;

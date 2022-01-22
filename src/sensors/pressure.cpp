@@ -32,9 +32,14 @@ namespace hyped
 
     int Pressure::scaleData(uint16_t raw_value)
     {
-      //TODO: convert voltages to bar
       //To convert ADC bins into volts
-      double pressure = static_cast<double>(raw_value) / 4095;
+      double pressure = (static_cast<double>(raw_value) / 4095) * 5;
+
+      //0 - 5 volts to 0 - 10 equal multiply by 2.
+      pressure = 2 * pressure;
+
+      //truncate down
+      return static_cast<int>(pressure);
     }
 
     int Pressure::getData()

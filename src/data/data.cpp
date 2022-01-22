@@ -95,7 +95,7 @@ namespace hyped
       return pressure_;
     }
 
-    void Data::getPressure(const int &pressure)
+    void Data::setPressure(const int &pressure)
     {
       ScopedLock L(&lock_pressure_);
       pressure_ = pressure;

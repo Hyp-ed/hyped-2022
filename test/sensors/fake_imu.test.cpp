@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 #include <sensors/fake_imu.hpp>
-#include <utils/concurrent/thread.hpp>
 
 namespace hyped::testing {
 

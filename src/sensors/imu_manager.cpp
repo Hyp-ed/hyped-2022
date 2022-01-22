@@ -58,4 +58,5 @@ void ImuManager::run()
     data.setSensorsImuData(imu_data);
   }
 }
+
 }  // namespace hyped::sensors

@@ -87,7 +87,7 @@ namespace hyped
 
     struct PressureData : public Sensor
     {
-      int pressure; //bar
+      int pressure; // bar
     };
 
     struct Sensors : public Module
@@ -235,17 +235,17 @@ namespace hyped
       void setTemperature(const int &temp);
 
       /**
-   * @brief Get the Pressure from ?
+   * @brief Get the Pressure
    *
-   * @return int pressure in bars
+   * @return int pressure in bar
    */
       int getPressure();
 
       /**
-    * @brief Set the Pressure from ?
-    *
-    * @param pressure - pressure in bars
-    */
+   * @brief Set the Pressure
+   *
+   * @param pressure - pressure in bar
+   */
       void setPressure(const int &pressure);
 
       /**
@@ -335,7 +335,7 @@ namespace hyped
       Telemetry telemetry_;
       EmergencyBrakes emergency_brakes_;
       int temperature_; // In degrees C
-      int pressure_;    // In bars
+      int pressure_;    // In bar
 
       // locks for data substructures
       Lock lock_state_machine_;
@@ -343,7 +343,7 @@ namespace hyped
       Lock lock_sensors_;
       Lock lock_motors_;
       Lock lock_temp_;
-      Lock lock_pressure_;
+      Lock lock_pressure;
 
       Lock lock_telemetry_;
       Lock lock_batteries_;

@@ -16,8 +16,6 @@ class RpmRegulator {
    *
    * @param actual_velocity - the actual velocity of the pod from navigation
    * @param actual_rpm - average rpm of all the motors
-   * @param actual_current - max current (mA) drawn out of all the motors
-   * @param actual_temperature - max temperature out of all the motors
    * @return int32_t - the optimal rpm which the motors should be set to.
    */
   int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm);

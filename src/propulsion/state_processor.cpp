@@ -100,7 +100,7 @@ void StateProcessor::accelerate()
   }
 }
 
-bool StateProcessor::isOverlimits()
+bool StateProcessor::isOverLimits()
 {
   const auto act_temp    = calculateMaximumTemperature();
   const auto act_current = calculateMaximumCurrent();

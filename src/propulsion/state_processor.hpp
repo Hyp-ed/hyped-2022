@@ -49,11 +49,11 @@ class StateProcessor {
    */
   void accelerate();
 
+  bool isOverLimits();
+
   /**
    * @brief Returns if the motors are initialised already
    */
-
-  bool isOverlimits();
   bool isInitialised();
 
   /**

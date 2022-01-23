@@ -92,14 +92,26 @@ void StateProcessor::accelerate()
     previous_acceleration_time_ = now;
     const auto velocity         = data_.getNavigationData().velocity;
     const auto act_rpm          = calculateAverageRpm();
-    const auto act_current      = calculateMaximumCurrent();
-    const auto act_temp         = calculateMaximumTemperature();
-    const auto rpm = rpm_regulator_.calculateRpm(velocity, act_rpm, act_current, act_temp);
+    const auto rpm              = rpm_regulator_.calculateRpm(velocity, act_rpm);
     log_.INFO("STATE-PROCESSOR", "sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }
   }
+}
+
+bool StateProcessor::isOverheating()
+{
+  const auto act_temp = calculateMaximumTemperature();
+  if (act_temp > kMaximumTemperature) { return true; }
+  return false;
+}
+
+bool StateProcessor::isOvercurrent()
+{
+  const auto act_current = calculateMaximumCurrent();
+  if (act_current > kMaximumCurrent) { return true; }
+  return false;
 }
 
 int32_t StateProcessor::calculateAverageRpm()

@@ -52,6 +52,11 @@ class StateProcessor {
   /**
    * @brief Returns if the motors are initialised already
    */
+
+  bool isOverheating();
+
+  bool isOvercurrent();
+
   bool isInitialised();
 
   /**
@@ -60,6 +65,8 @@ class StateProcessor {
   void sendOperationalCommand();
 
  private:
+  static constexpr int kMaximumTemperature = 150;
+  static constexpr int kMaximumCurrent     = 1500;  // mA
   /**
    * @brief Registers the controllers to handle CAN transmissions
    */

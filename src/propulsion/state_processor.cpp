@@ -100,21 +100,16 @@ void StateProcessor::accelerate()
   }
 }
 
-bool StateProcessor::isOverheating()
+bool StateProcessor::isOverlimits()
 {
-  const auto act_temp = calculateMaximumTemperature();
-  if (act_temp > kMaximumTemperature) {
-    log_.ERR("STATE PROCESSOR", "motors overheating");
-    return true;
-  }
-  return false;
-}
-
-bool StateProcessor::isOvercurrent()
-{
+  const auto act_temp    = calculateMaximumTemperature();
   const auto act_current = calculateMaximumCurrent();
   if (act_current > kMaximumCurrent) {
     log_.ERR("STATE PROCESSOR", "motors over maximum current");
+    return true;
+  }
+  if (act_temp > kMaximumTemperature) {
+    log_.ERR("STATE PROCESSOR", "motors overheating");
     return true;
   }
   return false;

@@ -53,10 +53,7 @@ class StateProcessor {
    * @brief Returns if the motors are initialised already
    */
 
-  bool isOverheating();
-
-  bool isOvercurrent();
-
+  bool isOverlimits();
   bool isInitialised();
 
   /**

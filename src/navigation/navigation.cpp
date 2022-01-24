@@ -27,7 +27,7 @@ Navigation::Navigation(utils::Logger &log, uint32_t axis /*=0*/)
       has_initial_time_(false),
       stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
                       kStripeDistance),
-      is_keyence_used_(true),
+      is_keyence_used_(false),
       is_keyence_real_(true),
       acceleration_integrator_(&velocity_),
       velocity_integrator_(&displacement_)

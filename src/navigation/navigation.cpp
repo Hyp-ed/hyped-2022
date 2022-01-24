@@ -372,7 +372,7 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
     if (exceeds_limits && is_imu_reliable_.at(i)) {
       log_.DBG3(
         "NAV",
-        "Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",  // NOLINT
+        "Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f", 
         i + 1, data_array.at(i), lower_limit, upper_limit, q2);
 
       data_array.at(i) = q2;
@@ -405,7 +405,7 @@ void Navigation::updateData()
   data_.setNavigationData(nav_data);
 
   if (log_counter_ % 100 == 0) {                                                 // kPrintFreq
-    log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f",  // NOLINT
+    log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f",
              log_counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
              stripe_counter_.getStripeCount() * hyped::data::Navigation::kStripeDistance);
     log_.DBG("NAV", "%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,

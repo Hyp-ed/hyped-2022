@@ -74,4 +74,16 @@ bool System::setExitFunction()
   return true;
 }
 
+bool System::isRunning()
+{
+  utils::concurrent::ScopedLock scoped_lock(&lock_);
+  return running_;
+}
+
+void System::stop()
+{
+  utils::concurrent::ScopedLock scoped_lock(&lock_);
+  running_ = false;
+}
+
 }  // namespace hyped::utils

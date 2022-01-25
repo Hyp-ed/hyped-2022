@@ -49,13 +49,13 @@ class System {
    */
   static bool setExitFunction();
 
-  bool isRunning() const;
+  bool isRunning();
   void stop();
 
   const Config config_;
 
  private:
-  utils::concurrent::Lock lock;
+  utils::concurrent::Lock lock_;
   bool running_;
   Logger log_;
 

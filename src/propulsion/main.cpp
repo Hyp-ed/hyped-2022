@@ -28,9 +28,9 @@ void Main::handleCriticalFailure(data::Data &data, data::Motors &motor_data)
 
 void Main::run()
 {
-  const auto &system = utils::System::getSystem();
-  auto &data         = data::Data::getInstance();
-  auto motor_data    = data.getMotorData();
+  auto &system    = utils::System::getSystem();
+  auto &data      = data::Data::getInstance();
+  auto motor_data = data.getMotorData();
 
   // Initialise states
   current_state_  = data.getStateMachineData().current_state;

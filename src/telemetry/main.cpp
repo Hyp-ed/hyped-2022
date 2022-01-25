@@ -7,9 +7,9 @@
 namespace hyped::telemetry {
 
 Main::Main()
-    : data_(data::Data::getInstance()),
-      utils::concurrent::Thread(
-        utils::Logger("TELEMETRY", utils::System::getSystem().config_.log_level_telemetry))
+    : utils::concurrent::Thread(
+      utils::Logger("TELEMETRY", utils::System::getSystem().config_.log_level_telemetry)),
+      data_(data::Data::getInstance())
 {
   const auto &system_config = utils::System::getSystem().config_;
   auto client_optional      = Client::fromFile(system_config.client_config_path);

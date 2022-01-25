@@ -8,9 +8,10 @@
 namespace hyped::sensors {
 
 GpioCounter::GpioCounter(const std::uint32_t pin)
-    : pin_(pin),
-      sys_(utils::System::getSystem()),
-      utils::concurrent::Thread(utils::Logger("GPIO-COUNTER", sys_.config_.log_level_sensors))
+    : utils::concurrent::Thread(
+      utils::Logger("GPIO-COUNTER", utils::System::getSystem().config_.log_level_sensors)),
+      pin_(pin),
+      sys_(utils::System::getSystem())
 {
 }
 

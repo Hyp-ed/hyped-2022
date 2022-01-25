@@ -49,7 +49,6 @@ class System {
    */
   static bool setExitFunction();
 
-  int8_t getRunId() const;
   bool isRunning() const;
   void stop();
 

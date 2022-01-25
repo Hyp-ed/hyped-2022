@@ -16,8 +16,7 @@
 #include <utils/math/integrator.hpp>
 #include <utils/math/statistics.hpp>
 
-namespace hyped {
-namespace navigation {
+namespace hyped::navigation {
 
 class Navigation {
  public:
@@ -35,7 +34,7 @@ class Navigation {
    * @param log System logger
    * @param axis Axis used of acceleration measurements
    */
-  explicit Navigation(utils::Logger &log, uint32_t axis = 0);
+  explicit Navigation(const std::uint32_t axis = 0);
   /**
    * @brief Get the current state of the navigation module
    *
@@ -153,8 +152,8 @@ class Navigation {
   static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
 
   // System communication
-  utils::Logger &log_;
   data::Data &data_;
+  utils::Logger log_;
   data::ModuleStatus status_;
 
   uint32_t log_counter_;
@@ -235,5 +234,4 @@ class Navigation {
   void checkVibration();
 };
 
-}  // namespace navigation
-}  // namespace hyped
+}  // namespace hyped::navigation

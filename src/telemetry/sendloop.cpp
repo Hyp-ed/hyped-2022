@@ -13,12 +13,12 @@ SendLoop::SendLoop(utils::Logger &log, data::Data &data, Main &main_ref)
       main_ref_{main_ref},
       data_{data}
 {
-  log_.DBG("Telemetry", "Telemetry SendLoop thread object created");
+  log_.debug("Telemetry SendLoop thread object created");
 }
 
 void SendLoop::run()
 {
-  log_.DBG("Telemetry", "Telemetry SendLoop thread started");
+  log_.debug("Telemetry SendLoop thread started");
 
   uint16_t num_packages_sent = 0;
 
@@ -32,8 +32,8 @@ void SendLoop::run()
     writer.packAdditionalData();
     writer.end();
     data::Telemetry telemetry_data = data_.getTelemetryData();
-    if (!main_ref_.client_.sendData(writer.getString())) {
-      log_.ERR("Telemetry", "Error sending message");
+    if (!main_ref_.client_->sendData(writer.getString())) {
+      log_.error("Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
 
@@ -43,7 +43,7 @@ void SendLoop::run()
     utils::concurrent::Thread::sleep(100);
   }
 
-  log_.DBG("Telemetry", "Exiting Telemetry SendLoop thread");
+  log_.debug("Exiting Telemetry SendLoop thread");
 }
 
 }  // namespace telemetry

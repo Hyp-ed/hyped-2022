@@ -5,6 +5,7 @@
 
 #include <net/if.h>
 #include <sys/socket.h>
+#include <utils/system.hpp>
 
 #if LINUX
 #include <linux/can.h>
@@ -43,10 +44,11 @@ namespace hyped {
 namespace utils {
 namespace io {
 
-Can::Can() : concurrent::Thread(0)
+Can::Can()
+    : utils::concurrent::Thread(utils::Logger("CAN", utils::System::getSystem().config_.log_level))
 {
   if ((socket_ = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
-    log_.ERR("CAN", "Could not open can socket");
+    log_.error("Could not open can socket");
     return;
   }
 
@@ -55,20 +57,20 @@ Can::Can() : concurrent::Thread(0)
   addr.can_ifindex = if_nametoindex("can0");  // ifr.ifr_ifindex;
 
   if (addr.can_ifindex == 0) {
-    log_.ERR("CAN", "Could not find can0 network interface");
+    log_.error("Could not find can0 network interface");
     close(socket_);
     socket_ = -1;
     return;
   }
 
   if (bind(socket_, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-    log_.ERR("CAN", "Could not bind can socket");
+    log_.error("Could not bind can socket");
     close(socket_);
     socket_ = -1;
     return;
   }
 
-  log_.INFO("CAN", "socket successfully created");  // TODO(Gregor): log this only if successful
+  log_.info("socket successfully created");  // TODO(Gregor): log this only if successful
 }
 
 Can::~Can()
@@ -89,10 +91,10 @@ int Can::send(const can::Frame &frame)
   if (socket_ < 0) return 0;  // early exit if no can device present
 
   can_frame can;
-  log_.DBG2("CAN", "trying to send something");
+  log_.debug("trying to send something");
   // checks, id <= ID_MAX, len <= LEN_MAX
   if (frame.len > 8) {
-    log_.ERR("CAN", "trying to send message of more than 8 bytes, bytes: %d", frame.len);
+    log_.error("trying to send message of more than 8 bytes, bytes: %d", frame.len);
     return 0;
   }
 
@@ -106,12 +108,12 @@ int Can::send(const can::Frame &frame)
   {
     concurrent::ScopedLock L(&socket_lock_);
     if (write(socket_, &can, CAN_MTU) != CAN_MTU) {
-      log_.ERR("CAN", "cannot write to socket");
+      log_.error("cannot write to socket");
       return 0;
     }
   }
 
-  log_.DBG1("CAN", "message with id %d sent, extended:%d", frame.id, frame.extended);
+  log_.debug("message with id %d sent, extended:%d", frame.id, frame.extended);
   return 1;
 }
 
@@ -120,12 +122,12 @@ void Can::run()
   /* these settings are static and can be held out of the hot path */
   can::Frame data;
 
-  log_.INFO("CAN", "starting continuous reading");
+  log_.info("starting continuous reading");
   while (running_ && socket_ >= 0) {
     receive(&data);
     processNewData(&data);
   }
-  log_.INFO("CAN", "stopped continuous reading");
+  log_.info("stopped continuous reading");
 
   if (socket_ >= 0) close(socket_);
 }
@@ -138,7 +140,7 @@ int Can::receive(can::Frame *frame)
   nBytes = read(socket_, &raw_data, CAN_MTU);
   if (nBytes != CAN_MTU) {
     // perror("read");
-    log_.ERR("CAN", "cannot read from socket");
+    log_.error("cannot read from socket");
     return 0;
   }
 
@@ -148,7 +150,7 @@ int Can::receive(can::Frame *frame)
   for (int i = 0; i < frame->len; i++) {
     frame->data[i] = raw_data.data[i];
   }
-  log_.DBG1("CAN", "received %u %u, extended %d", raw_data.can_id, frame->id, frame->extended);
+  log_.debug("received %u %u, extended %d", raw_data.can_id, frame->id, frame->extended);
   return 1;
 }
 
@@ -166,7 +168,7 @@ void Can::processNewData(can::Frame *message)
   if (owner) {
     owner->processNewData(*message);
   } else {
-    log_.ERR("CAN", "did not find owner of received CAN message with id %d", message->id);
+    log_.error("did not find owner of received CAN message with id %d", message->id);
   }
 }
 

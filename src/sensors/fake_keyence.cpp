@@ -53,8 +53,7 @@ std::optional<std::array<FakeKeyence, data::Sensors::kNumKeyence>> FakeKeyence::
 {
   const auto configs = readConfigs(log, path);
   if (!configs) {
-    log.ERR("FAKE-KEYENCE", "Failed to read config at %s. Could not construct objects.",
-            path.c_str());
+    log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
   return std::array<FakeKeyence, data::Sensors::kNumKeyence>(
@@ -66,26 +65,24 @@ std::optional<std::array<FakeKeyence::Config, data::Sensors::kNumKeyence>> FakeK
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
-    log.ERR("FAKE-KEYENCE", "Failed to open config file at %s", path.c_str());
+    log.error("Failed to open config file at %s", path.c_str());
     return std::nullopt;
   }
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
   document.ParseStream(input_stream_wrapper);
   if (document.HasParseError()) {
-    log.ERR("FAKE-KEYENCE", "Failed to parse config file at %s", path.c_str());
+    log.error("Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
   if (!document.HasMember("fake_keyence")) {
-    log.ERR("FAKE-KEYENCE", "Missing required field 'fake_keyence' in configuration file at %s",
-            path.c_str());
+    log.error("Missing required field 'fake_keyence' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
   auto config_object_array = document["fake_keyence"].GetArray();
   if (data::Sensors::kNumKeyence != config_object_array.Size()) {
-    log.ERR("FAKE-KEYENCE",
-            "Found %d config objects but %d were expected in configuration file at %s",
-            config_object_array.Size(), data::Sensors::kNumKeyence, path.c_str());
+    log.error("Found %d config objects but %d were expected in configuration file at %s",
+              config_object_array.Size(), data::Sensors::kNumKeyence, path.c_str());
     return std::nullopt;
   }
   std::array<FakeKeyence::Config, data::Sensors::kNumKeyence> configs;
@@ -94,9 +91,8 @@ std::optional<std::array<FakeKeyence::Config, data::Sensors::kNumKeyence>> FakeK
     const auto config_object = config_value.GetObject();
     FakeKeyence::Config config;
     if (!config_object.HasMember("noise")) {
-      log.ERR("FAKE-KEYENCE",
-              "Missing required field 'fake_keyence[%d].noise' in configuration file at %s", i,
-              path.c_str());
+      log.error("Missing required field 'fake_keyence[%d].noise' in configuration file at %s", i,
+                path.c_str());
       return std::nullopt;
     }
     config.noise = static_cast<data::nav_t>(config_object["noise"].GetDouble());
@@ -104,10 +100,10 @@ std::optional<std::array<FakeKeyence::Config, data::Sensors::kNumKeyence>> FakeK
       const auto state_name     = std::string(config_object["failure_in_state"].GetString());
       const auto state_optional = data::stateFromString(state_name);
       if (!state_optional) {
-        log.ERR("FAKE-KEYENCE",
-                "Unknown state name '%s' in field 'fake_keyence[%d].failure_in_state' in "
-                "configuration file at %s",
-                state_name.c_str(), i, path.c_str());
+        log.error(
+          "Unknown state name '%s' in field 'fake_keyence[%d].failure_in_state' in "
+          "configuration file at %s",
+          state_name.c_str(), i, path.c_str());
         return std::nullopt;
       }
       config.failure_in_state = state_optional;

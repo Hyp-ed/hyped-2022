@@ -4,69 +4,94 @@
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
 #include <sensors/temperature.hpp>
-#include <utils/config.hpp>
 
 namespace hyped::sensors {
 
-Main::Main(const uint8_t id, utils::Logger &log)
-    : Thread(id, log),
+Main::Main()
+    : utils::concurrent::Thread(
+      utils::Logger("SENSORS", utils::System::getSystem().config_.log_level_sensors)),
       sys_(utils::System::getSystem()),
-      data_(data::Data::getInstance()),
-      log_(log),
-      keyence_pins_{static_cast<uint8_t>(sys_.config->sensors.keyence_l),
-                    static_cast<uint8_t>(sys_.config->sensors.keyence_r)}
+      data_(data::Data::getInstance())
 {
-  static const std::string fake_config_path = "configurations/config.json";
-  battery_manager_                          = std::make_unique<BmsManager>(log);
-  if (sys_.fake_trajectory) {
-    const auto fake_trajectory_optional = FakeTrajectory::fromFile(log, fake_config_path);
+  battery_manager_ = BmsManager::fromFile(sys_.config_.bms_config_path);
+  if (!battery_manager_) {
+    log_.error("failed to initialise bms");
+    sys_.stop();
+    return;
+  }
+  if (sys_.config_.use_fake_trajectory) {
+    const auto fake_trajectory_optional
+      = FakeTrajectory::fromFile(log_, sys_.config_.fake_trajectory_config_path);
     if (!fake_trajectory_optional) {
-      log.ERR("SENSORS", "failed to initialise fake trajectory");
-      sys_.running_ = false;
+      log_.error("failed to initialise fake trajectory");
+      sys_.stop();
       return;
     }
     const auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
     const auto fake_keyences_optional
-      = FakeKeyence::fromFile(log, fake_config_path, fake_trajectory);
+      = FakeKeyence::fromFile(log_, sys_.config_.keyence_config_path, fake_trajectory);
     if (!fake_keyences_optional) {
-      log.ERR("SENSORS", "failed to initialise fake keyence");
-      sys_.running_ = false;
+      log_.error("failed to initialise fake keyence");
+      sys_.stop();
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
       keyences_.at(i) = std::move(std::make_unique<FakeKeyence>(fake_keyences_optional->at(i)));
     }
-    auto imu_manager_optional = ImuManager::fromFile(log, fake_config_path, fake_trajectory);
-    if (!imu_manager_optional) {
-      log.ERR("SENSORS", "failed to initialise fake imus");
-      sys_.running_ = false;
+    imu_manager_ = ImuManager::fromFile(sys_.config_.imu_config_path, fake_trajectory);
+    if (!imu_manager_) {
+      log_.error("failed to initialise fake imus");
+      sys_.stop();
       return;
     }
-    imu_manager_ = std::move(*imu_manager_optional);
   } else {
     // Real trajectory sensors
+    auto keyence_pins = keyencePinsFromFile(sys_.config_.keyence_config_path);
+    if (!keyence_pins) {
+      log_.error("failed to initialise keyence");
+      sys_.stop();
+      return;
+    }
     for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
-      auto keyence = std::make_unique<GpioCounter>(log_, keyence_pins_[i]);
+      auto keyence = std::make_unique<GpioCounter>(keyence_pins->at(i));
       keyence->start();
       keyences_[i] = std::move(keyence);
     }
-    imu_manager_ = std::make_unique<ImuManager>(log);
+    auto imu_pins = imuPinsFromFile(sys_.config_.imu_config_path);
+    if (!imu_pins) {
+      log_.error("failed to initialise IMUs");
+      sys_.stop();
+      return;
+    }
+    imu_manager_ = std::make_unique<ImuManager>(
+      utils::Logger("IMU-MANAGER", sys_.config_.log_level_sensors), *imu_pins);
+    if (!imu_manager_) {
+      log_.error("failed to initialise imus");
+      sys_.stop();
+      return;
+    }
   }
 
   // Temperature
-  if (sys_.fake_temperature_fail) {
+  if (sys_.config_.use_fake_temperature_fail) {
     temperature_ = std::make_unique<FakeTemperature>(log_, true);
-  } else if (sys_.fake_temperature) {
+  } else if (sys_.config_.use_fake_temperature) {
     temperature_ = std::make_unique<FakeTemperature>(log_, false);
   } else {
-    temperature_ = std::make_unique<Temperature>(log_, sys_.config->sensors.thermistor);
+    auto temperature_pin = temperaturePinFromFile(sys_.config_.temperature_config_path);
+    if (!temperature_pin) {
+      log_.error("failed to initialise temperature sensor");
+      sys_.stop();
+      return;
+    }
+    temperature_ = std::make_unique<Temperature>(log_, *temperature_pin);
   }
 
   // kReady for state machine transition
   sensors_               = data_.getSensorsData();
   sensors_.module_status = data::ModuleStatus::kReady;
   data_.setSensorsData(sensors_);
-  log_.INFO("Sensors", "Sensors have been initialised");
+  log_.info("Sensors have been initialised");
 }
 
 void Main::checkTemperature()
@@ -74,7 +99,7 @@ void Main::checkTemperature()
   temperature_->run();  // not a thread
   data_.setTemperature(temperature_->getData());
   if (data_.getTemperature() > 85 && !log_error_) {
-    log_.INFO("Sensors", "PCB temperature is getting a wee high...sorry Cheng");
+    log_.info("PCB temperature is getting a wee high...sorry Cheng");
     log_error_ = true;
   }
 }
@@ -88,7 +113,7 @@ void Main::run()
   auto previous_keyence = current_keyence;
 
   int temp_count = 0;
-  while (sys_.running_) {
+  while (sys_.isRunning()) {
     bool keyence_updated = false;
     for (size_t i = 0; i < current_keyence.size(); ++i) {
       if (current_keyence.at(i).timestamp > previous_keyence.at(i).timestamp) {

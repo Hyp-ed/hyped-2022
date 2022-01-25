@@ -242,7 +242,7 @@ Off Off::instance_;
 
 State *Off::checkTransition(Logger &log)
 {
-  log.ERR("STM", "tried to transition from Off state");
+  log.error("tried to transition from Off state");
   return nullptr;
 }
 

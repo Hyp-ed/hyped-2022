@@ -1,30 +1,29 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
-#include <utils/config.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-namespace telemetry {
+namespace hyped::telemetry {
 
 class Client {
  public:
-  explicit Client(utils::Logger &log);
+  struct Config {
+    std::string port;
+    std::string server_ip;
+  };
   ~Client();
   bool connect();
   bool sendData(std::string message);
   std::string receiveData();
+  static std::optional<Client> fromFile(const std::string &path);
 
  private:
-  Client(utils::Logger &log, const utils::Config &config);
-
-  utils::Logger &log_;
+  Client(utils::Logger log, const Config &config);
+  utils::Logger log_;
+  const Config config_;
   int socket_;
-  const std::string port_;
-  const std::string server_ip_;
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

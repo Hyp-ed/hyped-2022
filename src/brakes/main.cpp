@@ -1,27 +1,25 @@
 #include "main.hpp"
 
-#include <utils/config.hpp>
+namespace hyped::brakes {
 
-namespace hyped {
-namespace brakes {
-
-Main::Main(uint8_t id, Logger &log)
-    : Thread(id, log),
-      log_(log),
-      data_(data::Data::getInstance()),
-      sys_(utils::System::getSystem())
+Main::Main()
+    : utils::concurrent::Thread(
+      utils::Logger("BRAKES", utils::System::getSystem().config_.log_level_brakes)),
+      sys_(utils::System::getSystem()),
+      data_(data::Data::getInstance())
 {
-  // parse GPIO pins from config.txt file
-  for (int i = 0; i < 2; i++) {
-    command_pins_[i] = sys_.config->brakes.command[i];
-    button_pins_[i]  = sys_.config->brakes.button[i];
-  }
-  if (sys_.fake_brakes) {
+  if (sys_.config_.use_fake_brakes) {
     m_brake_ = new FakeStepper(log_, 1);
     f_brake_ = new FakeStepper(log_, 2);
   } else {
-    m_brake_ = new Stepper(command_pins_[0], button_pins_[0], log_, 1);
-    f_brake_ = new Stepper(command_pins_[1], button_pins_[1], log_, 2);
+    auto pins = pinsFromFile(sys_.config_.brakes_config_path);
+    if (!pins) {
+      log_.error("failed to initialise brakes");
+      sys_.stop();
+      return;
+    }
+    m_brake_ = new Stepper(pins->command_pins.at(0), pins->button_pins.at(0), log_, 1);
+    f_brake_ = new Stepper(pins->command_pins.at(1), pins->button_pins.at(1), log_, 2);
   }
 }
 
@@ -32,11 +30,9 @@ void Main::run()
   brakes_.module_status = ModuleStatus::kInit;
   data_.setEmergencyBrakesData(brakes_);
 
-  log_.INFO("Brakes", "Thread started");
+  log_.info("Thread started");
 
-  System &sys = System::getSystem();
-
-  while (sys.running_) {
+  while (sys_.isRunning()) {
     // Get the current state of brakes, state machine and telemetry modules from data
     brakes_   = data_.getEmergencyBrakesData();
     sm_data_  = data_.getStateMachineData();
@@ -44,6 +40,7 @@ void Main::run()
 
     switch (sm_data_.current_state) {
       case data::State::kIdle:
+      case data::State::kPreCalibrating:
         if (tlm_data_.nominal_braking_command) {
           if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
           if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }
@@ -121,7 +118,7 @@ void Main::run()
         break;
     }
   }
-  log_.INFO("Brakes", "Thread shutting down");
+  log_.info("Thread shutting down");
 }
 
 Main::~Main()
@@ -130,5 +127,4 @@ Main::~Main()
   delete m_brake_;
 }
 
-}  // namespace brakes
-}  // namespace hyped
+}  // namespace hyped::brakes

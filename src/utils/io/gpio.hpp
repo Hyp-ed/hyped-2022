@@ -1,23 +1,18 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
+#include <utils/logger.hpp>
 #include <utils/utils.hpp>
 
-namespace hyped {
-namespace utils {
-// Forward declaration
-class Logger;
-namespace io {
-
-namespace gpio {
-constexpr uint8_t kBankNum = 4;
-enum Direction { kIn = 0, kOut = 1 };
-}  // namespace gpio
+namespace hyped::utils::io {
 
 class GPIO {
  public:
+  static constexpr uint8_t kBankNum = 4;
+  enum class Direction { kIn = 0, kOut = 1 };
   /**
    * @brief to be called on when logger is not initialized
    * will call on following constructor after initializing logger with getLogger()
@@ -25,7 +20,7 @@ class GPIO {
    * @param pin address on BBB
    * @param direction to write into file system of gpio pin
    */
-  GPIO(uint32_t pin, gpio::Direction direction);
+  GPIO(uint32_t pin, Direction direction);
   /**
    * @brief overload constructor with logger initialized for debugging purposes
    *
@@ -33,7 +28,7 @@ class GPIO {
    * @param direction to write into file system of gpio pin
    * @param log
    */
-  GPIO(uint32_t pin, gpio::Direction direction, Logger &log);
+  GPIO(uint32_t pin, Direction direction, Logger &log);
 
   void set();      // set high
   void clear();    // set low
@@ -46,7 +41,13 @@ class GPIO {
   int8_t wait();
 
  private:
-  GPIO() = delete;
+  static constexpr std::array<off_t, kBankNum> kBases
+    = {0x44e07000, 0x4804c000, 0x481ac000, 0x481ae000};
+  static constexpr uint32_t kMmapSize = 0x1000;
+  static constexpr uint32_t kData     = 0x138;
+  static constexpr uint32_t kClear    = 0x190;
+  static constexpr uint32_t kSet      = 0x194;
+  GPIO()                              = delete;
 
   // GPIO system configuration
   /**
@@ -82,7 +83,7 @@ class GPIO {
    * @brief arary of size kBankNum, used in initialize() and attatchGPIO()
    *
    */
-  static void *base_mapping_[gpio::kBankNum];
+  static void *base_mapping_[kBankNum];
 
   /**
    * @brief vector of currently used (exported) pins
@@ -106,7 +107,7 @@ class GPIO {
   void setupWait();
 
   uint32_t pin_;
-  gpio::Direction direction_;
+  Direction direction_;
   Logger &log_;
 
   volatile uint32_t *set_;    // set register
@@ -118,6 +119,4 @@ class GPIO {
   NO_COPY_ASSIGN(GPIO)
 };
 
-}  // namespace io
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils::io

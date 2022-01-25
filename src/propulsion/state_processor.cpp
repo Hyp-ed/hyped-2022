@@ -11,13 +11,13 @@ StateProcessor::StateProcessor(utils::Logger &log)
       is_initialised_(false),
       rpm_regulator_()
 {
-  if (sys_.fake_motors) {
-    log_.INFO("STATE-PROCESSOR", "constructing with fake controllers");
+  if (sys_.config_.use_fake_controller) {
+    log_.info("constructing with fake controllers");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
     }
   } else {  // Use real controllers
-    log_.INFO("STATE-PROCESSOR", "constructing with real controllers");
+    log_.info("constructing with real controllers");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
       controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
@@ -28,7 +28,7 @@ void StateProcessor::initialiseMotors()
 {
   registerControllers();
   configureControllers();
-  log_.INFO("STATE-PROCESSOR", "initialising");
+  log_.info("initialising");
   bool error = false;
   for (auto &controller : controllers_) {
     if (controller->getFailure()) {
@@ -76,7 +76,7 @@ void StateProcessor::enterPreOperational()
 void StateProcessor::accelerate()
 {
   if (!is_initialised_) {
-    log_.INFO("STATE-PROCESSOR", "not initialised");
+    log_.info("not initialised");
     return;
   }
 
@@ -95,7 +95,7 @@ void StateProcessor::accelerate()
     const auto act_current      = calculateMaximumCurrent();
     const auto act_temp         = calculateMaximumTemperature();
     const auto rpm = rpm_regulator_.calculateRpm(velocity, act_rpm, act_current, act_temp);
-    log_.INFO("STATE-PROCESSOR", "sending %d rpm as target", rpm);
+    log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }

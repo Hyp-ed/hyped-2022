@@ -7,25 +7,25 @@
 
 namespace hyped::sensors {
 
-GpioCounter::GpioCounter(utils::Logger &log, int pin)
+GpioCounter::GpioCounter(const std::uint32_t pin)
     : pin_(pin),
       sys_(utils::System::getSystem()),
-      log_(log)
+      utils::concurrent::Thread(utils::Logger("GPIO-COUNTER", sys_.config_.log_level_sensors))
 {
 }
 
 void GpioCounter::run()
 {
-  utils::io::GPIO thepin(pin_, utils::io::gpio::kIn);  // exports pin
-  uint8_t val             = thepin.wait();             // Ignore first reading
+  utils::io::GPIO thepin(pin_, utils::io::GPIO::Direction::kIn);  // exports pin
+  uint8_t val             = thepin.wait();                        // Ignore first reading
   counter_data_.value     = 0;
   counter_data_.timestamp = utils::Timer::getTimeMicros();
 
-  while (sys_.running_) {
+  while (sys_.isRunning()) {
     val = thepin.wait();
     if (val == 1) {
       counter_data_.value = counter_data_.value + 1;
-      log_.DBG3("TEST-KEYENCE", "Stripe Count: %d", counter_data_.value);
+      log_.debug("Stripe Count: %d", counter_data_.value);
       counter_data_.timestamp   = utils::Timer::getTimeMicros();
       counter_data_.operational = true;
     }

@@ -57,7 +57,7 @@ std::optional<std::array<FakeImu, data::Sensors::kNumImus>> FakeImu::fromFile(
 {
   const auto configs = readConfigs(log, path);
   if (!configs) {
-    log.ERR("FAKE-IMU", "Failed to read config at %s. Could not construct objects.", path.c_str());
+    log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
   return std::array<FakeImu, data::Sensors::kNumImus>({
@@ -73,25 +73,24 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
-    log.ERR("FAKE-IMU", "Failed to open config file at %s", path.c_str());
+    log.error("Failed to open config file at %s", path.c_str());
     return std::nullopt;
   }
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
   document.ParseStream(input_stream_wrapper);
   if (document.HasParseError()) {
-    log.ERR("FAKE-IMU", "Failed to parse config file at %s", path.c_str());
+    log.error("Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
   if (!document.HasMember("fake_imu")) {
-    log.ERR("FAKE-IMU", "Missing required field 'fake_imu' in configuration file at %s",
-            path.c_str());
+    log.error("Missing required field 'fake_imu' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
   auto config_object_array = document["fake_imu"].GetArray();
   if (data::Sensors::kNumImus != config_object_array.Size()) {
-    log.ERR("FAKE-IMU", "Found %d config objects but %d were expected in configuration file at %s",
-            config_object_array.Size(), data::Sensors::kNumImus, path.c_str());
+    log.error("Found %d config objects but %d were expected in configuration file at %s",
+              config_object_array.Size(), data::Sensors::kNumImus, path.c_str());
     return std::nullopt;
   }
   std::array<FakeImu::Config, data::Sensors::kNumImus> configs;
@@ -100,8 +99,8 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
     const auto config_object = config_value.GetObject();
     FakeImu::Config config;
     if (!config_object.HasMember("noise")) {
-      log.ERR("FAKE-IMU", "Missing required field 'fake_imu[%d].noise' in configuration file at %d",
-              i, path.c_str());
+      log.error("Missing required field 'fake_imu[%d].noise' in configuration file at %d", i,
+                path.c_str());
       return std::nullopt;
     }
     config.noise = static_cast<data::nav_t>(config_object["noise"].GetDouble());
@@ -109,10 +108,10 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
       const auto state_name     = std::string(config_object["failure_in_state"].GetString());
       const auto state_optional = data::stateFromString(state_name);
       if (!state_optional) {
-        log.ERR("FAKE-IMU",
-                "Unknown state name '%s' in field 'fake_imu[%d].failure_in_state' in configuration "
-                "file at %s",
-                state_name.c_str(), i, path.c_str());
+        log.error(
+          "Unknown state name '%s' in field 'fake_imu[%d].failure_in_state' in configuration "
+          "file at %s",
+          state_name.c_str(), i, path.c_str());
         return std::nullopt;
       }
       config.failure_in_state = state_optional;

@@ -8,7 +8,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <utils/config.hpp>
 #include <utils/system.hpp>
 
 struct utils_config : public ::testing::Test {

@@ -14,42 +14,38 @@ std::optional<FakeTrajectory::Config> FakeTrajectory::readConfig(utils::Logger &
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
-    log.ERR("FAKE-TRAJECTORY", "Failed to open config file at %s", path.c_str());
+    log.error("Failed to open config file at %s", path.c_str());
     return std::nullopt;
   }
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
   document.ParseStream(input_stream_wrapper);
   if (document.HasParseError()) {
-    log.ERR("FAKE-TRAJECTORY", "Failed to parse config file at %s", path.c_str());
+    log.error("Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
   if (!document.HasMember("fake_trajectory")) {
-    log.ERR("FAKE-TRAJECTORY",
-            "Missing required field 'fake_trajectory' in configuration file at %s", path.c_str());
+    log.error("Missing required field 'fake_trajectory' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
   const auto config_object = document["fake_trajectory"].GetObject();
   FakeTrajectory::Config config;
   if (!config_object.HasMember("maximum_acceleration")) {
-    log.ERR(
-      "FAKE-TRAJECTORY",
+    log.error(
       "Missing required field 'fake_trajectory.maximum_acceleration' in configuration file at %s",
       path.c_str());
     return std::nullopt;
   }
   config.maximum_acceleration = config_object["maximum_acceleration"].GetDouble();
   if (!config_object.HasMember("braking_deceleration")) {
-    log.ERR(
-      "FAKE-TRAJECTORY",
+    log.error(
       "Missing required field 'fake_trajectory.braking_deceleration' in configuration file at %s",
       path.c_str());
     return std::nullopt;
   }
   config.braking_deceleration = config_object["braking_deceleration"].GetDouble();
   if (!config_object.HasMember("cruising_deceleration")) {
-    log.ERR(
-      "FAKE-TRAJECTORY",
+    log.error(
       "Missing required field 'fake_trajectory.cruising_deceleration' in configuration file at %s",
       path.c_str());
     return std::nullopt;
@@ -62,8 +58,7 @@ std::optional<FakeTrajectory> FakeTrajectory::fromFile(utils::Logger &log, const
 {
   const auto config_optional = readConfig(log, path);
   if (!config_optional) {
-    log.ERR("FAKE-TRAJECTORY", "Failed to read config at %s. Could not construct object.",
-            path.c_str());
+    log.error("Failed to read config at %s. Could not construct object.", path.c_str());
     return std::nullopt;
   }
   return FakeTrajectory(*config_optional);

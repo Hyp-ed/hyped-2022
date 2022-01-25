@@ -29,15 +29,15 @@ FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
   updateBatteryData();
   if (is_lp_) {
     if (is_fail_) {
-      log_.INFO("Fake-Batteries", "Fake LPBattery Fail initialised");
+      log_.info("Fake LPBattery Fail initialised");
     } else {
-      log_.INFO("Fake-Batteries", "Fake LPBattery initialised");
+      log_.info("Fake LPBattery initialised");
     }
   } else {
     if (is_fail_) {
-      log_.INFO("Fake-Batteries", "Fake HPBattery Fail initialised");
+      log_.info("Fake HPBattery Fail initialised");
     } else {
-      log_.INFO("Fake-Batteries", "Fake HPBattery initialised");
+      log_.info("Fake HPBattery initialised");
     }
   }
 }

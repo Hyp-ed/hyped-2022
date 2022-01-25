@@ -28,13 +28,12 @@ class MainLog : public utils::concurrent::Thread {
    * @param id log ID
    * @param log System logger
    */
-  explicit MainLog(const uint8_t id, utils::Logger &log);
+  MainLog();
   void run() override;
 
  private:
   static constexpr int kNumCalibrationQueries = 10000;
 
-  utils::Logger &log_;
   utils::System &sys_;
   data::Data &data_;
   std::array<data::NavigationVector, data::Sensors::kNumImus> gravity_calibration_;

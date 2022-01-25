@@ -12,7 +12,7 @@ namespace hyped::sensors {
 
 class GpioCounter : public ICounter, public utils::concurrent::Thread {
  public:
-  GpioCounter(utils::Logger &log, int pin);
+  GpioCounter(std::uint32_t pin);
   ~GpioCounter() {}
   data::CounterData getData() override;
   bool isOnline() override;
@@ -21,7 +21,6 @@ class GpioCounter : public ICounter, public utils::concurrent::Thread {
  private:
   int pin_;
   utils::System &sys_;
-  utils::Logger &log_;
   data::CounterData counter_data_;
 };
 }  // namespace hyped::sensors

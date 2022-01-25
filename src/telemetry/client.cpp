@@ -10,24 +10,15 @@
 #include <sys/types.h>
 #include <utils/system.hpp>
 
-namespace hyped {
-namespace telemetry {
+namespace hyped ::telemetry {
 
-Client::Client(utils::Logger &log) : Client{log, *utils::System::getSystem().config}
+Client::Client(utils::Logger log, const Config &config) : log_(log), config_(config)
 {
-}
-
-Client::Client(utils::Logger &log, const utils::Config &config)
-    : log_{log},
-      port_{config.telemetry.Port.c_str()},
-      server_ip_{config.telemetry.IP.c_str()}
-{
-  log_.DBG("Telemetry", "Client object created");
 }
 
 bool Client::connect()
 {
-  log_.INFO("Telemetry", "Beginning process to connect to server");
+  log_.info("Beginning process to connect to server");
 
   addrinfo hints;
   addrinfo *server_info;  // contains possible addresses to connect to according to hints
@@ -38,27 +29,28 @@ bool Client::connect()
   hints.ai_socktype = SOCK_STREAM;
 
   // get possible addresses we can connect to
-  const int error = getaddrinfo(server_ip_.c_str(), port_.c_str(), &hints, &server_info);
+  const int error
+    = getaddrinfo(config_.server_ip.c_str(), config_.port.c_str(), &hints, &server_info);
   if (error != 0) {
-    log_.ERR("Telemetry", "%s", gai_strerror(error));
+    log_.error("%s", gai_strerror(error));
     throw std::runtime_error{"Failed getting possible addresses"};
   }
 
   // get a socket file descriptor
   socket_ = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
   if (socket_ == -1) {
-    log_.ERR("Telemetry", "%s", strerror(errno));
+    log_.error("%s", strerror(errno));
     throw std::runtime_error{"Failed getting socket file descriptor"};
   }
 
   // connect socket to server
   if (::connect(socket_, server_info->ai_addr, server_info->ai_addrlen) == -1) {
     close(socket_);
-    log_.ERR("Telemetry", "%s", strerror(errno));
+    log_.error("%s", strerror(errno));
     throw std::runtime_error{"Failed connecting to socket (couldn't connect to server)"};
   }
 
-  log_.INFO("Telemetry", "Connected to server");
+  log_.info("Connected to server");
 
   return true;
 }
@@ -70,7 +62,7 @@ Client::~Client()
 
 bool Client::sendData(std::string message)
 {
-  log_.DBG3("Telemetry", "Starting to send message to server");
+  log_.debug("Starting to send message to server");
 
   message.append("\n");
 
@@ -79,14 +71,14 @@ bool Client::sendData(std::string message)
   // send payload
   if (send(socket_, message.c_str(), payload_length, 0) == -1) { return false; }
 
-  log_.DBG3("Telemetry", "Finished sending message to server");
+  log_.debug("Finished sending message to server");
 
   return true;
 }
 
 std::string Client::receiveData()
 {
-  log_.DBG1("Telemetry", "Waiting to receive from server");
+  log_.debug("Waiting to receive from server");
 
   char header[8];
 
@@ -102,10 +94,9 @@ std::string Client::receiveData()
     throw std::runtime_error{"Error receiving payload"};
   }
 
-  log_.DBG1("Telemetry", "Finished receiving from server");
+  log_.debug("Finished receiving from server");
 
   return std::string(buffer);
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

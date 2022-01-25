@@ -19,9 +19,9 @@ FakeTemperature::FakeTemperature(utils::Logger &log, bool is_fail)
 {
   temp_.temp = success_;
   if (is_fail_) {
-    log_.INFO("Fake-Temperature", "Fake Temperature Fail initialised");
+    log_.info("fail initialised");
   } else {
-    log_.INFO("Fake-Temperature", "Fake Temperature initialised");
+    log_.info("initialised");
   }
 }
 

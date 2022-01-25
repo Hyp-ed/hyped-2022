@@ -4,46 +4,38 @@
 
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::telemetry {
 
-namespace telemetry {
-
-Main::Main(const uint8_t id, utils::Logger &log)
-    : utils::concurrent::Thread{id, log},
-      data_{data::Data::getInstance()},
-      client_{log}
+Main::Main()
+    : data_(data::Data::getInstance()),
+      utils::concurrent::Thread(
+        utils::Logger("TELEMETRY", utils::System::getSystem().config_.log_level_telemetry))
 {
-  log_.DBG("Telemetry", "Telemetry Main thread object created");
+  const auto &system_config = utils::System::getSystem().config_;
+  auto client_optional      = Client::fromFile(system_config.client_config_path);
+  if (!client_optional) {
+    log_.error("failed to parse client config in config file at %s",
+               system_config.client_config_path);
+    utils::System::getSystem().stop();
+  }
+  client_ = std::make_unique<Client>(*client_optional);
 }
 
 void Main::run()
 {
-  // check if telemetry is disabled
-  const auto &sys                = utils::System::getSystem();
-  data::Telemetry telemetry_data = data_.getTelemetryData();
-
-  if (sys.telemetry_off) {
-    log_.DBG("Telemetry", "Telemetry is disabled");
-    log_.DBG("Telemetry", "Exiting Telemetry Main thread");
-    telemetry_data.module_status = data::ModuleStatus::kReady;
-    data_.setTelemetryData(telemetry_data);
-    return;
-  }
-
-  log_.DBG("Telemetry", "Telemetry Main thread started");
-
+  auto telemetry_data = data_.getTelemetryData();
+  log_.debug("Telemetry Main thread started");
   try {
-    client_.connect();
+    client_->connect();
   } catch (std::exception &e) {
-    log_.ERR("Telemetry", e.what());
-    log_.ERR("Telemetry", "Exiting Telemetry Main thread (due to error connecting)");
+    log_.error(e.what());
+    log_.error("Exiting Telemetry Main thread (due to error connecting)");
 
     telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setTelemetryData(telemetry_data);
 
     return;
   }
-
   telemetry_data.module_status = data::ModuleStatus::kReady;
   data_.setTelemetryData(telemetry_data);
 
@@ -54,8 +46,7 @@ void Main::run()
   send_loop_thread.join();
   receive_loop_thread.join();
 
-  log_.DBG("Telemetry", "Exiting Telemetry Main thread");
+  log_.debug("Exiting Telemetry Main thread");
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

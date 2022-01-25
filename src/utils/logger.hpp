@@ -44,7 +44,7 @@ class Logger {
  private:
   const char *const module_;
   Level level_;
-  static concurrent::Lock output_lock_;
+  inline static concurrent::Lock output_lock_;
   static void print(FILE *file, const char *format, va_list args);
   void printHead(FILE *file, const char *title) const;
 };

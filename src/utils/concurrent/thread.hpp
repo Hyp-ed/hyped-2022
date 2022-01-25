@@ -35,7 +35,7 @@ class Thread {
   static void sleep(uint32_t ms);
 
  private:
-  static uint8_t next_id_;
+  inline static uint8_t next_id_;
   uint8_t id_;
   std::thread *thread_;
 

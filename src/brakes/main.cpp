@@ -1,5 +1,11 @@
 #include "main.hpp"
 
+#include <fstream>
+
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/stringbuffer.h>
+
 namespace hyped::brakes {
 
 Main::Main()
@@ -125,6 +131,57 @@ Main::~Main()
 {
   delete f_brake_;
   delete m_brake_;
+}
+
+std::optional<Pins> Main::pinsFromFile(const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log_.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log_.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("brakes")) {
+    log_.error("Missing required field 'brakes' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["brakes"].GetObject();
+  Pins pins;
+  if (!config_object.HasMember("command_pins")) {
+    log_.error("Missing required field 'brakes.command_pins' in configuration file at %s",
+               path.c_str());
+    return std::nullopt;
+  }
+  auto command_pin_array = config_object["command_pins"].GetArray();
+  if (command_pin_array.Size() != data::EmergencyBrakes::kNumBrakes) {
+    log_.error("Found %d command pins but %d were expected in configuration file at %s",
+               command_pin_array.Size(), data::EmergencyBrakes::kNumBrakes, path.c_str());
+    return std::nullopt;
+  }
+  for (std::size_t i = 0; i < data::EmergencyBrakes::kNumBrakes; ++i) {
+    pins.command_pins.at(i) = static_cast<std::uint8_t>(command_pin_array[i].GetUint());
+  }
+  if (!config_object.HasMember("button_pins")) {
+    log_.error("Missing required field 'brakes.button_pins' in configuration file at %s",
+               path.c_str());
+    return std::nullopt;
+  }
+  auto button_pin_array = config_object["button_pins"].GetArray();
+  if (button_pin_array.Size() != data::EmergencyBrakes::kNumBrakes) {
+    log_.error("Found %d button pins but %d were expected in configuration file at %s",
+               button_pin_array.Size(), data::EmergencyBrakes::kNumBrakes, path.c_str());
+    return std::nullopt;
+  }
+  for (std::size_t i = 0; i < data::EmergencyBrakes::kNumBrakes; ++i) {
+    pins.button_pins.at(i) = static_cast<std::uint8_t>(button_pin_array[i].GetUint());
+  }
+  return pins;
 }
 
 }  // namespace hyped::brakes

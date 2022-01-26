@@ -50,8 +50,8 @@ class StateProcessor {
   void accelerate();
 
   /**
-  * @brief Checks if motors are exceeding maximum temperature or current
-  */
+   * @brief Checks if motors are exceeding maximum temperature or current
+   */
   bool isOverLimits();
 
   /**
@@ -65,8 +65,6 @@ class StateProcessor {
   void sendOperationalCommand();
 
  private:
-  static constexpr int kMaximumTemperature = 150;
-  static constexpr int kMaximumCurrent     = 1500;  // mA
   /**
    * @brief Registers the controllers to handle CAN transmissions
    */

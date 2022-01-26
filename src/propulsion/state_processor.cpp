@@ -104,12 +104,11 @@ bool StateProcessor::isOverLimits()
 {
   const auto act_temp    = calculateMaximumTemperature();
   const auto act_current = calculateMaximumCurrent();
-  const auto motors      = data_.getMotorData();
-  if (act_current > motors.kMaximumCurrent) {
+  if (act_current > data::Motors::kMaximumCurrent) {
     log_.ERR("STATE-PROCESSOR", "motors over maximum current");
     return true;
   }
-  if (act_temp > motors.kMaximumTemperature) {
+  if (act_temp > data::Motors::kMaximumTemperature) {
     log_.ERR("STATE-PROCESSOR", "motors overheating");
     return true;
   }

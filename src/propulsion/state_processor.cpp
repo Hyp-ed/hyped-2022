@@ -104,7 +104,7 @@ bool StateProcessor::isOverLimits()
 {
   const auto actual_temp    = calculateMaximumTemperature();
   const auto actual_current = calculateMaximumCurrent();
-  bool over_limits       = false;
+  bool over_limits          = false;
   if (actual_current > data::Motors::kMaximumCurrent) {
     log_.ERR("STATE-PROCESSOR", "motors over maximum current");
     over_limits = true;

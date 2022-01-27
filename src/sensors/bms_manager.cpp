@@ -2,6 +2,11 @@
 #include "bms_manager.hpp"
 #include "fake_batteries.hpp"
 
+#include <fstream>
+
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/stringbuffer.h>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
@@ -52,6 +57,50 @@ BmsManager::BmsManager(utils::Logger log, const Config &config)
   log_.info("batteries data has been initialised");
 }
 
+std::unique_ptr<BmsManager> BmsManager::fromFile(const std::string &path)
+{
+  auto &system = utils::System::getSystem();
+  utils::Logger log("BMS-MANAGER", system.config_.log_level_sensors);
+  const auto config_optional = readConfig(log, path);
+  if (!config_optional) {
+    log.error("Failed to read config file at %s. Could not construct objects.", path.c_str());
+    return nullptr;
+  }
+  auto config = *config_optional;
+  return std::make_unique<BmsManager>(log, config);
+}
+
+std::optional<BmsManager::Config> BmsManager::readConfig(utils::Logger &log,
+                                                         const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("bms_manager")) {
+    log.error("Missing required field 'bms_manager' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_objects = document["bms_manager"].GetObject();
+  Config config;
+  if (!config_objects.HasMember("startup_time_micros")) {
+    log.error(
+      "Missing required field 'bms_manager.startup_time_micros' in configuration file at %s",
+      path.c_str());
+    return std::nullopt;
+  }
+  config.startup_time_micros = config_objects["startup_time_micros"].GetUint64();
+  return config;
+}
+
 bool BmsManager::checkIMD()
 {
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
@@ -83,7 +132,7 @@ void BmsManager::run()
 
     // Check if BMS is ready at this point.
     // waiting time for BMS boot up is a fixed time.
-    if (utils::Timer::getTimeMicros() - start_time_ > check_time_) {
+    if (utils::Timer::getTimeMicros() - start_time_ > config_.startup_time_micros) {
       // if previous state is kInit, turn it to ready
       if (batteries_.module_status == data::ModuleStatus::kInit) {
         log_.debug("Batteries are ready");

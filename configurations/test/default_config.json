@@ -1,7 +1,16 @@
 {
   "brakes": {
-    "command_pins": [87, 10],
-    "button_pins": [66, 69]
+    "command_pins": [
+      87,
+      10
+    ],
+    "button_pins": [
+      66,
+      69
+    ]
+  },
+  "bms_manager": {
+    "startup_time_micros": 5000000
   },
   "fake_trajectory": {
     "maximum_acceleration": 1000.0,

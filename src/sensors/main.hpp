@@ -16,7 +16,7 @@ namespace hyped::sensors {
  * @brief Initialise sensors, data instances to be pulled in managers
  *        gpio threads and adc checks declared in main
  */
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
   Main();
   void run() override;  // from thread

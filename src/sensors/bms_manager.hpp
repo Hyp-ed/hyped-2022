@@ -8,20 +8,15 @@
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using hyped::data::BatteryData;
-using utils::Logger;
-using utils::concurrent::Thread;
-
-namespace sensors {
-
-class BmsManager : public Thread {
+class BmsManager : public utils::concurrent::Thread {
  public:
   struct Config {
-    uint64_t bms_timeout;
+    uint64_t startup_time_micros;
   };
   void run() override;
+  explicit BmsManager(utils::Logger log, const Config &config);
   static std::unique_ptr<BmsManager> fromFile(const std::string &path);
 
  private:
@@ -49,15 +44,13 @@ class BmsManager : public Thread {
    * @brief do not check ranges for first 5 seconds
    */
   uint64_t start_time_;
-  uint64_t check_time_ = 5000000;
 
   /**
    * @brief checks voltage, current, temperature, and charge
    */
   bool batteriesInRange();
 
-  explicit BmsManager(utils::Logger log, const Config &config);
+  static std::optional<Config> readConfig(utils::Logger &log, const std::string &path);
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

@@ -66,6 +66,10 @@ void Main::run()
         if (encountered_transition) { state_processor_.sendOperationalCommand(); }
         break;
       case data::State::kAccelerating:
+        if (state_processor_.isOverLimits()) {
+          handleCriticalFailure(data, motor_data);
+          break;
+        }
         state_processor_.accelerate();
         break;
       case data::State::kCruising:

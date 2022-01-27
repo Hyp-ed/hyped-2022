@@ -50,6 +50,11 @@ class StateProcessor {
   void accelerate();
 
   /**
+   * @brief Checks if motors are exceeding maximum temperature or current
+   */
+  bool isOverLimits();
+
+  /**
    * @brief Returns if the motors are initialised already
    */
   bool isInitialised();

@@ -1,7 +1,5 @@
 #include "transitions.hpp"
-namespace hyped {
-
-namespace state_machine {
+namespace hyped::state_machine {
 
 //--------------------------------------------------------------------------------------
 // Emergency
@@ -10,31 +8,31 @@ namespace state_machine {
 /*
  * @brief   Local function that determines whether or not there is an emergency.
  */
-bool checkEmergency(Logger &log, const data::EmergencyBrakes &brakes_data,
+bool checkEmergency(utils::Logger &log, const data::EmergencyBrakes &brakes_data,
                     const data::Navigation &nav_data, const data::Batteries &batteries_data,
                     const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                     const data::Motors &motors_data)
 {
   if (telemetry_data.emergency_stop_command) {
-    log.ERR("STM", "stop command received");
+    log.error("stop command received");
     return true;
-  } else if (nav_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in navigation");
+  } else if (nav_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    log.error("critical failure in navigation");
     return true;
-  } else if (telemetry_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in telemetry");
+  } else if (telemetry_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    log.error("critical failure in telemetry");
     return true;
-  } else if (motors_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in motors");
+  } else if (motors_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    log.error("critical failure in motors");
     return true;
-  } else if (brakes_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in brakes");
+  } else if (brakes_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    log.error("critical failure in brakes");
     return true;
-  } else if (batteries_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in batteries");
+  } else if (batteries_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    log.error("critical failure in batteries");
     return true;
-  } else if (sensors_data.module_status == ModuleStatus::kCriticalFailure) {
-    log.ERR("STM", "critical failure in sensors");
+  } else if (sensors_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    log.error("critical failure in sensors");
     return true;
   }
   return false;
@@ -44,36 +42,36 @@ bool checkEmergency(Logger &log, const data::EmergencyBrakes &brakes_data,
 // Module Status
 //--------------------------------------------------------------------------------------
 
-bool checkModulesInitialised(Logger &log, const data::EmergencyBrakes &brakes_data,
+bool checkModulesInitialised(utils::Logger &log, const data::EmergencyBrakes &brakes_data,
                              const data::Navigation &nav_data,
                              const data::Batteries &batteries_data,
                              const data::Telemetry &telemetry_data,
                              const data::Sensors &sensors_data, const data::Motors &motors_data)
 {
-  if (brakes_data.module_status < ModuleStatus::kInit) return false;
-  if (nav_data.module_status < ModuleStatus::kInit) return false;
-  if (batteries_data.module_status < ModuleStatus::kInit) return false;
-  if (telemetry_data.module_status < ModuleStatus::kInit) return false;
-  if (sensors_data.module_status < ModuleStatus::kInit) return false;
-  if (motors_data.module_status < ModuleStatus::kInit) return false;
+  if (brakes_data.module_status < data::ModuleStatus::kInit) return false;
+  if (nav_data.module_status < data::ModuleStatus::kInit) return false;
+  if (batteries_data.module_status < data::ModuleStatus::kInit) return false;
+  if (telemetry_data.module_status < data::ModuleStatus::kInit) return false;
+  if (sensors_data.module_status < data::ModuleStatus::kInit) return false;
+  if (motors_data.module_status < data::ModuleStatus::kInit) return false;
 
-  log.INFO("STM", "calibrate command received and all modules initialised");
+  log.info("calibrate command received and all modules initialised");
   return true;
 }
 
-bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
+bool checkModulesReady(utils::Logger &log, const data::EmergencyBrakes &brakes_data,
                        const data::Navigation &nav_data, const data::Batteries &batteries_data,
                        const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                        const data::Motors &motors_data)
 {
-  if (brakes_data.module_status != ModuleStatus::kReady) return false;
-  if (nav_data.module_status != ModuleStatus::kReady) return false;
-  if (batteries_data.module_status != ModuleStatus::kReady) return false;
-  if (telemetry_data.module_status != ModuleStatus::kReady) return false;
-  if (sensors_data.module_status != ModuleStatus::kReady) return false;
-  if (motors_data.module_status != ModuleStatus::kReady) return false;
+  if (brakes_data.module_status != data::ModuleStatus::kReady) return false;
+  if (nav_data.module_status != data::ModuleStatus::kReady) return false;
+  if (batteries_data.module_status != data::ModuleStatus::kReady) return false;
+  if (telemetry_data.module_status != data::ModuleStatus::kReady) return false;
+  if (sensors_data.module_status != data::ModuleStatus::kReady) return false;
+  if (motors_data.module_status != data::ModuleStatus::kReady) return false;
 
-  log.INFO("STM", "all modules calibrated");
+  log.info("all modules calibrated");
   return true;
 }
 
@@ -106,32 +104,30 @@ bool checkShutdownCommand(const data::Telemetry &telemetry_data)
 // Navigation Data Events
 //--------------------------------------------------------------------------------------
 
-bool checkEnteredBrakingZone(Logger &log, const data::Navigation &nav_data)
+bool checkEnteredBrakingZone(utils::Logger &log, const data::Navigation &nav_data)
 {
   data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
   data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
   if (remaining_distance > required_distance) return false;
 
-  log.INFO("STM", "entered braking zone");
+  log.info("entered braking zone");
   return true;
 }
 
-bool checkReachedMaxVelocity(Logger &log, const data::Navigation &nav_data)
+bool checkReachedMaxVelocity(utils::Logger &log, const data::Navigation &nav_data)
 {
   if (nav_data.velocity < Navigation::kMaximumVelocity) return false;
 
-  log.INFO("STM", "reached maximum velocity");
+  log.info("reached maximum velocity");
   return true;
 }
 
-bool checkPodStopped(Logger &log, const data::Navigation &nav_data)
+bool checkPodStopped(utils::Logger &log, const data::Navigation &nav_data)
 {
   if (nav_data.velocity > 0) return false;
 
-  log.INFO("STM", "pod has stopped");
+  log.info("pod has stopped");
   return true;
 }
 
-}  // namespace state_machine
-
-}  // namespace hyped
+}  // namespace hyped::state_machine

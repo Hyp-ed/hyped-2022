@@ -54,8 +54,7 @@ std::optional<std::array<FakeWheelEncoder, data::Sensors::kNumEncoders>> FakeWhe
 {
   const auto configs = readConfigs(log, path);
   if (!configs) {
-    log.ERR("FAKE-WHEEL-ENCODER", "Failed to read config at %s. Could not construct objects.",
-            path.c_str());
+    log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
   return std::array<FakeWheelEncoder, data::Sensors::kNumEncoders>({
@@ -71,27 +70,25 @@ std::optional<std::array<FakeWheelEncoder::Config, data::Sensors::kNumEncoders>>
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
-    log.ERR("FAKE-WHEEL-ENCODER", "Failed to open config file at %s", path.c_str());
+    log.error("Failed to open config file at %s", path.c_str());
     return std::nullopt;
   }
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
   document.ParseStream(input_stream_wrapper);
   if (document.HasParseError()) {
-    log.ERR("FAKE-WHEEL-ENCODER", "Failed to parse config file at %s", path.c_str());
+    log.error("Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
   if (!document.HasMember("fake_wheel_encoder")) {
-    log.ERR("FAKE-WHEEL-ENCODER",
-            "Missing required field 'fake_wheel_encoder' in configuration file at %s",
-            path.c_str());
+    log.error("Missing required field 'fake_wheel_encoder' in configuration file at %s",
+              path.c_str());
     return std::nullopt;
   }
   auto config_object_array = document["fake_wheel_encoder"].GetArray();
   if (data::Sensors::kNumEncoders != config_object_array.Size()) {
-    log.ERR("FAKE-WHEEL-ENCODER",
-            "Found %d config objects but %d were expected in configuration file at %s",
-            config_object_array.Size(), data::Sensors::kNumEncoders, path.c_str());
+    log.error("Found %d config objects but %d were expected in configuration file at %s",
+              config_object_array.Size(), data::Sensors::kNumEncoders, path.c_str());
     return std::nullopt;
   }
   std::array<FakeWheelEncoder::Config, data::Sensors::kNumEncoders> configs;
@@ -100,9 +97,8 @@ std::optional<std::array<FakeWheelEncoder::Config, data::Sensors::kNumEncoders>>
     const auto config_object = config_value.GetObject();
     FakeWheelEncoder::Config config;
     if (!config_object.HasMember("noise")) {
-      log.ERR("FAKE-WHEEL-ENCODER",
-              "Missing required field 'fake_wheel_encoder[%d].noise' in configuration file at %s",
-              i, path.c_str());
+      log.error("Missing required field 'fake_wheel_encoder[%d].noise' in configuration file at %s",
+                i, path.c_str());
       return std::nullopt;
     }
     config.noise = static_cast<data::nav_t>(config_object["noise"].GetDouble());
@@ -110,10 +106,10 @@ std::optional<std::array<FakeWheelEncoder::Config, data::Sensors::kNumEncoders>>
       const auto state_name     = std::string(config_object["failure_in_state"].GetString());
       const auto state_optional = data::stateFromString(state_name);
       if (!state_optional) {
-        log.ERR("FAKE-WHEEL-ENCODER",
-                "Unknown state name '%s' in field 'fake_wheel_encoder[%d].failure_in_state' in "
-                "configuration file at %s",
-                state_name.c_str(), i, path.c_str());
+        log.error(
+          "Unknown state name '%s' in field 'fake_wheel_encoder[%d].failure_in_state' in "
+          "configuration file at %s",
+          state_name.c_str(), i, path.c_str());
         return std::nullopt;
       }
       config.failure_in_state = state_optional;

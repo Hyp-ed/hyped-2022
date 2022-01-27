@@ -1,23 +1,21 @@
 #pragma once
 
+#include <stdio.h>
+
 #include <cstdint>
 
-namespace hyped {
-namespace utils {
+#include <utils/concurrent/lock.hpp>
+
+namespace hyped::utils {
 
 class Logger {
  public:
-  Logger() : verbose_(false), debug_(-1)
-  { /* EMPTY */
-  }
+  enum class Level { kError, kInfo, kDebug };
 
-  /**
-   * @brief Construct a new Logger object with preset debug levels
-   *
-   * @param verbose
-   * @param debug   - debug level used in DBGX()
-   */
-  explicit Logger(bool verbose, int8_t debug);
+  explicit Logger(const char *const module, const Level level);
+  explicit Logger(const char *const module);
+
+  void setLevel(const Level level);
 
   /**
    * @brief All debug messages have the same format. The arguments closely
@@ -26,49 +24,29 @@ class Logger {
    * INFO is printed iff verbose_ for this logger set.
    * Output goes to STDOUT
    *
-   * @param module - name of the module generating the message
    * @param format - format string as in printf
    * @param ...    - arguments for the format string
    */
-  void INFO(const char *module, const char *format, ...);
+  void info(const char *format, ...) const;
 
   /**
    * @brief Use to indicate error. Output goes to STDERR
    */
-  void ERR(const char *module, const char *format, ...);
+  void error(const char *format, ...) const;
 
   /**
    * @brief Use for infrequent debug messages:
    * e.g. state transitions, successful initialisation
    * DBG is printed iff debug_ >= 0
    */
-  void DBG(const char *module, const char *format, ...);
-
-  /**
-   * @brief Use for medium frequency debug messages
-   * e.g. successful sensor reading, receiving command message from basestation
-   * DBG is printed iff debug_ >= 1
-   */
-  void DBG1(const char *module, const char *format, ...);
-
-  /**
-   * @brief Use for high frequency debug messages
-   * e.g. CAN readings, Update of NAV data
-   * DBG is printed iff debug_ >= 2
-   */
-  void DBG2(const char *module, const char *format, ...);
-
-  /**
-   * @brief Use for high frequency debug messages, full debug with detailed output
-   * e.g. actual data being received by CAN, each state transtition condition evaluation
-   * DBG is printed iff debug_ >= 3
-   */
-  void DBG3(const char *module, const char *format, ...);
+  void debug(const char *format, ...) const;
 
  private:
-  bool verbose_;
-  int8_t debug_;
+  const char *const module_;
+  Level level_;
+  inline static concurrent::Lock output_lock_;
+  static void print(FILE *file, const char *format, va_list args);
+  void printHead(FILE *file, const char *title) const;
 };
 
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils

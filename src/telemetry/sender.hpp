@@ -12,7 +12,7 @@ namespace hyped::telemetry {
 
 class Sender : public utils::concurrent::Thread {
  public:
-  explicit Sender(utils::Logger &log, data::Data &data, Client &client);
+  explicit Sender(data::Data &data, Client &client);
   void run() override;
 
  private:

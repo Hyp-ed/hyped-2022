@@ -55,7 +55,7 @@ static constexpr uint8_t kUserCtrl      = 0x03;  // userbank 0
 
 namespace hyped::sensors {
 
-static constexpr utils::io::gpio::Direction kDirection = utils::io::gpio::kOut;
+static constexpr utils::io::GPIO::Direction kDirection = utils::io::GPIO::Direction::kOut;
 
 Imu::Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo)
     : spi_(utils::io::SPI::getInstance()),
@@ -65,8 +65,8 @@ Imu::Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo)
       is_fifo_(is_fifo),
       is_online_(false)
 {
-  log_.DBG1("IMU", "pin is %d", pin);
-  log_.INFO("IMU", "creating sensor");
+  log_.debug("pin is %d", pin);
+  log_.info("creating sensor");
   init();
 }
 
@@ -105,10 +105,10 @@ void Imu::init()
   enableFifo();
 
   if (check_init) {
-    log_.INFO("IMU", "Imu sensor %d created. Initialisation complete.", pin_);
+    log_.info("Imu sensor %d created. Initialisation complete.", pin_);
     selectBank(0);
   } else {
-    log_.ERR("IMU", "ERROR: Imu sensor %d not initialised.", pin_);
+    log_.error("ERROR: Imu sensor %d not initialised.", pin_);
   }
 }
 
@@ -132,9 +132,9 @@ void Imu::enableFifo()
   readByte(kUserCtrl, &check_enable);  // in user control
 
   if (check_enable == (data | 0x40)) {
-    log_.INFO("IMU", "FIFO Enabled");
+    log_.info("FIFO Enabled");
   } else {
-    log_.ERR("IMU", "ERROR: FIFO not enabled");
+    log_.error("ERROR: FIFO not enabled");
   }
   kFrameSize_ = 6;
 }
@@ -146,31 +146,31 @@ bool Imu::whoAmI()
 
   for (send_counter = 1; send_counter < 10; send_counter++) {
     readByte(kWhoAmIImu, &data);
-    log_.DBG1("IMU", "connected to SPI, data: %d", data);
+    log_.debug("connected to SPI, data: %d", data);
     if (data == kWhoAmIResetValue) {
       is_online_ = true;
       break;
     } else {
-      log_.DBG1("IMU", "Cannot initialise. Who am I is incorrect");
+      log_.debug("Cannot initialise. Who am I is incorrect");
       is_online_ = false;
       utils::concurrent::Thread::yield();
     }
   }
 
-  if (!is_online_) { log_.ERR("IMU", "Cannot initialise who am I. Sensor %d offline", pin_); }
+  if (!is_online_) { log_.error("Cannot initialise who am I. Sensor %d offline", pin_); }
   return is_online_;
 }
 
 Imu::~Imu()
 {
-  log_.INFO("IMU", "Deconstructing sensor %d object", pin_);
+  log_.info("Deconstructing sensor %d object", pin_);
 }
 
 void Imu::selectBank(uint8_t switch_bank)
 {
   writeByte(kRegBankSel, (switch_bank << 4));
   user_bank_ = switch_bank;
-  log_.DBG1("IMU", "User bank switched to %u", user_bank_);
+  log_.debug("User bank switched to %u", user_bank_);
 }
 
 void Imu::writeByte(uint8_t write_reg, uint8_t write_data)
@@ -237,13 +237,13 @@ int Imu::readFifo(data::ImuData &data)
     uint16_t fifo_size = (((uint16_t)(size_buffer[0] & 0x1F)) << 8) | (size_buffer[1]);
 
     if (fifo_size == 0) {
-      log_.DBG1("Imu-FIFO", "FIFO EMPTY");
+      log_.debug("FIFO EMPTY");
       return 0;
     }
-    log_.DBG1("Imu-FIFO", "Buffer size = %d", fifo_size);
+    log_.debug("Buffer size = %d", fifo_size);
     int16_t axcounts, aycounts, azcounts;  // include negative int
     float value_x, value_y, value_z;
-    log_.DBG1("Imu-FIFO", "iterating = %d", (fifo_size / kFrameSize_));
+    log_.debug("iterating = %d", (fifo_size / kFrameSize_));
     for (size_t i = 0; i < (fifo_size / kFrameSize_); i++) {  // make sure is less than array size
       readBytes(kFifoRW, buffer, kFrameSize_);
       axcounts = (((int16_t)buffer[0]) << 8) | buffer[1];  // 2 byte acc data for xyz
@@ -267,7 +267,7 @@ int Imu::readFifo(data::ImuData &data)
     return 1;
   } else {
     // Try and turn the sensor on again
-    log_.ERR("Imu-FIFO", "Sensor not operational, trying to turn on sensor");
+    log_.error("Sensor not operational, trying to turn on sensor");
     init();
     return 0;
   }
@@ -280,12 +280,12 @@ data::ImuData Imu::getData()
     if (is_fifo_) {
       int count = readFifo(imu_data);
       if (count) {
-        log_.DBG2("Imu", "Fifo filled");
+        log_.debug("Fifo filled");
       } else {
-        log_.DBG2("Imu", "Fifo empty");
+        log_.debug("Fifo empty");
       }
     } else {
-      log_.DBG2("Imu", "Getting Imu data");
+      log_.debug("Getting Imu data");
       uint8_t response[8];
       int16_t bit_data;
       float value;

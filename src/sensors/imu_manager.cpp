@@ -4,39 +4,38 @@
 
 #include <sensors/fake_imu.hpp>
 #include <sensors/imu.hpp>
-#include <utils/config.hpp>
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
 
-ImuManager::ImuManager(utils::Logger &log) : Thread(log)
+ImuManager::ImuManager(utils::Logger log,
+                       const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins)
+    : Thread(log)
 {
   utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
-
-  auto &sys = utils::System::getSystem();
   for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
-    imus_[i] = std::make_unique<Imu>(log, sys.config->sensors.chip_select[i], false);
+    imus_.at(i) = std::make_unique<Imu>(log, imu_pins.at(i), false);
   }
-  log_.INFO("IMU-MANAGER", "initialisation complete");
 }
 
-ImuManager::ImuManager(utils::Logger &log,
+ImuManager::ImuManager(utils::Logger log,
                        std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus)
-    : imus_(std::move(imus))
+    : Thread(log),
+      imus_(std::move(imus))
 {
-  log.INFO("IMU-MANAGER", "initialisation complete");
 }
 
-std::optional<std::unique_ptr<ImuManager>> ImuManager::fromFile(
-  utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
+std::unique_ptr<ImuManager> ImuManager::fromFile(const std::string &path,
+                                                 std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
+  auto &system = utils::System::getSystem();
+  utils::Logger log("IMU-MANAGER", system.config_.log_level_sensors);
   const auto fake_imus_optional = FakeImu::fromFile(log, path, fake_trajectory);
   if (!fake_imus_optional) {
-    log.ERR("IMU-MANAGER", "failed to initialise fake imus");
-    auto &system    = utils::System::getSystem();
-    system.running_ = false;
-    return std::nullopt;
+    log.error("failed to initialise fake imus");
+    system.stop();
+    return nullptr;
   }
   std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus;
   for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
@@ -49,8 +48,8 @@ void ImuManager::run()
 {
   auto &sys  = utils::System::getSystem();
   auto &data = data::Data::getInstance();
-  while (sys.running_) {
-    DataArray imu_data;
+  while (sys.isRunning()) {
+    data::DataPoint<std::array<data::ImuData, data::Sensors::kNumImus>> imu_data;
     for (size_t i = 0; i < imus_.size(); ++i) {
       imu_data.value[i] = imus_.at(i)->getData();
     }

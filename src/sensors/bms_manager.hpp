@@ -18,22 +18,22 @@ namespace sensors {
 
 class BmsManager : public Thread {
  public:
-  explicit BmsManager(Logger &log);
+  struct Config {
+    uint64_t bms_timeout;
+  };
   void run() override;
+  static std::unique_ptr<BmsManager> fromFile(const std::string &path);
 
  private:
   IBms *bms_[data::Batteries::kNumLPBatteries + data::Batteries::kNumHPBatteries];
   utils::System &sys_;
+  data::Data &data_;
+  const Config config_;
 
   /**
    * @brief check IMD and set GPIOs accordingly
    */
   bool checkIMD();
-
-  /**
-   * @brief needs to be references because run() passes directly to data struct
-   */
-  data::Data &data_;
 
   /**
    * @brief holds LP BatteryData, HP BatteryData, and module_status
@@ -55,6 +55,8 @@ class BmsManager : public Thread {
    * @brief checks voltage, current, temperature, and charge
    */
   bool batteriesInRange();
+
+  explicit BmsManager(utils::Logger log, const Config &config);
 };
 
 }  // namespace sensors

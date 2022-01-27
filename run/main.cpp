@@ -1,81 +1,49 @@
-#include "navigation/main.hpp"
-
 #include <fstream>
-#include <string>
+#include <iostream>
+#include <memory>
 
 #include <brakes/main.hpp>
+#include <navigation/main.hpp>
 #include <propulsion/main.hpp>
 #include <sensors/main.hpp>
 #include <state_machine/main.hpp>
 #include <telemetry/main.hpp>
-#include <utils/concurrent/thread.hpp>
-#include <utils/logger.hpp>
 #include <utils/system.hpp>
-
-using hyped::utils::Logger;
-using hyped::utils::System;
-using hyped::utils::concurrent::Thread;
-
-using hyped::data::Sensors;
 
 int main(int argc, char *argv[])
 {
-  System::parseArgs(argc, argv);
-  System &sys = System::getSystem();
-  Logger log_system(sys.verbose, sys.debug);
-  Logger log_motor(sys.verbose_motor, sys.debug_motor);
-  Logger log_brakes(sys.verbose_brakes, sys.debug_brakes);
-  Logger log_nav(sys.verbose_nav, sys.debug_nav);
-  Logger log_sensor(sys.verbose_sensor, sys.debug_sensor);
-  Logger log_state(sys.verbose_state, sys.debug_state);
-  Logger log_tlm(sys.verbose_tlm, sys.debug_tlm);
-
+  hyped::utils::System::parseArgs(argc, argv);
   // print HYPED logo at system startup
   std::ifstream file("main_logo.txt");
   if (file.is_open()) {
-    std::string line;
-    while (getline(file, line)) {
-      printf("%s\n", line.c_str());
-    }
-    file.close();
+    std::string buffer;
+    file >> buffer;
+    std::cout << buffer;
   }
 
-  log_system.INFO("MAIN", "Starting BBB with %d modules", 5);
-  log_system.DBG("MAIN", "DBG0");
-  log_system.DBG1("MAIN", "DBG1");
-  log_system.DBG2("MAIN", "DBG2");
-  log_system.DBG3("MAIN", "DBG3");
-
   // Initalise the threads here
-  Thread *sensors       = new hyped::sensors::Main(0, log_sensor);
-  Thread *brakes        = new hyped::brakes::Main(1, log_brakes);
-  Thread *motors        = new hyped::propulsion::Main(2, log_motor);
-  Thread *state_machine = new hyped::state_machine::Main(4, log_state);
-  Thread *nav           = new hyped::navigation::Main(5, log_nav);
-  Thread *tlm           = new hyped::telemetry::Main(3, log_tlm);
+  hyped::brakes::Main brakes;
+  hyped::navigation::Main navigation;
+  hyped::propulsion::Main propulsion;
+  hyped::sensors::Main sensors;
+  hyped::state_machine::Main state_machine;
+  hyped::telemetry::Main telemetry;
 
   // Start the threads here
-  sensors->start();
-  brakes->start();
-  motors->start();
-  state_machine->start();
-  nav->start();
-  tlm->start();
+  brakes.start();
+  navigation.start();
+  propulsion.start();
+  sensors.start();
+  state_machine.start();
+  telemetry.start();
 
   // Join the threads here
-  sensors->join();
-  brakes->join();
-  motors->join();
-  state_machine->join();
-  nav->join();
-  tlm->join();
-
-  delete sensors;
-  delete brakes;
-  delete motors;
-  delete state_machine;
-  delete nav;
-  delete tlm;
+  brakes.join();
+  navigation.join();
+  propulsion.join();
+  sensors.join();
+  state_machine.join();
+  telemetry.join();
 
   return 0;
 }

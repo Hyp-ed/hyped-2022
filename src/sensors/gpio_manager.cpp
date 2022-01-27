@@ -1,26 +1,27 @@
 #include "gpio_manager.hpp"
 
-#include <utils/config.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
 
-GpioManager::GpioManager(utils::Logger &log)
+GpioManager::GpioManager(utils::Logger log, const Config &config)
     : Thread(log),
       sys_(utils::System::getSystem()),
-      data_(data::Data::getInstance())
+      data_(data::Data::getInstance()),
+      config_(config)
 {
   // clear HPSSRs if default is high
   for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
-    high_power_ssr_.push_back(std::make_unique<utils::io::GPIO>(
-      sys_.config->sensors.hp_shutoff.at(i), utils::io::gpio::kOut));
+    high_power_ssr_.push_back(std::make_unique<utils::io::GPIO>(config_.high_power_ssr_pins.at(i),
+                                                                utils::io::GPIO::Direction::kOut));
     high_power_ssr_.at(i)->clear();
-    log_.INFO("BMS-MANAGER", "HP SSR %d has been initialised CLEAR", i);
+    log_.info("HP SSR %d has been initialised CLEAR", i);
   }
   // master switch to keep pod on
-  master_ = std::make_unique<utils::io::GPIO>(sys_.config->sensors.master, utils::io::gpio::kOut);
+  master_ = std::make_unique<utils::io::GPIO>(config_.master_switch_pin,
+                                              utils::io::GPIO::Direction::kOut);
   master_->set();
-  log_.INFO("BMS-MANAGER", "Master switch SET");
+  log_.info("Master switch SET");
   // add additional GPIO in format above
   Thread::yield();
 }
@@ -44,7 +45,7 @@ void GpioManager::setHighPower()
 
 void GpioManager::run()
 {
-  while (sys_.running_) {
+  while (sys_.isRunning()) {
     const auto state = data_.getStateMachineData().current_state;
     if (state != previous_state_) {
       switch (state) {
@@ -58,19 +59,19 @@ void GpioManager::run()
         case data::State::kEmergencyBraking:
         case data::State::kFailureStopped:
           clearHighPower();
-          log_.ERR("GPIO-MANAGER", "Emergency State! HP SSR cleared");
+          log_.error("Emergency State! HP SSR cleared");
           break;
         case data::State::kFinished:
           clearHighPower();
-          log_.INFO("GPIO-MANAGER", "kFinished reached...HP off");
+          log_.info("kFinished reached...HP off");
           break;
         case data::State::kReady:
           setHighPower();
-          log_.INFO("GPIO-MANAGER", "kReady...HP SSR set and HP on");
+          log_.info("kReady...HP SSR set and HP on");
           break;
         case data::State::kInvalid:
           clearHighPower();  // shutting down HP asap
-          log_.ERR("GPIO-MANAGER", "Unknown State! HP SSR cleared, shutting down!");
+          log_.error("Unknown State! HP SSR cleared, shutting down!");
 
           // signalling failure to get out of undefied behaviour
           auto batteries_data          = data_.getBatteriesData();

@@ -1,4 +1,8 @@
 {
+  "brakes": {
+    "command_pins": [87, 10],
+    "button_pins": [66, 69]
+  },
   "fake_trajectory": {
     "maximum_acceleration": 1000.0,
     "braking_deceleration": 2000.0,

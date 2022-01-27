@@ -5,6 +5,8 @@
 #include "interface.hpp"
 
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include <utils/system.hpp>
 
@@ -16,7 +18,7 @@ namespace hyped::sensors {
  */
 class Main : public Thread {
  public:
-  Main(uint8_t id, utils::Logger &log);
+  Main();
   void run() override;  // from thread
 
  private:
@@ -34,16 +36,20 @@ class Main : public Thread {
    */
   void checkTemperature();
 
+  std::optional<std::array<uint32_t, data::Sensors::kNumKeyence>> keyencePinsFromFile(
+    const std::string &path);
+  std::optional<std::array<uint32_t, data::Sensors::kNumImus>> imuPinsFromFile(
+    const std::string &path);
+  std::optional<uint32_t> temperaturePinFromFile(const std::string &path);
+
   utils::System &sys_;
   data::Data &data_;
-  utils::Logger &log_;
 
   // master data structures
   data::Sensors sensors_;
   data::Batteries batteries_;
   data::CounterData stripe_counter_;
 
-  std::array<uint8_t, data::Sensors::kNumKeyence> keyence_pins_;
   std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;

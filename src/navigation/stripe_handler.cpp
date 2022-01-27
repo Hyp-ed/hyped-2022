@@ -57,12 +57,12 @@ bool StripeHandler::checkFailure(const data::nav_t displacement)
 {
   // Failure if more than one disagreement
   if (getFailureCount() > 1) {
-    log_.ERR("NAV", "More than one large IMU/Keyence disagreement, entering kCriticalFailure");
+    log_.error("More than one large IMU/Keyence disagreement, entering kCriticalFailure");
     return true;
   }
   if (getDisplacementOffset(displacement) > kMaxStripeDifference * kStripeDist) {
-    log_.ERR("NAV", "IMU distance at least %d * kStripeDist ahead, entering kCriticalFailure",
-             kMaxStripeDifference - 1);
+    log_.error("IMU distance at least %d * kStripeDist ahead, entering kCriticalFailure",
+               kMaxStripeDifference - 1);
     return true;
   }
   return false;
@@ -101,7 +101,7 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
     }
     // Too large disagreement
     if (std::abs(displacement_offset) > 2 * allowed_uncertainty) {
-      log_.INFO("NAV", "Displacement change: %.3f, allowed uncertainty: %.3f", displacement_offset,
+      log_.info("Displacement change: %.3f, allowed uncertainty: %.3f", displacement_offset,
                 allowed_uncertainty);
       ++num_missed_stripes_;
       num_missed_stripes_ += std::floor(std::abs(displacement_offset) / kStripeDist);
@@ -109,9 +109,9 @@ void StripeHandler::queryKeyence(data::nav_t &displacement, data::nav_t &velocit
     // Lower the uncertainty in velocity
     velocity_uncertainty_
       -= std::abs(displacement_offset * 1e6 / (stripe_counter_.timestamp - init_time_));
-    log_.DBG("NAV", "Stripe detected!");
-    log_.DBG1("NAV", "Timestamp difference: %d", stripe_counter_.timestamp - init_time_);
-    log_.DBG1("NAV", "Timestamp currently:  %d", stripe_counter_.timestamp);
+    log_.debug("Stripe detected!");
+    log_.debug("Timestamp difference: %d", stripe_counter_.timestamp - init_time_);
+    log_.debug("Timestamp currently:  %d", stripe_counter_.timestamp);
 
     // Ensure velocity uncertainty is positive
     velocity_uncertainty_ = std::abs(velocity_uncertainty_);

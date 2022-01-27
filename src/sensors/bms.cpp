@@ -20,7 +20,7 @@ Bms::Bms(uint8_t id, utils::Logger &log)
   // verify this Bms unit has not been instantiated
   for (uint8_t i : existing_ids_) {
     if (id == i) {
-      log_.ERR("BMS", "BMS %d already exists, duplicate unit instantiation", id);
+      log_.error("BMS %d already exists, duplicate unit instantiation", id);
       return;
     }
   }
@@ -51,20 +51,20 @@ void Bms::request()
 
   int sent = can_.send(message);
   if (sent) {
-    log_.DBG1("BMS", "module %u: request message sent", id_);
+    log_.debug("module %u: request message sent", id_);
   } else {
-    log_.ERR("BMS", "module %u error: request message not sent", id_);
+    log_.error("module %u error: request message not sent", id_);
   }
 }
 
 void Bms::run()
 {
-  log_.INFO("BMS", "module %u: starting BMS", id_);
+  log_.info("module %u: starting BMS", id_);
   while (running_) {
     request();
     sleep(bms::kPeriod);
   }
-  log_.INFO("BMS", "module %u: stopped BMS", id_);
+  log_.info("module %u: stopped BMS", id_);
 }
 
 bool Bms::hasId(uint32_t id, bool extended)
@@ -82,12 +82,12 @@ bool Bms::hasId(uint32_t id, bool extended)
 
 void Bms::processNewData(utils::io::can::Frame &message)
 {
-  log_.DBG1("BMS", "module %u: received CAN message with id %d", id_, message.id);
+  log_.debug("module %u: received CAN message with id %d", id_, message.id);
 
   // check current CAN message
   if (message.id == 0x28) {
     if (message.len < 3) {
-      log_.ERR("BMS", "module %u: current reading not enough data", id_);
+      log_.error("module %u: current reading not enough data", id_);
       return;
     }
 
@@ -95,7 +95,7 @@ void Bms::processNewData(utils::io::can::Frame &message)
     return;
   }
 
-  log_.DBG2("BMS", "message data[0,1] %d %d", message.data[0], message.data[1]);
+  log_.debug("message data[0,1] %d %d", message.data[0], message.data[1]);
   uint8_t offset = message.id - (bms::kIdBase + (bms::kIdIncrement * id_));
   switch (offset) {
     case 0x1:  // cells 1-4
@@ -114,8 +114,7 @@ void Bms::processNewData(utils::io::can::Frame &message)
       data_.temperature = message.data[0] - bms::Data::kTemperatureOffset;
       break;
     default:
-      log_.ERR("BMS", "received invalid message, id %d, CANID %d, offset %d", id_, message.id,
-               offset);
+      log_.error("received invalid message, id %d, CANID %d, offset %d", id_, message.id, offset);
   }
 
   last_update_time_ = utils::Timer::getTimeMicros();
@@ -180,8 +179,7 @@ HighPowerBms::HighPowerBms(uint16_t id, utils::Logger &log)
   // verify this HighPowerBms unit has not been instantiated
   for (uint16_t i : existing_ids_) {
     if (id == i) {
-      log_.ERR("HIGH-POWER-BMS", "HighPowerBms %d already exists, duplicate unit instantiation",
-               id);
+      log_.error("HighPowerBms %d already exists, duplicate unit instantiation", id);
       return;
     }
   }
@@ -238,9 +236,8 @@ void HighPowerBms::processNewData(utils::io::can::Frame &message)
     battery_data_.average_temperature = message.data[3];
   }
 
-  log_.DBG2("HIGH-POWER-BMS", "High Temp: %d, Average Temp: %d, Low Temp: %d",
-            battery_data_.high_temperature, battery_data_.average_temperature,
-            battery_data_.low_temperature);
+  log_.debug("High Temp: %d, Average Temp: %d, Low Temp: %d", battery_data_.high_temperature,
+             battery_data_.average_temperature, battery_data_.low_temperature);
 
   // voltage, current, charge, and isolation 1:1 configured
   // low_voltage_cell and high_voltage_cell 10:1 configured
@@ -255,7 +252,7 @@ void HighPowerBms::processNewData(utils::io::can::Frame &message)
   } else if (message.id == static_cast<uint16_t>(can_id_ + 1)) {
     battery_data_.high_voltage_cell = ((message.data[0] << 8) | message.data[1]);  // mV
     uint16_t imd_reading            = ((message.data[2] << 8) | message.data[3]);  // mV
-    log_.DBG2("HIGH-POWER-BMS", "Isolation ADC: %u", imd_reading);
+    log_.debug("Isolation ADC: %u", imd_reading);
     if (imd_reading > 4000) {  // 4 volts for safe isolation
       battery_data_.imd_fault = true;
     } else {
@@ -271,9 +268,9 @@ void HighPowerBms::processNewData(utils::io::can::Frame &message)
     battery_data_.cell_voltage[cell_num] /= 10;  // mV
   }
 
-  log_.DBG2("HIGH-POWER-BMS", "Cell voltage: %u", battery_data_.cell_voltage[0]);
-  log_.DBG2("HIGH-POWER-BMS", "received data Volt,Curr,Char,low_v,high_v: %u,%u,%u,%u,%u",
-            battery_data_.voltage, battery_data_.current, battery_data_.charge,
-            battery_data_.low_voltage_cell, battery_data_.high_voltage_cell);
+  log_.debug("Cell voltage: %u", battery_data_.cell_voltage[0]);
+  log_.debug("received data Volt,Curr,Char,low_v,high_v: %u,%u,%u,%u,%u", battery_data_.voltage,
+             battery_data_.current, battery_data_.charge, battery_data_.low_voltage_cell,
+             battery_data_.high_voltage_cell);
 }
 }  // namespace hyped::sensors

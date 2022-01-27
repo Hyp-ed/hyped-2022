@@ -27,15 +27,20 @@ void KalmanFilter::setup()
   Eigen::MatrixXf H = createMeasurementMatrix();
 
   // check system navigation run for R setup
-  const auto &sys   = utils::System::getSystem();
-  Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m_, m_);
-
-  if (sys.official_run || sys.outside_run)
-    R = createTrackMeasurementCovarianceMatrix();
-  else if (sys.elevator_run)
-    R = createElevatorMeasurementCovarianceMatrix();
-  else if (sys.stationary_run)
-    R = createStationaryMeasurementCovarianceMatrix();
+  const auto &sys = utils::System::getSystem();
+  Eigen::MatrixXf R;
+  switch (sys.config_.run_kind) {
+    case utils::System::RunKind::kOfficial:
+    case utils::System::RunKind::kOutside:
+      R = createTrackMeasurementCovarianceMatrix();
+      break;
+    case utils::System::RunKind::kElevator:
+      R = createElevatorMeasurementCovarianceMatrix();
+      break;
+    case utils::System::RunKind::kStationary:
+      R = createStationaryMeasurementCovarianceMatrix();
+      break;
+  }
 
   kalmanFilter_.setModels(A, Q, H, R);
 

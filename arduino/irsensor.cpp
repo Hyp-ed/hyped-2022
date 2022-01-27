@@ -23,42 +23,34 @@ void setup(){
 }
 // Read IR Sensors + Output based on reading
 void loop(){
-    statusSensor = digitalRead (IRSensor1);
+    statusSensor1 = digitalRead (IRSensor1);
+    statusSensor2 = digitalRead (IRSensor2);
+    statusSensor3 = digitalRead (IRSensor3);
+    statusSensor4 = digitalRead (IRSensor4);
 
-    if (statusSensor == 1){
+    if (statusSensor1 == 1){
         digitalWrite (Output1, LOW);
     }
     else {
         digitalWrite (Output1, HIGH);
     }
-}
-void loop(){
-    statusSensor = digitalRead (IRSensor2);
-
-    if (statusSensor == 1){
+    
+    if (statusSensor2 == 1){
         digitalWrite (Output2, LOW);
     }
     else {
         digitalWrite (Output, HIGH);
     }
-}
-void loop(){
-    statusSensor = digitalRead (IRSensor3);
-
-    if (statusSensor == 1){
-        digitalWrite (Output3, LOW);
+    
+    if (statusSensor3 == 1){
+        digitalWrite (Output2, LOW);
     }
     else {
-        digitalWrite (Output3, HIGH);
+        digitalWrite (Output, HIGH);
     }
-}
-void loop(){
-    statusSensor = digitalRead (IRSensor4);
-
-    if (statusSensor == 1){
+    if (statusSensor4 == 1){
         digitalWrite (Output4, LOW);
     }
     else {
         digitalWrite (Output4, HIGH);
     }
-}

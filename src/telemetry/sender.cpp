@@ -1,24 +1,25 @@
-#include "sendloop.hpp"
+#include "sender.hpp"
 #include "writer.hpp"
 
 #include <string>
 
-#include "data/data.hpp"
+#include <data/data.hpp>
+#include <utils/system.hpp>
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
-SendLoop::SendLoop(utils::Logger &log, data::Data &data, Main &main_ref)
-    : utils::concurrent::Thread{log},
-      main_ref_{main_ref},
-      data_{data}
+Sender::Sender(data::Data &data, Client &client)
+    : utils::concurrent::Thread(
+      utils::Logger("SENDER", utils::System::getSystem().config_.log_level_telemetry)),
+      data_(data),
+      client_(client)
 {
-  log_.debug("Telemetry SendLoop thread object created");
+  log_.debug("Telemetry Sender thread object created");
 }
 
-void SendLoop::run()
+void Sender::run()
 {
-  log_.debug("Telemetry SendLoop thread started");
+  log_.debug("Telemetry Sender thread started");
 
   uint16_t num_packages_sent = 0;
 
@@ -32,8 +33,7 @@ void SendLoop::run()
     writer.packAdditionalData();
     writer.end();
     data::Telemetry telemetry_data = data_.getTelemetryData();
-    if (!main_ref_.client_->sendData(writer.getString())) {
-      log_.error("Error sending message");
+    if (!client_.sendData(writer.getString())) {
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
 
@@ -43,8 +43,7 @@ void SendLoop::run()
     utils::concurrent::Thread::sleep(100);
   }
 
-  log_.debug("Exiting Telemetry SendLoop thread");
+  log_.debug("Exiting Telemetry Sender thread");
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

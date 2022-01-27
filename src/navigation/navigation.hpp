@@ -139,8 +139,6 @@ class Navigation {
   static constexpr data::nav_t kTukeyThreshold        = 1;  // 0.75
   static constexpr data::nav_t kTukeyIQRBound         = 3;
 
-  static constexpr data::nav_t kStripeDistance = 30.48;
-
   static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
   static constexpr uint32_t kNumBrakes               = 4;

@@ -1,6 +1,6 @@
 #include "main.hpp"
-#include "recvloop.hpp"
-#include "sendloop.hpp"
+#include "receiver.hpp"
+#include "sender.hpp"
 
 #include <utils/system.hpp>
 
@@ -39,12 +39,12 @@ void Main::run()
   telemetry_data.module_status = data::ModuleStatus::kReady;
   data_.setTelemetryData(telemetry_data);
 
-  SendLoop send_loop_thread{log_, data_, *this};
-  RecvLoop receive_loop_thread{log_, data_, this};
-  send_loop_thread.start();
-  receive_loop_thread.start();
-  send_loop_thread.join();
-  receive_loop_thread.join();
+  Sender sender(data_, *client_);
+  Receiver receiver(data_, *client_);
+  sender.start();
+  receiver.start();
+  sender.join();
+  receiver.join();
 
   log_.debug("Exiting Telemetry Main thread");
 }

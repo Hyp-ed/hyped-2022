@@ -24,8 +24,8 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
       velocity_uncertainty_(0.),
       has_initial_time_(false),
       stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
-                      kStripeDistance),
-      is_keyence_used_(true),
+                      data::Navigation::kStripeDistance),
+      is_keyence_used_(false),
       acceleration_integrator_(&velocity_),
       velocity_integrator_(&displacement_)
 {
@@ -367,10 +367,8 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
   for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_imu_reliable_.at(i)) {
-      log_.debug(
-        "Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",  // NOLINT
-        i + 1, data_array.at(i), lower_limit, upper_limit, q2);
-
+      log_.debug("Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
+                 i + 1, data_array.at(i), lower_limit, upper_limit, q2);
       data_array.at(i) = q2;
       imu_outlier_counter_.at(i)++;
       // If this counter exceeds some threshold then that IMU is deemed unreliable
@@ -400,10 +398,10 @@ void Navigation::updateData()
 
   data_.setNavigationData(nav_data);
 
-  if (log_counter_ % 100 == 0) {                                            // kPrintFreq
-    log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f",  // NOLINT
-               log_counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
-               stripe_counter_.getStripeCount() * kStripeDistance);
+  if (log_counter_ % 100 == 0) {
+    log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", log_counter_,
+               nav_data.acceleration, nav_data.velocity, nav_data.displacement,
+               stripe_counter_.getStripeCount() * data::Navigation::kStripeDistance);
     log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,
                velocity_uncertainty_, displacement_uncertainty_, stripe_counter_.getFailureCount());
   }

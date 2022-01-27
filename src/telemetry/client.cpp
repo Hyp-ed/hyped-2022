@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <utils/system.hpp>
 
-namespace hyped ::telemetry {
+namespace hyped::telemetry {
 
 Client::Client(utils::Logger log, const Config &config) : log_(log), config_(config)
 {

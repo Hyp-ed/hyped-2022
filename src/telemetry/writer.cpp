@@ -156,10 +156,6 @@ void Writer::packBattery(std::string name, data::BatteryData battery)
   json_writer_.Int(battery.average_temperature);
   json_writer_.Key("voltage");
   json_writer_.Int(battery.voltage);
-  json_writer_.Key("voltage");
-  json_writer_.Int(battery.voltage);
-  json_writer_.Key("current");
-  json_writer_.Int(battery.current);
   json_writer_.Key("current");
   json_writer_.Int(battery.current);
   json_writer_.Key("charge");

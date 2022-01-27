@@ -26,7 +26,7 @@ Navigation::Navigation(utils::Logger &log, uint32_t axis /*=0*/)
       velocity_uncertainty_(0.),
       has_initial_time_(false),
       stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
-                      hyped::data::Navigation::kStripeDistance),
+                      data::Navigation::kStripeDistance),
       is_keyence_used_(true),
       acceleration_integrator_(&velocity_),
       velocity_integrator_(&displacement_)
@@ -407,7 +407,7 @@ void Navigation::updateData()
   if (log_counter_ % 100 == 0) {                                                 // kPrintFreq
     log_.DBG("NAV", "%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f",
              log_counter_, nav_data.acceleration, nav_data.velocity, nav_data.displacement,
-             stripe_counter_.getStripeCount() * hyped::data::Navigation::kStripeDistance);
+             stripe_counter_.getStripeCount() * data::Navigation::kStripeDistance);
     log_.DBG("NAV", "%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,
              velocity_uncertainty_, displacement_uncertainty_, stripe_counter_.getFailureCount());
   }

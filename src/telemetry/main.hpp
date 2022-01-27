@@ -5,9 +5,7 @@
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 
-namespace hyped {
-
-namespace telemetry {
+namespace hyped::telemetry {
 
 class Main : public utils::concurrent::Thread {
  public:
@@ -15,11 +13,8 @@ class Main : public utils::concurrent::Thread {
   void run() override;
 
  private:
-  friend class SendLoop;
-  friend class RecvLoop;
   data::Data &data_;
   Client client_;
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

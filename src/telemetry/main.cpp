@@ -1,12 +1,11 @@
 #include "main.hpp"
-#include "recvloop.hpp"
-#include "sendloop.hpp"
+#include "receiver.hpp"
+#include "sender.hpp"
 
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::telemetry {
 
-namespace telemetry {
 
 Main::Main(const uint8_t id, utils::Logger &log)
     : utils::concurrent::Thread{id, log},
@@ -47,8 +46,8 @@ void Main::run()
   telemetry_data.module_status = data::ModuleStatus::kReady;
   data_.setTelemetryData(telemetry_data);
 
-  SendLoop send_loop_thread{log_, data_, *this};
-  RecvLoop receive_loop_thread{log_, data_, this};
+  Sender send_loop_thread{log_, data_, this->client_};
+  Receiver receive_loop_thread{log_, data_, this->client_};
   send_loop_thread.start();
   receive_loop_thread.start();
   send_loop_thread.join();
@@ -57,5 +56,4 @@ void Main::run()
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }
 
-}  // namespace telemetry
 }  // namespace hyped

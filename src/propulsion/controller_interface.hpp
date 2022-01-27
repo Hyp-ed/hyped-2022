@@ -20,6 +20,7 @@ enum ControllerState {
 
 class IController {
  public:
+  virtual ~IController() {}
   virtual void registerController()                                                          = 0;
   virtual void configure()                                                                   = 0;
   virtual void enterOperational()                                                            = 0;

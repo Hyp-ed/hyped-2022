@@ -9,8 +9,8 @@ namespace hyped::telemetry {
 Receiver::Receiver(data::Data &data, Client &client)
     : utils::concurrent::Thread(
       utils::Logger("RECEIVER", utils::System::getSystem().config_.log_level_telemetry)),
-      client_{client},
-      data_{data}
+      data_(data),
+      client_(client)
 {
   log_.debug("constructed");
 }

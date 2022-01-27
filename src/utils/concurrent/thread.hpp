@@ -12,6 +12,7 @@ namespace concurrent {
 class Thread {
  public:
   explicit Thread(Logger log);
+  virtual ~Thread() {}
 
   /**
    * @brief      Spawn new thread and call Run() method

@@ -39,7 +39,7 @@ std::unique_ptr<ImuManager> ImuManager::fromFile(const std::string &path,
   }
   std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus;
   for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
-    imus.at(i) = std::move(std::make_unique<FakeImu>(fake_imus_optional->at(i)));
+    imus.at(i) = std::make_unique<FakeImu>(fake_imus_optional->at(i));
   }
   return std::make_unique<ImuManager>(ImuManager(log, std::move(imus)));
 }

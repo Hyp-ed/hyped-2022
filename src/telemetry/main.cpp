@@ -15,7 +15,7 @@ Main::Main()
   auto client_optional      = Client::fromFile(system_config.client_config_path);
   if (!client_optional) {
     log_.error("failed to parse client config in config file at %s",
-               system_config.client_config_path);
+               system_config.client_config_path.c_str());
     utils::System::getSystem().stop();
   }
   client_ = std::make_unique<Client>(*client_optional);

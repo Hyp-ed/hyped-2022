@@ -36,7 +36,7 @@ Main::Main()
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
-      keyences_.at(i) = std::move(std::make_unique<FakeKeyence>(fake_keyences_optional->at(i)));
+      keyences_.at(i) = std::make_unique<FakeKeyence>(fake_keyences_optional->at(i));
     }
     imu_manager_ = ImuManager::fromFile(sys_.config_.imu_config_path, fake_trajectory);
     if (!imu_manager_) {

@@ -106,4 +106,4 @@ std::string Client::receiveData()
   return std::string(buffer);
 }
 
-}  // namespace telemetry
+}  // namespace hyped::telemetry

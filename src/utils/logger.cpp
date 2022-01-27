@@ -24,8 +24,6 @@ void myPrint(FILE *file, const char *format, va_list args)
   fprintf(file, "\n");
 }
 
-
-
 void logHead(FILE *file, const char *title, const char *module)
 {
   using namespace std::chrono;

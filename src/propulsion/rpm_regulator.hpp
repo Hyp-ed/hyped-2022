@@ -1,19 +1,8 @@
 #pragma once
 
-#include "controller.hpp"
+#include <data/data.hpp>
 
-#include <cstdlib>
-#include <vector>
-
-#include <utils/logger.hpp>
-#include <utils/system.hpp>
-
-static constexpr int kMaximumTemperature = 150;
-static constexpr int kMaximumCurrent     = 1500;  // mA
-
-namespace hyped {
-
-namespace motor_control {
+namespace hyped::propulsion {
 
 class RpmRegulator {
  public:
@@ -27,20 +16,9 @@ class RpmRegulator {
    *
    * @param actual_velocity - the actual velocity of the pod from navigation
    * @param actual_rpm - average rpm of all the motors
-   * @param actual_current - max current (mA) drawn out of all the motors
-   * @param actual_temperature - max temperature out of all the motors
    * @return int32_t - the optimal rpm which the motors should be set to.
    */
-  int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm,
-                       const int32_t actual_current, const int32_t actual_temperature);
-
-  /**
-   * @brief Get the Failure boolean
-   *
-   * @return true - if failure has occured
-   * @return false - if no failure has occured
-   */
-  bool isFaulty();
+  int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm);
 
  private:
   /**
@@ -59,9 +37,6 @@ class RpmRegulator {
    * @return int32_t - the step with which to increase the rpm
    */
   int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);
-
-  bool failure_;
 };
 
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

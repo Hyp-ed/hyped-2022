@@ -27,7 +27,7 @@ Main::Main(uint8_t id, Logger &log)
 
 void Main::run()
 {
-  // Setting module status for STM transition
+  // Setting module status for state machine transition
   brakes_               = data_.getEmergencyBrakesData();
   brakes_.module_status = ModuleStatus::kInit;
   data_.setEmergencyBrakesData(brakes_);

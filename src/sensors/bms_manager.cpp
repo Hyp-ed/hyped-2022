@@ -1,7 +1,7 @@
 #include "bms.hpp"
-
 #include "bms_manager.hpp"
 #include "fake_batteries.hpp"
+
 #include <utils/config.hpp>
 #include <utils/timer.hpp>
 
@@ -51,7 +51,7 @@ BmsManager::BmsManager(Logger &log)
     }
   }
 
-  // kInit for SM transition
+  // kInit for state machine transition
   batteries_               = data_.getBatteriesData();
   batteries_.module_status = data::ModuleStatus::kInit;
   data_.setBatteriesData(batteries_);

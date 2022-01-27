@@ -1,100 +1,84 @@
 #pragma once
 
-#include "controller.hpp"
-
 #include "controller_interface.hpp"
-#include "fake_controller.hpp"
 #include "rpm_regulator.hpp"
-#include "state_processor_interface.hpp"
+
+#include <array>
+#include <memory>
+
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
-#include <utils/timer.hpp>
 
-namespace hyped {
+namespace hyped::propulsion {
 
-namespace motor_control {
-
-using data::Batteries;
-using data::Data;
-using data::Motors;
-using data::Navigation;
-using utils::Logger;
-using utils::System;
-using utils::Timer;
-
-class StateProcessor : public StateProcessorInterface {
+class StateProcessor {
  public:
   /**
-   * @brief {Initializes the state processors with the amount of motors and the logger}
+   * @brief Initializes the state processors with the amount of motors and the logger
    * */
-  StateProcessor(int motorAmount, Logger &log);
+  StateProcessor(utils::Logger &log);
 
   /**
-   * @brief { Sends the desired settings to the motors }
+   * @brief Sends the desired settings to the motors
    */
-  void initMotors() override;
+  void initialiseMotors();
 
   /**
-   * @brief { Changes the state of the motor controller to preOperational }
+   * @brief Changes the state of the motor controller to preOperational
    */
-  void enterPreOperational() override;
+  void enterPreOperational();
 
   /**
-   * @brief { Stops all motors }
+   * @brief Stops all motors
    */
-  void quickStopAll() override;
+  void quickStopAll();
 
   /**
-   * @brief { Checks the motor controller's health }
+   * @brief Checks the motor controller's health
    */
-  void healthCheck() override;
+  void healthCheck();
 
   /**
-   * @brief { Checks if the motor controller's error registers }
+   * @brief Checks if the motor controller's error registers
    */
-  bool getFailure() override;
+  bool hasControllerFailure();
 
   /**
-   * @brief { Tells the controllers to start accelerating the motors }
+   * @brief Tells the controllers to start accelerating the motors
    */
-  void accelerate() override;
+  void accelerate();
 
   /**
-   * @brief { Returns if the motors are initialised already }
+   * @brief Checks if motors are exceeding maximum temperature or current
    */
-  bool isInitialized() override;
+  bool isOverLimits();
 
   /**
-   * @brief Exits the tube with low velocity
-   * */
-  void servicePropulsion() override;
-
-  /**
-   * @brief Returns if a critical error ocurred
-   * */
-  bool isCriticalFailure() override;
+   * @brief Returns if the motors are initialised already
+   */
+  bool isInitialised();
 
   /**
    * @brief sends the enter operational command
    */
   void sendOperationalCommand();
 
- protected:
+ private:
   /**
-   * @brief { Registers the controllers to handle CAN transmissions }
+   * @brief Registers the controllers to handle CAN transmissions
    */
-  void registerControllers() override;
+  void registerControllers();
 
   /**
-   * @brief { Configures the controllers }
+   * @brief Configures the controllers
    */
-  void configureControllers() override;
+  void configureControllers();
 
   /**
-   * @brief { Send settings data to the motors }
+   * @brief Send settings data to the motors
    */
-  void prepareMotors() override;
+  void prepareMotors();
 
   /**
    * @brief Calculate the Average rpm of all motors
@@ -102,7 +86,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calculateAverageRpm(ControllerInterface **controllers);
+  int32_t calculateAverageRpm();
 
   /**
    * @brief calculate the max Current drawn out of all the motors
@@ -110,7 +94,7 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int16_t calculateMaxCurrent();
+  int16_t calculateMaximumCurrent();
 
   /**
    * @brief Calculate the max temperature out of all the motors
@@ -118,25 +102,15 @@ class StateProcessor : public StateProcessorInterface {
    * @param controllers
    * @return int32_t
    */
-  int32_t calculateMaxTemp(ControllerInterface **controllers);
+  int32_t calculateMaximumTemperature();
 
-  bool useFakeController;
-  Logger &log_;
-  System &sys_;
-  Data &data_;
-  Motors motor_data_;
-  int motorAmount;
-  bool initialized;
-  bool criticalError;
-  int32_t servicePropulsionSpeed;
-  float speed;
-  ControllerInterface **controllers;
-  RpmRegulator regulator;
-  float velocity;
-  Navigation navigationData;
-  uint64_t accelerationTimestamp;
-  Timer accelerationTimer;
+  utils::Logger &log_;
+  utils::System &sys_;
+  data::Data &data_;
+  bool is_initialised_;
+  std::array<std::unique_ptr<ControllerInterface>, data::Motors::kNumMotors> controllers_;
+  RpmRegulator rpm_regulator_;
+  uint64_t previous_acceleration_time_;
 };
 
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

@@ -1,24 +1,23 @@
-#include "sendloop.hpp"
+#include "sender.hpp"
 #include "writer.hpp"
 
 #include <string>
 
 #include "data/data.hpp"
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
-SendLoop::SendLoop(utils::Logger &log, data::Data &data, Main &main_ref)
+Sender::Sender(utils::Logger &log, data::Data &data, Client &client)
     : utils::concurrent::Thread{log},
-      main_ref_{main_ref},
+      client_{client},
       data_{data}
 {
-  log_.DBG("Telemetry", "Telemetry SendLoop thread object created");
+  log_.DBG("Telemetry", "Telemetry Sender thread object created");
 }
 
-void SendLoop::run()
+void Sender::run()
 {
-  log_.DBG("Telemetry", "Telemetry SendLoop thread started");
+  log_.DBG("Telemetry", "Telemetry Sender thread started");
 
   uint16_t num_packages_sent = 0;
 
@@ -35,7 +34,7 @@ void SendLoop::run()
     writer.end();
 
     data::Telemetry telemetry_data = data_.getTelemetryData();
-    if (!main_ref_.client_.sendData(writer.getString())) {
+    if (!client_.sendData(writer.getString())) {
       log_.ERR("Telemetry", "Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
@@ -46,8 +45,7 @@ void SendLoop::run()
     utils::concurrent::Thread::sleep(100);
   }
 
-  log_.DBG("Telemetry", "Exiting Telemetry SendLoop thread");
+  log_.DBG("Telemetry", "Exiting Telemetry Sender thread");
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

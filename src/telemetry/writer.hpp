@@ -5,8 +5,7 @@
 #include <data/data.hpp>
 #include <rapidjson/writer.h>
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
 /*
   Guide on how to use this class: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
@@ -67,5 +66,4 @@ class Writer {
   data::Data &data_;
 };
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

@@ -1,13 +1,12 @@
 #include "main.hpp"
 
-namespace hyped {
+namespace hyped::propulsion {
 
-namespace motor_control {
 Main::Main(const uint8_t id, utils::Logger &log)
     : Thread(id, log),
       is_running_(true),
       log_(log),
-      state_processor_(new StateProcessor(Motors::kNumMotors, log))
+      state_processor_(log)
 {
 }
 
@@ -29,20 +28,20 @@ void Main::handleCriticalFailure(data::Data &data, data::Motors &motor_data)
 
 void Main::run()
 {
-  utils::System &sys      = utils::System::getSystem();
-  data::Data &data        = data::Data::getInstance();
-  data::Motors motor_data = data.getMotorData();
+  const auto &system = utils::System::getSystem();
+  auto &data         = data::Data::getInstance();
+  auto motor_data    = data.getMotorData();
 
   // Initialise states
-  data::State current_state_  = data.getStateMachineData().current_state;
-  data::State previous_state_ = data::State::kInvalid;
+  current_state_  = data.getStateMachineData().current_state;
+  previous_state_ = data::State::kInvalid;
 
-  // kInit for SM transition
+  // kInit for state machine transition
   motor_data.module_status = data::ModuleStatus::kInit;
   data.setMotorData(motor_data);
   log_.INFO("Motor", "Initialisation complete");
 
-  while (is_running_ && sys.running_) {
+  while (is_running_ && system.running_) {
     // Get the current state of the system from the state machine's data
     data::Motors motor_data     = data.getMotorData();
     data::State current_state_  = data.getStateMachineData().current_state;
@@ -50,28 +49,33 @@ void Main::run()
 
     switch (current_state_) {
       case data::State::kIdle:
+      case data::State::kPreCalibrating:
         break;
       case data::State::kCalibrating:
-        if (state_processor_->isInitialized()) {
+        if (state_processor_.isInitialised()) {
           if (motor_data.module_status != data::ModuleStatus::kReady) {
             motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);
           }
         } else {
-          state_processor_->initMotors();
-          if (state_processor_->isCriticalFailure()) { handleCriticalFailure(data, motor_data); }
+          state_processor_.initialiseMotors();
+          if (!state_processor_.isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
         break;
       case data::State::kReady:
-        if (encountered_transition) { state_processor_->sendOperationalCommand(); }
+        if (encountered_transition) { state_processor_.sendOperationalCommand(); }
         break;
       case data::State::kAccelerating:
-        state_processor_->accelerate();
+        if (state_processor_.isOverLimits()) {
+          handleCriticalFailure(data, motor_data);
+          break;
+        }
+        state_processor_.accelerate();
         break;
       case data::State::kCruising:
       case data::State::kNominalBraking:
       case data::State::kEmergencyBraking:
-        state_processor_->quickStopAll();
+        state_processor_.quickStopAll();
         break;
       case data::State::kFailureStopped:
       case data::State::kFinished:
@@ -83,5 +87,4 @@ void Main::run()
 
   log_.INFO("Motor", "Thread shutting down");
 }
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

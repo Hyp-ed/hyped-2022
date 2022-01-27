@@ -1,71 +1,42 @@
+#include "controller.hpp"
+#include "fake_controller.hpp"
 #include "state_processor.hpp"
 
-namespace hyped {
+namespace hyped::propulsion {
 
-namespace motor_control {
-
-StateProcessor::StateProcessor(int motorAmount, Logger &log)
+StateProcessor::StateProcessor(utils::Logger &log)
     : log_(log),
-      sys_(System::getSystem()),
-      data_(Data::getInstance()),
-      motor_data_(data_.getMotorData()),
-      motorAmount(motorAmount),
-      initialized(false),
-      criticalError(false),
-      servicePropulsionSpeed(100),
-      speed(0),
-      regulator()
+      sys_(utils::System::getSystem()),
+      data_(data::Data::getInstance()),
+      is_initialised_(false),
+      rpm_regulator_()
 {
-  // rpmCalculator = new CalculateRpm(log);
-
-  useFakeController = sys_.fake_motors;
-
-  navigationData = data_.getNavigationData();
-
-  controllers = new ControllerInterface *[motorAmount];
-
-  if (useFakeController) {  // Use the test controllers implementation
-    log_.INFO("Motor", "Intializing with fake controller");
-    for (int i = 0; i < motorAmount; i++) {
-      controllers[i] = new FakeController(log_, i, false);
+  if (sys_.fake_motors) {
+    log_.INFO("STATE-PROCESSOR", "constructing with fake controllers");
+    for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
+      controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
     }
   } else {  // Use real controllers
-    log_.INFO("Motor", "Intializing with real controller");
-    for (int i = 0; i < motorAmount; i++) {
-      controllers[i] = new Controller(log_, i);
+    log_.INFO("STATE-PROCESSOR", "constructing with real controllers");
+    for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
+      controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
   }
 }
 
-void StateProcessor::initMotors()
+void StateProcessor::initialiseMotors()
 {
-  // Register controllers on CAN bus
   registerControllers();
-
-  // Configure controllers parameters
   configureControllers();
-
-  log_.INFO("Motor", "Initialize Speed Calculator");
-
+  log_.INFO("STATE-PROCESSOR", "initialising");
   bool error = false;
-
-  if (regulator.isFaulty()) {
-    error         = true;
-    criticalError = true;
-    return;
-  }
-
-  for (int i = 0; i < motorAmount; i++) {
-    if (controllers[i]->getFailure()) {
+  for (auto &controller : controllers_) {
+    if (controller->getFailure()) {
       error = true;
       break;
     }
   }
-  if (!error) {
-    initialized = true;
-  } else {
-    criticalError = true;
-  }
+  if (!error) { is_initialised_ = true; }
 }
 
 void StateProcessor::sendOperationalCommand()
@@ -75,95 +46,104 @@ void StateProcessor::sendOperationalCommand()
 
 void StateProcessor::registerControllers()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->registerController();
+  for (auto &controller : controllers_) {
+    controller->registerController();
   }
 }
 
 void StateProcessor::configureControllers()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->configure();
+  for (auto &controller : controllers_) {
+    controller->configure();
   }
 }
 
 void StateProcessor::prepareMotors()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->enterOperational();
+  for (auto &controller : controllers_) {
+    controller->enterOperational();
   }
-
-  // Setup acceleration timer
-  accelerationTimer.start();
-  accelerationTimestamp = 0;
+  previous_acceleration_time_ = 0;
 }
 
 void StateProcessor::enterPreOperational()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->enterPreOperational();
+  for (auto &controller : controllers_) {
+    controller->enterPreOperational();
   }
 }
 
 void StateProcessor::accelerate()
 {
-  if (initialized) {
-    motor_data_ = data_.getMotorData();
-    for (int i = 0; i < motorAmount; i++) {
-      controllers[i]->updateActualVelocity();
-      motor_data_.rpms[i] = controllers[i]->getVelocity();
+  if (!is_initialised_) {
+    log_.INFO("STATE-PROCESSOR", "not initialised");
+    return;
+  }
+
+  auto motor_data = data_.getMotorData();
+  for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
+    controllers_.at(i)->updateActualVelocity();
+    motor_data.rpms.at(i) = controllers_.at(i)->getVelocity();
+  }
+  data_.setMotorData(motor_data);
+
+  const auto now = utils::Timer::getTimeMicros();
+  if (now - previous_acceleration_time_ > 5000) {
+    previous_acceleration_time_ = now;
+    const auto velocity         = data_.getNavigationData().velocity;
+    const auto act_rpm          = calculateAverageRpm();
+    const auto rpm              = rpm_regulator_.calculateRpm(velocity, act_rpm);
+    log_.INFO("STATE-PROCESSOR", "sending %d rpm as target", rpm);
+    for (auto &controller : controllers_) {
+      controller->sendTargetVelocity(rpm);
     }
-    data_.setMotorData(motor_data_);
-
-    if (accelerationTimer.getTimeMicros() - accelerationTimestamp > 5000) {
-      log_.DBG3("Motor", "Accelerate");
-      accelerationTimestamp = accelerationTimer.getTimeMicros();
-      velocity              = navigationData.velocity;
-
-      int32_t act_rpm     = calculateAverageRpm(controllers);
-      int32_t act_current = calculateMaxCurrent();
-      int32_t act_temp    = calculateMaxTemp(controllers);
-
-      int32_t rpm = regulator.calculateRpm(velocity, act_rpm, act_current, act_temp);
-
-      log_.INFO("MOTOR", "Sending %d rpm as target", rpm);
-
-      for (int i = 0; i < motorAmount; i++) {
-        controllers[i]->sendTargetVelocity(rpm);
-      }
-    }
-  } else {
-    log_.INFO("Motor", "State Processor not initialized");
   }
 }
 
-int32_t StateProcessor::calculateAverageRpm(ControllerInterface **controllers)
+bool StateProcessor::isOverLimits()
+{
+  const auto actual_temp    = calculateMaximumTemperature();
+  const auto actual_current = calculateMaximumCurrent();
+  bool over_limits          = false;
+  if (actual_current > data::Motors::kMaximumCurrent) {
+    log_.ERR("STATE-PROCESSOR", "motors over maximum current");
+    over_limits = true;
+  }
+  if (actual_temp > data::Motors::kMaximumTemperature) {
+    log_.ERR("STATE-PROCESSOR", "motors overheating");
+    over_limits = true;
+  }
+  return over_limits;
+}
+
+int32_t StateProcessor::calculateAverageRpm()
 {
   int32_t total = 0;
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->updateActualVelocity();
-    total += controllers[i]->getVelocity();
+  for (auto &controller : controllers_) {
+    controller->updateActualVelocity();
+    total += controller->getVelocity();
   }
-  return std::round(total / motorAmount);
+  // integer division should be good enough
+  return total / data::Motors::kNumMotors;
 }
 
-int16_t StateProcessor::calculateMaxCurrent()
+int16_t StateProcessor::calculateMaximumCurrent()
 {
-  Batteries hp_packs  = data_.getBatteriesData();
+  const auto hp_packs = data_.getBatteriesData();
   int16_t max_current = 0;
-  for (int i = 0; i < hp_packs.kNumHPBatteries; i++) {
-    int16_t current = hp_packs.high_power_batteries[i].current;
+  for (size_t i = 0; i < hp_packs.kNumHPBatteries; ++i) {
+    int16_t current = hp_packs.high_power_batteries.at(i).current;
     if (max_current < current) { max_current = current; }
   }
   return max_current;
 }
 
-int32_t StateProcessor::calculateMaxTemp(ControllerInterface **controllers)
+int32_t StateProcessor::calculateMaximumTemperature()
 {
   int32_t max_temp = 0;
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->updateMotorTemp();
-    int32_t temp = controllers[i]->getMotorTemp();
+  for (auto &controller : controllers_) {
+    controller->updateMotorTemp();
+    const auto temp = controller->getMotorTemp();
     if (max_temp < temp) { max_temp = temp; }
   }
   return max_temp;
@@ -171,43 +151,29 @@ int32_t StateProcessor::calculateMaxTemp(ControllerInterface **controllers)
 
 void StateProcessor::quickStopAll()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->quickStop();
+  for (auto &controller : controllers_) {
+    controller->quickStop();
   }
 }
 
 void StateProcessor::healthCheck()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->healthCheck();
+  for (auto &controller : controllers_) {
+    controller->healthCheck();
   }
 }
 
-bool StateProcessor::getFailure()
+bool StateProcessor::hasControllerFailure()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    if (controllers[i]->getFailure()) { return true; }
+  for (auto &controller : controllers_) {
+    if (controller->getFailure()) { return true; }
   }
-
   return false;
 }
 
-void StateProcessor::servicePropulsion()
+bool StateProcessor::isInitialised()
 {
-  for (int i = 0; i < motorAmount; i++) {
-    controllers[i]->sendTargetVelocity(servicePropulsionSpeed);
-  }
+  return this->is_initialised_;
 }
 
-bool StateProcessor::isInitialized()
-{
-  return this->initialized;
-}
-
-bool StateProcessor::isCriticalFailure()
-{
-  return this->criticalError;
-}
-
-}  // namespace motor_control
-}  // namespace hyped
+}  // namespace hyped::propulsion

@@ -1,10 +1,11 @@
 #pragma once
 
+#include "data_point.hpp"
+
 #include <array>
 #include <cstdint>
 #include <vector>
 
-#include "data_point.hpp"
 #include <utils/concurrent/lock.hpp>
 #include <utils/math/vector.hpp>
 
@@ -23,10 +24,10 @@ namespace data {
 // Global Module States
 // -------------------------------------------------------------------------------------------------
 enum class ModuleStatus {
-  kCriticalFailure,  // STM transitions to EmergencyBraking/FailureStopped
+  kCriticalFailure,  // state machine transitions to EmergencyBraking/FailureStopped
   kStart,            // Initial module state
-  kInit,             // STM transistions to Calibrating if all modules have Init or Ready status.
-  kReady,            // STM transistions to Ready if all modules have Ready status.
+  kInit,   // state machine transistions to Calibrating if all modules have Init or Ready status.
+  kReady,  // state machine transistions to Ready if all modules have Ready status.
 };
 
 struct Module {
@@ -119,8 +120,10 @@ struct EmergencyBrakes : public Module {
 // -------------------------------------------------------------------------------------------------
 
 struct Motors : public Module {
-  static constexpr int kNumMotors       = 4;
-  std::array<uint32_t, kNumMotors> rpms = {{0, 0, 0, 0}};
+  static constexpr int kNumMotors              = 4;
+  static constexpr uint8_t kMaximumTemperature = 150;
+  static constexpr uint16_t kMaximumCurrent    = 1500;  // mA
+  std::array<uint32_t, kNumMotors> rpms        = {{0, 0, 0, 0}};
 };
 
 // -------------------------------------------------------------------------------------------------

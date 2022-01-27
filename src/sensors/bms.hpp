@@ -132,7 +132,7 @@ class BMS : public Thread, public CanProccesor, public BMSInterface {
   // for making sure only one object per BMS unit exist
   static std::vector<uint8_t> existing_ids_;
   static int16_t current_;
-  NO_COPY_ASSIGN(BMS);
+  NO_COPY_ASSIGN(BMS)
 };
 
 class BMSHP : public CanProccesor, public BMSInterface {
@@ -165,7 +165,7 @@ class BMSHP : public CanProccesor, public BMSInterface {
   uint64_t last_update_time_;  // stores arrival time of CAN message
   // for making sure only one object per BMS unit exist
   static std::vector<uint16_t> existing_ids_;
-  NO_COPY_ASSIGN(BMSHP);
+  NO_COPY_ASSIGN(BMSHP)
 };
 
 }  // namespace sensors

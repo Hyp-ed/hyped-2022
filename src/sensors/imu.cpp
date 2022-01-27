@@ -283,7 +283,7 @@ void Imu::getData(ImuData *data)
 {
   if (is_online_) {
     if (is_fifo_) {
-      int count = readFifo(data);  // TODO(anyone): does this synax work?
+      int count = readFifo(data);
       if (count) {
         log_.DBG2("Imu", "Fifo filled");
       } else {

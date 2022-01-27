@@ -283,7 +283,7 @@ void FakeImuFromFile::readDataFromFile(std::string acc_file_path, std::string de
       timestamp = kAccTimeInterval;
       val_read  = &dec_val_read_;
       bool_read = &dec_val_operational_;
-    } else if (i == 2) {
+    } else {
       file_path = em_file_path;
       timestamp = kAccTimeInterval;
       val_read  = &em_val_read_;

@@ -6,8 +6,7 @@
 
 #include <data/data.hpp>
 
-namespace hyped {
-namespace telemetry {
+namespace hyped::telemetry {
 
 Writer::Writer(data::Data &data) : json_writer_(string_buffer_), data_{data}
 {
@@ -222,5 +221,4 @@ const std::string Writer::convertModuleStatus(data::ModuleStatus module_status)
   }
 }
 
-}  // namespace telemetry
-}  // namespace hyped
+}  // namespace hyped::telemetry

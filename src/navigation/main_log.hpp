@@ -1,5 +1,6 @@
 #pragma once
 
+#include "imu_data_logger.hpp"
 #include "navigation.hpp"
 
 #include <stdio.h>
@@ -7,7 +8,6 @@
 #include <cstdio>
 #include <fstream>
 
-#include "imu_data_logger.hpp"
 #include <data/data.hpp>
 #include <data/data_point.hpp>
 #include <sensors/imu.hpp>

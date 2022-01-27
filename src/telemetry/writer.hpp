@@ -30,7 +30,7 @@ class Writer {
 
   // functions to pack timestamp and number of package
   void packTime();
-  void packId(uint16_t id);
+  void packId(const uint16_t id);
 
   // specific functions that allow packing of structs in central data structure
   void packTelemetryData();
@@ -55,7 +55,7 @@ class Writer {
 
  private:
   // functions to pack internal CDS structs/types
-  void packBattery(std::string name, const data::BatteryData battery);
+  void packBattery(std::string name, const data::BatteryData &battery);
 
   // starts and ends lists, which allow to structure the data
   void startList(const std::string name);

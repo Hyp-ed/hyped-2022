@@ -19,22 +19,23 @@ void Sender::run()
 {
   log_.DBG("Telemetry", "Telemetry Sender thread started");
 
-  uint16_t num_packages_sent = 0;
+  uint32_t num_packages_sent = 0;
 
   while (true) {
     Writer writer(data_);
-    writer.start();
-    writer.packTime();
-    writer.packId(num_packages_sent);
-    writer.packTelemetryData();
-    writer.packSensorsData();
-    writer.packMotorData();
-    writer.packStateMachineData();
-    writer.packNavigationData();
-    writer.end();
 
     data::Telemetry telemetry_data = data_.getTelemetryData();
     if (!client_.sendData(writer.getString())) {
+      writer.start();
+      writer.packTime();
+      writer.packId(num_packages_sent);
+      writer.packTelemetryData();
+      writer.packSensorsData();
+      writer.packMotorData();
+      writer.packStateMachineData();
+      writer.packNavigationData();
+      writer.end();
+
       log_.ERR("Telemetry", "Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);

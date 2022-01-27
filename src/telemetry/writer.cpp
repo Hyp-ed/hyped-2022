@@ -148,7 +148,7 @@ void Writer::packStateMachineData()
   json_writer_.EndObject();
 }
 
-void Writer::packBattery(std::string name, data::BatteryData battery)
+void Writer::packBattery(std::string name, const data::BatteryData &battery)
 {
   json_writer_.Key(name.c_str());
   json_writer_.StartObject();

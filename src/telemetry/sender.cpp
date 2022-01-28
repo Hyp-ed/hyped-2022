@@ -24,21 +24,23 @@ void Sender::run()
   while (true) {
     Writer writer(data_);
 
-    data::Telemetry telemetry_data = data_.getTelemetryData();
+    writer.start();
+    writer.packTime();
+    writer.packId(num_packages_sent);
+    writer.packTelemetryData();
+    writer.packSensorsData();
+    writer.packMotorData();
+    writer.packStateMachineData();
+    writer.packNavigationData();
+    writer.end();
+    
     if (!client_.sendData(writer.getString())) {
-      writer.start();
-      writer.packTime();
-      writer.packId(num_packages_sent);
-      writer.packTelemetryData();
-      writer.packSensorsData();
-      writer.packMotorData();
-      writer.packStateMachineData();
-      writer.packNavigationData();
-      writer.end();
-
+      data::Telemetry telemetry_data = data_.getTelemetryData();
       log_.ERR("Telemetry", "Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
+
+      // Need to use writer.getString() and send the string.
 
       break;
     }

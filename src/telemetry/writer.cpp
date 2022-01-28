@@ -32,7 +32,6 @@ void Writer::packTelemetryData()
   const auto telemetry_data = data_.getTelemetryData();
 
   json_writer_.StartObject();
-
   // Commands
   json_writer_.Key("calibrate");
   json_writer_.Bool(telemetry_data.calibrate_command);
@@ -72,7 +71,6 @@ void Writer::packNavigationData()
   // Module status
   json_writer_.Key("navigation_status");
   json_writer_.String(convertModuleStatus(nav_data.module_status).c_str());
-
   json_writer_.EndObject();
 }
 
@@ -83,7 +81,6 @@ void Writer::packSensorsData()
   const auto brakes_data    = data_.getEmergencyBrakesData();
 
   json_writer_.StartObject();
-
   // LP Batteries
   json_writer_.StartArray();
   for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
@@ -120,7 +117,6 @@ void Writer::packMotorData()
   const auto motor_data = data_.getMotorData();
 
   json_writer_.StartObject();
-
   // RPMS
   json_writer_.Key("motor_rpms");
   json_writer_.StartArray();
@@ -132,7 +128,6 @@ void Writer::packMotorData()
   // Module status
   json_writer_.Key("motors_status");
   json_writer_.String(convertModuleStatus(motor_data.module_status).c_str());
-
   json_writer_.EndObject();
 }
 
@@ -148,7 +143,7 @@ void Writer::packStateMachineData()
   json_writer_.EndObject();
 }
 
-void Writer::packBattery(std::string name, const data::BatteryData &battery)
+void Writer::packBattery(const std::string name, const data::BatteryData &battery)
 {
   json_writer_.Key(name.c_str());
   json_writer_.StartObject();

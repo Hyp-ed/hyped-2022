@@ -9,8 +9,8 @@
       69
     ]
   },
-  "bms_manager": {
-    "startup_time_micros": 5000000
+  "sensors": {
+    "bms_startup_time_micros": 5000000
   },
   "fake_trajectory": {
     "maximum_acceleration": 1000.0,

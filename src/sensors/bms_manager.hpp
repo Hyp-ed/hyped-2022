@@ -13,7 +13,7 @@ namespace hyped::sensors {
 class BmsManager : public utils::concurrent::Thread {
  public:
   struct Config {
-    uint64_t startup_time_micros;
+    uint64_t bms_startup_time_micros;
   };
   void run() override;
   explicit BmsManager(utils::Logger log, const Config &config);

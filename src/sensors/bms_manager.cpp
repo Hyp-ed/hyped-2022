@@ -85,19 +85,19 @@ std::optional<BmsManager::Config> BmsManager::readConfig(utils::Logger &log,
     log.error("Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
-  if (!document.HasMember("bms_manager")) {
-    log.error("Missing required field 'bms_manager' in configuration file at %s", path.c_str());
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_objects = document["bms_manager"].GetObject();
+  auto config_objects = document["sensors"].GetObject();
   Config config;
-  if (!config_objects.HasMember("startup_time_micros")) {
+  if (!config_objects.HasMember("bms_startup_time_micros")) {
     log.error(
-      "Missing required field 'bms_manager.startup_time_micros' in configuration file at %s",
+      "Missing required field 'sensors.bms_startup_time_micros' in configuration file at %s",
       path.c_str());
     return std::nullopt;
   }
-  config.startup_time_micros = config_objects["startup_time_micros"].GetUint64();
+  config.bms_startup_time_micros = config_objects["bms_startup_time_micros"].GetUint64();
   return config;
 }
 
@@ -132,7 +132,7 @@ void BmsManager::run()
 
     // Check if BMS is ready at this point.
     // waiting time for BMS boot up is a fixed time.
-    if (utils::Timer::getTimeMicros() - start_time_ > config_.startup_time_micros) {
+    if (utils::Timer::getTimeMicros() - start_time_ > config_.bms_startup_time_micros) {
       // if previous state is kInit, turn it to ready
       if (batteries_.module_status == data::ModuleStatus::kInit) {
         log_.debug("Batteries are ready");

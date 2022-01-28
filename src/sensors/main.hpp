@@ -18,8 +18,17 @@ namespace hyped::sensors {
  */
 class Main : public utils::concurrent::Thread {
  public:
+  using KeyencePins = std::array<uint32_t, data::Sensors::kNumKeyence>;
+  using ImuPins     = std::array<uint32_t, data::Sensors::kNumImus>;
+
   Main();
   void run() override;  // from thread
+
+  static std::optional<KeyencePins> keyencePinsFromFile(utils::Logger &log,
+                                                        const std::string &path);
+  static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
+  static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
+                                                        const std::string &path);
 
  private:
   /**
@@ -35,12 +44,6 @@ class Main : public utils::concurrent::Thread {
    *        unnecessary to constantly check temperature;
    */
   void checkTemperature();
-
-  std::optional<std::array<uint32_t, data::Sensors::kNumKeyence>> keyencePinsFromFile(
-    const std::string &path);
-  std::optional<std::array<uint32_t, data::Sensors::kNumImus>> imuPinsFromFile(
-    const std::string &path);
-  std::optional<uint32_t> temperaturePinFromFile(const std::string &path);
 
   utils::System &sys_;
   data::Data &data_;

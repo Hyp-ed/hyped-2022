@@ -1,5 +1,11 @@
 #include "main.hpp"
 
+#include <fstream>
+
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/stringbuffer.h>
+
 #include <sensors/fake_keyence.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
@@ -46,7 +52,7 @@ Main::Main()
     }
   } else {
     // Real trajectory sensors
-    auto keyence_pins = keyencePinsFromFile(sys_.config_.keyence_config_path);
+    auto keyence_pins = keyencePinsFromFile(log_, sys_.config_.keyence_config_path);
     if (!keyence_pins) {
       log_.error("failed to initialise keyence");
       sys_.stop();
@@ -57,7 +63,7 @@ Main::Main()
       keyence->start();
       keyences_[i] = std::move(keyence);
     }
-    auto imu_pins = imuPinsFromFile(sys_.config_.imu_config_path);
+    auto imu_pins = imuPinsFromFile(log_, sys_.config_.imu_config_path);
     if (!imu_pins) {
       log_.error("failed to initialise IMUs");
       sys_.stop();
@@ -78,7 +84,7 @@ Main::Main()
   } else if (sys_.config_.use_fake_temperature) {
     temperature_ = std::make_unique<FakeTemperature>(log_, false);
   } else {
-    auto temperature_pin = temperaturePinFromFile(sys_.config_.temperature_config_path);
+    auto temperature_pin = temperaturePinFromFile(log_, sys_.config_.temperature_config_path);
     if (!temperature_pin) {
       log_.error("failed to initialise temperature sensor");
       sys_.stop();
@@ -102,6 +108,111 @@ void Main::checkTemperature()
     log_.info("PCB temperature is getting a wee high...sorry Cheng");
     log_error_ = true;
   }
+}
+
+std::optional<Main::KeyencePins> Main::keyencePinsFromFile(utils::Logger &log,
+                                                           const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("keyence_pins")) {
+    log.error("Missing required field 'sensors.keyence_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  auto keyence_pin_array = config_object["keyence_pins"].GetArray();
+  if (keyence_pin_array.Size() != data::Sensors::kNumKeyence) {
+    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
+              keyence_pin_array.Size(), data::Sensors::kNumKeyence, path.c_str());
+  }
+  KeyencePins keyence_pins;
+  std::size_t i = 0;
+  for (auto &keyence_pin : keyence_pin_array) {
+    keyence_pins.at(i) = static_cast<uint32_t>(keyence_pin.GetUint());
+    ++i;
+  }
+  return keyence_pins;
+}
+
+std::optional<Main::ImuPins> Main::imuPinsFromFile(utils::Logger &log, const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("imu_pins")) {
+    log.error("Missing required field 'sensors.imu_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  auto imu_pin_array = config_object["imu_pins"].GetArray();
+  if (imu_pin_array.Size() != data::Sensors::kNumImus) {
+    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
+              imu_pin_array.Size(), data::Sensors::kNumImus, path.c_str());
+  }
+  ImuPins imu_pins;
+  std::size_t i = 0;
+  for (auto &imu_pin : imu_pin_array) {
+    imu_pins.at(i) = static_cast<uint32_t>(imu_pin.GetUint());
+    ++i;
+  }
+  return imu_pins;
+}
+
+std::optional<std::uint32_t> Main::temperaturePinFromFile(utils::Logger &log,
+                                                          const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("temperature_pin")) {
+    log.error("Missing required field 'sensors.temperature_pin' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  return static_cast<std::uint32_t>(config_object["temperature_pin"].GetUint());
 }
 
 void Main::run()

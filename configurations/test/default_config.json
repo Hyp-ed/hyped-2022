@@ -1,16 +1,13 @@
 {
   "brakes": {
-    "command_pins": [
-      87,
-      10
-    ],
-    "button_pins": [
-      66,
-      69
-    ]
+    "command_pins": [87, 10],
+    "button_pins": [66, 69]
   },
   "sensors": {
-    "bms_startup_time_micros": 5000000
+    "bms_startup_time_micros": 5000000,
+    "keyence_pins": [67, 68],
+    "imu_pins": [22, 27, 47, 86],
+    "temperature_pin": 3
   },
   "fake_trajectory": {
     "maximum_acceleration": 1000.0,

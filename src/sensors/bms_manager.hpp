@@ -3,6 +3,7 @@
 #include "interface.hpp"
 
 #include <cstdint>
+#include <memory>
 
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>

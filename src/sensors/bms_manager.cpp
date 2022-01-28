@@ -90,15 +90,15 @@ std::optional<BmsManager::Config> BmsManager::readConfig(utils::Logger &log,
     log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_objects = document["sensors"].GetObject();
+  auto config_object = document["sensors"].GetObject();
   Config config;
-  if (!config_objects.HasMember("bms_startup_time_micros")) {
+  if (!config_object.HasMember("bms_startup_time_micros")) {
     log.error(
       "Missing required field 'sensors.bms_startup_time_micros' in configuration file at %s",
       path.c_str());
     return std::nullopt;
   }
-  config.bms_startup_time_micros = config_objects["bms_startup_time_micros"].GetUint64();
+  config.bms_startup_time_micros = config_object["bms_startup_time_micros"].GetUint64();
   return config;
 }
 

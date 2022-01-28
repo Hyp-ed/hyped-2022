@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -10,17 +11,20 @@ namespace hyped::telemetry {
 class Client {
  public:
   struct Config {
-    std::string port;
+    std::string server_port;
     std::string server_ip;
   };
+
+  Client(utils::Logger log, const Config &config);
   ~Client();
+  static std::unique_ptr<Client> fromFile(const std::string &path);
+  static std::optional<Config> readConfig(utils::Logger &log, const std::string &path);
+
   bool connect();
   bool sendData(std::string message);
   std::string receiveData();
-  static std::optional<Client> fromFile(const std::string &path);
 
  private:
-  Client(utils::Logger log, const Config &config);
   utils::Logger log_;
   const Config config_;
   int socket_;

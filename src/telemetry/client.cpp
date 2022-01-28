@@ -4,8 +4,12 @@
 #include <unistd.h>
 
 #include <cstring>
+#include <fstream>
 #include <string>
 
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/stringbuffer.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -31,7 +35,7 @@ bool Client::connect()
 
   // get possible addresses we can connect to
   const int error
-    = getaddrinfo(config_.server_ip.c_str(), config_.port.c_str(), &hints, &server_info);
+    = getaddrinfo(config_.server_ip.c_str(), config_.server_port.c_str(), &hints, &server_info);
   if (error != 0) {
     log_.error("%s", gai_strerror(error));
     throw std::runtime_error{"Failed getting possible addresses"};
@@ -98,6 +102,54 @@ std::string Client::receiveData()
   log_.debug("Finished receiving from server");
 
   return std::string(buffer);
+}
+
+std::unique_ptr<Client> Client::fromFile(const std::string &path)
+{
+  auto &system = utils::System::getSystem();
+  utils::Logger log("CLIENT", system.config_.log_level_telemetry);
+  const auto config_optional = readConfig(log, path);
+  if (!config_optional) {
+    log.error("Failed to read config filet at %s. Could not construct objects.", path.c_str());
+    return nullptr;
+  }
+  auto config = *config_optional;
+  return std::make_unique<Client>(log, config);
+}
+
+std::optional<Client::Config> Client::readConfig(utils::Logger &log, const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("telemetry")) {
+    log.error("Missing required field 'telemetry' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["telemetry"].GetObject();
+  Config config;
+  if (!config_object.HasMember("server_ip")) {
+    log.error("Missing required field 'telemetry.server_ip' in configuration filet at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  config.server_ip = config_object["server_ip"].GetString();
+  if (!config_object.HasMember("server_port")) {
+    log.error("Missing required field 'telemetry.server_port' in configuration filet at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  config.server_port = config_object["server_port"].GetString();
+  return config;
 }
 
 }  // namespace hyped::telemetry

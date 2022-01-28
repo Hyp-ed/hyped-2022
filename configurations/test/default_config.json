@@ -9,6 +9,10 @@
     "imu_pins": [22, 27, 47, 86],
     "temperature_pin": 3
   },
+  "telemetry": {
+    "server_ip": "127.0.0.1",
+    "server_port": "9090"
+  },
   "fake_trajectory": {
     "maximum_acceleration": 1000.0,
     "braking_deceleration": 2000.0,

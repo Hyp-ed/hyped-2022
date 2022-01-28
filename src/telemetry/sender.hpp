@@ -4,8 +4,9 @@
 
 #include <string>
 
-#include <data/data.hpp>
 #include <rapidjson/writer.h>
+
+#include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 
 namespace hyped::telemetry {

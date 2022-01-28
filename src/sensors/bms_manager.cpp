@@ -7,6 +7,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
+
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {

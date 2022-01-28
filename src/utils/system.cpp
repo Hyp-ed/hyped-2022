@@ -86,4 +86,10 @@ void System::stop()
   running_ = false;
 }
 
+void System::start()
+{
+  utils::concurrent::ScopedLock scoped_lock(&lock_);
+  running_ = true;
+}
+
 }  // namespace hyped::utils

@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include <gtest/gtest.h>
+
 #include <sensors/fake_keyence.hpp>
 #include <utils/concurrent/thread.hpp>
 
@@ -23,9 +24,9 @@ class FakeKeyenceTest : public Test {
 TEST_F(FakeKeyenceTest, defaultParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_keyences_optional
-    = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+    = sensors::FakeKeyence::fromFile(kDefaultConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
   const auto fake_keyences = *fake_keyences_optional;
@@ -46,9 +47,8 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
     data.setStateMachineData(state_machine_data);
   }
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  auto fake_keyences_optional
-    = sensors::FakeKeyence::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
+  auto fake_keyences_optional = sensors::FakeKeyence::fromFile(kDefaultConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
   disableOutput();
@@ -132,9 +132,9 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
 TEST_F(FakeKeyenceTest, oneFaultyParsesConfig)
 {
   auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_keyences_optional
-    = sensors::FakeKeyence::fromFile(log_, kOneFaultyConfigPath, fake_trajectory);
+    = sensors::FakeKeyence::fromFile(kOneFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
   const auto fake_keyences = *fake_keyences_optional;
@@ -157,10 +157,10 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
   }
   enableOutput();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   disableOutput();
   auto fake_keyences_optional
-    = sensors::FakeKeyence::fromFile(log_, kOneFaultyConfigPath, fake_trajectory);
+    = sensors::FakeKeyence::fromFile(kOneFaultyConfigPath, fake_trajectory);
   ASSERT_TRUE(fake_keyences_optional);
   auto fake_keyences = *fake_keyences_optional;
   {
@@ -240,10 +240,10 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
 TEST_F(FakeKeyenceTest, twoFaultyParsesConfig)
 {
   auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   enableOutput();
   const auto fake_keyences_optional
-    = sensors::FakeKeyence::fromFile(log_, kTwoFaultyConfigPath, fake_trajectory);
+    = sensors::FakeKeyence::fromFile(kTwoFaultyConfigPath, fake_trajectory);
   ASSERT_TRUE(fake_keyences_optional);
   const auto fake_keyences = *fake_keyences_optional;
   ASSERT_EQ(data::Sensors::kNumKeyence, fake_keyences.size());
@@ -266,10 +266,10 @@ TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
   }
   enableOutput();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   disableOutput();
   auto fake_keyences_optional
-    = sensors::FakeKeyence::fromFile(log_, kTwoFaultyConfigPath, fake_trajectory);
+    = sensors::FakeKeyence::fromFile(kTwoFaultyConfigPath, fake_trajectory);
   ASSERT_TRUE(fake_keyences_optional);
   auto fake_keyences = *fake_keyences_optional;
   {

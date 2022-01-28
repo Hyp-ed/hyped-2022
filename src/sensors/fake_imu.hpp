@@ -21,7 +21,7 @@ class FakeImu : public IImu {
   bool isOnline() override { return true; }
   const Config &getConfig() const;
   static std::optional<std::array<FakeImu, data::Sensors::kNumImus>> fromFile(
-    utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
+    const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
  private:
   const Config config_;

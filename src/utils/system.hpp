@@ -51,6 +51,7 @@ class System {
 
   bool isRunning();
   void stop();
+  void start();
 
   const Config config_;
 

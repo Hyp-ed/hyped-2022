@@ -31,7 +31,7 @@ std::unique_ptr<ImuManager> ImuManager::fromFile(const std::string &path,
 {
   auto &system = utils::System::getSystem();
   utils::Logger log("IMU-MANAGER", system.config_.log_level_sensors);
-  const auto fake_imus_optional = FakeImu::fromFile(log, path, fake_trajectory);
+  const auto fake_imus_optional = FakeImu::fromFile(path, fake_trajectory);
   if (!fake_imus_optional) {
     log.error("failed to initialise fake imus");
     system.stop();

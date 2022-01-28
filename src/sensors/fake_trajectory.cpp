@@ -7,6 +7,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <utils/system.hpp>
+
 namespace hyped::sensors {
 
 std::optional<FakeTrajectory::Config> FakeTrajectory::readConfig(utils::Logger &log,
@@ -54,8 +56,10 @@ std::optional<FakeTrajectory::Config> FakeTrajectory::readConfig(utils::Logger &
   return config;
 }
 
-std::optional<FakeTrajectory> FakeTrajectory::fromFile(utils::Logger &log, const std::string &path)
+std::optional<FakeTrajectory> FakeTrajectory::fromFile(const std::string &path)
 {
+  auto &system = utils::System::getSystem();
+  utils::Logger log("FAKE-TRAJECTORY", system.config_.log_level);
   const auto config_optional = readConfig(log, path);
   if (!config_optional) {
     log.error("Failed to read config at %s. Could not construct object.", path.c_str());

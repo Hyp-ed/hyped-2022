@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <gtest/gtest.h>
+
 #include <utils/system.hpp>
 
 int main(int argc, char **argv)

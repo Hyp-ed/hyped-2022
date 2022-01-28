@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/main.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
@@ -47,7 +48,7 @@ class RunTest : public Test {
   {
     // We only need to set one critical failure as other behaviour
     // is tested in transitions.test.cpp.
-    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
   }
 
   /**
@@ -84,7 +85,7 @@ class RunTest : public Test {
    * If tests are failing for no apparent reason, try increasing the sleep duration to be sure this
    * is not the source of the problem.
    */
-  void waitForUpdate() { Thread::sleep(20); }
+  void waitForUpdate() { utils::concurrent::Thread::sleep(20); }
 
   // ---- Run steps --------------
 
@@ -103,12 +104,12 @@ class RunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Prevent Idle -> Calibrating
-    brakes_data_.module_status        = ModuleStatus::kStart;
-    nav_data_.module_status           = ModuleStatus::kStart;
-    telemetry_data_.module_status     = ModuleStatus::kStart;
-    motors_data_.module_status        = ModuleStatus::kStart;
-    sensors_data_.module_status       = ModuleStatus::kStart;
-    batteries_data_.module_status     = ModuleStatus::kStart;
+    brakes_data_.module_status        = data::ModuleStatus::kStart;
+    nav_data_.module_status           = data::ModuleStatus::kStart;
+    telemetry_data_.module_status     = data::ModuleStatus::kStart;
+    motors_data_.module_status        = data::ModuleStatus::kStart;
+    sensors_data_.module_status       = data::ModuleStatus::kStart;
+    batteries_data_.module_status     = data::ModuleStatus::kStart;
     telemetry_data_.calibrate_command = false;
 
     // Verify transition conditions are as intended
@@ -151,12 +152,12 @@ class RunTest : public Test {
 
     // Enforce Idle -> PreCalibrating
     telemetry_data_.calibrate_command = false;
-    brakes_data_.module_status        = ModuleStatus::kInit;
-    nav_data_.module_status           = ModuleStatus::kInit;
-    telemetry_data_.module_status     = ModuleStatus::kInit;
-    motors_data_.module_status        = ModuleStatus::kInit;
-    sensors_data_.module_status       = ModuleStatus::kInit;
-    batteries_data_.module_status     = ModuleStatus::kInit;
+    brakes_data_.module_status        = data::ModuleStatus::kInit;
+    nav_data_.module_status           = data::ModuleStatus::kInit;
+    telemetry_data_.module_status     = data::ModuleStatus::kInit;
+    motors_data_.module_status        = data::ModuleStatus::kInit;
+    sensors_data_.module_status       = data::ModuleStatus::kInit;
+    batteries_data_.module_status     = data::ModuleStatus::kInit;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -251,12 +252,12 @@ class RunTest : public Test {
 
     // Enforce Idle -> PreCalibrating
     telemetry_data_.calibrate_command = true;
-    brakes_data_.module_status        = ModuleStatus::kInit;
-    nav_data_.module_status           = ModuleStatus::kInit;
-    telemetry_data_.module_status     = ModuleStatus::kInit;
-    motors_data_.module_status        = ModuleStatus::kInit;
-    sensors_data_.module_status       = ModuleStatus::kInit;
-    batteries_data_.module_status     = ModuleStatus::kInit;
+    brakes_data_.module_status        = data::ModuleStatus::kInit;
+    nav_data_.module_status           = data::ModuleStatus::kInit;
+    telemetry_data_.module_status     = data::ModuleStatus::kInit;
+    motors_data_.module_status        = data::ModuleStatus::kInit;
+    sensors_data_.module_status       = data::ModuleStatus::kInit;
+    batteries_data_.module_status     = data::ModuleStatus::kInit;
 
     // Prevent Calibrating -> Ready
     // >> No work required due to the above
@@ -352,12 +353,12 @@ class RunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce Calibrating -> Ready
-    brakes_data_.module_status    = ModuleStatus::kReady;
-    nav_data_.module_status       = ModuleStatus::kReady;
-    telemetry_data_.module_status = ModuleStatus::kReady;
-    motors_data_.module_status    = ModuleStatus::kReady;
-    sensors_data_.module_status   = ModuleStatus::kReady;
-    batteries_data_.module_status = ModuleStatus::kReady;
+    brakes_data_.module_status    = data::ModuleStatus::kReady;
+    nav_data_.module_status       = data::ModuleStatus::kReady;
+    telemetry_data_.module_status = data::ModuleStatus::kReady;
+    motors_data_.module_status    = data::ModuleStatus::kReady;
+    sensors_data_.module_status   = data::ModuleStatus::kReady;
+    batteries_data_.module_status = data::ModuleStatus::kReady;
 
     // Prevent Ready -> Accelerating
     telemetry_data_.launch_command = false;
@@ -448,12 +449,12 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Ready -> FailureStopped
-    brakes_data_.module_status             = ModuleStatus::kReady;
-    nav_data_.module_status                = ModuleStatus::kReady;
-    telemetry_data_.module_status          = ModuleStatus::kReady;
-    motors_data_.module_status             = ModuleStatus::kReady;
-    sensors_data_.module_status            = ModuleStatus::kReady;
-    batteries_data_.module_status          = ModuleStatus::kReady;
+    brakes_data_.module_status             = data::ModuleStatus::kReady;
+    nav_data_.module_status                = data::ModuleStatus::kReady;
+    telemetry_data_.module_status          = data::ModuleStatus::kReady;
+    motors_data_.module_status             = data::ModuleStatus::kReady;
+    sensors_data_.module_status            = data::ModuleStatus::kReady;
+    batteries_data_.module_status          = data::ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce Ready -> Accelerating
@@ -552,12 +553,12 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Accelerating -> FailureBraking
-    brakes_data_.module_status             = ModuleStatus::kReady;
-    nav_data_.module_status                = ModuleStatus::kReady;
-    telemetry_data_.module_status          = ModuleStatus::kReady;
-    motors_data_.module_status             = ModuleStatus::kReady;
-    sensors_data_.module_status            = ModuleStatus::kReady;
-    batteries_data_.module_status          = ModuleStatus::kReady;
+    brakes_data_.module_status             = data::ModuleStatus::kReady;
+    nav_data_.module_status                = data::ModuleStatus::kReady;
+    telemetry_data_.module_status          = data::ModuleStatus::kReady;
+    motors_data_.module_status             = data::ModuleStatus::kReady;
+    sensors_data_.module_status            = data::ModuleStatus::kReady;
+    batteries_data_.module_status          = data::ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce Accelerating -> NominalBraking
@@ -608,12 +609,12 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Accelerating -> FailureBraking
-    brakes_data_.module_status             = ModuleStatus::kReady;
-    nav_data_.module_status                = ModuleStatus::kReady;
-    telemetry_data_.module_status          = ModuleStatus::kReady;
-    motors_data_.module_status             = ModuleStatus::kReady;
-    sensors_data_.module_status            = ModuleStatus::kReady;
-    batteries_data_.module_status          = ModuleStatus::kReady;
+    brakes_data_.module_status             = data::ModuleStatus::kReady;
+    nav_data_.module_status                = data::ModuleStatus::kReady;
+    telemetry_data_.module_status          = data::ModuleStatus::kReady;
+    motors_data_.module_status             = data::ModuleStatus::kReady;
+    sensors_data_.module_status            = data::ModuleStatus::kReady;
+    batteries_data_.module_status          = data::ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
     // Prevent Accelerating -> NominalBraking
@@ -705,12 +706,12 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent Cruising -> FailureBraking
-    brakes_data_.module_status             = ModuleStatus::kReady;
-    nav_data_.module_status                = ModuleStatus::kReady;
-    telemetry_data_.module_status          = ModuleStatus::kReady;
-    motors_data_.module_status             = ModuleStatus::kReady;
-    sensors_data_.module_status            = ModuleStatus::kReady;
-    batteries_data_.module_status          = ModuleStatus::kReady;
+    brakes_data_.module_status             = data::ModuleStatus::kReady;
+    nav_data_.module_status                = data::ModuleStatus::kReady;
+    telemetry_data_.module_status          = data::ModuleStatus::kReady;
+    motors_data_.module_status             = data::ModuleStatus::kReady;
+    sensors_data_.module_status            = data::ModuleStatus::kReady;
+    batteries_data_.module_status          = data::ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce Cruising -> NominalBraking
@@ -801,12 +802,12 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent NominalBraking -> FailureBraking
-    brakes_data_.module_status             = ModuleStatus::kReady;
-    nav_data_.module_status                = ModuleStatus::kReady;
-    telemetry_data_.module_status          = ModuleStatus::kReady;
-    motors_data_.module_status             = ModuleStatus::kReady;
-    sensors_data_.module_status            = ModuleStatus::kReady;
-    batteries_data_.module_status          = ModuleStatus::kReady;
+    brakes_data_.module_status             = data::ModuleStatus::kReady;
+    nav_data_.module_status                = data::ModuleStatus::kReady;
+    telemetry_data_.module_status          = data::ModuleStatus::kReady;
+    motors_data_.module_status             = data::ModuleStatus::kReady;
+    sensors_data_.module_status            = data::ModuleStatus::kReady;
+    batteries_data_.module_status          = data::ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce NominalBraking -> Finished
@@ -917,7 +918,7 @@ class RunTest : public Test {
     // Check result
     enableOutput();
     utils::System &sys = utils::System::getSystem();
-    ASSERT_EQ(sys.running_, false) << "failed to transition from Finished to Off";
+    ASSERT_EQ(sys.isRunning(), false) << "failed to transition from Finished to Off";
     disableOutput();
   }
 
@@ -996,7 +997,7 @@ class RunTest : public Test {
     // Check result
     enableOutput();
     utils::System &sys = utils::System::getSystem();
-    ASSERT_EQ(sys.running_, false) << "failed to transition from FailureStopped to Off";
+    ASSERT_EQ(sys.isRunning(), false) << "failed to transition from FailureStopped to Off";
     disableOutput();
   }
 };
@@ -1008,11 +1009,11 @@ TEST_F(RunTest, nominalRunWithoutCruising)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1037,11 +1038,11 @@ TEST_F(RunTest, nominalRunWithCruising)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1067,11 +1068,11 @@ TEST_F(RunTest, idleEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1091,11 +1092,11 @@ TEST_F(RunTest, calibratingEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1117,11 +1118,11 @@ TEST_F(RunTest, readyEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1144,11 +1145,11 @@ TEST_F(RunTest, acceleratingEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1173,11 +1174,11 @@ TEST_F(RunTest, cruisingEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1204,11 +1205,11 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();
@@ -1235,11 +1236,11 @@ TEST_F(RunTest, brakingEmergencyWithCruising)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = true;
+    sys.start();
 
     initialiseData();
 
-    Thread *state_machine = new state_machine::Main(0, log_);
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
     state_machine->start();
 
     waitForUpdate();

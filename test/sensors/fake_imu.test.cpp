@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include <gtest/gtest.h>
+
 #include <sensors/fake_imu.hpp>
 
 namespace hyped::testing {
@@ -20,9 +21,8 @@ class FakeImuTest : public Test {
 TEST_F(FakeImuTest, defaultParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  const auto fake_imus_optional
-    = sensors::FakeImu::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
+  const auto fake_imus_optional = sensors::FakeImu::fromFile(kDefaultConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   const auto fake_imus = *fake_imus_optional;
@@ -42,8 +42,8 @@ TEST_F(FakeImuTest, defaultAllOperational)
 {
   auto &data                 = data::Data::getInstance();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  auto fake_imus_optional = sensors::FakeImu::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
+  auto fake_imus_optional = sensors::FakeImu::fromFile(kDefaultConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   disableOutput();
@@ -112,9 +112,8 @@ TEST_F(FakeImuTest, defaultAllOperational)
 TEST_F(FakeImuTest, oneFaultyParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  const auto fake_imus_optional
-    = sensors::FakeImu::fromFile(log_, kOneFaultyConfigPath, fake_trajectory);
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
+  const auto fake_imus_optional = sensors::FakeImu::fromFile(kOneFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   const auto fake_imus = *fake_imus_optional;
@@ -135,8 +134,8 @@ TEST_F(FakeImuTest, oneFaultyExpectedFailure)
 {
   auto &data                 = data::Data::getInstance();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  auto fake_imus_optional = sensors::FakeImu::fromFile(log_, kOneFaultyConfigPath, fake_trajectory);
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
+  auto fake_imus_optional = sensors::FakeImu::fromFile(kOneFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   disableOutput();
@@ -205,9 +204,9 @@ TEST_F(FakeImuTest, oneFaultyExpectedFailure)
 TEST_F(FakeImuTest, fourFaultyParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_imus_optional
-    = sensors::FakeImu::fromFile(log_, kFourFaultyConfigPath, fake_trajectory);
+    = sensors::FakeImu::fromFile(kFourFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   const auto fake_imus = *fake_imus_optional;
@@ -231,9 +230,8 @@ TEST_F(FakeImuTest, fourFaultyExpectedFailure)
 {
   auto &data                 = data::Data::getInstance();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
-  auto fake_imus_optional
-    = sensors::FakeImu::fromFile(log_, kFourFaultyConfigPath, fake_trajectory);
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
+  auto fake_imus_optional = sensors::FakeImu::fromFile(kFourFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   disableOutput();

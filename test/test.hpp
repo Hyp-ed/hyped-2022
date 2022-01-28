@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include <gtest/gtest.h>
+
 #include <utils/logger.hpp>
 
 namespace hyped::testing {
@@ -44,7 +45,7 @@ class Test : public ::testing::Test {
   }
 
  public:
-  utils::Logger log_;
+  inline static utils::Logger log_ = utils::Logger("TEST");
   void SetUp() { disableOutput(); }
   void TearDown() { enableOutput(); }
 };

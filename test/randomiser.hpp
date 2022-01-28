@@ -34,11 +34,11 @@ class Randomiser {
   }
 
   // Randomises a module status to any of the possible values.
-  static void randomiseModuleStatus(ModuleStatus &module_status)
+  static void randomiseModuleStatus(data::ModuleStatus &module_status)
   {
     // Randomises the module status.
     constexpr int num_statuses = 4;
-    module_status              = static_cast<ModuleStatus>(rand() % num_statuses);
+    module_status              = static_cast<data::ModuleStatus>(rand() % num_statuses);
   }
 
   //---------------------------------------------------------------------------

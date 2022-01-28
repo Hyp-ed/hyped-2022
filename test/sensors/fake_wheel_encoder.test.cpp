@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include <gtest/gtest.h>
+
 #include <sensors/fake_wheel_encoder.hpp>
 #include <utils/concurrent/thread.hpp>
 
@@ -23,9 +24,9 @@ class FakeWheelEncoderTest : public Test {
 TEST_F(FakeWheelEncoderTest, defaultParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_wheel_encoders_optional
-    = sensors::FakeWheelEncoder::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+    = sensors::FakeWheelEncoder::fromFile(kDefaultConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   const auto fake_wheel_encoders = *fake_wheel_encoders_optional;
@@ -50,9 +51,9 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     data.setStateMachineData(state_machine_data);
   }
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_wheel_encoders_optional
-    = sensors::FakeWheelEncoder::fromFile(log_, kDefaultConfigPath, fake_trajectory);
+    = sensors::FakeWheelEncoder::fromFile(kDefaultConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   disableOutput();
@@ -172,9 +173,9 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
 TEST_F(FakeWheelEncoderTest, oneFaultyParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_wheel_encoders_optional
-    = sensors::FakeWheelEncoder::fromFile(log_, kOneFaultyConfigPath, fake_trajectory);
+    = sensors::FakeWheelEncoder::fromFile(kOneFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   const auto fake_wheel_encoders = *fake_wheel_encoders_optional;
@@ -200,9 +201,9 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
     data.setStateMachineData(state_machine_data);
   }
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_wheel_encoders_optional
-    = sensors::FakeWheelEncoder::fromFile(log_, kOneFaultyConfigPath, fake_trajectory);
+    = sensors::FakeWheelEncoder::fromFile(kOneFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   disableOutput();
@@ -320,9 +321,9 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
 TEST_F(FakeWheelEncoderTest, fourFaultyParsesConfig)
 {
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_wheel_encoders_optional
-    = sensors::FakeWheelEncoder::fromFile(log_, kFourFaultyConfigPath, fake_trajectory);
+    = sensors::FakeWheelEncoder::fromFile(kFourFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   const auto fake_wheel_encoders = *fake_wheel_encoders_optional;
@@ -352,9 +353,9 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
     data.setStateMachineData(state_machine_data);
   }
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
-    *sensors::FakeTrajectory::fromFile(log_, kDefaultConfigPath));
+    *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_wheel_encoders_optional
-    = sensors::FakeWheelEncoder::fromFile(log_, kFourFaultyConfigPath, fake_trajectory);
+    = sensors::FakeWheelEncoder::fromFile(kFourFaultyConfigPath, fake_trajectory);
   enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   disableOutput();

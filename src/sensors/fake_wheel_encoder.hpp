@@ -19,7 +19,7 @@ class FakeWheelEncoder : public ICounter {
   bool isOnline() override { return true; }
   const Config &getConfig() const;
   static std::optional<std::array<FakeWheelEncoder, data::Sensors::kNumEncoders>> fromFile(
-    utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
+    const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
  private:
   const Config config_;

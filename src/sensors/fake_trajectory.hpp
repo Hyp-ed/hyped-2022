@@ -23,7 +23,7 @@ class FakeTrajectory {
   };
   Trajectory getTrajectory();
   const Config &getConfig() const;
-  static std::optional<FakeTrajectory> fromFile(utils::Logger &log, const std::string &path);
+  static std::optional<FakeTrajectory> fromFile(const std::string &path);
 
  private:
   const Config config_;

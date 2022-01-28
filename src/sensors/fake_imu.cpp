@@ -7,6 +7,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <utils/system.hpp>
+
 namespace hyped::sensors {
 
 FakeImu::FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory)
@@ -53,8 +55,10 @@ const FakeImu::Config &FakeImu::getConfig() const
 }
 
 std::optional<std::array<FakeImu, data::Sensors::kNumImus>> FakeImu::fromFile(
-  utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
+  const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
+  auto &system = utils::System::getSystem();
+  utils::Logger log("FAKE-IMU");
   const auto configs = readConfigs(log, path);
   if (!configs) {
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());

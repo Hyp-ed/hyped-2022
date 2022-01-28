@@ -8,8 +8,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
 #include <utils/logger.hpp>

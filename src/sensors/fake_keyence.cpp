@@ -7,6 +7,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <utils/system.hpp>
+
 namespace hyped::sensors {
 
 FakeKeyence::FakeKeyence(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory)
@@ -49,8 +51,10 @@ const FakeKeyence::Config &FakeKeyence::getConfig() const
 }
 
 std::optional<std::array<FakeKeyence, data::Sensors::kNumKeyence>> FakeKeyence::fromFile(
-  utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
+  const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
+  auto &system = utils::System::getSystem();
+  utils::Logger log("FAKE-KEYENCE");
   const auto configs = readConfigs(log, path);
   if (!configs) {
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());

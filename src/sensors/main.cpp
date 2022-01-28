@@ -27,7 +27,7 @@ Main::Main()
   }
   if (sys_.config_.use_fake_trajectory) {
     const auto fake_trajectory_optional
-      = FakeTrajectory::fromFile(log_, sys_.config_.fake_trajectory_config_path);
+      = FakeTrajectory::fromFile(sys_.config_.fake_trajectory_config_path);
     if (!fake_trajectory_optional) {
       log_.error("failed to initialise fake trajectory");
       sys_.stop();
@@ -35,7 +35,7 @@ Main::Main()
     }
     const auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
     const auto fake_keyences_optional
-      = FakeKeyence::fromFile(log_, sys_.config_.keyence_config_path, fake_trajectory);
+      = FakeKeyence::fromFile(sys_.config_.keyence_config_path, fake_trajectory);
     if (!fake_keyences_optional) {
       log_.error("failed to initialise fake keyence");
       sys_.stop();

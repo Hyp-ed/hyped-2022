@@ -7,6 +7,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <utils/system.hpp>
+
 namespace hyped::sensors {
 
 FakeWheelEncoder::FakeWheelEncoder(const Config &config,
@@ -50,8 +52,10 @@ const FakeWheelEncoder::Config &FakeWheelEncoder::getConfig() const
 }
 
 std::optional<std::array<FakeWheelEncoder, data::Sensors::kNumEncoders>> FakeWheelEncoder::fromFile(
-  utils::Logger &log, const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
+  const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
+  auto &system = utils::System::getSystem();
+  utils::Logger log("FAKE-WHEEL-ENCODER");
   const auto configs = readConfigs(log, path);
   if (!configs) {
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());

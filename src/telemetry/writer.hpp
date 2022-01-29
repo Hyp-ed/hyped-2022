@@ -28,7 +28,7 @@ class Writer {
  public:
   explicit Writer(data::Data &data);
 
-  // functions to pack timestamp and number of package
+  // functions to pack timestamp and number of packages
   void packTime();
   void packId(const uint16_t id);
 
@@ -62,8 +62,7 @@ class Writer {
   void endList();
 
   rapidjson::StringBuffer string_buffer_;
-  rapidjson::Writer<rapidjson::StringBuffer>
-    json_writer_;
+  rapidjson::Writer<rapidjson::StringBuffer> json_writer_;
   data::Data &data_;
 };
 

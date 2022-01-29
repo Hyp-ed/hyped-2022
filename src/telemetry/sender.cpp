@@ -33,7 +33,7 @@ void Sender::run()
     writer.packStateMachineData();
     writer.packNavigationData();
     writer.end();
-    
+
     if (!client_.sendData(writer.getString())) {
       data::Telemetry telemetry_data = data_.getTelemetryData();
       log_.ERR("Telemetry", "Error sending message");

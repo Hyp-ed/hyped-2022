@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include <cstdint>
+#include <optional>
 
 #include <utils/concurrent/lock.hpp>
 
@@ -11,6 +12,7 @@ namespace hyped::utils {
 class Logger {
  public:
   enum class Level { kError, kInfo, kDebug };
+  static std::optional<Level> levelFromInt(const int level);
 
   explicit Logger(const char *const module, const Level level);
   explicit Logger(const char *const module);

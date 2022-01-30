@@ -4,8 +4,18 @@
 
 #include <chrono>
 #include <ctime>
+#include <unordered_map>
 
 namespace hyped::utils {
+
+std::optional<Logger::Level> Logger::levelFromInt(const int level)
+{
+  static const std::unordered_map<int, Level> kIntToLevel
+    = {{0, Level::kError}, {1, Level::kInfo}, {2, Level::kDebug}};
+  const auto it = kIntToLevel.find(level);
+  if (it == kIntToLevel.end()) { return std::nullopt; }
+  return it->second;
+}
 
 void Logger::print(FILE *file, const char *format, va_list args)
 {

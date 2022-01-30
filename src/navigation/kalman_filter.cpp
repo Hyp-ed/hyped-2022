@@ -29,18 +29,7 @@ void KalmanFilter::setup()
   // check system navigation run for R setup
   const auto &sys = utils::System::getSystem();
   Eigen::MatrixXf R;
-  switch (sys.config_.run_kind) {
-    case utils::System::RunKind::kOfficial:
-    case utils::System::RunKind::kOutside:
-      R = createTrackMeasurementCovarianceMatrix();
-      break;
-    case utils::System::RunKind::kElevator:
-      R = createElevatorMeasurementCovarianceMatrix();
-      break;
-    case utils::System::RunKind::kStationary:
-      R = createStationaryMeasurementCovarianceMatrix();
-      break;
-  }
+  R = createTrackMeasurementCovarianceMatrix();
 
   kalmanFilter_.setModels(A, Q, H, R);
 

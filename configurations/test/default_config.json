@@ -1,17 +1,29 @@
 {
+  "system": {
+    "log_level": 0,
+    "use_fake_trajectory": true,
+    "use_fake_batteries": true,
+    "use_fake_batteries_fail": false,
+    "use_fake_temperature": false,
+    "use_fake_temperature_fail": false,
+    "use_fake_brakes": false,
+    "use_fake_controller": false,
+    "use_fake_high_power": false,
+    "axis": 0
+  },
   "brakes": {
-    "command_pins": [87, 10],
-    "button_pins": [66, 69]
+    "command_pins": [0, 0],
+    "button_pins": [1, 1]
   },
   "sensors": {
     "bms_startup_time_micros": 5000000,
     "keyence_pins": [67, 68],
     "imu_pins": [22, 27, 47, 86],
-    "temperature_pin": 3
+    "temperature_pin": 158
   },
   "telemetry": {
-    "server_ip": "127.0.0.1",
-    "server_port": "9090"
+    "server_ip": "192.168.5.3",
+    "server_port": "7070"
   },
   "fake_trajectory": {
     "maximum_acceleration": 1000.0,

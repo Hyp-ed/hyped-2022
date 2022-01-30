@@ -6,13 +6,14 @@
 #include <cstdint>
 #include <memory>
 
+#include <rapidjson/document.h>
+
 #include <utils/concurrent/barrier.hpp>
 
 namespace hyped::utils {
 
 class System {
  public:
-  enum class RunKind { kOfficial, kOutside, kElevator, kStationary };
   struct Config {
     std::string client_config_path;
     std::string imu_config_path;
@@ -22,12 +23,12 @@ class System {
     std::string bms_config_path;
     std::string brakes_config_path;
     Logger::Level log_level;
-    Logger::Level log_level_propulsion;
+    Logger::Level log_level_brakes;
     Logger::Level log_level_navigation;
+    Logger::Level log_level_propulsion;
     Logger::Level log_level_sensors;
     Logger::Level log_level_state_machine;
     Logger::Level log_level_telemetry;
-    Logger::Level log_level_brakes;
     bool use_fake_trajectory;
     bool use_fake_batteries;
     bool use_fake_batteries_fail;
@@ -36,11 +37,12 @@ class System {
     bool use_fake_brakes;
     bool use_fake_controller;
     bool use_fake_high_power;
-    int8_t axis;
-    int8_t run_id;
-    RunKind run_kind;
+    std::uint8_t axis;
+    std::uint64_t run_id;
   };
-  static void parseArgs(int argc, char *argv[]);
+  System(const Config &config);
+  static void parseArgs(const int argc, const char *const *const argv);
+  static std::uint64_t newRunId();
   static System &getSystem();
   static Logger &getLogger();
 
@@ -51,7 +53,6 @@ class System {
 
   bool isRunning();
   void stop();
-  void start();
 
   const Config config_;
 
@@ -60,7 +61,6 @@ class System {
   bool running_;
   Logger log_;
 
-  System(const Config &config);
   inline static std::unique_ptr<System> system_;
 
   static void interruptHandler(int);

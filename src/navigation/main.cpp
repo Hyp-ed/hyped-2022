@@ -20,8 +20,6 @@ void Main::run()
   auto &data               = data::Data::getInstance();
   bool navigation_complete = false;
 
-  if (sys_.config_.run_kind != utils::System::RunKind::kOfficial) { nav_.disableKeyenceUsage(); }
-
   // Setting module status for state machine transition
   data::Navigation nav_data = data.getNavigationData();
   nav_data.module_status    = data::ModuleStatus::kInit;

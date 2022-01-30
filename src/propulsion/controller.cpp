@@ -438,44 +438,40 @@ void Controller::processSdoMessage(utils::io::can::Frame &message)
   if (index_1 == 0x27 && index_2 == 0x20 && sub_index == 0x00) {
     if (message.data[4] != 0 && message.data[5] != 0) {
       throwCriticalFailure();
-      uint8_t warning_message = message.data[4];
-      switch (warning_message) {
-        case 0x01:
-          log_.ERR("MOTOR", "Controller %d warning: Controller temperature exceeded");
-          break;
-        case 0x02:
-          log_.ERR("MOTOR", "Controller %d warning: Motor temperature exceeded");
-          break;
-        case 0x04:
-          log_.ERR("MOTOR", "Controller %d warning: DC link under voltage");
-          break;
-        case 0x08:
-          log_.ERR("MOTOR", "Controller %d warning: DC link over voltage");
-          break;
-        case 0x10:
-          log_.ERR("MOTOR", "Controller %d warning: DC over current");
-          break;
-        case 0x20:
-          log_.ERR("MOTOR", "Controller %d warning: Stall protection active");
-          break;
-        case 0x40:
-          log_.ERR("MOTOR", "Controller %d warning: Max velocity exceeded");
-          break;
-        case 0x80:
-          log_.ERR("MOTOR", "Controller %d warning: BMS proposed power");
-          break;
-        case 0x100:
-          log_.ERR("MOTOR", "Controller %d warning: Capacitor temperature exceeded");
-          break;
-        case 0x200:
-          log_.ERR("MOTOR", "Controller %d warning: I2T protection");
-          break;
-        case 0x400:
-          log_.ERR("MOTOR", "Controller %d warning: Field weakening active ");
-          break;
-        default:
-          log_.ERR("MOTOR", "Controller %d warning: Warning code %d", node_id_, warning_message);
+      uint16_t warning_message
+        = stoi(std::to_string(message.data[5]) + std::to_string(message.data[4])); // Merge error bytes into one string
+
+      if (warning_message & 0x01) {
+        log_.ERR("MOTOR", "Controller %d warning: Controller temperature exceeded");
       }
+      if (warning_message & 0x02) {
+        log_.ERR("MOTOR", "Controller %d warning: Motor temperature exceeded");
+      }
+      if (warning_message & 0x04) {
+        log_.ERR("MOTOR", "Controller %d warning: DC link under voltage");
+      }
+      if (warning_message & 0x08) {
+        log_.ERR("MOTOR", "Controller %d warning: DC link over voltage");
+      }
+      if (warning_message & 0x10) { log_.ERR("MOTOR", "Controller %d warning: DC over current"); }
+      if (warning_message & 0x20) {
+        log_.ERR("MOTOR", "Controller %d warning: Stall protection active");
+      }
+      if (warning_message & 0x40) {
+        log_.ERR("MOTOR", "Controller %d warning: Max velocity exceeded");
+      }
+      if (warning_message & 0x80) {
+        log_.ERR("MOTOR", "Controller %d warning: BMS proposed power");
+      }
+      if (warning_message & 0x100) {
+        log_.ERR("MOTOR", "Controller %d warning: Capacitor temperature exceeded");
+      }
+      if (warning_message & 0x200) { log_.ERR("MOTOR", "Controller %d warning: I2T protection"); }
+      if (warning_message & 0x400) {
+        log_.ERR("MOTOR", "Controller %d warning: Field weakening active ");
+      }
+
+      log_.ERR("MOTOR", "Controller %d warning: Warning code %d", node_id_, warning_message);
     }
     return;
   }

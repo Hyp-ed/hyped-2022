@@ -147,8 +147,6 @@ class Navigation {
   static constexpr data::nav_t kSpringCoefficient    = 18;
   static constexpr data::nav_t kEmbrakeAngle         = 0.52;
 
-  static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
-
   // System communication
   data::Data &data_;
   utils::Logger log_;

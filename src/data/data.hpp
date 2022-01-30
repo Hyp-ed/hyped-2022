@@ -33,17 +33,17 @@ struct Module {
 using nav_t            = float;
 using NavigationVector = utils::math::Vector<nav_t, 3>;
 struct Navigation : public Module {
-  static constexpr nav_t kMaximumVelocity = 100;     // m/s
-  static constexpr nav_t kRunLength       = 1250.0;  // m
-  static constexpr nav_t kBrakingBuffer   = 20.0;    // m
-  // TODO(miltfra): Fix wheel and keyence distances
-  static constexpr nav_t kWheelCircumfrence = 3.14 * 0.1;  // m
-  static constexpr nav_t kStripeDistance    = 50;          // m
-  nav_t displacement;                                      // m
-  nav_t velocity;                                          // m/s
-  nav_t acceleration;                                      // m/s^2
-  nav_t emergency_braking_distance;                        // m
-  nav_t braking_distance = 750;                            // m
+  static constexpr nav_t kMaximumVelocity   = 100;     // m/s
+  static constexpr nav_t kRunLength         = 1250.0;  // m
+  static constexpr nav_t kBrakingBuffer     = 20.0;    // m
+  static constexpr nav_t kPi                = 3.14159265359;
+  static constexpr nav_t kWheelCircumfrence = kPi * 0.1;  // m
+  static constexpr nav_t kStripeDistance    = 15;         // m
+  nav_t displacement;                                     // m
+  nav_t velocity;                                         // m/s
+  nav_t acceleration;                                     // m/s^2
+  nav_t emergency_braking_distance;                       // m
+  nav_t braking_distance = 750;                           // m
 };
 
 // -------------------------------------------------------------------------------------------------

@@ -73,7 +73,7 @@ data::nav_t Navigation::getBrakingDistance() const
   const uint32_t total_rpm = std::accumulate(motor_data.rpms.begin(), motor_data.rpms.end(), 0);
   const auto avg_rpm
     = static_cast<data::nav_t>(total_rpm) / static_cast<data::nav_t>(data::Motors::kNumMotors);
-  const auto rot_velocity = (avg_rpm / 60.0) * (2 * kPi);
+  const auto rot_velocity = (avg_rpm / 60.0) * (2 * data::Navigation::kPi);
 
   const auto actuation_force = kSpringCompression * kSpringCoefficient;
   const auto braking_force

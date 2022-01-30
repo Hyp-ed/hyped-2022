@@ -899,9 +899,8 @@ class RunTest : public Test {
  */
 TEST_F(RunTest, nominalRunWithoutCruising)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -928,9 +927,8 @@ TEST_F(RunTest, nominalRunWithoutCruising)
  */
 TEST_F(RunTest, nominalRunWithCruising)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -958,9 +956,8 @@ TEST_F(RunTest, nominalRunWithCruising)
  */
 TEST_F(RunTest, idleEmergency)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -982,9 +979,8 @@ TEST_F(RunTest, idleEmergency)
  */
 TEST_F(RunTest, calibratingEmergency)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -1008,9 +1004,8 @@ TEST_F(RunTest, calibratingEmergency)
  */
 TEST_F(RunTest, readyEmergency)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -1035,9 +1030,8 @@ TEST_F(RunTest, readyEmergency)
  */
 TEST_F(RunTest, acceleratingEmergency)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -1064,9 +1058,8 @@ TEST_F(RunTest, acceleratingEmergency)
  */
 TEST_F(RunTest, cruisingEmergency)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -1095,9 +1088,8 @@ TEST_F(RunTest, cruisingEmergency)
  */
 TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 
@@ -1126,9 +1118,8 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
  */
 TEST_F(RunTest, brakingEmergencyWithCruising)
 {
-  static const char *args[] = {kDefaultConfigPath.c_str()};
   for (std::size_t i = 0; i < kTestSize; ++i) {
-    utils::System::parseArgs(1, args);
+    utils::System::parseArgs(2, kDefaultArgs);
 
     initialiseData();
 

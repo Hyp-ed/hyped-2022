@@ -30,38 +30,38 @@ System::System(const Config &config)
 
 void System::parseArgs(const int argc, const char *const *const argv)
 {
-  if (argc != 1) {
+  if (argc != 2) {
     kInitialisationErrorLogger.error(
-      "found %d arguments but %d were expected; more arguments are not yet supported", argc, 1);
+      "found %d arguments but %d were expected; more arguments are not yet supported", argc - 1, 1);
     exit(1);
   }
-  std::ifstream input_stream(argv[0]);
+  std::ifstream input_stream(argv[1]);
   if (!input_stream.is_open()) {
-    kInitialisationErrorLogger.error("failed to open config file at %s", argv[0]);
+    kInitialisationErrorLogger.error("failed to open config file at %s", argv[1]);
     exit(1);
   }
   rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
   rapidjson::Document document;
   document.ParseStream(input_stream_wrapper);
   if (document.HasParseError()) {
-    kInitialisationErrorLogger.error("failed to parse config file at %s", argv[0]);
+    kInitialisationErrorLogger.error("failed to parse config file at %s", argv[1]);
     exit(1);
   }
   if (!document.HasMember("system")) {
     kInitialisationErrorLogger.error("missing required field 'system' in configuration file at %s",
-                                     argv[0]);
+                                     argv[1]);
     exit(1);
   }
   const auto config_object = document["system"].GetObject();
   // Default values
   Config config;
-  config.client_config_path          = std::string(argv[0]);
-  config.imu_config_path             = std::string(argv[0]);
-  config.keyence_config_path         = std::string(argv[0]);
-  config.temperature_config_path     = std::string(argv[0]);
-  config.fake_trajectory_config_path = std::string(argv[0]);
-  config.bms_config_path             = std::string(argv[0]);
-  config.brakes_config_path          = std::string(argv[0]);
+  config.client_config_path          = std::string(argv[1]);
+  config.imu_config_path             = std::string(argv[1]);
+  config.keyence_config_path         = std::string(argv[1]);
+  config.temperature_config_path     = std::string(argv[1]);
+  config.fake_trajectory_config_path = std::string(argv[1]);
+  config.bms_config_path             = std::string(argv[1]);
+  config.brakes_config_path          = std::string(argv[1]);
   config.run_id                      = newRunId();
   // System log level
   if (config_object.HasMember("log_level")) {
@@ -69,13 +69,13 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level' in config file at %s; using default value", argv[0]);
+      "could not find field 'system.log_level' in config file at %s; using default value", argv[1]);
     config.log_level = Logger::Level::kInfo;
   }
   // Brakes log level
@@ -84,14 +84,14 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level_brakes = *log_level;
   } else {
     kInitialisationErrorLogger.info(
       "could not find field 'system.log_level_brakes' in config filet at %s; using default value",
-      argv[0]);
+      argv[1]);
     config.log_level_brakes = config.log_level;
   }
   // Navigation log level
@@ -100,7 +100,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level_navigation = *log_level;
@@ -108,7 +108,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     kInitialisationErrorLogger.info(
       "could not find field 'system.log_level_navigation' in config filet at %s; using default "
       "value",
-      argv[0]);
+      argv[1]);
     config.log_level_navigation = config.log_level;
   }
   // Propulsion log level
@@ -117,7 +117,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level_propulsion = *log_level;
@@ -125,7 +125,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     kInitialisationErrorLogger.info(
       "could not find field 'system.log_level_propulsion' in config filet at %s; using default "
       "value",
-      argv[0]);
+      argv[1]);
     config.log_level_propulsion = config.log_level;
   }
   // Sensors log level
@@ -134,14 +134,14 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level_sensors = *log_level;
   } else {
     kInitialisationErrorLogger.info(
       "could not find field 'system.log_level_sensors' in config filet at %s; using default value",
-      argv[0]);
+      argv[1]);
     config.log_level_sensors = config.log_level;
   }
   // State machine log level
@@ -150,7 +150,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level_state_machine = *log_level;
@@ -158,7 +158,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     kInitialisationErrorLogger.info(
       "could not find field 'system.log_level_state_machine' in config filet at %s; using default "
       "value",
-      argv[0]);
+      argv[1]);
     config.log_level_state_machine = config.log_level;
   }
   // Telemetry log level
@@ -167,7 +167,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     const auto log_level     = Logger::levelFromInt(log_level_raw);
     if (!log_level) {
       kInitialisationErrorLogger.error(
-        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[0]);
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
       exit(1);
     }
     config.log_level_telemetry = *log_level;
@@ -175,7 +175,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     kInitialisationErrorLogger.info(
       "could not find field 'system.log_level_telemetry' in config filet at %s; using default "
       "value",
-      argv[0]);
+      argv[1]);
     config.log_level_telemetry = config.log_level;
   }
   // Use fake trajectory?
@@ -185,7 +185,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     kInitialisationErrorLogger.info(
       "could not find field 'system.use_fake_trajectory' in config filet at %s; using default "
       "value",
-      argv[0]);
+      argv[1]);
     config.use_fake_trajectory = false;
   }
   // Use fake batteries?

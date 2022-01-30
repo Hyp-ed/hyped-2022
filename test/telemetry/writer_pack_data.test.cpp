@@ -7,9 +7,7 @@
 using namespace hyped::telemetry;
 using namespace hyped::data;
 
-Writer::Writer(data::Data &data) : json_writer_(string_buffer_), data_{data}
-{
-}
+const auto data_ = &hyped::data::Data::getInstance();
 
 /**
  * Tests packing of data in CDS to json
@@ -31,7 +29,7 @@ struct WriterPackData : public ::testing::Test {
 TEST_F(WriterPackData, packsTelemetryData)
 {
   // TODO initialise CDS with values
-  Writer writer(data_);
+  Writer writer(*data_);
   writer.start();
   writer.packTelemetryData();
   writer.end();
@@ -43,7 +41,7 @@ TEST_F(WriterPackData, packsTelemetryData)
 TEST_F(WriterPackData, packsNavigationData)
 {
   // TODO initialise CDS with values
-  Writer writer(data_);
+  Writer writer(*data_);
   writer.start();
   writer.packNavigationData();
   writer.end();
@@ -55,7 +53,7 @@ TEST_F(WriterPackData, packsNavigationData)
 TEST_F(WriterPackData, packsSensorsData)
 {
   // TODO initialise CDS with values
-  Writer writer(data_);
+  Writer writer(*data_);
   writer.start();
   writer.packSensorsData();
   writer.end();
@@ -67,7 +65,7 @@ TEST_F(WriterPackData, packsSensorsData)
 TEST_F(WriterPackData, packsMotorData)
 {
   // TODO initialise CDS with values
-  Writer writer(data_);
+  Writer writer(*data_);
   writer.start();
   writer.packMotorData();
   writer.end();
@@ -79,7 +77,7 @@ TEST_F(WriterPackData, packsMotorData)
 TEST_F(WriterPackData, packsStateMachineData)
 {
   // TODO initialise CDS with values
-  Writer writer(data_);
+  Writer writer(*data_);
   writer.start();
   writer.packStateMachineData();
   writer.end();
@@ -91,9 +89,9 @@ TEST_F(WriterPackData, packsStateMachineData)
 TEST_F(WriterPackData, packsBatteryData)
 {
   // TODO initialise CDS with values
-  Writer writer(data_);
+  Writer writer(*data_);
   writer.start();
-  writer.packBattery();
+  // writer.packBattery();
   writer.end();
   std::string actualJson = writer.getString();
   std::string expectedJson = "INSERT JSON HERE"; // TODO

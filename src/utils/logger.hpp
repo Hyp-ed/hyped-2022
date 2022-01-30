@@ -11,7 +11,7 @@ namespace hyped::utils {
 
 class Logger {
  public:
-  enum class Level { kError, kInfo, kDebug };
+  enum class Level { kNone, kError, kInfo, kDebug };
   static std::optional<Level> levelFromInt(const int level);
 
   explicit Logger(const char *const module, const Level level);

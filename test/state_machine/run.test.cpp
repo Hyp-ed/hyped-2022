@@ -119,11 +119,9 @@ class RunTest : public Test {
     const bool has_modules_initialised = state_machine::checkModulesInitialised(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_calibrate_command);
     ASSERT_EQ(false, has_modules_initialised);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -140,9 +138,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kIdle);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -168,12 +164,10 @@ class RunTest : public Test {
     const bool has_modules_ready = state_machine::checkModulesReady(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_calibrating_command);
     ASSERT_EQ(true, has_modules_initialised);
     ASSERT_EQ(false, has_modules_ready);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -181,11 +175,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Idle";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreCalibrating)
       << "failed to transition from Idle to PreCalibrating";
-    disableOutput();
   }
 
   /**
@@ -196,9 +188,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kIdle);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -216,7 +206,6 @@ class RunTest : public Test {
 
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -224,11 +213,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Idle";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
       << "failed to transition from Idle to FailureStopped";
-    disableOutput();
   }
 
   /**
@@ -240,9 +227,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreCalibrating);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -271,12 +256,10 @@ class RunTest : public Test {
     const bool has_modules_ready = state_machine::checkModulesReady(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_calibrating_command);
     ASSERT_EQ(true, has_modules_initialised);
     ASSERT_EQ(false, has_modules_ready);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -284,11 +267,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in PreCalibrating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kCalibrating)
       << "failed to transition from PreCalibrating to Calibrating";
-    disableOutput();
   }
 
   /**
@@ -299,9 +280,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreCalibrating);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -319,7 +298,6 @@ class RunTest : public Test {
 
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -327,11 +305,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in PreCalibrating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
       << "failed to transition from PreCalibrating to FailureStopped";
-    disableOutput();
   }
 
   /**
@@ -342,9 +318,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kCalibrating);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -370,11 +344,9 @@ class RunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_launch_command = state_machine::checkLaunchCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_modules_ready);
     ASSERT_EQ(false, has_launch_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -382,11 +354,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Calibrating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kReady)
       << "failed to transition from Calibrating to Ready";
-    disableOutput();
   }
 
   /**
@@ -397,9 +367,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kCalibrating);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -415,10 +383,8 @@ class RunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -426,11 +392,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Calibrating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
       << "failed to transition from Calibrating to FailureStopped";
-    disableOutput();
   }
 
   /**
@@ -441,9 +405,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kReady);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -474,12 +436,10 @@ class RunTest : public Test {
     const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
     const bool has_reached_max_velocity = state_machine::checkReachedMaxVelocity(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_launch_command);
     ASSERT_EQ(false, has_entered_braking_zone);
     ASSERT_EQ(false, has_reached_max_velocity);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -487,11 +447,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Ready";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kAccelerating)
       << "failed to transition from Ready to Accelerating";
-    disableOutput();
   }
 
   /**
@@ -502,9 +460,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kReady);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -520,21 +476,17 @@ class RunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
     waitForUpdate();
     readData();
 
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered critical failure in Ready";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
       << "failed to transition from Ready to FailureStopped";
-    disableOutput();
   }
 
   /**
@@ -545,9 +497,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kAccelerating);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -574,11 +524,9 @@ class RunTest : public Test {
     const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = state_machine::checkPodStopped(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -586,11 +534,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Accelerating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking)
       << "failed to transition from Accelerating to NominalBraking";
-    disableOutput();
   }
 
   /**
@@ -601,9 +547,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kAccelerating);
-    disableOutput();
 
     // Randomise data_
     randomiseInternally();
@@ -631,11 +575,9 @@ class RunTest : public Test {
     const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
     const bool has_reached_max_velocity = state_machine::checkReachedMaxVelocity(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_entered_braking_zone);
     ASSERT_EQ(true, has_reached_max_velocity);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -643,11 +585,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Accelerating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kCruising)
       << "failed to transition from Accelerating to Cruising";
-    disableOutput();
   }
 
   /**
@@ -658,9 +598,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kAccelerating);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -676,10 +614,8 @@ class RunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_stopped = state_machine::checkPodStopped(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_stopped);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -687,20 +623,16 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Accelerating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
       << "failed to transition from Accelerating to EmergencyBraking";
-    disableOutput();
   }
 
   void testCruisingToNominalBraking()
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kCruising);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -727,11 +659,9 @@ class RunTest : public Test {
     const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = state_machine::checkPodStopped(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -739,20 +669,16 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Cruising";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking)
       << "failed to transition from Cruising to NominalBraking";
-    disableOutput();
   }
 
   void testCruisingEmergency()
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kCruising);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -768,10 +694,8 @@ class RunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_stopped = state_machine::checkPodStopped(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_stopped);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -779,11 +703,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Cruising";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
       << "failed to transition from Cruising to EmergencyBraking";
-    disableOutput();
   }
 
   /**
@@ -794,9 +716,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -822,11 +742,9 @@ class RunTest : public Test {
     const bool has_stopped          = state_machine::checkPodStopped(log_, nav_data_);
     const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_stopped);
     ASSERT_EQ(false, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -834,11 +752,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in NominalBraking";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFinished)
       << "failed to transition from NominalBraking to Finished";
-    disableOutput();
   }
 
   /**
@@ -849,9 +765,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -867,10 +781,8 @@ class RunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_stopped = state_machine::checkPodStopped(log_, nav_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_stopped);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -878,11 +790,9 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in NominalBraking";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
       << "failed to transition from NominalBraking to EmergencyBraking";
-    disableOutput();
   }
 
   /**
@@ -893,9 +803,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFinished);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -906,9 +814,7 @@ class RunTest : public Test {
     // Verify transition conditions are as intended
     const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -916,10 +822,8 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     utils::System &sys = utils::System::getSystem();
     ASSERT_EQ(sys.isRunning(), false) << "failed to transition from Finished to Off";
-    disableOutput();
   }
 
   /**
@@ -930,9 +834,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -947,10 +849,8 @@ class RunTest : public Test {
     const bool has_stopped          = state_machine::checkPodStopped(log_, nav_data_);
     const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_stopped);
     ASSERT_EQ(false, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -958,10 +858,8 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
       << "failed to transition from FailureBraking to FailureStopped";
-    disableOutput();
   }
 
   /**
@@ -972,9 +870,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    enableOutput();
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped);
-    disableOutput();
 
     // Randomise data
     randomiseInternally();
@@ -985,9 +881,7 @@ class RunTest : public Test {
     // Verify transition conditions are as intended
     const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
 
-    enableOutput();
     ASSERT_EQ(true, has_shutdown_command);
-    disableOutput();
 
     // Let STM do its thing
     writeData();
@@ -995,10 +889,8 @@ class RunTest : public Test {
     readData();
 
     // Check result
-    enableOutput();
     utils::System &sys = utils::System::getSystem();
     ASSERT_EQ(sys.isRunning(), false) << "failed to transition from FailureStopped to Off";
-    disableOutput();
   }
 };
 

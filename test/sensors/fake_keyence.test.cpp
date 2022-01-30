@@ -27,7 +27,6 @@ TEST_F(FakeKeyenceTest, defaultParsesConfig)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(kDefaultConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
   const auto fake_keyences = *fake_keyences_optional;
   ASSERT_EQ(data::Sensors::kNumKeyence, fake_keyences.size());
@@ -35,7 +34,6 @@ TEST_F(FakeKeyenceTest, defaultParsesConfig)
   ASSERT_FLOAT_EQ(0.2, fake_keyences.at(1).getConfig().noise);
   ASSERT_FALSE(fake_keyences.at(0).getConfig().failure_in_state);
   ASSERT_FALSE(fake_keyences.at(1).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
@@ -49,9 +47,7 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_keyences_optional = sensors::FakeKeyence::fromFile(kDefaultConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
-  disableOutput();
   auto fake_keyences = *fake_keyences_optional;
   {
     auto state_machine_data          = data.getStateMachineData();
@@ -64,12 +60,10 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -81,12 +75,10 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -98,12 +90,10 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -115,12 +105,10 @@ TEST_F(FakeKeyenceTest, defaultNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
 }
@@ -135,7 +123,6 @@ TEST_F(FakeKeyenceTest, oneFaultyParsesConfig)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(kOneFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_keyences_optional);
   const auto fake_keyences = *fake_keyences_optional;
   ASSERT_EQ(data::Sensors::kNumKeyence, fake_keyences.size());
@@ -144,7 +131,6 @@ TEST_F(FakeKeyenceTest, oneFaultyParsesConfig)
   ASSERT_TRUE(fake_keyences.at(0).getConfig().failure_in_state);
   ASSERT_FALSE(fake_keyences.at(1).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kNominalBraking, *fake_keyences.at(0).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
@@ -155,10 +141,8 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
     state_machine_data.current_state = data::State::kIdle;
     data.setStateMachineData(state_machine_data);
   }
-  enableOutput();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
-  disableOutput();
   auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(kOneFaultyConfigPath, fake_trajectory);
   ASSERT_TRUE(fake_keyences_optional);
@@ -174,12 +158,10 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -191,12 +173,10 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -208,11 +188,9 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -224,11 +202,9 @@ TEST_F(FakeKeyenceTest, oneFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
 }
@@ -241,7 +217,6 @@ TEST_F(FakeKeyenceTest, twoFaultyParsesConfig)
 {
   auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
-  enableOutput();
   const auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(kTwoFaultyConfigPath, fake_trajectory);
   ASSERT_TRUE(fake_keyences_optional);
@@ -253,7 +228,6 @@ TEST_F(FakeKeyenceTest, twoFaultyParsesConfig)
   ASSERT_TRUE(fake_keyences.at(1).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kAccelerating, *fake_keyences.at(0).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kNominalBraking, *fake_keyences.at(1).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
@@ -264,10 +238,8 @@ TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
     state_machine_data.current_state = data::State::kIdle;
     data.setStateMachineData(state_machine_data);
   }
-  enableOutput();
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
-  disableOutput();
   auto fake_keyences_optional
     = sensors::FakeKeyence::fromFile(kTwoFaultyConfigPath, fake_trajectory);
   ASSERT_TRUE(fake_keyences_optional);
@@ -283,11 +255,9 @@ TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -299,11 +269,9 @@ TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -315,10 +283,8 @@ TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -330,10 +296,8 @@ TEST_F(FakeKeyenceTest, twoFaultyNonDecreasingData)
     utils::concurrent::Thread::sleep(kSleepMillis);
     const std::array<data::CounterData, data::Sensors::kNumKeyence> current_counter_data
       = {fake_keyences.at(0).getData(), fake_keyences.at(1).getData()};
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
 }

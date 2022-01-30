@@ -62,10 +62,6 @@ class StateTest : public hyped::testing::Test {
     data_.setSensorsData(sensors_data_);
     data_.setBatteriesData(batteries_data_);
   }
-
-  void SetUp() { disableOutput(); }
-
-  void TearDown() { enableOutput(); }
 };
 
 //---------------------------------------------------------------------------
@@ -92,7 +88,6 @@ TEST_F(IdleTest, handlesEmergency)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from Idle";
@@ -100,7 +95,6 @@ TEST_F(IdleTest, handlesEmergency)
       ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Idle";
     }
-    disableOutput();
   }
 }
 
@@ -122,7 +116,6 @@ TEST_F(IdleTest, handlesAllInitialised)
                                                  telemetry_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
-      enableOutput();
       if (all_initialised) {
         ASSERT_EQ(new_state, state_machine::PreCalibrating::getInstance())
           << "failed to enter PreCalibrating from Idle";
@@ -130,7 +123,6 @@ TEST_F(IdleTest, handlesAllInitialised)
         ASSERT_NE(new_state, state_machine::PreCalibrating::getInstance())
           << "falsely entered PreCalibrating from Idle";
       }
-      disableOutput();
     }
   }
 }
@@ -156,7 +148,6 @@ TEST_F(PreCalibratingTest, handlesEmergency)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from PreCalibrating";
@@ -164,7 +155,6 @@ TEST_F(PreCalibratingTest, handlesEmergency)
       ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from PreCalibrating";
     }
-    disableOutput();
   }
 }
 
@@ -186,7 +176,6 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
       const bool calibrate_command = state_machine::checkCalibrateCommand(telemetry_data_);
       const auto new_state         = state->checkTransition(log_);
 
-      enableOutput();
       if (calibrate_command) {
         ASSERT_EQ(new_state, state_machine::Calibrating::getInstance())
           << "failed to enter Calibrating from PreCalibrating";
@@ -194,7 +183,6 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
         ASSERT_NE(new_state, state_machine::Calibrating::getInstance())
           << "falsely entered Calibrating from PreCalibrating";
       }
-      disableOutput();
     }
   }
 }
@@ -224,7 +212,6 @@ TEST_F(CalibratingTest, handlesEmergency)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from Calibrating";
@@ -232,7 +219,6 @@ TEST_F(CalibratingTest, handlesEmergency)
       ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Calibrating";
     }
-    disableOutput();
   }
 }
 
@@ -255,7 +241,6 @@ TEST_F(CalibratingTest, handlesAllReady)
                                            telemetry_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
-      enableOutput();
       if (all_ready) {
         ASSERT_EQ(new_state, state_machine::Ready::getInstance())
           << "failed to enter Ready from Calibrating";
@@ -263,7 +248,6 @@ TEST_F(CalibratingTest, handlesAllReady)
         ASSERT_NE(new_state, state_machine::Ready::getInstance())
           << "falsely entered Ready from Calibrating";
       }
-      disableOutput();
     }
   }
 }
@@ -294,7 +278,6 @@ TEST_F(ReadyTest, handlesEmergency)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from Ready";
@@ -302,7 +285,6 @@ TEST_F(ReadyTest, handlesEmergency)
       ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Ready";
     }
-    disableOutput();
   }
 }
 
@@ -325,7 +307,6 @@ TEST_F(ReadyTest, handlesLaunchCommand)
       const bool received_launch_command = state_machine::checkLaunchCommand(telemetry_data_);
       const auto new_state               = state->checkTransition(log_);
 
-      enableOutput();
       if (received_launch_command) {
         ASSERT_EQ(new_state, state_machine::Accelerating::getInstance())
           << "failed to enter Accelerating from Ready";
@@ -333,7 +314,6 @@ TEST_F(ReadyTest, handlesLaunchCommand)
         ASSERT_NE(new_state, state_machine::Accelerating::getInstance())
           << "falsely entered Accelerating from Ready";
       }
-      disableOutput();
     }
   }
 }
@@ -364,7 +344,6 @@ TEST_F(AcceleratingTest, handlesEmergency)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, state_machine::FailureBraking::getInstance())
         << "failed to enter FailureBraking from Accelerating";
@@ -372,7 +351,6 @@ TEST_F(AcceleratingTest, handlesEmergency)
       ASSERT_NE(new_state, state_machine::FailureBraking::getInstance())
         << "falsely entered FailureBraking from Accelerating";
     }
-    disableOutput();
   }
 }
 
@@ -395,7 +373,6 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
       const bool in_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
       const auto new_state       = state->checkTransition(log_);
 
-      enableOutput();
       if (in_braking_zone) {
         ASSERT_EQ(new_state, state_machine::NominalBraking::getInstance())
           << "failed to enter NominalBraking from Accelerating";
@@ -403,7 +380,6 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
         ASSERT_NE(new_state, state_machine::NominalBraking::getInstance())
           << "falsely entered NominalBraking from Accelerating";
       }
-      disableOutput();
     }
   }
 }
@@ -434,7 +410,6 @@ TEST_F(NominalBrakingTest, handlesEmergency)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
       ASSERT_EQ(new_state, state_machine::FailureBraking::getInstance())
         << "failed to enter FailureBraking from NominalBraking";
@@ -442,7 +417,6 @@ TEST_F(NominalBrakingTest, handlesEmergency)
       ASSERT_NE(new_state, state_machine::FailureBraking::getInstance())
         << "falsely entered FailureBraking from NominalBraking";
     }
-    disableOutput();
   }
 }
 
@@ -464,7 +438,6 @@ TEST_F(NominalBrakingTest, handlesStopped)
       const bool stopped   = state_machine::checkPodStopped(log_, nav_data_);
       const auto new_state = state->checkTransition(log_);
 
-      enableOutput();
       if (stopped) {
         ASSERT_EQ(new_state, state_machine::Finished::getInstance())
           << "failed to enter Finished from NominalBraking";
@@ -472,7 +445,6 @@ TEST_F(NominalBrakingTest, handlesStopped)
         ASSERT_NE(new_state, state_machine::Finished::getInstance())
           << "falsely entered Finished from NominalBraking";
       }
-      disableOutput();
     }
   }
 }
@@ -502,7 +474,6 @@ TEST_F(FinishedTest, handlesShutdownCommand)
     const bool received_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
-    enableOutput();
     if (received_shutdown_command) {
       ASSERT_EQ(new_state, state_machine::Off::getInstance())
         << "failed to enter Off from Finished";
@@ -510,7 +481,6 @@ TEST_F(FinishedTest, handlesShutdownCommand)
       ASSERT_NE(new_state, state_machine::Off::getInstance())
         << "falsely entered Off from Finished";
     }
-    disableOutput();
   }
 }
 
@@ -539,7 +509,6 @@ TEST_F(FailureBrakingTest, handlesStopped)
     const bool stopped   = state_machine::checkPodStopped(log_, nav_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (stopped) {
       ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from FailureBraking";
@@ -547,7 +516,6 @@ TEST_F(FailureBrakingTest, handlesStopped)
       ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from FailureBraking";
     }
-    disableOutput();
   }
 }
 
@@ -576,7 +544,6 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
     const bool received_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
-    enableOutput();
     if (received_shutdown_command) {
       ASSERT_EQ(new_state, state_machine::Off::getInstance())
         << "failed to enter Off from FailureStopped";
@@ -584,7 +551,6 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
       ASSERT_NE(new_state, state_machine::Off::getInstance())
         << "falsely entered Off from FailureStopped";
     }
-    disableOutput();
   }
 }
 

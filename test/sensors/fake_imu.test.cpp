@@ -23,7 +23,6 @@ TEST_F(FakeImuTest, defaultParsesConfig)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_imus_optional = sensors::FakeImu::fromFile(kDefaultConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   const auto fake_imus = *fake_imus_optional;
   ASSERT_EQ(data::Sensors::kNumImus, fake_imus.size());
@@ -35,7 +34,6 @@ TEST_F(FakeImuTest, defaultParsesConfig)
   ASSERT_FALSE(fake_imus.at(1).getConfig().failure_in_state);
   ASSERT_FALSE(fake_imus.at(2).getConfig().failure_in_state);
   ASSERT_FALSE(fake_imus.at(3).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeImuTest, defaultAllOperational)
@@ -44,64 +42,52 @@ TEST_F(FakeImuTest, defaultAllOperational)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_imus_optional = sensors::FakeImu::fromFile(kDefaultConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_imus_optional);
-  disableOutput();
   auto fake_imus = *fake_imus_optional;
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kReady;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kAccelerating;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kCruising;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kNominalBraking;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kEmergencyBraking;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
 }
 
@@ -114,7 +100,6 @@ TEST_F(FakeImuTest, oneFaultyParsesConfig)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_imus_optional = sensors::FakeImu::fromFile(kOneFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   const auto fake_imus = *fake_imus_optional;
   ASSERT_EQ(data::Sensors::kNumImus, fake_imus.size());
@@ -127,7 +112,6 @@ TEST_F(FakeImuTest, oneFaultyParsesConfig)
   ASSERT_TRUE(fake_imus.at(2).getConfig().failure_in_state);
   ASSERT_FALSE(fake_imus.at(3).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kCruising, fake_imus.at(2).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeImuTest, oneFaultyExpectedFailure)
@@ -136,64 +120,52 @@ TEST_F(FakeImuTest, oneFaultyExpectedFailure)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_imus_optional = sensors::FakeImu::fromFile(kOneFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_imus_optional);
-  disableOutput();
   auto fake_imus = *fake_imus_optional;
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kReady;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kAccelerating;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kCruising;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_FALSE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kNominalBraking;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_FALSE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kEmergencyBraking;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_FALSE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
 }
 
@@ -207,7 +179,6 @@ TEST_F(FakeImuTest, fourFaultyParsesConfig)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_imus_optional
     = sensors::FakeImu::fromFile(kFourFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_imus_optional);
   const auto fake_imus = *fake_imus_optional;
   ASSERT_EQ(data::Sensors::kNumImus, fake_imus.size());
@@ -223,7 +194,6 @@ TEST_F(FakeImuTest, fourFaultyParsesConfig)
   ASSERT_EQ(data::State::kCruising, fake_imus.at(1).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kEmergencyBraking, fake_imus.at(2).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kAccelerating, fake_imus.at(3).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeImuTest, fourFaultyExpectedFailure)
@@ -232,64 +202,52 @@ TEST_F(FakeImuTest, fourFaultyExpectedFailure)
   const auto fake_trajectory = std::make_shared<sensors::FakeTrajectory>(
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_imus_optional = sensors::FakeImu::fromFile(kFourFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_imus_optional);
-  disableOutput();
   auto fake_imus = *fake_imus_optional;
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kReady;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_TRUE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kAccelerating;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_TRUE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_FALSE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kCruising;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_TRUE(fake_imus.at(0).getData().operational);
     ASSERT_FALSE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_FALSE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kNominalBraking;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_FALSE(fake_imus.at(0).getData().operational);
     ASSERT_FALSE(fake_imus.at(1).getData().operational);
     ASSERT_TRUE(fake_imus.at(2).getData().operational);
     ASSERT_FALSE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
   {
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kEmergencyBraking;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     ASSERT_FALSE(fake_imus.at(0).getData().operational);
     ASSERT_FALSE(fake_imus.at(1).getData().operational);
     ASSERT_FALSE(fake_imus.at(2).getData().operational);
     ASSERT_FALSE(fake_imus.at(3).getData().operational);
-    disableOutput();
   }
 }
 }  // namespace hyped::testing

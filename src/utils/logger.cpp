@@ -11,7 +11,7 @@ namespace hyped::utils {
 std::optional<Logger::Level> Logger::levelFromInt(const int level)
 {
   static const std::unordered_map<int, Level> kIntToLevel
-    = {{0, Level::kError}, {1, Level::kInfo}, {2, Level::kDebug}};
+    = {{-1, Level::kNone}, {0, Level::kError}, {1, Level::kInfo}, {2, Level::kDebug}};
   const auto it = kIntToLevel.find(level);
   if (it == kIntToLevel.end()) { return std::nullopt; }
   return it->second;
@@ -57,12 +57,14 @@ void Logger::setLevel(const Logger::Level level)
 void Logger::error(const char *format, ...) const
 {
   static FILE *file = stderr;
-  utils::concurrent::ScopedLock scoped_lock(&output_lock_);
-  printHead(file, "ERROR");
-  va_list args;
-  va_start(args, format);
-  print(file, format, args);
-  va_end(args);
+  if (level_ == Level::kDebug || level_ == Level::kInfo || level_ == Level::kError) {
+    utils::concurrent::ScopedLock scoped_lock(&output_lock_);
+    printHead(file, "ERROR");
+    va_list args;
+    va_start(args, format);
+    print(file, format, args);
+    va_end(args);
+  }
 }
 
 void Logger::info(const char *format, ...) const

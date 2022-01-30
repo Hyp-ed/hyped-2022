@@ -21,15 +21,11 @@ class FakeTrajectoryTest : public Test {
 TEST_F(FakeTrajectoryTest, parsesConfig)
 {
   const auto fake_trajectory = sensors::FakeTrajectory::fromFile(kDefaultConfigPath);
-  enableOutput();
   ASSERT_TRUE(fake_trajectory);
-  disableOutput();
   const auto &config = fake_trajectory->getConfig();
-  enableOutput();
   ASSERT_FLOAT_EQ(1000.0, config.maximum_acceleration);
   ASSERT_FLOAT_EQ(2000.0, config.braking_deceleration);
   ASSERT_FLOAT_EQ(0.01, config.cruising_deceleration);
-  disableOutput();
 }
 
 TEST_F(FakeTrajectoryTest, noMovementWithZeroAcceleration)
@@ -41,11 +37,9 @@ TEST_F(FakeTrajectoryTest, noMovementWithZeroAcceleration)
     state_machine_data.current_state = state;
     data.setStateMachineData(state_machine_data);
     const auto trajectory = fake_trajectory->getTrajectory();
-    enableOutput();
     ASSERT_FLOAT_EQ(0.0, trajectory.acceleration);
     ASSERT_FLOAT_EQ(0.0, trajectory.velocity);
     ASSERT_FLOAT_EQ(0.0, trajectory.displacement);
-    disableOutput();
   }
 }
 
@@ -61,9 +55,7 @@ TEST_F(FakeTrajectoryTest, expectedVelocities)
       state_machine_data.current_state = state;
       data.setStateMachineData(state_machine_data);
       const auto trajectory = fake_trajectory->getTrajectory();
-      enableOutput();
       ASSERT_EQ(trajectory.velocity, 0.0);
-      disableOutput();
       previous_trajectory = trajectory;
     }
   }
@@ -72,10 +64,8 @@ TEST_F(FakeTrajectoryTest, expectedVelocities)
     auto state_machine_data          = data.getStateMachineData();
     state_machine_data.current_state = data::State::kAccelerating;
     data.setStateMachineData(state_machine_data);
-    enableOutput();
     const auto trajectory = fake_trajectory->getTrajectory();
-    ASSERT_GT(trajectory.velocity, previous_trajectory.velocity);
-    disableOutput();
+    ASSERT_GE(trajectory.velocity, previous_trajectory.velocity);
     previous_trajectory = trajectory;
   }
   // Braking
@@ -85,9 +75,7 @@ TEST_F(FakeTrajectoryTest, expectedVelocities)
       state_machine_data.current_state = state;
       data.setStateMachineData(state_machine_data);
       const auto trajectory = fake_trajectory->getTrajectory();
-      enableOutput();
-      ASSERT_LT(trajectory.velocity, previous_trajectory.velocity);
-      disableOutput();
+      ASSERT_LE(trajectory.velocity, previous_trajectory.velocity);
       previous_trajectory = trajectory;
     }
   }
@@ -98,9 +86,7 @@ TEST_F(FakeTrajectoryTest, expectedVelocities)
       state_machine_data.current_state = state;
       data.setStateMachineData(state_machine_data);
       const auto trajectory = fake_trajectory->getTrajectory();
-      enableOutput();
       ASSERT_FLOAT_EQ(trajectory.velocity, 0.0);
-      disableOutput();
     }
   }
 }
@@ -116,9 +102,7 @@ TEST_F(FakeTrajectoryTest, expectedAcclerations)
       state_machine_data.current_state = state;
       data.setStateMachineData(state_machine_data);
       const auto trajectory = fake_trajectory->getTrajectory();
-      enableOutput();
       ASSERT_FLOAT_EQ(trajectory.acceleration, 0.0);
-      disableOutput();
     }
   }
   // Accelerating
@@ -127,9 +111,7 @@ TEST_F(FakeTrajectoryTest, expectedAcclerations)
     state_machine_data.current_state = data::State::kAccelerating;
     data.setStateMachineData(state_machine_data);
     const auto trajectory = fake_trajectory->getTrajectory();
-    enableOutput();
     ASSERT_GT(trajectory.acceleration, 0.0);
-    disableOutput();
   }
   // Braking
   {
@@ -138,9 +120,7 @@ TEST_F(FakeTrajectoryTest, expectedAcclerations)
       state_machine_data.current_state = state;
       data.setStateMachineData(state_machine_data);
       const auto trajectory = fake_trajectory->getTrajectory();
-      enableOutput();
       ASSERT_LT(trajectory.acceleration, 0.0);
-      disableOutput();
     }
   }
   // Post-run
@@ -150,9 +130,7 @@ TEST_F(FakeTrajectoryTest, expectedAcclerations)
       state_machine_data.current_state = state;
       data.setStateMachineData(state_machine_data);
       const auto trajectory = fake_trajectory->getTrajectory();
-      enableOutput();
       ASSERT_FLOAT_EQ(trajectory.acceleration, 0.0);
-      disableOutput();
     }
   }
 }

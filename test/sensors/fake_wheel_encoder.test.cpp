@@ -27,7 +27,6 @@ TEST_F(FakeWheelEncoderTest, defaultParsesConfig)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_wheel_encoders_optional
     = sensors::FakeWheelEncoder::fromFile(kDefaultConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   const auto fake_wheel_encoders = *fake_wheel_encoders_optional;
   ASSERT_EQ(data::Sensors::kNumEncoders, fake_wheel_encoders.size());
@@ -39,7 +38,6 @@ TEST_F(FakeWheelEncoderTest, defaultParsesConfig)
   ASSERT_FALSE(fake_wheel_encoders.at(1).getConfig().failure_in_state);
   ASSERT_FALSE(fake_wheel_encoders.at(2).getConfig().failure_in_state);
   ASSERT_FALSE(fake_wheel_encoders.at(3).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
@@ -54,9 +52,7 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_wheel_encoders_optional
     = sensors::FakeWheelEncoder::fromFile(kDefaultConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
-  disableOutput();
   auto fake_wheel_encoders = *fake_wheel_encoders_optional;
   std::array<data::CounterData, fake_wheel_encoders.size()> previous_counter_data = {
     fake_wheel_encoders.at(0).getData(),
@@ -77,7 +73,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -86,7 +81,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -102,7 +96,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -111,7 +104,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -127,7 +119,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -136,7 +127,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -152,7 +142,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -161,7 +150,6 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
 }
@@ -176,7 +164,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyParsesConfig)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_wheel_encoders_optional
     = sensors::FakeWheelEncoder::fromFile(kOneFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   const auto fake_wheel_encoders = *fake_wheel_encoders_optional;
   ASSERT_EQ(data::Sensors::kNumEncoders, fake_wheel_encoders.size());
@@ -189,7 +176,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyParsesConfig)
   ASSERT_FALSE(fake_wheel_encoders.at(2).getConfig().failure_in_state);
   ASSERT_FALSE(fake_wheel_encoders.at(3).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kNominalBraking, *fake_wheel_encoders.at(1).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
@@ -204,9 +190,7 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_wheel_encoders_optional
     = sensors::FakeWheelEncoder::fromFile(kOneFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
-  disableOutput();
   auto fake_wheel_encoders = *fake_wheel_encoders_optional;
   std::array<data::CounterData, fake_wheel_encoders.size()> previous_counter_data = {
     fake_wheel_encoders.at(0).getData(),
@@ -227,7 +211,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -236,7 +219,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -252,7 +234,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_TRUE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -261,7 +242,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
     ASSERT_GE(current_counter_data.at(1).value, previous_counter_data.at(1).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -277,7 +257,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -285,7 +264,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -301,7 +279,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -309,7 +286,6 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
 }
@@ -324,7 +300,6 @@ TEST_F(FakeWheelEncoderTest, fourFaultyParsesConfig)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   const auto fake_wheel_encoders_optional
     = sensors::FakeWheelEncoder::fromFile(kFourFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
   const auto fake_wheel_encoders = *fake_wheel_encoders_optional;
   ASSERT_EQ(data::Sensors::kNumEncoders, fake_wheel_encoders.size());
@@ -341,7 +316,6 @@ TEST_F(FakeWheelEncoderTest, fourFaultyParsesConfig)
   ASSERT_EQ(data::State::kAccelerating, *fake_wheel_encoders.at(1).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kCruising, *fake_wheel_encoders.at(2).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kNominalBraking, *fake_wheel_encoders.at(3).getConfig().failure_in_state);
-  disableOutput();
 }
 
 TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
@@ -356,9 +330,7 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   auto fake_wheel_encoders_optional
     = sensors::FakeWheelEncoder::fromFile(kFourFaultyConfigPath, fake_trajectory);
-  enableOutput();
   ASSERT_TRUE(fake_wheel_encoders_optional);
-  disableOutput();
   auto fake_wheel_encoders = *fake_wheel_encoders_optional;
   std::array<data::CounterData, fake_wheel_encoders.size()> previous_counter_data = {
     fake_wheel_encoders.at(0).getData(),
@@ -379,7 +351,6 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
     ASSERT_TRUE(current_counter_data.at(2).operational);
@@ -387,7 +358,6 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(2).value, previous_counter_data.at(2).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -403,14 +373,12 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
     ASSERT_FALSE(current_counter_data.at(2).operational);
     ASSERT_TRUE(current_counter_data.at(3).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
     ASSERT_GE(current_counter_data.at(3).value, previous_counter_data.at(3).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -426,13 +394,11 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_TRUE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
     ASSERT_FALSE(current_counter_data.at(2).operational);
     ASSERT_FALSE(current_counter_data.at(3).operational);
     ASSERT_GE(current_counter_data.at(0).value, previous_counter_data.at(0).value);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
   {
@@ -448,12 +414,10 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
       fake_wheel_encoders.at(2).getData(),
       fake_wheel_encoders.at(3).getData(),
     };
-    enableOutput();
     ASSERT_FALSE(current_counter_data.at(0).operational);
     ASSERT_FALSE(current_counter_data.at(1).operational);
     ASSERT_FALSE(current_counter_data.at(2).operational);
     ASSERT_FALSE(current_counter_data.at(3).operational);
-    disableOutput();
     previous_counter_data = current_counter_data;
   }
 }

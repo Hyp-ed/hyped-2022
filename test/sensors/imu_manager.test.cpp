@@ -20,21 +20,15 @@ TEST_F(ImuManagerTest, fakeImusFromFile)
     *sensors::FakeTrajectory::fromFile(kDefaultConfigPath));
   {
     auto imu_manager = sensors::ImuManager::fromFile(kDefaultConfigPath, fake_trajectory);
-    enableOutput();
     ASSERT_TRUE(imu_manager);
-    disableOutput();
   }
   {
     auto imu_manager = sensors::ImuManager::fromFile(kOneFaultyConfigPath, fake_trajectory);
-    enableOutput();
     ASSERT_TRUE(imu_manager);
-    disableOutput();
   }
   {
     auto imu_manager = sensors::ImuManager::fromFile(kFourFaultyConfigPath, fake_trajectory);
-    enableOutput();
     ASSERT_TRUE(imu_manager);
-    disableOutput();
   }
 }
 

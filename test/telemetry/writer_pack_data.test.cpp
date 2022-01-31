@@ -13,16 +13,7 @@ Data &data_ = Data::getInstance();
  * Tests packing of data in CDS to json
  */
 struct WriterPackData : public ::testing::Test {
-  // ---- Error messages -------
-  const std::string telemetry_packing_error  = "Telemetry json does not match expected output.";
-  const std::string navigation_packing_error = "Navigation json does not match expected output.";
-  const std::string sensors_packing_error    = "Sensors json does not match expected output.";
-  const std::string motor_packing_error      = "Motor json does not match expected output.";
-  const std::string state_machine_packing_error
-    = "State machine json does not match expected output.";
-  const std::string battery_packing_error = "Battery json does not match expected output.";
-
- protected:
+  protected:
   void SetUp() {}
   void TearDown() {}
 };
@@ -36,7 +27,7 @@ TEST_F(WriterPackData, packsTelemetryData)
   writer.end();
   std::string actualJson   = writer.getString();
   std::string expectedJson = "INSERT JSON HERE";  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << telemetry_packing_error;
+  ASSERT_EQ(actualJson, expectedJson) << "Telemetry json does not match expected output.";
 }
 
 TEST_F(WriterPackData, packsNavigationData)
@@ -48,7 +39,7 @@ TEST_F(WriterPackData, packsNavigationData)
   writer.end();
   std::string actualJson   = writer.getString();
   std::string expectedJson = "INSERT JSON HERE";  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << navigation_packing_error;
+  ASSERT_EQ(actualJson, expectedJson) << "Navigation json does not match expected output.";
 }
 
 TEST_F(WriterPackData, packsSensorsData)
@@ -60,7 +51,7 @@ TEST_F(WriterPackData, packsSensorsData)
   writer.end();
   std::string actualJson   = writer.getString();
   std::string expectedJson = "INSERT JSON HERE";  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << sensors_packing_error;
+  ASSERT_EQ(actualJson, expectedJson) << "Sensors json does not match expected output.";
 }
 
 TEST_F(WriterPackData, packsMotorData)
@@ -72,7 +63,7 @@ TEST_F(WriterPackData, packsMotorData)
   writer.end();
   std::string actualJson   = writer.getString();
   std::string expectedJson = "INSERT JSON HERE";  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << motor_packing_error;
+  ASSERT_EQ(actualJson, expectedJson) << "Motor json does not match expected output.";
 }
 
 TEST_F(WriterPackData, packsStateMachineData)
@@ -84,7 +75,7 @@ TEST_F(WriterPackData, packsStateMachineData)
   writer.end();
   std::string actualJson   = writer.getString();
   std::string expectedJson = "INSERT JSON HERE";  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << state_machine_packing_error;
+  ASSERT_EQ(actualJson, expectedJson) << "State machine json does not match expected output.";
 }
 
 TEST_F(WriterPackData, packsBatteryData)
@@ -96,5 +87,5 @@ TEST_F(WriterPackData, packsBatteryData)
   writer.end();
   std::string actualJson   = writer.getString();
   std::string expectedJson = "INSERT JSON HERE";  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << battery_packing_error;
+  ASSERT_EQ(actualJson, expectedJson) << "Battery json does not match expected output.";
 }

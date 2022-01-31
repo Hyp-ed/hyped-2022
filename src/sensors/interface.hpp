@@ -4,8 +4,21 @@
 
 #include <data/data.hpp>
 
+<<<<<<< HEAD
 namespace hyped::sensors {
 
+=======
+namespace hyped {
+using data::BatteryData;
+using data::ImuData;
+using data::NavigationVector;
+using data::PressureData;
+using data::StripeCounter;
+using data::TemperatureData;
+
+namespace sensors {
+
+>>>>>>> parent of 854a941... fix issues as required
 class SensorInterface {
  public:
   /**
@@ -21,7 +34,11 @@ class ImuInterface : public SensorInterface {
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
+<<<<<<< HEAD
   virtual void getData(data::ImuData *imu) = 0;
+=======
+  virtual void getData(ImuData *imu)                  = 0;
+>>>>>>> parent of 854a941... fix issues as required
 };
 
 class GpioInterface : public SensorInterface {
@@ -30,7 +47,11 @@ class GpioInterface : public SensorInterface {
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
    */
+<<<<<<< HEAD
   virtual void getData(data::StripeCounter *stripe_counter) = 0;
+=======
+  virtual void getData(StripeCounter *stripe_counter) = 0;
+>>>>>>> parent of 854a941... fix issues as required
 };
 
 class BMSInterface : public SensorInterface {
@@ -39,7 +60,11 @@ class BMSInterface : public SensorInterface {
    * @brief Get Battery data
    * @param battery - output pointer to be filled by this sensor
    */
+<<<<<<< HEAD
   virtual void getData(data::BatteryData *battery) = 0;
+=======
+  virtual void getData(BatteryData *battery)          = 0;
+>>>>>>> parent of 854a941... fix issues as required
 };
 
 class TemperatureInterface {
@@ -70,4 +95,9 @@ class PressureInterface {
    */
   virtual int getData() = 0;
 };
+<<<<<<< HEAD
 }  // namespace hyped::sensors
+=======
+}  // namespace sensors
+}  // namespace hyped
+>>>>>>> parent of 854a941... fix issues as required

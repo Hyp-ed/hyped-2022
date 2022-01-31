@@ -37,7 +37,7 @@ class Pressure : public PressureInterface {
    * @brief scale raw difital data to output in ms??
    *
    * @param raw_value input voltage
-   * @return float representation of pressure
+   * @return int representation of pressure
    */
   double scaleData(uint8_t raw_value);
 

@@ -48,19 +48,19 @@ Sensors Data::getSensorsData()
   return sensors_;
 }
 
-DataPoint<std::array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
+DataPoint<array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.imu;
 }
 
-DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> Data::getSensorsEncoderData()
+DataPoint<array<EncoderData, Sensors::kNumEncoders>> Data::getSensorsEncoderData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.encoder;
 }
 
-std::array<StripeCounter, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
+array<StripeCounter, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.keyence_stripe_counter;
@@ -72,21 +72,21 @@ void Data::setSensorsData(const Sensors &sensors_data)
   sensors_ = sensors_data;
 }
 
-void Data::setSensorsImuData(const DataPoint<std::array<ImuData, Sensors::kNumImus>> &imu)
+void Data::setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>> &imu)
 {
   ScopedLock L(&lock_sensors_);
   sensors_.imu = imu;
 }
 
 void Data::setSensorsEncoderData(
-  const DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> &encoder)  // NOLINT
+  const DataPoint<array<EncoderData, Sensors::kNumEncoders>> &encoder)  // NOLINT
 {
   ScopedLock L(&lock_sensors_);
   sensors_.encoder = encoder;
 }
 
 void Data::setSensorsKeyenceData(
-  const std::array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter)  // NOLINT
+  const array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter)  // NOLINT
 {
   ScopedLock L(&lock_sensors_);
   sensors_.keyence_stripe_counter = keyence_stripe_counter;

@@ -6,7 +6,7 @@
 
 namespace hyped::sensors {
 
-Pressure::Pressure(utils::Logger &log, int pin) : pin_(pin), log_(log)
+Pressure::Pressure(hyped::utils::Logger &log, int pin) : pin_(pin), log_(log)
 {
 }
 

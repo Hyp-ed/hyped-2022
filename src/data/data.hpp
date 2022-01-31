@@ -9,7 +9,14 @@
 #include <utils/concurrent/lock.hpp>
 #include <utils/math/vector.hpp>
 
+using std::array;
+using std::vector;
+
 namespace hyped {
+
+// imports
+using utils::concurrent::Lock;
+using utils::math::Vector;
 
 namespace data {
 
@@ -31,7 +38,7 @@ struct Module {
 // Navigation
 // -------------------------------------------------------------------------------------------------
 typedef float nav_t;
-typedef utils::math::Vector<nav_t, 3> NavigationVector;
+typedef Vector<nav_t, 3> NavigationVector;
 struct Navigation : public Module {
   static constexpr nav_t kMaximumVelocity = 100;     // m/s
   static constexpr nav_t kRunLength       = 1250.0;  // m
@@ -80,9 +87,9 @@ struct Sensors : public Module {
   TemperatureData temperature;
   PressureData pressure;
 
-  DataPoint<std::array<ImuData, kNumImus>> imu;
-  DataPoint<std::array<EncoderData, kNumEncoders>> encoder;
-  std::array<StripeCounter, kNumKeyence> keyence_stripe_counter;
+  DataPoint<array<ImuData, kNumImus>> imu;
+  DataPoint<array<EncoderData, kNumEncoders>> encoder;
+  array<StripeCounter, kNumKeyence> keyence_stripe_counter;
 };
 
 struct BatteryData {
@@ -105,8 +112,8 @@ struct Batteries : public Module {
   static constexpr int kNumLPBatteries = 2;
   static constexpr int kNumHPBatteries = 1;
 
-  std::array<BatteryData, kNumLPBatteries> low_power_batteries;
-  std::array<BatteryData, kNumHPBatteries> high_power_batteries;
+  array<BatteryData, kNumLPBatteries> low_power_batteries;
+  array<BatteryData, kNumHPBatteries> high_power_batteries;
 };
 
 struct EmergencyBrakes : public Module {
@@ -204,17 +211,17 @@ class Data {
   /**
    * @brief retrieves imu data from Sensors
    */
-  DataPoint<std::array<ImuData, Sensors::kNumImus>> getSensorsImuData();
+  DataPoint<array<ImuData, Sensors::kNumImus>> getSensorsImuData();
 
   /**
    * @brief retrieves encoder data from Sensors
    */
-  DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> getSensorsEncoderData();
+  DataPoint<array<EncoderData, Sensors::kNumEncoders>> getSensorsEncoderData();
 
   /**
    * @brief retrieves gpio_counter data from Sensors
    */
-  std::array<StripeCounter, Sensors::kNumKeyence> getSensorsKeyenceData();
+  array<StripeCounter, Sensors::kNumKeyence> getSensorsKeyenceData();
 
   /**
    * @brief      Should be called to update sensor data.
@@ -223,16 +230,16 @@ class Data {
   /**
    * @brief      Should be called to update sensor imu data.
    */
-  void setSensorsImuData(const DataPoint<std::array<ImuData, Sensors::kNumImus>> &imu);
+  void setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>> &imu);
   /**
    * @brief      Should be called to update sensor encoder data.
    */
-  void setSensorsEncoderData(const DataPoint<std::array<EncoderData, Sensors::kNumEncoders>> &imu);
+  void setSensorsEncoderData(const DataPoint<array<EncoderData, Sensors::kNumEncoders>> &imu);
   /**
    * @brief      Should be called to update sensor keyence data.
    */
   void setSensorsKeyenceData(
-    const std::array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter);  // NOLINT
+    const array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter);  // NOLINT
 
   /**
    * @brief      Retrieves data from the batteries.
@@ -282,16 +289,20 @@ class Data {
   Batteries batteries_;
   Telemetry telemetry_;
   EmergencyBrakes emergency_brakes_;
+  uint32_t temperature_;  // In degrees C
+  uint32_t pressure_;
 
   // locks for data substructures
-  utils::concurrent::Lock lock_state_machine_;
-  utils::concurrent::Lock lock_navigation_;
-  utils::concurrent::Lock lock_sensors_;
-  utils::concurrent::Lock lock_motors_;
+  Lock lock_state_machine_;
+  Lock lock_navigation_;
+  Lock lock_sensors_;
+  Lock lock_motors_;
+  Lock lock_temp_;
+  Lock lock_pressure_;
 
-  utils::concurrent::Lock lock_telemetry_;
-  utils::concurrent::Lock lock_batteries_;
-  utils::concurrent::Lock lock_emergency_brakes_;
+  Lock lock_telemetry_;
+  Lock lock_batteries_;
+  Lock lock_emergency_brakes_;
 
   Data() {}
 

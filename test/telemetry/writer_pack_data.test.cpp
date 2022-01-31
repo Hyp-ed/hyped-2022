@@ -7,8 +7,6 @@
 using namespace hyped::telemetry;
 using namespace hyped::data;
 
-Data &data_ = Data::getInstance();
-
 /**
  * Tests packing of data in CDS to json
  */
@@ -18,6 +16,8 @@ struct WriterPackData : public ::testing::Test {
   void TearDown() {}
 };
 
+Data &data_ = Data::getInstance();
+
 TEST_F(WriterPackData, packsTelemetryData)
 {
   // TODO initialise CDS with values
@@ -25,8 +25,8 @@ TEST_F(WriterPackData, packsTelemetryData)
   writer.start();
   writer.packTelemetryData();
   writer.end();
-  std::string actualJson   = writer.getString();
-  std::string expectedJson = "INSERT JSON HERE";  // TODO
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Telemetry json does not match expected output.";
 }
 
@@ -37,8 +37,8 @@ TEST_F(WriterPackData, packsNavigationData)
   writer.start();
   writer.packNavigationData();
   writer.end();
-  std::string actualJson   = writer.getString();
-  std::string expectedJson = "INSERT JSON HERE";  // TODO
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Navigation json does not match expected output.";
 }
 
@@ -49,8 +49,8 @@ TEST_F(WriterPackData, packsSensorsData)
   writer.start();
   writer.packSensorsData();
   writer.end();
-  std::string actualJson   = writer.getString();
-  std::string expectedJson = "INSERT JSON HERE";  // TODO
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Sensors json does not match expected output.";
 }
 
@@ -61,8 +61,8 @@ TEST_F(WriterPackData, packsMotorData)
   writer.start();
   writer.packMotorData();
   writer.end();
-  std::string actualJson   = writer.getString();
-  std::string expectedJson = "INSERT JSON HERE";  // TODO
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Motor json does not match expected output.";
 }
 
@@ -73,8 +73,8 @@ TEST_F(WriterPackData, packsStateMachineData)
   writer.start();
   writer.packStateMachineData();
   writer.end();
-  std::string actualJson   = writer.getString();
-  std::string expectedJson = "INSERT JSON HERE";  // TODO
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "State machine json does not match expected output.";
 }
 
@@ -85,7 +85,7 @@ TEST_F(WriterPackData, packsBatteryData)
   writer.start();
   // writer.packBattery();
   writer.end();
-  std::string actualJson   = writer.getString();
-  std::string expectedJson = "INSERT JSON HERE";  // TODO
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Battery json does not match expected output.";
 }

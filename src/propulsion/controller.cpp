@@ -438,8 +438,8 @@ void Controller::processSdoMessage(utils::io::can::Frame &message)
   if (index_1 == 0x27 && index_2 == 0x20 && sub_index == 0x00) {
     if (message.data[4] != 0 && message.data[5] != 0) {
       throwCriticalFailure();
-      uint16_t warning_message
-        = stoi(std::to_string(message.data[5]) + std::to_string(message.data[4])); // Merge error bytes into one string
+      // Merge error bytes into one string
+      uint16_t warning_message = (message.data[5] << 8) + message.data[4];
 
       if (warning_message & 0x01) {
         log_.ERR("MOTOR", "Controller %d warning: Controller temperature exceeded");

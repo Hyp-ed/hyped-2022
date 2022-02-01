@@ -28,6 +28,12 @@ TEST_F(WriterConvertStateMachineState, convertsCalibratingState)
   ASSERT_EQ(convertedState, "CALIBRATING") << "Should convert Calibrating state.";
 }
 
+TEST_F(WriterConvertStateMachineState, convertsPreCalibratingState)
+{
+  std::string convertedState = Writer::convertStateMachineState(State::kPreCalibrating);
+  ASSERT_EQ(convertedState, "PRE_CALIBRATING") << "Should convert Pre-calibrating state.";
+}
+
 TEST_F(WriterConvertStateMachineState, convertsReadyState)
 {
   std::string convertedState = Writer::convertStateMachineState(State::kReady);

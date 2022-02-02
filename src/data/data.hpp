@@ -72,11 +72,11 @@ struct StripeCounter : public Sensor {
 };
 
 struct TemperatureData : public Sensor {
-  uint32_t temp;  // C
+  uint8_t temp;  // C
 };
 
 struct PressureData : public Sensor {
-  uint32_t pressure;  // bar
+  uint8_t pressure;  // bar
 };
 
 struct Sensors : public Module {
@@ -94,10 +94,10 @@ struct Sensors : public Module {
 
 struct BatteryData {
   static constexpr int kNumCells = 36;
-  uint16_t voltage;            // dV
-  int16_t current;             // dA
-  uint8_t charge;              // %
-  int8_t average_temperature;  // C
+  uint16_t voltage;             // dV
+  int16_t current;              // dA
+  uint8_t charge;               // %
+  uint8_t average_temperature;  // C
 
   // below only for BMSHP! Value for BMSLP = 0
   uint16_t cell_voltage[kNumCells];  // mV

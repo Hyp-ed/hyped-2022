@@ -70,8 +70,9 @@ bool Main::keyencesUpdated()
 void Main::checkTemperature()
 {
   temperature_->run();  // not a thread
-  data_.setTemperature(temperature_->getData());
-  if (data_.getTemperature() > 85 && !log_error_) {
+
+  converted_temp_ = temperature_->getData();
+  if (converted_temp_ > 85 && !log_error_) {
     log_.INFO("Sensors", "PCB temperature is getting a wee high...sorry Cheng");
     log_error_ = true;
   }
@@ -87,7 +88,9 @@ void Main::run()
   keyence_stripe_counter_arr_    = data_.getSensorsData().keyence_stripe_counter;
   prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
 
-  int temp_count = 0;
+  // Intialise temperature
+  temp_ = data_.getSensorsData().temperature;
+
   while (sys_.running_) {
     // We need to read the gpio counters and write to the data structure
     // If previous is not equal to the new data then update
@@ -100,12 +103,8 @@ void Main::run()
       keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
     }
     Thread::sleep(10);  // Sleep for 10ms
-    temp_count++;
-    if (temp_count % 20 == 0) {  // check every 20 cycles of main
-      checkTemperature();
-      // So that temp_count does not get huge
-      temp_count = 0;
-    }
+
+    checkTemperature();
   }
 
   imu_manager_->join();

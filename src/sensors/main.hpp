@@ -70,6 +70,17 @@ class Main : public Thread {
    *        update when keyenceUpdated() == true
    */
   array<data::StripeCounter, data::Sensors::kNumKeyence> prev_keyence_stripe_count_arr_;
+
+  /**
+   * @brief use this to take the temperature so far
+   *
+   */
+
+  TemperatureData temp_;
+
+  uint8_t converted_temp_;
+
+  // Sensors sensors_data_;
 };
 
 }  // namespace sensors

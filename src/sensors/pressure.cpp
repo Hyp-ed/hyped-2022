@@ -29,7 +29,7 @@ void Pressure::run()
 double Pressure::scaleData(uint8_t raw_temp_value, uint8_t raw_pressure_value)
 {
   // define the constant factory coefficients
-  const uint8_t coefficients_[5] = {46372, 43981, 29059, 27842, 31553};
+  const int coefficients_[5] = {46372, 43981, 29059, 27842, 31553};
 
   // method for conversion follows a method by David Edwards
   // calibrates the raw values using the factory coefficients.

@@ -417,6 +417,18 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
+    // Assert not in braking zone
+    nav_data_.braking_distance = 0;
+    nav_data_.displacement     = 0;
+
+    // Enforce Accelerating -> Cruising
+    nav_data_.velocity = Navigation::kMaximumVelocity;
+
+    // reading and writing to the CDS directly to update navigation data
+    Data &data_ = Data::getInstance();
+    data_.setNavigationData(nav_data_);
+    auto navigation_data = data_.getNavigationData();
+
     const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
 
@@ -426,9 +438,9 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
       const auto new_state            = state->checkTransition(log_);
 
       enableOutput();
-      if (reached_max_velocity && !(in_braking_zone)) {
+      if (reached_max_velocity) {
         ASSERT_EQ(new_state, Cruising::getInstance())
-          << "failed to enter Cruising from Accelerating";
+          << "failed to enter Cruising from Accelerating ";
       } else {
         ASSERT_NE(new_state, Cruising::getInstance())
           << "falsely entered Cruising from Accelerating";

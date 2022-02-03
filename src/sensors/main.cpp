@@ -91,6 +91,7 @@ void Main::run()
   // Intialise temperature
   temp_ = data_.getSensorsData().temperature;
 
+  int temp_count;
   while (sys_.running_) {
     // We need to read the gpio counters and write to the data structure
     // If previous is not equal to the new data then update
@@ -103,8 +104,12 @@ void Main::run()
       keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
     }
     Thread::sleep(10);  // Sleep for 10ms
-
-    checkTemperature();
+    temp_count++;
+    if (temp_count % 20 == 0) {  // check every 20 cycles of main
+      checkTemperature();
+      // So that temp_count does not get huge
+      temp_count = 0;
+    }
   }
 
   imu_manager_->join();

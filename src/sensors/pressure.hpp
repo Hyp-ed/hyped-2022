@@ -17,7 +17,7 @@ class Pressure : public PressureInterface {
    * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Pressure(utils::Logger &log, int pressure_pin, int temp_pin);
+  Pressure(utils::Logger &log, uint8_t pressure_pin, uint8_t temp_pin);
 
   /**
    * @brief
@@ -40,7 +40,7 @@ class Pressure : public PressureInterface {
    * @param raw_pressure_value input pressure voltage
    * @return int representation of pressure
    */
-  double scaleData(uint8_t raw_temp_value, uint8_t raw_pressure_value);
+  int scaleData(uint8_t raw_temp_value, uint8_t raw_pressure_value);
 
   /**
    * @brief ADC pin

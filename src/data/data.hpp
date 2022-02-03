@@ -300,7 +300,6 @@ class Data {
   Lock lock_sensors_;
   Lock lock_motors_;
   Lock lock_temp_;
-  Lock lock_pressure_;
 
   Lock lock_telemetry_;
   Lock lock_batteries_;

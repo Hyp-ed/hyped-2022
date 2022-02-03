@@ -440,7 +440,7 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
       enableOutput();
       if (reached_max_velocity) {
         ASSERT_EQ(new_state, Cruising::getInstance())
-          << "failed to enter Cruising from Accelerating ";
+          << "failed to enter Cruising from Accelerating";
       } else {
         ASSERT_NE(new_state, Cruising::getInstance())
           << "falsely entered Cruising from Accelerating";

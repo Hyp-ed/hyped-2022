@@ -291,15 +291,12 @@ class Data {
   Batteries batteries_;
   Telemetry telemetry_;
   EmergencyBrakes emergency_brakes_;
-  uint32_t temperature_;  // In degrees C
-  uint32_t pressure_;
 
   // locks for data substructures
   Lock lock_state_machine_;
   Lock lock_navigation_;
   Lock lock_sensors_;
   Lock lock_motors_;
-  Lock lock_temp_;
 
   Lock lock_telemetry_;
   Lock lock_batteries_;

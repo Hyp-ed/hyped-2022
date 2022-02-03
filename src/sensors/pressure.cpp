@@ -42,7 +42,7 @@ int Pressure::scaleData(uint8_t raw_temp_value, uint8_t raw_pressure_value)
   float P3 = (static_cast<float>(coefficients_[1]) * 4);
   float P4
     = (static_cast<float>(coefficients_[3]) / 1024l) * (static_cast<float>(delta_temp) / 2048L);
-  int pressure = static_cast<int>(P1 + P2 - P3 - P4);
+  int pressure = static_cast<int>((P1 + P2 - P3 - P4) / 100);
 
   return pressure;
 }

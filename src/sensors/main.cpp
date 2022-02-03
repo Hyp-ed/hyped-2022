@@ -78,6 +78,17 @@ void Main::checkTemperature()
   }
 }
 
+void Main::checkPressure()
+{
+  pressure_->run();  // not a thread
+
+  converted_pressure_ = pressure_->getData();
+  if (converted_pressure_ > 1200 && !log_error_) {
+    log_.INFO("Sensors", "PCB pressure is above what can be sensed");
+    log_error_ = true;
+  }
+}
+
 void Main::run()
 {
   // start all managers
@@ -88,10 +99,11 @@ void Main::run()
   keyence_stripe_counter_arr_    = data_.getSensorsData().keyence_stripe_counter;
   prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
 
-  // Intialise temperature
+  // Intialise temperature and pressure
   temp_ = data_.getSensorsData().temperature;
+  pres_ = data_.getSensorsData().pressure;
 
-  int temp_count;
+  int iteration_count;
   while (sys_.running_) {
     // We need to read the gpio counters and write to the data structure
     // If previous is not equal to the new data then update
@@ -104,11 +116,12 @@ void Main::run()
       keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
     }
     Thread::sleep(10);  // Sleep for 10ms
-    temp_count++;
-    if (temp_count % 20 == 0) {  // check every 20 cycles of main
+    iteration_count++;
+    if (iteration_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
+      checkPressure();
       // So that temp_count does not get huge
-      temp_count = 0;
+      iteration_count = 0;
     }
   }
 

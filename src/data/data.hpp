@@ -76,7 +76,7 @@ struct TemperatureData : public Sensor {
 };
 
 struct PressureData : public Sensor {
-  uint8_t pressure;  // bar
+  uint8_t pressure;  // mbar
 };
 
 struct Sensors : public Module {

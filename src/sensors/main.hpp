@@ -44,6 +44,13 @@ class Main : public Thread {
    */
   void checkTemperature();
 
+  /**
+   * @brief used to check the pressure every twenty times in the main loop,
+   *        similar to temperature;
+   *
+   */
+  void checkPressure();
+
   data::Data &data_;
   utils::System &sys_;
   utils::Logger &log_;
@@ -58,6 +65,7 @@ class Main : public Thread {
   ImuManager *imu_manager_;
   BmsManager *battery_manager_;
   TemperatureInterface *temperature_;
+  PressureInterface *pressure_;
   bool log_error_ = false;
 
   /**
@@ -77,8 +85,10 @@ class Main : public Thread {
    */
 
   TemperatureData temp_;
+  PressureData pres_;
 
   uint8_t converted_temp_;
+  uint8_t converted_pressure_;
 
   // Sensors sensors_data_;
 };

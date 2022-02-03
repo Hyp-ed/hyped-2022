@@ -442,33 +442,37 @@ void Controller::processSdoMessage(utils::io::can::Frame &message)
       uint16_t warning_message = (message.data[5] << 8) + message.data[4];
 
       if (warning_message & 0x01) {
-        log_.ERR("MOTOR", "Controller %d warning: Controller temperature exceeded");
+        log_.ERR("MOTOR", "Controller %d warning: Controller temperature exceeded", node_id_);
       }
       if (warning_message & 0x02) {
-        log_.ERR("MOTOR", "Controller %d warning: Motor temperature exceeded");
+        log_.ERR("MOTOR", "Controller %d warning: Motor temperature exceeded", node_id_);
       }
       if (warning_message & 0x04) {
-        log_.ERR("MOTOR", "Controller %d warning: DC link under voltage");
+        log_.ERR("MOTOR", "Controller %d warning: DC link under voltage", node_id_);
       }
       if (warning_message & 0x08) {
-        log_.ERR("MOTOR", "Controller %d warning: DC link over voltage");
+        log_.ERR("MOTOR", "Controller %d warning: DC link over voltage", node_id_);
       }
-      if (warning_message & 0x10) { log_.ERR("MOTOR", "Controller %d warning: DC over current"); }
+      if (warning_message & 0x10) {
+        log_.ERR("MOTOR", "Controller %d warning: DC over current", node_id_);
+      }
       if (warning_message & 0x20) {
-        log_.ERR("MOTOR", "Controller %d warning: Stall protection active");
+        log_.ERR("MOTOR", "Controller %d warning: Stall protection active", node_id_);
       }
       if (warning_message & 0x40) {
-        log_.ERR("MOTOR", "Controller %d warning: Max velocity exceeded");
+        log_.ERR("MOTOR", "Controller %d warning: Max velocity exceeded", node_id_);
       }
       if (warning_message & 0x80) {
-        log_.ERR("MOTOR", "Controller %d warning: BMS proposed power");
+        log_.ERR("MOTOR", "Controller %d warning: BMS proposed power", node_id_);
       }
       if (warning_message & 0x100) {
-        log_.ERR("MOTOR", "Controller %d warning: Capacitor temperature exceeded");
+        log_.ERR("MOTOR", "Controller %d warning: Capacitor temperature exceeded", node_id_);
       }
-      if (warning_message & 0x200) { log_.ERR("MOTOR", "Controller %d warning: I2T protection"); }
+      if (warning_message & 0x200) {
+        log_.ERR("MOTOR", "Controller %d warning: I2T protection", node_id_);
+      }
       if (warning_message & 0x400) {
-        log_.ERR("MOTOR", "Controller %d warning: Field weakening active ");
+        log_.ERR("MOTOR", "Controller %d warning: Field weakening active ", node_id_);
       }
 
       log_.ERR("MOTOR", "Controller %d warning: Warning code %d", node_id_, warning_message);

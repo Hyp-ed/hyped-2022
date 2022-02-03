@@ -9,26 +9,18 @@
 
 namespace hyped {
 
-using data::Data;
-using data::State;
-using hyped::data::ModuleStatus;
-using hyped::data::StateMachine;
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
-
 namespace navigation {
 
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
-  explicit Main(uint8_t id, Logger &log);
+  explicit Main(uint8_t id, utils::Logger &log);
   void run() override;
   bool isCalibrated();
 
  private:
-  Logger &log_;
-  System &sys_;
-  Navigation nav_;
+  utils::Logger &log_;
+  utils::System &sys_;
+  navigation::Navigation nav_;
 };
 
 }  // namespace navigation

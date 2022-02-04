@@ -246,7 +246,7 @@ class RunTest : public Test {
     // Randomise data
     randomiseInternally();
 
-    // Prevent Idle -> FailureStopped
+    // Prevent PreCalibrating -> FailureStopped
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce Idle -> PreCalibrating
@@ -291,8 +291,8 @@ class RunTest : public Test {
   }
 
   /**
-   * Modifies data such that the Idle -> FailureStopped transition conditions are met and verifies
-   * the behaviour.
+   * Modifies data such that the PreCalibrating -> FailureStopped transition conditions are met and
+   * verifies the behaviour.
    */
   void testPreCalibratingEmergency()
   {
@@ -305,7 +305,7 @@ class RunTest : public Test {
     // Randomise data
     randomiseInternally();
 
-    // Enforce Idle -> FailureStopped
+    // Enforce PreCalibrating -> FailureStopped
     forceEmergency();
 
     // Prevent FailureStopped -> Off
@@ -458,6 +458,7 @@ class RunTest : public Test {
 
     // Enforce Ready -> Accelerating
     telemetry_data_.launch_command = true;
+    sensors_data_.high_power_off   = false;
 
     // Prevent Accelerating -> NominalBraking
     nav_data_.displacement     = 0;
@@ -472,12 +473,14 @@ class RunTest : public Test {
     const bool has_launch_command = checkLaunchCommand(telemetry_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_launch_command);
     ASSERT_EQ(false, has_entered_braking_zone);
     ASSERT_EQ(false, has_reached_max_velocity);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -537,10 +540,10 @@ class RunTest : public Test {
   }
 
   /**
-   * Modifies data such that the Accelerating -> NominalBraking transition conditions are met and
+   * Modifies data such that the Accelerating -> PreBraking transition conditions are met and
    * verifies the behaviour.
    */
-  void testAcceleratingToNominalBraking()
+  void testAcceleratingToPreBraking()
   {
     // Check initial state
     readData();
@@ -560,11 +563,10 @@ class RunTest : public Test {
     batteries_data_.module_status          = ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
-    // Enforce Accelerating -> NominalBraking
-    nav_data_.braking_distance = 1000;
-    nav_data_.displacement     = Navigation::kRunLength - nav_data_.braking_distance;
+    // Prevent PreBraking -> NominalBraking
+    sensors_data_.high_power_off = false;
 
-    // Prevent NominalBraking -> Finished
+    // Prevent PreBraking -> Finished
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
@@ -572,11 +574,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -587,8 +591,8 @@ class RunTest : public Test {
     // Check result
     enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Accelerating";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking)
-      << "failed to transition from Accelerating to NominalBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreBraking)
+      << "failed to transition from Accelerating to PreBraking";
     disableOutput();
   }
 
@@ -616,6 +620,9 @@ class RunTest : public Test {
     batteries_data_.module_status          = ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
+    // Prevent Cruising -> NominalBraking
+    sensors_data_.high_power_off = false;
+
     // Prevent Accelerating -> NominalBraking
     // Prevent Cruising -> NominalBraking
     nav_data_.braking_distance = 0;
@@ -629,11 +636,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_entered_braking_zone);
     ASSERT_EQ(true, has_reached_max_velocity);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -650,8 +659,8 @@ class RunTest : public Test {
   }
 
   /**
-   * Modifies data_ such that the Accelerating -> FailureBraking transition conditions are met and
-   * verifies the behaviour.
+   * Modifies data_ such that the Accelerating -> FailurePreBraking transition conditions are met
+   * and verifies the behaviour.
    */
   void testAcceleratingEmergency()
   {
@@ -664,20 +673,22 @@ class RunTest : public Test {
     // Randomise data
     randomiseInternally();
 
-    // Enforce Accelerating -> FailureBraking
+    // Enforce Accelerating -> FailurePreBraking
     forceEmergency();
 
-    // Prevent FailureBraking -> FailureStopped
+    // Prevent FailurePreBraking -> FailureStopped
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
-    const bool has_stopped   = checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -688,12 +699,16 @@ class RunTest : public Test {
     // Check result
     enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Accelerating";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
-      << "failed to transition from Accelerating to EmergencyBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailurePreBraking)
+      << "failed to transition from Accelerating to FailurePreBraking";
     disableOutput();
   }
 
-  void testCruisingToNominalBraking()
+  /**
+   * Modifies data_ such that the Cruising -> PreBraking transition conditions are met and
+   * verifies the behaviour.
+   */
+  void testCruisingToPreBraking()
   {
     // Check initial state
     readData();
@@ -713,11 +728,10 @@ class RunTest : public Test {
     batteries_data_.module_status          = ModuleStatus::kReady;
     telemetry_data_.emergency_stop_command = false;
 
-    // Enforce Cruising -> NominalBraking
-    nav_data_.braking_distance = 1000;
-    nav_data_.displacement     = Navigation::kRunLength - nav_data_.braking_distance;
+    // Prevent PreBraking -> NominalBraking
+    sensors_data_.high_power_off = false;
 
-    // Prevent NominalBraking -> Finished
+    // Prevent PreBraking -> Finished
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
@@ -725,11 +739,13 @@ class RunTest : public Test {
                                               telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -740,11 +756,15 @@ class RunTest : public Test {
     // Check result
     enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Cruising";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking)
-      << "failed to transition from Cruising to NominalBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreBraking)
+      << "failed to transition from Cruising to PreBraking";
     disableOutput();
   }
 
+  /**
+   * Modifies data_ such that the Cruising-> FailurePreBraking transition conditions are met and
+   * verifies the behaviour.
+   */
   void testCruisingEmergency()
   {
     // Check initial state
@@ -756,20 +776,22 @@ class RunTest : public Test {
     // Randomise data
     randomiseInternally();
 
-    // Enforce Cruising -> FailureBraking
+    // Enforce Cruising -> FailurePreBraking
     forceEmergency();
 
-    // Prevent FailureBraking -> FailureStopped
+    // Prevent FailurePreBraking -> FailureStopped
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+    const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
                                               telemetry_data_, sensors_data_, motors_data_);
-    const bool has_stopped   = checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off = checkHighPowerOff(sensors_data_);
 
     enableOutput();
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(false, has_high_power_off);
     disableOutput();
 
     // Let STM do its thing
@@ -780,8 +802,113 @@ class RunTest : public Test {
     // Check result
     enableOutput();
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Cruising";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
-      << "failed to transition from Cruising to EmergencyBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailurePreBraking)
+      << "failed to transition from Cruising to FailurePreBraking";
+    disableOutput();
+  }
+
+  /**
+   * Modifies data_ such that the PreBraking-> FailurePreBraking transition conditions are met and
+   * verifies the behaviour.
+   */
+  void testPreBrakingEmergency()
+  {
+    // Check initial state
+    readData();
+    enableOutput();
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreBraking);
+    disableOutput();
+
+    // Randomise data
+    randomiseInternally();
+
+    // Enforce PreBraking -> FailurePreBraking
+    forceEmergency();
+
+    // Prevent FailurePreBraking -> FailureStopped
+    nav_data_.velocity = 100;
+
+    // Verify transition conditions are as intended
+    const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_stopped        = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off = checkHighPowerOff(sensors_data_);
+
+    enableOutput();
+    ASSERT_EQ(true, has_emergency);
+    ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(false, has_high_power_off);
+    disableOutput();
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    enableOutput();
+    ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in PreBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailurePreBraking)
+      << "failed to transition from PreBraking to FailurePreBraking";
+    disableOutput();
+  }
+
+  /**
+   * Modifies data_ such that the PreBraking -> NominalBraking transition conditions are met and
+   * verifies the behaviour.
+   */
+  void testPreBrakingToNominalBraking()
+  {
+    // Check initial state
+    readData();
+    enableOutput();
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreBraking);
+    disableOutput();
+
+    // Randomise data
+    randomiseInternally();
+
+    // Prevent PreBraking -> FailureBraking
+    brakes_data_.module_status             = ModuleStatus::kReady;
+    nav_data_.module_status                = ModuleStatus::kReady;
+    telemetry_data_.module_status          = ModuleStatus::kReady;
+    motors_data_.module_status             = ModuleStatus::kReady;
+    sensors_data_.module_status            = ModuleStatus::kReady;
+    batteries_data_.module_status          = ModuleStatus::kReady;
+    telemetry_data_.emergency_stop_command = false;
+
+    // Enforce PreBraking -> NominalBraking
+    nav_data_.braking_distance   = 1000;
+    nav_data_.displacement       = Navigation::kRunLength - nav_data_.braking_distance;
+    sensors_data_.high_power_off = true;
+
+    // Prevent NominalBraking -> Finished
+    nav_data_.velocity = 100;
+
+    // Verify transition conditions are as intended
+    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
+                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_entered_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_stopped              = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off       = checkHighPowerOff(sensors_data_);
+
+    enableOutput();
+    ASSERT_EQ(false, has_emergency);
+    ASSERT_EQ(true, has_entered_braking_zone);
+    ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(true, has_high_power_off);
+    disableOutput();
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    enableOutput();
+    ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in PreBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kNominalBraking)
+      << "failed to transition from PreBraking to NominalBraking";
     disableOutput();
   }
 
@@ -922,6 +1049,49 @@ class RunTest : public Test {
   }
 
   /**
+   * Modifies data_ such that the FailurePreBraking-> FailureBraking transition conditions are met
+   * and verifies the behaviour.
+   */
+  void testFailurePreBrakingToFailureBraking()
+  {
+    // Check initial state
+    readData();
+    enableOutput();
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailurePreBraking);
+    disableOutput();
+
+    // Randomise data
+    randomiseInternally();
+
+    // Prevent FailureBraking -> FailureStopped
+    nav_data_.velocity = 100;
+
+    // Enforce FailurePreBraking -> FailureBraking
+    sensors_data_.high_power_off = true;
+
+    // Verify transition conditions are as intended
+    const bool has_stopped        = checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off = checkHighPowerOff(sensors_data_);
+
+    enableOutput();
+    ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(true, has_high_power_off);
+    disableOutput();
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    enableOutput();
+    ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in FailurePreBraking";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+      << "failed to transition from FailurePreBraking to FailureBraking";
+    disableOutput();
+  }
+
+  /**
    * Modifies data such that the FailureBraking -> Stopped transition conditions are met and
    * verifies the behaviour.
    */
@@ -1021,7 +1191,8 @@ TEST_F(RunTest, nominalRunWithoutCruising)
     testPreCalibratingToCalibrating();
     testCalibratingToReady();
     testReadyToAccelerating();
-    testAcceleratingToNominalBraking();
+    testAcceleratingToPreBraking();
+    testPreBrakingToNominalBraking();
     testNominalBrakingToFinished();
     testFinishedToOff();
 
@@ -1051,7 +1222,8 @@ TEST_F(RunTest, nominalRunWithCruising)
     testCalibratingToReady();
     testReadyToAccelerating();
     testAcceleratingToCruising();
-    testCruisingToNominalBraking();
+    testCruisingToPreBraking();
+    testPreBrakingToNominalBraking();
     testNominalBrakingToFinished();
     testFinishedToOff();
 
@@ -1158,6 +1330,7 @@ TEST_F(RunTest, acceleratingEmergency)
     testCalibratingToReady();
     testReadyToAccelerating();
     testAcceleratingEmergency();
+    testFailurePreBrakingToFailureBraking();
     testFailureBrakingToStopped();
     testFailureStoppedToOff();
 
@@ -1188,6 +1361,7 @@ TEST_F(RunTest, cruisingEmergency)
     testReadyToAccelerating();
     testAcceleratingToCruising();
     testCruisingEmergency();
+    testFailurePreBrakingToFailureBraking();
     testFailureBrakingToStopped();
     testFailureStoppedToOff();
 
@@ -1205,7 +1379,6 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
     sys.running_       = true;
-
     initialiseData();
 
     Thread *state_machine = new Main(0, log_);
@@ -1217,7 +1390,8 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
     testPreCalibratingToCalibrating();
     testCalibratingToReady();
     testReadyToAccelerating();
-    testAcceleratingToNominalBraking();
+    testAcceleratingToPreBraking();
+    testPreBrakingToNominalBraking();
     testNominalBrakingEmergency();
     testFailureBrakingToStopped();
     testFailureStoppedToOff();
@@ -1249,7 +1423,8 @@ TEST_F(RunTest, brakingEmergencyWithCruising)
     testCalibratingToReady();
     testReadyToAccelerating();
     testAcceleratingToCruising();
-    testCruisingToNominalBraking();
+    testCruisingToPreBraking();
+    testPreBrakingToNominalBraking();
     testNominalBrakingEmergency();
     testFailureBrakingToStopped();
     testFailureStoppedToOff();

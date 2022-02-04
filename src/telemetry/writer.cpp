@@ -31,6 +31,7 @@ void Writer::packTelemetryData()
 {
   const auto telemetry_data = data_.getTelemetryData();
 
+  json_writer_.Key("telemetry");
   json_writer_.StartObject();
   // Commands
   json_writer_.Key("calibrate");
@@ -56,6 +57,7 @@ void Writer::packNavigationData()
 {
   const auto nav_data = data_.getNavigationData();
 
+  json_writer_.Key("navigation");
   json_writer_.StartObject();
   json_writer_.Key("braking_distance");
   json_writer_.Int(nav_data.braking_distance);
@@ -80,8 +82,10 @@ void Writer::packSensorsData()
   const auto batteries_data = data_.getBatteriesData();
   const auto brakes_data    = data_.getEmergencyBrakesData();
 
+  json_writer_.Key("sensors");
   json_writer_.StartObject();
   // LP Batteries
+  json_writer_.Key("lp_batteries");
   json_writer_.StartArray();
   for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
     packBattery("lp_battery", batteries_data.low_power_batteries[i]);
@@ -89,6 +93,7 @@ void Writer::packSensorsData()
   json_writer_.EndArray();
 
   // HP Batteries
+  json_writer_.Key("hp_batteries");
   json_writer_.StartArray();
   for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
     packBattery("hp_battery", batteries_data.high_power_batteries[i]);
@@ -116,6 +121,7 @@ void Writer::packMotorData()
 {
   const auto motor_data = data_.getMotorData();
 
+  json_writer_.Key("motors");
   json_writer_.StartObject();
   // RPMS
   json_writer_.Key("motor_rpms");
@@ -135,6 +141,7 @@ void Writer::packStateMachineData()
 {
   const auto sm_data = data_.getStateMachineData();
 
+  json_writer_.Key("state_machine");
   json_writer_.StartObject();
   json_writer_.Key("critical_failure");
   json_writer_.Bool(sm_data.critical_failure);

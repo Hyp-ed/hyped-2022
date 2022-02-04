@@ -28,19 +28,25 @@ GpioManager::GpioManager(Logger &log)
 
 void GpioManager::clearHP()
 {
+  data::Sensors sensors_data_struct = data_.getSensorsData();
   master_->clear();  // important to clear this first
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
     hp_ssr_[i]->clear();  // HP off until kReady State
   }
+  sensors_data_struct.high_power_off = true;  // all SSRs in HP off
+  data_.setSensorsData(sensors_data_struct);
 }
 
 void GpioManager::setHP()
 {
+  data::Sensors sensors_data_struct = data_.getSensorsData();
   for (int i = 0; i < data::Batteries::kNumHPBatteries; i++) {
     hp_ssr_[i]->set();
     sleep(50);
   }
   master_->set();
+  sensors_data_struct.high_power_off = false;  // all SSRs in HP on
+  data_.setSensorsData(sensors_data_struct);
 }
 
 void GpioManager::run()
@@ -79,7 +85,15 @@ void GpioManager::run()
         case data::State::kAccelerating:
         case data::State::kCruising:
         case data::State::kCalibrating:
+        case data::State::kPreBraking:
+          clearHP();
+          log_.ERR("GPIO-MANAGER", "Braking! HP SSR cleared");
+          break;
         case data::State::kNominalBraking:
+          break;
+        case data::State::kFailurePreBraking:
+          clearHP();
+          log_.ERR("GPIO-MANAGER", "Failure Braking! HP SSR cleared");
           break;
         case data::State::kEmergencyBraking:
         case data::State::kFailureStopped:

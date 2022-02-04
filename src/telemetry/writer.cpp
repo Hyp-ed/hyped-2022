@@ -186,6 +186,8 @@ const std::string Writer::convertStateMachineState(data::State state)
       return "FAILURE_STOPPED";
     case data::State::kIdle:
       return "IDLE";
+    case data::State::kPreCalibrating:
+      return "PRE_CALIBRATING";
     case data::State::kCalibrating:
       return "CALIBRATING";
     case data::State::kFinished:

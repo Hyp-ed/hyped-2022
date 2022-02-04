@@ -11,16 +11,31 @@ using namespace hyped::data;
  * Tests packing of data in CDS to json
  */
 struct WriterPackData : public ::testing::Test {
-  protected:
+ protected:
   void SetUp() {}
   void TearDown() {}
 };
 
 Data &data_ = Data::getInstance();
 
+void setTelemetryData()
+{
+  Telemetry telemetry_data = data_.getTelemetryData();
+
+  telemetry_data.calibrate_command       = false;
+  telemetry_data.emergency_stop_command  = false;
+  telemetry_data.launch_command          = false;
+  telemetry_data.nominal_braking_command = false;
+  telemetry_data.service_propulsion_go   = false;
+  telemetry_data.shutdown_command        = false;
+  telemetry_data.module_status           = ModuleStatus::kCriticalFailure;
+
+  data_.setTelemetryData(telemetry_data);
+}
+
 TEST_F(WriterPackData, packsTelemetryData)
 {
-  // TODO initialise CDS with values
+  setTelemetryData();
   Writer writer(data_);
   writer.start();
   writer.packTelemetryData();

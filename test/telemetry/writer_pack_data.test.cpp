@@ -33,6 +33,36 @@ void setTelemetryData()
   data_.setTelemetryData(telemetry_data);
 }
 
+void setNavigationData()
+{
+  Navigation navigation_data = data_.getNavigationData();
+  data_.setNavigationData(navigation_data);
+}
+
+void setSensorsData()
+{
+  Sensors sensors_data = data_.getSensorsData();
+  data_.setSensorsData(sensors_data);
+}
+
+void setMotorData()
+{
+  Motors motors_data = data_.getMotorData();
+  data_.setMotorData(motors_data);
+}
+
+void setStateMachineData()
+{
+  StateMachine state_machine_data = data_.getStateMachineData();
+  data_.setStateMachineData(state_machine_data);
+}
+
+void setBatteryData()
+{
+  Batteries battery_data = data_.getBatteriesData();
+  data_.setBatteriesData(battery_data);
+}
+
 TEST_F(WriterPackData, packsTelemetryData)
 {
   setTelemetryData();
@@ -43,11 +73,12 @@ TEST_F(WriterPackData, packsTelemetryData)
   const std::string actualJson   = writer.getString();
   const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Telemetry json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "Telemetry json invalid.";
 }
 
 TEST_F(WriterPackData, packsNavigationData)
 {
-  // TODO initialise CDS with values
+  setNavigationData();
   Writer writer(data_);
   writer.start();
   writer.packNavigationData();
@@ -55,11 +86,12 @@ TEST_F(WriterPackData, packsNavigationData)
   const std::string actualJson   = writer.getString();
   const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Navigation json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "Navigation json invalid.";
 }
 
 TEST_F(WriterPackData, packsSensorsData)
 {
-  // TODO initialise CDS with values
+  setSensorsData();
   Writer writer(data_);
   writer.start();
   writer.packSensorsData();
@@ -67,11 +99,12 @@ TEST_F(WriterPackData, packsSensorsData)
   const std::string actualJson   = writer.getString();
   const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Sensors json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "Sensors json invalid.";
 }
 
 TEST_F(WriterPackData, packsMotorData)
 {
-  // TODO initialise CDS with values
+  setMotorData();
   Writer writer(data_);
   writer.start();
   writer.packMotorData();
@@ -79,11 +112,12 @@ TEST_F(WriterPackData, packsMotorData)
   const std::string actualJson   = writer.getString();
   const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Motor json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "Motor json invalid.";
 }
 
 TEST_F(WriterPackData, packsStateMachineData)
 {
-  // TODO initialise CDS with values
+  setStateMachineData();
   Writer writer(data_);
   writer.start();
   writer.packStateMachineData();
@@ -91,11 +125,12 @@ TEST_F(WriterPackData, packsStateMachineData)
   const std::string actualJson   = writer.getString();
   const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "State machine json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "State machine json invalid.";
 }
 
 TEST_F(WriterPackData, packsBatteryData)
 {
-  // TODO initialise CDS with values
+  setBatteryData();
   Writer writer(data_);
   writer.start();
   // writer.packBattery();
@@ -103,4 +138,5 @@ TEST_F(WriterPackData, packsBatteryData)
   const std::string actualJson   = writer.getString();
   const std::string expectedJson = "INSERT JSON HERE";  // TODO
   ASSERT_EQ(actualJson, expectedJson) << "Battery json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "Battery json invalid.";
 }

@@ -36,31 +36,85 @@ void setTelemetryData()
 void setNavigationData()
 {
   Navigation navigation_data = data_.getNavigationData();
+
+  navigation_data.acceleration               = 10.0;
+  navigation_data.braking_distance           = 20.0;
+  navigation_data.displacement               = 100.0;
+  navigation_data.emergency_braking_distance = 50.0;
+  navigation_data.velocity                   = 5.0;
+  navigation_data.module_status              = ModuleStatus::kReady;
+
   data_.setNavigationData(navigation_data);
 }
 
 void setSensorsData()
 {
-  Sensors sensors_data = data_.getSensorsData();
+  Sensors sensors_data        = data_.getSensorsData();
+  Batteries batteries_data    = data_.getBatteriesData();
+  EmergencyBrakes brakes_data = data_.getEmergencyBrakesData();
+
+  sensors_data.module_status   = ModuleStatus::kInit;
+  brakes_data.module_status    = ModuleStatus::kReady;
+  batteries_data.module_status = ModuleStatus::kStart;
+  data_.setTemperature(20);
+  for (int16_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
+    batteries_data.high_power_batteries[i].average_temperature = 8;
+    batteries_data.high_power_batteries[i].charge              = 3;
+    batteries_data.high_power_batteries[i].current             = 10;
+    batteries_data.high_power_batteries[i].high_temperature    = 16;
+    batteries_data.high_power_batteries[i].high_voltage_cell   = 24;
+    batteries_data.high_power_batteries[i].imd_fault           = false;
+    batteries_data.high_power_batteries[i].low_temperature     = 13;
+    batteries_data.high_power_batteries[i].low_voltage_cell    = 5;
+    batteries_data.high_power_batteries[i].voltage             = 12;
+  }
+  for (int16_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
+    batteries_data.low_power_batteries[i].average_temperature = 8;
+    batteries_data.low_power_batteries[i].charge              = 3;
+    batteries_data.low_power_batteries[i].current             = 10;
+    batteries_data.low_power_batteries[i].high_temperature    = 16;
+    batteries_data.low_power_batteries[i].high_voltage_cell   = 24;
+    batteries_data.low_power_batteries[i].imd_fault           = false;
+    batteries_data.low_power_batteries[i].low_temperature     = 13;
+    batteries_data.low_power_batteries[i].low_voltage_cell    = 5;
+    batteries_data.low_power_batteries[i].voltage             = 12;
+  }
+
   data_.setSensorsData(sensors_data);
 }
 
 void setMotorData()
 {
   Motors motors_data = data_.getMotorData();
+
+  motors_data.module_status = ModuleStatus::kCriticalFailure;
+  for (int16_t i = 0; i < motors_data.kNumMotors; ++i) {
+    motors_data.rpms[i] = 150;
+  }
+
   data_.setMotorData(motors_data);
 }
 
 void setStateMachineData()
 {
   StateMachine state_machine_data = data_.getStateMachineData();
+
+  state_machine_data.critical_failure = false;
+  state_machine_data.current_state    = kAccelerating;
+
   data_.setStateMachineData(state_machine_data);
 }
 
-void setBatteryData()
+TEST_F(WriterPackData, packsId)
 {
-  Batteries battery_data = data_.getBatteriesData();
-  data_.setBatteriesData(battery_data);
+  Writer writer(data_);
+  writer.start();
+  writer.packId(5);
+  writer.end();
+  const std::string actualJson   = writer.getString();
+  const std::string expectedJson = "INSERT JSON HERE";  // TODO
+  ASSERT_EQ(actualJson, expectedJson) << "ID json does not match expected output.";
+  ASSERT_TRUE(writer.isValidJson()) << "ID json invalid.";
 }
 
 TEST_F(WriterPackData, packsTelemetryData)
@@ -130,7 +184,7 @@ TEST_F(WriterPackData, packsStateMachineData)
 
 TEST_F(WriterPackData, packsBatteryData)
 {
-  setBatteryData();
+  setSensorsData();
   Writer writer(data_);
   writer.start();
   // writer.packBattery();

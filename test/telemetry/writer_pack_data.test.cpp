@@ -4,7 +4,6 @@
 
 using namespace hyped::telemetry;
 using namespace hyped::data;
-using namespace std;
 
 /**
  * Tests packing of data in CDS to json

@@ -58,11 +58,7 @@ class Writer {
 
  private:
   // functions to pack internal CDS structs/types
-  void packBattery(const std::string name, const data::BatteryData &battery);
-
-  // starts and ends lists, which allow to structure the data
-  void startList(const std::string name);
-  void endList();
+  void packBattery(const data::BatteryData &battery);
 
   rapidjson::StringBuffer string_buffer_;
   rapidjson::Writer<rapidjson::StringBuffer> json_writer_;

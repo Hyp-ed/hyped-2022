@@ -4,6 +4,7 @@
 
 using namespace hyped::telemetry;
 using namespace hyped::data;
+using namespace std;
 
 /**
  * Tests packing of data in CDS to json
@@ -79,6 +80,8 @@ void setSensorsData()
   }
 
   data_.setSensorsData(sensors_data);
+  data_.setEmergencyBrakesData(brakes_data);
+  data_.setBatteriesData(batteries_data);
 }
 
 void setMotorData()
@@ -106,11 +109,12 @@ void setStateMachineData()
 TEST_F(WriterPackData, packsId)
 {
   Writer writer(data_);
+  int id = 5;
   writer.start();
-  writer.packId(5);
+  writer.packId(id);
   writer.end();
   const std::string actualJson   = writer.getString();
-  const std::string expectedJson = {"id": int};  // TODO
+  const std::string expectedJson = "{\"id\":" + std::to_string(id) + "}";
   ASSERT_EQ(actualJson, expectedJson) << "ID json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "ID json invalid.";
 }
@@ -122,8 +126,11 @@ TEST_F(WriterPackData, packsTelemetryData)
   writer.start();
   writer.packTelemetryData();
   writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson = {"telemetry": {"calibrate": bool,"emergency_stop": bool, "launch": bool , "nominal_breaking": bool ,"service_propulsion_go":bool,"shutdown":bool,"telemetry_status":String}};  // TODO
+  const std::string actualJson = writer.getString();
+  const std::string expectedJson
+    = "{\"telemetry\":{\"calibrate\":false,\"emergency_stop\":false,\"launch\":false,\"nominal_"
+      "breaking\":false,\"service_propulsion_go\":false,\"shutdown\":false,\"telemetry_status\":"
+      "\"CRITICAL_FAILURE\"}}";
   ASSERT_EQ(actualJson, expectedJson) << "Telemetry json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Telemetry json invalid.";
 }
@@ -135,8 +142,10 @@ TEST_F(WriterPackData, packsNavigationData)
   writer.start();
   writer.packNavigationData();
   writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson = {"navigation": {"braking_distance": 750, "displacement":1250,"emergency_braking_distance":20,"velocity":100,"acceleration":8}};  // TODO
+  const std::string actualJson = writer.getString();
+  const std::string expectedJson
+    = "{\"navigation\":{\"braking_distance\":20,\"displacement\":100,\"emergency_braking_"
+      "distance\":50,\"velocity\":5,\"acceleration\":10,\"navigation_status\":\"READY\"}}";
   ASSERT_EQ(actualJson, expectedJson) << "Navigation json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Navigation json invalid.";
 }
@@ -148,8 +157,16 @@ TEST_F(WriterPackData, packsSensorsData)
   writer.start();
   writer.packSensorsData();
   writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson = {"sensors": {[{"lp_battery":{"average_temp":int, "voltage":int,"current":int,"charge":int,"low_temp":int,"high_temp":int,"low_voltage_cell":int,"high_voltage_cell":int,"imd_fault": false}},{"lp_battery":{"average_temp":int, "voltage":int,"current":int,"charge":int,"low_temp":int,"high_temp":int,"low_voltage_cell":int,"high_voltage_cell":int,"imd_fault": false}}],[{"hp_battery":{"average_temp":int, "voltage":int,"current":int,"charge":int,"low_temp":int,"high_temp":int,"low_voltage_cell":int,"high_voltage_cell":int,"imd_fault": false}}], "brakes_retracted": bool,"temperature":int,"brake status": String,"sensors_status":bool, "batteries_status": bool}};  // TODO
+  const std::string actualJson = writer.getString();
+  const std::string expectedJson
+    = "{\"sensors\":{\"lp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
+      "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
+      "24,\"imd_fault\":false},{\"average_temp\":8,\"voltage\":12,\"current\":10,\"charge\":3,"
+      "\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":24,\"imd_"
+      "fault\":false}],\"hp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
+      "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
+      "24,\"imd_fault\":false}],\"brakes_retracted\":true,\"temperature\":20,\"brakes_status\":"
+      "\"READY\",\"sensors_status\":\"INIT\",\"batteries_status\":\"START\"}}";
   ASSERT_EQ(actualJson, expectedJson) << "Sensors json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Sensors json invalid.";
 }
@@ -161,8 +178,9 @@ TEST_F(WriterPackData, packsMotorData)
   writer.start();
   writer.packMotorData();
   writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson = {"motors": {"motor_rpms":[0,0,0,0],"motors_status":String} ;  // TODO
+  const std::string actualJson = writer.getString();
+  const std::string expectedJson
+    = "{\"motors\":{\"motor_rpms\":[150,150,150,150],\"motors_status\":\"CRITICAL_FAILURE\"}}";
   ASSERT_EQ(actualJson, expectedJson) << "Motor json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Motor json invalid.";
 }
@@ -174,21 +192,9 @@ TEST_F(WriterPackData, packsStateMachineData)
   writer.start();
   writer.packStateMachineData();
   writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson = {"state_machine": {"critical_failure": bool,"current_state": String}};  // TODO
+  const std::string actualJson = writer.getString();
+  const std::string expectedJson
+    = "{\"state_machine\":{\"critical_failure\":false,\"current_state\":\"ACCELERATING\"}}";
   ASSERT_EQ(actualJson, expectedJson) << "State machine json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "State machine json invalid.";
-}
-
-TEST_F(WriterPackData, packsBatteryData)
-{
-  setSensorsData();
-  Writer writer(data_);
-  writer.start();
-  // writer.packBattery();
-  writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson =  <value>: {"average_temp":int, "voltage":int,"current":int,"charge":int,"low_temp":int,"high_temp":int,"low_voltage_cell":int,"high_voltage_cell":int,"imd_fault": bool};  // TODO
-  ASSERT_EQ(actualJson, expectedJson) << "Battery json does not match expected output.";
-  ASSERT_TRUE(writer.isValidJson()) << "Battery json invalid.";
 }

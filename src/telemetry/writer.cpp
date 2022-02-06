@@ -88,7 +88,7 @@ void Writer::packSensorsData()
   json_writer_.Key("lp_batteries");
   json_writer_.StartArray();
   for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
-    packBattery("lp_battery", batteries_data.low_power_batteries[i]);
+    packBattery(batteries_data.low_power_batteries[i]);
   }
   json_writer_.EndArray();
 
@@ -96,7 +96,7 @@ void Writer::packSensorsData()
   json_writer_.Key("hp_batteries");
   json_writer_.StartArray();
   for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
-    packBattery("hp_battery", batteries_data.high_power_batteries[i]);
+    packBattery(batteries_data.high_power_batteries[i]);
   }
   json_writer_.EndArray();
 
@@ -111,9 +111,9 @@ void Writer::packSensorsData()
   json_writer_.Key("brakes_status");
   json_writer_.String(convertModuleStatus(brakes_data.module_status).c_str());
   json_writer_.Key("sensors_status");
-  json_writer_.Bool(convertModuleStatus(sensors_data.module_status).c_str());
+  json_writer_.String(convertModuleStatus(sensors_data.module_status).c_str());
   json_writer_.Key("batteries_status");
-  json_writer_.Bool(convertModuleStatus(batteries_data.module_status).c_str());
+  json_writer_.String(convertModuleStatus(batteries_data.module_status).c_str());
   json_writer_.EndObject();
 }
 
@@ -150,9 +150,8 @@ void Writer::packStateMachineData()
   json_writer_.EndObject();
 }
 
-void Writer::packBattery(const std::string name, const data::BatteryData &battery)
+void Writer::packBattery(const data::BatteryData &battery)
 {
-  json_writer_.Key(name.c_str());
   json_writer_.StartObject();
   json_writer_.Key("average_temp");
   json_writer_.Int(battery.average_temperature);

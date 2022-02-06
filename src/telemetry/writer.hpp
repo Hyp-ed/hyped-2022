@@ -46,6 +46,9 @@ class Writer {
   // after calling this function, no additional data points can be added
   void end() { json_writer_.EndObject(); }
 
+  // checks whether json is complete. json is complete if it has complete root object or array.
+  bool isValidJson() { return json_writer_.IsComplete(); }
+
   // returns the main JSON object as a string, that is ready to be sent to GUI
   std::string getString() { return string_buffer_.GetString(); }
 

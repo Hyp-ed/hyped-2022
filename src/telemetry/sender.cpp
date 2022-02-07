@@ -39,9 +39,6 @@ void Sender::run()
       log_.ERR("Telemetry", "Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
-
-      // Need to use writer.getString() and send the string.
-
       break;
     }
     ++num_packages_sent;

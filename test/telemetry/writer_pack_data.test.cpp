@@ -16,7 +16,7 @@ struct WriterPackData : public ::testing::Test {
 
 Data &data_ = Data::getInstance();
 
-void setTelemetryData()
+void initTelemetryData()
 {
   Telemetry telemetry_data = data_.getTelemetryData();
 
@@ -31,7 +31,7 @@ void setTelemetryData()
   data_.setTelemetryData(telemetry_data);
 }
 
-void setNavigationData()
+void initNavigationData()
 {
   Navigation navigation_data = data_.getNavigationData();
 
@@ -45,7 +45,7 @@ void setNavigationData()
   data_.setNavigationData(navigation_data);
 }
 
-void setSensorsData()
+void initSensorsData()
 {
   Sensors sensors_data        = data_.getSensorsData();
   Batteries batteries_data    = data_.getBatteriesData();
@@ -83,7 +83,7 @@ void setSensorsData()
   data_.setBatteriesData(batteries_data);
 }
 
-void setMotorData()
+void initMotorData()
 {
   Motors motors_data = data_.getMotorData();
 
@@ -95,7 +95,7 @@ void setMotorData()
   data_.setMotorData(motors_data);
 }
 
-void setStateMachineData()
+void initStateMachineData()
 {
   StateMachine state_machine_data = data_.getStateMachineData();
 
@@ -108,19 +108,18 @@ void setStateMachineData()
 TEST_F(WriterPackData, packsId)
 {
   Writer writer(data_);
-  int id = 5;
   writer.start();
-  writer.packId(id);
+  writer.packId(5);
   writer.end();
   const std::string actualJson   = writer.getString();
-  const std::string expectedJson = "{\"id\":" + std::to_string(id) + "}";
+  const std::string expectedJson = "{\"id\":5}";
   ASSERT_EQ(actualJson, expectedJson) << "ID json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "ID json invalid.";
 }
 
 TEST_F(WriterPackData, packsTelemetryData)
 {
-  setTelemetryData();
+  initTelemetryData();
   Writer writer(data_);
   writer.start();
   writer.packTelemetryData();
@@ -136,7 +135,7 @@ TEST_F(WriterPackData, packsTelemetryData)
 
 TEST_F(WriterPackData, packsNavigationData)
 {
-  setNavigationData();
+  initNavigationData();
   Writer writer(data_);
   writer.start();
   writer.packNavigationData();
@@ -151,7 +150,7 @@ TEST_F(WriterPackData, packsNavigationData)
 
 TEST_F(WriterPackData, packsSensorsData)
 {
-  setSensorsData();
+  initSensorsData();
   Writer writer(data_);
   writer.start();
   writer.packSensorsData();
@@ -172,7 +171,7 @@ TEST_F(WriterPackData, packsSensorsData)
 
 TEST_F(WriterPackData, packsMotorData)
 {
-  setMotorData();
+  initMotorData();
   Writer writer(data_);
   writer.start();
   writer.packMotorData();
@@ -186,7 +185,7 @@ TEST_F(WriterPackData, packsMotorData)
 
 TEST_F(WriterPackData, packsStateMachineData)
 {
-  setStateMachineData();
+  initStateMachineData();
   Writer writer(data_);
   writer.start();
   writer.packStateMachineData();

@@ -22,9 +22,9 @@ TEST_F(WriterPackData, packsId)
   writer.start();
   writer.packId(5);
   writer.end();
-  const std::string actualJson   = writer.getString();
-  const std::string expectedJson = "{\"id\":5}";
-  ASSERT_EQ(actualJson, expectedJson) << "ID json does not match expected output.";
+  const std::string actual_json   = writer.getString();
+  const std::string expected_json = "{\"id\":5}";
+  ASSERT_EQ(actual_json, expected_json) << "ID json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "ID json invalid.";
 }
 
@@ -46,12 +46,12 @@ TEST_F(WriterPackData, packsTelemetryData)
   writer.start();
   writer.packTelemetryData();
   writer.end();
-  const std::string actualJson = writer.getString();
-  const std::string expectedJson
+  const std::string actual_json = writer.getString();
+  const std::string expected_json
     = "{\"telemetry\":{\"calibrate\":false,\"emergency_stop\":false,\"launch\":false,\"nominal_"
       "breaking\":false,\"service_propulsion_go\":false,\"shutdown\":false,\"telemetry_status\":"
       "\"CRITICAL_FAILURE\"}}";
-  ASSERT_EQ(actualJson, expectedJson) << "Telemetry json does not match expected output.";
+  ASSERT_EQ(actual_json, expected_json) << "Telemetry json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Telemetry json invalid.";
 }
 
@@ -72,11 +72,11 @@ TEST_F(WriterPackData, packsNavigationData)
   writer.start();
   writer.packNavigationData();
   writer.end();
-  const std::string actualJson = writer.getString();
-  const std::string expectedJson
+  const std::string actual_json = writer.getString();
+  const std::string expected_json
     = "{\"navigation\":{\"braking_distance\":20,\"displacement\":100,\"emergency_braking_"
       "distance\":50,\"velocity\":5,\"acceleration\":10,\"navigation_status\":\"READY\"}}";
-  ASSERT_EQ(actualJson, expectedJson) << "Navigation json does not match expected output.";
+  ASSERT_EQ(actual_json, expected_json) << "Navigation json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Navigation json invalid.";
 }
 
@@ -121,8 +121,8 @@ TEST_F(WriterPackData, packsSensorsData)
   writer.start();
   writer.packSensorsData();
   writer.end();
-  const std::string actualJson = writer.getString();
-  const std::string expectedJson
+  const std::string actual_json = writer.getString();
+  const std::string expected_json
     = "{\"sensors\":{\"lp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
       "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
       "24,\"imd_fault\":false},{\"average_temp\":8,\"voltage\":12,\"current\":10,\"charge\":3,"
@@ -131,7 +131,7 @@ TEST_F(WriterPackData, packsSensorsData)
       "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
       "24,\"imd_fault\":false}],\"brakes_retracted\":true,\"temperature\":20,\"brakes_status\":"
       "\"READY\",\"sensors_status\":\"INIT\",\"batteries_status\":\"START\"}}";
-  ASSERT_EQ(actualJson, expectedJson) << "Sensors json does not match expected output.";
+  ASSERT_EQ(actual_json, expected_json) << "Sensors json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Sensors json invalid.";
 }
 
@@ -150,10 +150,10 @@ TEST_F(WriterPackData, packsMotorData)
   writer.start();
   writer.packMotorData();
   writer.end();
-  const std::string actualJson = writer.getString();
-  const std::string expectedJson
+  const std::string actual_json = writer.getString();
+  const std::string expected_json
     = "{\"motors\":{\"motor_rpms\":[150,150,150,150],\"motors_status\":\"CRITICAL_FAILURE\"}}";
-  ASSERT_EQ(actualJson, expectedJson) << "Motor json does not match expected output.";
+  ASSERT_EQ(actual_json, expected_json) << "Motor json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Motor json invalid.";
 }
 
@@ -170,9 +170,9 @@ TEST_F(WriterPackData, packsStateMachineData)
   writer.start();
   writer.packStateMachineData();
   writer.end();
-  const std::string actualJson = writer.getString();
-  const std::string expectedJson
+  const std::string actual_json = writer.getString();
+  const std::string expected_json
     = "{\"state_machine\":{\"critical_failure\":false,\"current_state\":\"ACCELERATING\"}}";
-  ASSERT_EQ(actualJson, expectedJson) << "State machine json does not match expected output.";
+  ASSERT_EQ(actual_json, expected_json) << "State machine json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "State machine json invalid.";
 }

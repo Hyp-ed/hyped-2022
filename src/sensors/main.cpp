@@ -103,7 +103,7 @@ void Main::run()
   temp_ = data_.getSensorsData().temperature;
   pres_ = data_.getSensorsData().pressure;
 
-  int iteration_count;
+  std::size_t iteration_count = 0;
   while (sys_.running_) {
     // We need to read the gpio counters and write to the data structure
     // If previous is not equal to the new data then update
@@ -116,7 +116,7 @@ void Main::run()
       keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
     }
     Thread::sleep(10);  // Sleep for 10ms
-    iteration_count++;
+    ++iteration_count;
     if (iteration_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
       checkPressure();

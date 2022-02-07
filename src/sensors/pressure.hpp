@@ -17,14 +17,14 @@ class Pressure : public PressureInterface {
    * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Pressure(utils::Logger &log, uint8_t pressure_pin, uint8_t temp_pin);
+  Pressure(utils::Logger &log, uint16_t pressure_pin, uint16_t temp_pin);
 
   /**
    * @brief
    *
-   * @return int to set to data struct in sensors main
+   * @return uint16_t to set to data struct in sensors main
    */
-  int getData() override;
+  uint16_t getData() override;
 
   /**
    * @brief one iteration of checking sensors
@@ -40,7 +40,7 @@ class Pressure : public PressureInterface {
    * @param raw_pressure_value input pressure voltage
    * @return int representation of pressure
    */
-  int scaleData(uint8_t raw_temp_value, uint8_t raw_pressure_value);
+  uint16_t scaleData(uint16_t raw_temp_value, uint16_t raw_pressure_value);
 
   /**
    * @brief ADC pin

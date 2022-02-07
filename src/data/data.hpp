@@ -72,11 +72,11 @@ struct StripeCounter : public Sensor {
 };
 
 struct TemperatureData : public Sensor {
-  uint8_t temp;  // C
+  uint16_t temp;  // C
 };
 
 struct PressureData : public Sensor {
-  uint8_t pressure;  // mbar
+  uint16_t pressure;  // mbar
 };
 
 struct Sensors : public Module {

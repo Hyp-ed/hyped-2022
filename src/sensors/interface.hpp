@@ -76,7 +76,7 @@ class PressureInterface {
    * @brief returns int representation of pressure
    * @return int pressure bars
    */
-  virtual int getData() = 0;
+  virtual uint16_t getData() = 0;
 };
 }  // namespace sensors
 }  // namespace hyped

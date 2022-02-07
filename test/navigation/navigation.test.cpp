@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <data/data.hpp>
 #include <navigation/navigation.hpp>
 #include <utils/logger.hpp>
@@ -30,6 +30,6 @@ TEST_F(NavigationTest, correctEmergencyBrakingDistance)
 
   // this should read the sensors data and use it to update velocity etc. but doesn't seem to
   nav.navigate();
-  std::cout << data_.getNavigationData().velocity
+  std::cout << data_.getNavigationData().velocity;
 }
 }  // namespace hyped::navigation

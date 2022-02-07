@@ -30,6 +30,6 @@ TEST_F(NavigationTest, correctEmergencyBrakingDistance)
 
   // this should read the sensors data and use it to update velocity etc. but doesn't seem to
   nav.navigate();
-  std::cout << data_.getNavigationData().velocity;
+  std::cout << data_.getNavigationData().velocity
 }
 }  // namespace hyped::navigation

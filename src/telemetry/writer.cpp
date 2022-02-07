@@ -8,7 +8,7 @@
 
 namespace hyped::telemetry {
 
-Writer::Writer(data::Data &data) : json_writer_(string_buffer_), data_{data}
+Writer::Writer() : json_writer_(string_buffer_), data_(data::Data::getInstance())
 {
 }
 

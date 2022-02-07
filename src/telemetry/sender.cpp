@@ -22,7 +22,7 @@ void Sender::run()
   uint32_t num_packages_sent = 0;
 
   while (true) {
-    Writer writer(data_);
+    Writer writer;
 
     writer.start();
     writer.packTime();

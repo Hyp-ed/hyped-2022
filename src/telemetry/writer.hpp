@@ -26,7 +26,7 @@ namespace hyped::telemetry {
 */
 class Writer {
  public:
-  explicit Writer(data::Data &data);
+  explicit Writer();
 
   // functions to pack timestamp and number of packages
   void packTime();

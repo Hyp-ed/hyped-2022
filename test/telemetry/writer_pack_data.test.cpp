@@ -18,7 +18,7 @@ Data &data_ = Data::getInstance();
 
 TEST_F(WriterPackData, packsId)
 {
-  Writer writer(data_);
+  Writer writer;
   writer.start();
   writer.packId(5);
   writer.end();
@@ -42,7 +42,7 @@ TEST_F(WriterPackData, packsTelemetryData)
 
   data_.setTelemetryData(telemetry_data);
 
-  Writer writer(data_);
+  Writer writer;
   writer.start();
   writer.packTelemetryData();
   writer.end();
@@ -68,7 +68,7 @@ TEST_F(WriterPackData, packsNavigationData)
 
   data_.setNavigationData(navigation_data);
 
-  Writer writer(data_);
+  Writer writer;
   writer.start();
   writer.packNavigationData();
   writer.end();
@@ -117,7 +117,7 @@ TEST_F(WriterPackData, packsSensorsData)
   data_.setEmergencyBrakesData(brakes_data);
   data_.setBatteriesData(batteries_data);
 
-  Writer writer(data_);
+  Writer writer;
   writer.start();
   writer.packSensorsData();
   writer.end();
@@ -146,7 +146,7 @@ TEST_F(WriterPackData, packsMotorData)
 
   data_.setMotorData(motors_data);
 
-  Writer writer(data_);
+  Writer writer;
   writer.start();
   writer.packMotorData();
   writer.end();
@@ -166,7 +166,7 @@ TEST_F(WriterPackData, packsStateMachineData)
 
   data_.setStateMachineData(state_machine_data);
 
-  Writer writer(data_);
+  Writer writer;
   writer.start();
   writer.packStateMachineData();
   writer.end();

@@ -331,7 +331,7 @@ struct AcceleratingTest : public StateTest {
 
 /**
  * Ensures that if any module reports an emergency,
- * the state changes to FailureBraking.
+ * the state changes to FailurePreBraking.
  *
  * Time complexity: O(kTestSize)
  */
@@ -345,10 +345,10 @@ TEST_F(AcceleratingTest, handlesEmergency)
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
-      ASSERT_EQ(new_state, state_machine::FailureBraking::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailurePreBraking::getInstance())
         << "failed to enter FailureBraking from Accelerating";
     } else {
-      ASSERT_NE(new_state, state_machine::FailureBraking::getInstance())
+      ASSERT_NE(new_state, state_machine::FailurePreBraking::getInstance())
         << "falsely entered FailureBraking from Accelerating";
     }
   }
@@ -357,7 +357,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
 /**
  * Ensures that if no emergency is reported from any module and
  * if the pod is in the braking zone, the state changes to the
- * nominal braking state.
+ * pre-braking state.
  *
  * Time complexity: O(kTestSize)
  */
@@ -374,11 +374,183 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
       const auto new_state       = state->checkTransition(log_);
 
       if (in_braking_zone) {
+        ASSERT_EQ(new_state, state_machine::PreBraking::getInstance())
+          << "failed to enter PreBraking from Accelerating";
+      } else {
+        ASSERT_NE(new_state, state_machine::PreBraking::getInstance())
+          << "falsely entered PreBraking from Accelerating";
+      }
+    }
+  }
+}
+
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if the pod has reached maximum velocity, the state changes to the
+ * Cruising state.
+ *
+ * Time complexity: O(kTestSize)
+ */
+
+TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    // Assert not in braking zone
+    nav_data_.braking_distance = 0;
+    nav_data_.displacement     = 0;
+
+    // Enforce Accelerating -> Cruising
+    nav_data_.velocity = state_machine::Navigation::kMaximumVelocity;
+
+    // reading and writing to the CDS directly to update navigation data
+    auto &data_ = data::Data::getInstance();
+    data_.setNavigationData(nav_data_);
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool reached_max_velocity = state_machine::checkReachedMaxVelocity(log_, nav_data_);
+      const auto new_state            = state->checkTransition(log_);
+
+      if (reached_max_velocity) {
+        ASSERT_EQ(new_state, state_machine::Cruising::getInstance())
+          << "failed to enter Cruising from Accelerating";
+      } else {
+        ASSERT_NE(new_state, state_machine::Cruising::getInstance())
+          << "falsely entered Cruising from Accelerating";
+      }
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
+// Cruising Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing Cruising behaviour with respect to data
+ */
+struct CruisingTest : public StateTest {
+  state_machine::Cruising *state = state_machine::Cruising::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailurePreBraking.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(CruisingTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
+
+    if (has_emergency) {
+      ASSERT_EQ(new_state, state_machine::FailurePreBraking::getInstance())
+        << "failed to enter FailurePreBraking from Cruising";
+    } else {
+      ASSERT_NE(new_state, state_machine::FailurePreBraking::getInstance())
+        << "falsely entered FailurePreBraking from Cruising";
+    }
+  }
+}
+
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if the pod is in the braking zone, the state changes to the
+ * pre-braking state.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(CruisingTest, handlesInBrakingZone)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool in_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+      const auto new_state       = state->checkTransition(log_);
+
+      if (in_braking_zone) {
+        ASSERT_EQ(new_state, state_machine::PreBraking::getInstance())
+          << "failed to enter PreBraking from Cruising";
+      } else {
+        ASSERT_NE(new_state, state_machine::PreBraking::getInstance())
+          << "falsely entered PreBraking from Cruising";
+      }
+    }
+  }
+}
+//---------------------------------------------------------------------------
+// Pre-Braking Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing PreBraking behaviour with respect to data
+ */
+struct PreBrakingTest : public StateTest {
+  state_machine::PreBraking *state = state_machine::PreBraking::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailurePreBraking.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreBrakingTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
+
+    if (has_emergency) {
+      ASSERT_EQ(new_state, state_machine::FailurePreBraking::getInstance())
+        << "failed to enter FailurePreBraking from PreBraking";
+    } else {
+      ASSERT_NE(new_state, state_machine::FailurePreBraking::getInstance())
+        << "falsely entered FailurePreBraking from PreBraking";
+    }
+  }
+}
+
+/**
+ * Ensures that if no emergency is reported from any module and
+ * if all the SSRs are not in HP, the state changes to the nominal braking state.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreBrakingTest, handlesHighPowerOff)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool has_high_power_off = state_machine::checkHighPowerOff(sensors_data_);
+      const auto new_state          = state->checkTransition(log_);
+
+      if (has_high_power_off) {
         ASSERT_EQ(new_state, state_machine::NominalBraking::getInstance())
-          << "failed to enter NominalBraking from Accelerating";
+          << "failed to enter NominalBraking from PreBraking";
       } else {
         ASSERT_NE(new_state, state_machine::NominalBraking::getInstance())
-          << "falsely entered NominalBraking from Accelerating";
+          << "falsely entered NominalBraking from PreBraking";
       }
     }
   }
@@ -480,6 +652,41 @@ TEST_F(FinishedTest, handlesShutdownCommand)
     } else {
       ASSERT_NE(new_state, state_machine::Off::getInstance())
         << "falsely entered Off from Finished";
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
+// Failure Pre-Braking Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing failure pre-braking behaviour with respect to data
+ */
+struct FailurePreBrakingTest : public StateTest {
+  state_machine::FailurePreBraking *state = state_machine::FailurePreBraking::getInstance();
+};
+
+/**
+ * Ensures that if SSRs are not in HP while in the failure
+ * pre-braking state, the state changes to FailureBraking.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_high_power_off = state_machine::checkHighPowerOff(sensors_data_);
+    const auto new_state          = state->checkTransition(log_);
+
+    if (has_high_power_off) {
+      ASSERT_EQ(new_state, state_machine::FailureBraking::getInstance())
+        << "failed to enter FailureBraking from FailurePreBraking";
+    } else {
+      ASSERT_NE(new_state, state_machine::FailureBraking::getInstance())
+        << "falsely entered FailureBraking from FailurePreBraking";
     }
   }
 }

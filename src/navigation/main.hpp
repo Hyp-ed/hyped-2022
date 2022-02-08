@@ -16,7 +16,6 @@ class Main : public utils::concurrent::Thread {
   bool isCalibrated();
 
  private:
-  utils::System &sys_;
   Navigation nav_;
 };
 

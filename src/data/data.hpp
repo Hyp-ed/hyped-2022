@@ -73,6 +73,7 @@ struct Sensors : public Module {
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
   std::array<CounterData, kNumKeyence> keyence_stripe_counters;
+  bool high_power_off = false;  // true if all SSRs are not in HP
 };
 
 struct BatteryData {
@@ -139,7 +140,9 @@ enum class State {
   kReady,
   kAccelerating,
   kCruising,
+  kPreBraking,
   kNominalBraking,
+  kFailurePreBraking,
   kEmergencyBraking,
   kFailureStopped,
   kFinished,

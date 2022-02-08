@@ -126,10 +126,10 @@ State *Accelerating::checkTransition(Logger &log)
 
   bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
-  if (emergency) { return FailureBraking::getInstance(); }
+  if (emergency) { return FailurePreBraking::getInstance(); }
 
   bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
-  if (in_braking_zone) { return NominalBraking::getInstance(); }
+  if (in_braking_zone) { return PreBraking::getInstance(); }
 
   bool reached_max_velocity = checkReachedMaxVelocity(log, nav_data_);
   if (reached_max_velocity) { return Cruising::getInstance(); }
@@ -151,11 +151,32 @@ State *Cruising::checkTransition(Logger &log)
 
   bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
-  if (emergency) { return FailureBraking::getInstance(); }
+  if (emergency) { return FailurePreBraking::getInstance(); }
 
   bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
-  if (in_braking_zone) { return NominalBraking::getInstance(); }
+  if (in_braking_zone) { return PreBraking::getInstance(); }
 
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  Pre-Braking
+//--------------------------------------------------------------------------------------
+
+PreBraking PreBraking::instance_;
+data::State PreBraking::enum_value_       = data::State::kPreBraking;
+char PreBraking::string_representation_[] = "PreBraking";
+
+State *PreBraking::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+  if (emergency) { return FailurePreBraking::getInstance(); }
+
+  bool has_high_power_off = checkHighPowerOff(sensors_data_);
+  if (has_high_power_off) { return NominalBraking::getInstance(); }
   return nullptr;
 }
 
@@ -195,6 +216,23 @@ State *Finished::checkTransition(Logger &)
 
   bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
   if (received_shutdown_command) { return Off::getInstance(); }
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  Failure Pre-Braking
+//--------------------------------------------------------------------------------------
+
+FailurePreBraking FailurePreBraking::instance_;
+data::State FailurePreBraking::enum_value_       = data::State::kFailurePreBraking;
+char FailurePreBraking::string_representation_[] = "FailurePreBraking";
+
+State *FailurePreBraking::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool has_high_power_off = checkHighPowerOff(sensors_data_);
+  if (has_high_power_off) { return FailureBraking::getInstance(); }
   return nullptr;
 }
 

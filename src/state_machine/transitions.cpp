@@ -76,6 +76,17 @@ bool checkModulesReady(utils::Logger &log, const data::EmergencyBrakes &brakes_d
 }
 
 //--------------------------------------------------------------------------------------
+// Sensors Command
+//--------------------------------------------------------------------------------------
+
+bool checkHighPowerOff(const data::Sensors &sensors_data_struct)
+{
+  if (!sensors_data_struct.high_power_off) return false;
+
+  return true;
+}
+
+//--------------------------------------------------------------------------------------
 // Telemetry Commands
 //--------------------------------------------------------------------------------------
 

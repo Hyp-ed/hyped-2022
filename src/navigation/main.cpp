@@ -6,15 +6,14 @@ namespace hyped::navigation {
 
 Main::Main()
     : utils::concurrent::Thread(
-      utils::Logger("NAVIGATION", utils::System::getSystem().config_.log_level_navigation)),
-      sys_(utils::System::getSystem()),
-      nav_(sys_.config_.axis)
+      utils::Logger("NAVIGATION", utils::System::getSystem().config_.log_level_navigation))
 {
 }
 
 void Main::run()
 {
-  log_.info("Axis: %d", sys_.config_.axis);
+  auto &system = utils::System::getSystem();
+  log_.info("Axis: %d", system.config_.axis);
   log_.info("Navigation waiting for calibration");
 
   auto &data               = data::Data::getInstance();
@@ -26,7 +25,7 @@ void Main::run()
   data.setNavigationData(nav_data);
 
   // wait for calibration state for calibration
-  while (sys_.isRunning() && !navigation_complete) {
+  while (system.isRunning() && !navigation_complete) {
     auto current_state = data.getStateMachineData().current_state;
 
     switch (current_state) {

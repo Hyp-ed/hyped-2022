@@ -97,6 +97,9 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
       trajectory_.acceleration = config_.maximum_acceleration;
       break;
     case data::State::kCruising:
+      // We assume acceleration is off and brakes are not engaged in pre-braking states:
+    case data::State::kPreBraking:
+    case data::State::kFailurePreBraking:
       trajectory_.acceleration = -config_.cruising_deceleration;
       break;
     case data::State::kNominalBraking:

@@ -7,10 +7,51 @@ using utils::concurrent::ScopedLock;
 
 namespace data {
 
-const char *states[num_states] = {
-  "Idle", "PreCalibrating", "Calibrating",  "Ready",  "Accelerating", "Cruising", "PreBraking",
-  "NominalBraking", "FailurePreBraking",  "EmergencyBraking", "FailureStopped", "Finished", "Invalid",
+static const std::unordered_map<State, std::string> state_names = {
+  {State::kIdle, "Idle"},
+  {State::kPreCalibrating, "PreCalibrating"},
+  {State::kCalibrating, "Calibrating"},
+  {State::kReady, "Ready"},
+  {State::kAccelerating, "Accelerating"},
+  {State::kCruising, "Cruising"},
+  {State::kPreBraking, "PreBraking"},
+  {State::kNominalBraking, "NominalBraking"},
+  {State::kFailurePreBraking, "FailurePreBraking"},
+  {State::kEmergencyBraking, "EmergencyBraking"},
+  {State::kFailureStopped, "FailureStopped"},
+  {State::kFinished, "Finished"},
+  {State::kInvalid, "Invalid"},
 };
+
+static const std::unordered_map<std::string, State> states_by_name = {
+  {"Idle", State::kIdle},
+  {"PreCalibrating", State::kPreCalibrating},
+  {"Calibrating", State::kCalibrating},
+  {"Ready", State::kReady},
+  {"Accelerating", State::kAccelerating},
+  {"Cruising", State::kCruising},
+  {"PreBraking", State::kPreBraking},
+  {"NominalBraking", State::kNominalBraking},
+  {"FailurePreBraking", State::kFailurePreBraking},
+  {"EmergencyBraking", State::kEmergencyBraking},
+  {"FailureStopped", State::kFailureStopped},
+  {"Finished", State::kFinished},
+  {"Invalid", State::kInvalid},
+};
+
+std::optional<std::string> stateToString(const State state)
+{
+  const auto it = state_names.find(state);
+  if (it == state_names.end()) { return std::nullopt; }
+  return it->second;
+}
+
+std::optional<State> stateFromString(const std::string &state_name)
+{
+  const auto it = states_by_name.find(state_name);
+  if (it == states_by_name.end()) { return std::nullopt; }
+  return it->second;
+}
 
 Data &Data::getInstance()
 {
@@ -48,22 +89,22 @@ Sensors Data::getSensorsData()
   return sensors_;
 }
 
-DataPoint<array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
+DataPoint<std::array<ImuData, Sensors::kNumImus>> Data::getSensorsImuData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.imu;
 }
 
-DataPoint<array<EncoderData, Sensors::kNumEncoders>> Data::getSensorsEncoderData()
+std::array<CounterData, Sensors::kNumEncoders> Data::getSensorsWheelEncoderData()
 {
   ScopedLock L(&lock_sensors_);
-  return sensors_.encoder;
+  return sensors_.wheel_encoders;
 }
 
-array<StripeCounter, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
+std::array<CounterData, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
 {
   ScopedLock L(&lock_sensors_);
-  return sensors_.keyence_stripe_counter;
+  return sensors_.keyence_stripe_counters;
 }
 
 int Data::getTemperature()
@@ -84,24 +125,23 @@ void Data::setSensorsData(const Sensors &sensors_data)
   sensors_ = sensors_data;
 }
 
-void Data::setSensorsImuData(const DataPoint<array<ImuData, Sensors::kNumImus>> &imu)
+void Data::setSensorsImuData(const DataPoint<std::array<ImuData, Sensors::kNumImus>> &imu)
 {
   ScopedLock L(&lock_sensors_);
   sensors_.imu = imu;
 }
 
-void Data::setSensorsEncoderData(
-  const DataPoint<array<EncoderData, Sensors::kNumEncoders>> &encoder)  // NOLINT
+void Data::setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNumEncoders> &encoder)
 {
   ScopedLock L(&lock_sensors_);
-  sensors_.encoder = encoder;
+  sensors_.wheel_encoders = encoder;
 }
 
 void Data::setSensorsKeyenceData(
-  const array<StripeCounter, Sensors::kNumKeyence> &keyence_stripe_counter)  // NOLINT
+  const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter)
 {
   ScopedLock L(&lock_sensors_);
-  sensors_.keyence_stripe_counter = keyence_stripe_counter;
+  sensors_.keyence_stripe_counters = keyence_stripe_counter;
 }
 
 Batteries Data::getBatteriesData()

@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include <gtest/gtest.h>
+
 #include <utils/math/vector.hpp>
 
 namespace hyped {

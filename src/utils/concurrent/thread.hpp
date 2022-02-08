@@ -11,12 +11,8 @@ namespace concurrent {
 
 class Thread {
  public:
-  explicit Thread(uint8_t id, Logger &log);
-  // some constructors if you do not want to specify all the details
-  explicit Thread(uint8_t id);
-  explicit Thread(Logger &log);
-  Thread();
-  virtual ~Thread();
+  explicit Thread(Logger log);
+  virtual ~Thread() {}
 
   /**
    * @brief      Spawn new thread and call Run() method
@@ -40,11 +36,12 @@ class Thread {
   static void sleep(uint32_t ms);
 
  private:
+  inline static uint8_t next_id_;
   uint8_t id_;
   std::thread *thread_;
 
  protected:
-  Logger &log_;
+  Logger log_;
 };
 
 class BusyThread : public Thread {

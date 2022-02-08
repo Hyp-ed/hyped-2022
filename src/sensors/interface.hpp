@@ -1,20 +1,10 @@
 #pragma once
 
-#include <string>
-
 #include <data/data.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::BatteryData;
-using data::ImuData;
-using data::NavigationVector;
-using data::StripeCounter;
-using data::TemperatureData;
-
-namespace sensors {
-
-class SensorInterface {
+class ISensor {
  public:
   /**
    * @brief Check if sensor is responding, i.e. connected to the system
@@ -23,35 +13,55 @@ class SensorInterface {
   virtual bool isOnline() = 0;
 };
 
-class ImuInterface : public SensorInterface {
+class IImu : public ISensor {
  public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IImu() {}
+
   /**
    * @brief Get IMU data
    * @param imu - output pointer to be filled by this sensor
    */
-  virtual void getData(ImuData *imu) = 0;
+  virtual data::ImuData getData() = 0;
 };
 
-class GpioInterface : public SensorInterface {
+class ICounter : public ISensor {
  public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~ICounter() {}
+
   /**
    * @brief Get GPIO data
    * @param stripe_counter - output pointer
    */
-  virtual void getData(StripeCounter *stripe_counter) = 0;
+  virtual data::CounterData getData() = 0;
 };
 
-class BMSInterface : public SensorInterface {
+class IBms : public ISensor {
  public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IBms() {}
+
   /**
    * @brief Get Battery data
    * @param battery - output pointer to be filled by this sensor
    */
-  virtual void getData(BatteryData *battery) = 0;
+  virtual data::BatteryData getData() = 0;
 };
 
-class TemperatureInterface {
+class ITemperature {
  public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~ITemperature() {}
+
   /**
    * @brief not a thread, checks temperature
    */
@@ -63,5 +73,4 @@ class TemperatureInterface {
    */
   virtual int getData() = 0;
 };
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

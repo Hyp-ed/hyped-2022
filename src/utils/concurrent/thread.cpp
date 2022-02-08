@@ -4,42 +4,24 @@
 
 #include <utils/system.hpp>
 
-namespace hyped {
-namespace utils {
-namespace concurrent {
+namespace hyped::utils::concurrent {
 
 namespace {
 
-void thread_entry_point(Thread *this_)
+void threadEntryPoint(Thread *this_)
 {
   this_->run();
 }
 
 }  // namespace
 
-Thread::Thread(Logger &log) : id_(-1), thread_(0), log_(log)
-{ /* EMPTY */
-}
-
-Thread::Thread(uint8_t id) : id_(id), thread_(0), log_(System::getLogger())
-{ /* EMPTY */
-}
-
-Thread::Thread() : id_(-1), thread_(0), log_(System::getLogger())
-{ /* EMPTY */
-}
-
-Thread::Thread(uint8_t id, Logger &log) : id_(id), thread_(0), log_(log)
-{ /* EMPTY */
-}
-
-Thread::~Thread()
-{ /* EMPTY */
+Thread::Thread(utils::Logger log) : id_(next_id_++), thread_(0), log_(log)
+{
 }
 
 void Thread::start()
 {
-  thread_ = new std::thread(thread_entry_point, this);
+  thread_ = new std::thread(threadEntryPoint, this);
 }
 
 void Thread::join()
@@ -49,7 +31,7 @@ void Thread::join()
 
 void Thread::run()
 {
-  log_.INFO("THREAD", "You are starting EMPTY thread. Terminating now.");
+  log_.info("Empty thread started; terminating immediately");
 }
 
 void Thread::yield()
@@ -78,6 +60,4 @@ BusyThread::~BusyThread()
   running_ = false;
 }
 
-}  // namespace concurrent
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils::concurrent

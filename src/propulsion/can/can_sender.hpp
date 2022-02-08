@@ -12,13 +12,13 @@
 
 namespace hyped::propulsion {
 
-class CanSender : public utils::io::CanProccesor, public SenderInterface {
+class CanSender : public utils::io::CanProccesor, public ISender {
  public:
   /**
    * @brief Initialise the CanSender with the logger, the id and the controller as an attribute,
    * to access it's attributes
    */
-  CanSender(utils::Logger &log, const uint8_t node_id, ControllerInterface &controller);
+  CanSender(utils::Logger &log, const uint8_t node_id, IController &controller);
 
   /**
    * @brief Sends CAN messages
@@ -50,11 +50,12 @@ class CanSender : public utils::io::CanProccesor, public SenderInterface {
   uint8_t node_id_;
   utils::io::Can &can_;
   std::atomic<bool> is_sending_;
-  ControllerInterface &controller_;
+  IController &controller_;
 
   static constexpr uint32_t kEmgyTransmit = 0x80;
   static constexpr uint32_t kSdoTransmit  = 0x580;
   static constexpr uint32_t kNmtTransmit  = 0x700;
   static constexpr uint64_t kTimeout      = 70000;  // us
 };
+
 }  // namespace hyped::propulsion

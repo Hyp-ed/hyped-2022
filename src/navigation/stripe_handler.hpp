@@ -13,7 +13,7 @@ namespace navigation {
 
 class StripeHandler {
  public:
-  using KeyenceDataArray = std::array<data::StripeCounter, data::Sensors::kNumKeyence>;
+  using KeyenceDataArray = std::array<data::CounterData, data::Sensors::kNumKeyence>;
 
   /**
    * @brief Construct a new Stripe Counter object
@@ -36,7 +36,7 @@ class StripeHandler {
    * @param velocity Current velocity
    * @param real Whether or not the sensors are real
    */
-  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity, const bool real);
+  void queryKeyence(data::nav_t &displacement, data::nav_t &velocity);
   /**
    * @brief Checks if submodule should enter kCriticalFailure
    *

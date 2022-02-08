@@ -1,7 +1,8 @@
 #include <string>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <telemetry/writer.hpp>
 
 using namespace hyped::telemetry;

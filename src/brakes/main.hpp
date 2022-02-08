@@ -8,23 +8,22 @@
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::brakes {
 
-using data::ModuleStatus;
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
+struct Pins {
+  std::array<std::uint8_t, data::EmergencyBrakes::kNumBrakes> command_pins;
+  std::array<std::uint8_t, data::EmergencyBrakes::kNumBrakes> button_pins;
+};
 
-namespace brakes {
 /*
  * @description This module handles the interaction with the brakes.
  */
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
   /*
    * @brief Initialises essential variables
    */
-  Main(uint8_t id, Logger &log);
+  Main();
 
   /*
    * @brief Cleans up previous allocations
@@ -37,17 +36,15 @@ class Main : public Thread {
   void run() override;
 
  private:
-  Logger &log_;
-  data::Data &data_;
+  std::optional<Pins> pinsFromFile(const std::string &path);
+
   utils::System &sys_;
+  data::Data &data_;
   data::StateMachine sm_data_;
   data::EmergencyBrakes brakes_;
   data::Telemetry tlm_data_;
-  uint8_t command_pins_[2];    // GPIO pin numbers for sending commands to brakes
-  uint8_t button_pins_[2];     // GPIO pin numbers for retrieving brake status
-  StepperInterface *m_brake_;  // Stepper for electromagnetic brakes
-  StepperInterface *f_brake_;  // Stepper for friction brakes
+  IStepper *m_brake_;  // Stepper for electromagnetic brakes
+  IStepper *f_brake_;  // Stepper for friction brakes
 };
 
-}  // namespace brakes
-}  // namespace hyped
+}  // namespace hyped::brakes

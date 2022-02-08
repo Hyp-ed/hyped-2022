@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <telemetry/writer.hpp>
 
-namespace hyped {
+namespace hyped::testing {
 
 /**
  * Tests the conversion of Module Status from Enum to String as required for GUI

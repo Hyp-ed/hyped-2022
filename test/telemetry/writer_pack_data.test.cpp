@@ -2,23 +2,21 @@
 #include "gtest/gtest.h"
 #include "telemetry/writer.hpp"
 
-using namespace hyped::telemetry;
-using namespace hyped::data;
+namespace hyped {
 
 /**
  * Tests packing of data in CDS to json
  */
 struct WriterPackData : public ::testing::Test {
  protected:
+  data::Data &data = data::Data::getInstance();
   void SetUp() {}
   void TearDown() {}
 };
 
-Data &data_ = Data::getInstance();
-
 TEST_F(WriterPackData, packsId)
 {
-  Writer writer;
+  telemetry::Writer writer;
   writer.start();
   writer.packId(5);
   writer.end();
@@ -30,7 +28,7 @@ TEST_F(WriterPackData, packsId)
 
 TEST_F(WriterPackData, packsTelemetryData)
 {
-  Telemetry telemetry_data = data_.getTelemetryData();
+  data::Telemetry telemetry_data = data.getTelemetryData();
 
   telemetry_data.calibrate_command       = false;
   telemetry_data.emergency_stop_command  = false;
@@ -38,11 +36,11 @@ TEST_F(WriterPackData, packsTelemetryData)
   telemetry_data.nominal_braking_command = false;
   telemetry_data.service_propulsion_go   = false;
   telemetry_data.shutdown_command        = false;
-  telemetry_data.module_status           = ModuleStatus::kCriticalFailure;
+  telemetry_data.module_status           = data::ModuleStatus::kCriticalFailure;
 
-  data_.setTelemetryData(telemetry_data);
+  data.setTelemetryData(telemetry_data);
 
-  Writer writer;
+  telemetry::Writer writer;
   writer.start();
   writer.packTelemetryData();
   writer.end();
@@ -57,18 +55,18 @@ TEST_F(WriterPackData, packsTelemetryData)
 
 TEST_F(WriterPackData, packsNavigationData)
 {
-  Navigation navigation_data = data_.getNavigationData();
+  data::Navigation navigation_data = data.getNavigationData();
 
   navigation_data.acceleration               = 10.0;
   navigation_data.braking_distance           = 20.0;
   navigation_data.displacement               = 100.0;
   navigation_data.emergency_braking_distance = 50.0;
   navigation_data.velocity                   = 5.0;
-  navigation_data.module_status              = ModuleStatus::kReady;
+  navigation_data.module_status              = data::ModuleStatus::kReady;
 
-  data_.setNavigationData(navigation_data);
+  data.setNavigationData(navigation_data);
 
-  Writer writer;
+  telemetry::Writer writer;
   writer.start();
   writer.packNavigationData();
   writer.end();
@@ -82,14 +80,14 @@ TEST_F(WriterPackData, packsNavigationData)
 
 TEST_F(WriterPackData, packsSensorsData)
 {
-  Sensors sensors_data        = data_.getSensorsData();
-  Batteries batteries_data    = data_.getBatteriesData();
-  EmergencyBrakes brakes_data = data_.getEmergencyBrakesData();
+  data::Sensors sensors_data        = data.getSensorsData();
+  data::Batteries batteries_data    = data.getBatteriesData();
+  data::EmergencyBrakes brakes_data = data.getEmergencyBrakesData();
 
-  sensors_data.module_status   = ModuleStatus::kInit;
-  brakes_data.module_status    = ModuleStatus::kReady;
-  batteries_data.module_status = ModuleStatus::kStart;
-  data_.setTemperature(20);
+  sensors_data.module_status   = data::ModuleStatus::kInit;
+  brakes_data.module_status    = data::ModuleStatus::kReady;
+  batteries_data.module_status = data::ModuleStatus::kStart;
+  data.setTemperature(20);
   for (int16_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
     batteries_data.high_power_batteries[i].average_temperature = 8;
     batteries_data.high_power_batteries[i].charge              = 3;
@@ -113,11 +111,11 @@ TEST_F(WriterPackData, packsSensorsData)
     batteries_data.low_power_batteries[i].voltage             = 12;
   }
 
-  data_.setSensorsData(sensors_data);
-  data_.setEmergencyBrakesData(brakes_data);
-  data_.setBatteriesData(batteries_data);
+  data.setSensorsData(sensors_data);
+  data.setEmergencyBrakesData(brakes_data);
+  data.setBatteriesData(batteries_data);
 
-  Writer writer;
+  telemetry::Writer writer;
   writer.start();
   writer.packSensorsData();
   writer.end();
@@ -137,16 +135,16 @@ TEST_F(WriterPackData, packsSensorsData)
 
 TEST_F(WriterPackData, packsMotorData)
 {
-  Motors motors_data = data_.getMotorData();
+  data::Motors motors_data = data.getMotorData();
 
-  motors_data.module_status = ModuleStatus::kCriticalFailure;
+  motors_data.module_status = data::ModuleStatus::kCriticalFailure;
   for (int16_t i = 0; i < motors_data.kNumMotors; ++i) {
     motors_data.rpms[i] = 150;
   }
 
-  data_.setMotorData(motors_data);
+  data.setMotorData(motors_data);
 
-  Writer writer;
+  telemetry::Writer writer;
   writer.start();
   writer.packMotorData();
   writer.end();
@@ -159,14 +157,14 @@ TEST_F(WriterPackData, packsMotorData)
 
 TEST_F(WriterPackData, packsStateMachineData)
 {
-  StateMachine state_machine_data = data_.getStateMachineData();
+  data::StateMachine state_machine_data = data.getStateMachineData();
 
   state_machine_data.critical_failure = false;
-  state_machine_data.current_state    = kAccelerating;
+  state_machine_data.current_state    = data::kAccelerating;
 
-  data_.setStateMachineData(state_machine_data);
+  data.setStateMachineData(state_machine_data);
 
-  Writer writer;
+  telemetry::Writer writer;
   writer.start();
   writer.packStateMachineData();
   writer.end();
@@ -176,3 +174,5 @@ TEST_F(WriterPackData, packsStateMachineData)
   ASSERT_EQ(actual_json, expected_json) << "State machine json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "State machine json invalid.";
 }
+
+}  // namespace hyped

@@ -4,7 +4,7 @@
 
 namespace hyped::propulsion {
 
-CanSender::CanSender(utils::Logger &log, const uint8_t node_id, ControllerInterface &controller)
+CanSender::CanSender(utils::Logger &log, const uint8_t node_id, IController &controller)
     : log_(log),
       node_id_(node_id),
       can_(utils::io::Can::getInstance()),
@@ -16,14 +16,14 @@ CanSender::CanSender(utils::Logger &log, const uint8_t node_id, ControllerInterf
 
 bool CanSender::sendMessage(utils::io::can::Frame &message)
 {
-  log_.INFO("MOTOR", "Sending Message");
+  log_.info("Sending Message");
   can_.send(message);
   is_sending_    = true;
   const auto now = utils::Timer::getTimeMicros();
   while (is_sending_) {
     if ((utils::Timer::getTimeMicros() - now) > kTimeout) {
       // TODO(Iain): Test the latency and set the TIMEOUT to a reasonable value.
-      log_.ERR("MOTOR", "Sender timeout reached");
+      log_.error("Sender timeout reached");
       return false;
     }
   }
@@ -46,7 +46,7 @@ void CanSender::processNewData(utils::io::can::Frame &message)
   } else if (id == kNmtTransmit + node_id_) {
     controller_.processNmtMessage(message);
   } else {
-    log_.ERR("MOTOR", "Controller %d: CAN message not recognised", node_id_);
+    log_.error("Controller %d: CAN message not recognised", node_id_);
   }
 }
 

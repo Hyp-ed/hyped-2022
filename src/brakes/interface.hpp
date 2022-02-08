@@ -4,7 +4,7 @@ namespace hyped {
 
 namespace brakes {
 
-class StepperInterface {
+class IStepper {
  public:
   virtual void checkHome()           = 0;
   virtual void sendRetract()         = 0;
@@ -14,7 +14,7 @@ class StepperInterface {
   virtual bool checkClamped()        = 0;
 
   // Explicit virtual deconstructor needs to be declared *and* defined
-  virtual ~StepperInterface() {}
+  virtual ~IStepper() {}
 };
 
 }  // namespace brakes

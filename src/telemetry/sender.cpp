@@ -3,21 +3,23 @@
 
 #include <string>
 
-#include "data/data.hpp"
+#include <data/data.hpp>
+#include <utils/system.hpp>
 
 namespace hyped::telemetry {
 
-Sender::Sender(utils::Logger &log, data::Data &data, Client &client)
-    : utils::concurrent::Thread{log},
-      client_{client},
-      data_{data}
+Sender::Sender(data::Data &data, Client &client)
+    : utils::concurrent::Thread(
+      utils::Logger("SENDER", utils::System::getSystem().config_.log_level_telemetry)),
+      data_(data),
+      client_(client)
 {
-  log_.DBG("Telemetry", "Telemetry Sender thread object created");
+  log_.debug("Telemetry Sender thread object created");
 }
 
 void Sender::run()
 {
-  log_.DBG("Telemetry", "Telemetry Sender thread started");
+  log_.debug("Telemetry Sender thread started");
 
   uint32_t num_packages_sent = 0;
 
@@ -35,8 +37,6 @@ void Sender::run()
     writer.end();
 
     if (!client_.sendData(writer.getString())) {
-      data::Telemetry telemetry_data = data_.getTelemetryData();
-      log_.ERR("Telemetry", "Error sending message");
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
       break;
@@ -45,7 +45,7 @@ void Sender::run()
     utils::concurrent::Thread::sleep(100);
   }
 
-  log_.DBG("Telemetry", "Exiting Telemetry Sender thread");
+  log_.debug("Exiting Telemetry Sender thread");
 }
 
 }  // namespace hyped::telemetry

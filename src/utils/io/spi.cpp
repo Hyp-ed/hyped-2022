@@ -100,7 +100,7 @@ SPI::SPI(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
   spi_fd_             = open(device, O_RDWR, 0);
 
   if (spi_fd_ < 0) {
-    log_.ERR("SPI", "Could not open spi device");
+    log_.error("Could not open spi device");
     return;
   }
 
@@ -109,24 +109,22 @@ SPI::SPI(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
 
   uint8_t bits = SPI_BITS;  // need to change this value
   if (ioctl(spi_fd_, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
-    log_.ERR("SPI", "could not set bits per word");
+    log_.error("could not set bits per word");
   }
 
   // set clock mode and CS active low
   uint8_t mode = (SPI_MODE & 0x3) & ~SPI_CS_HIGH;
-  if (ioctl(spi_fd_, SPI_IOC_WR_MODE, &mode) < 0) { log_.ERR("SPI", "could not set mode"); }
+  if (ioctl(spi_fd_, SPI_IOC_WR_MODE, &mode) < 0) { log_.error("could not set mode"); }
 
   // set bit order
   uint8_t order = SPI_MSBFIRST;
-  if (ioctl(spi_fd_, SPI_IOC_WR_LSB_FIRST, &order) < 0) {
-    log_.ERR("SPI", "could not set bit order");
-  }
+  if (ioctl(spi_fd_, SPI_IOC_WR_LSB_FIRST, &order) < 0) { log_.error("could not set bit order"); }
 
   bool check_init = initialise();
   if (check_init) {
-    log_.INFO("SPI", "spi instance created");
+    log_.info("spi instance created");
   } else {
-    log_.ERR("SPI", "spi instansiation failed");
+    log_.error("spi instansiation failed");
   }
 }
 
@@ -137,21 +135,21 @@ bool SPI::initialise()
 
   fd = open("/dev/mem", O_RDWR);
   if (fd < 0) {
-    log_.ERR("SPI", "could not open /dev/mem");
+    log_.error("could not open /dev/mem");
     return false;
   }
 
   base = mmap(0, kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, kSPIAddrBase);
   if (base == MAP_FAILED) {
-    log_.ERR("SPI", "could not map bank 0x%x", kSPIAddrBase);
+    log_.error("could not map bank 0x%x", kSPIAddrBase);
     return false;
   }
 
   hw_ = reinterpret_cast<SPI_HW *>(base);
   ch_ = &hw_->ch0;
 
-  log_.INFO("SPI", "Mapping successfully created %d", sizeof(SPI_HW));
-  log_.INFO("SPI", "revision 0x%x", hw_->revision);
+  log_.info("Mapping successfully created %d", sizeof(SPI_HW));
+  log_.info("revision 0x%x", hw_->revision);
   return true;
 }
 
@@ -174,7 +172,7 @@ void SPI::setClock(Clock clk)
   }
 
   if (ioctl(spi_fd_, SPI_IOC_WR_MAX_SPEED_HZ, &data) < 0) {
-    log_.ERR("SPI", "could not set clock frequency of %d", data);
+    log_.error("could not set clock frequency of %d", data);
   }
 }
 
@@ -189,7 +187,7 @@ void SPI::transfer(uint8_t *tx, uint8_t *rx, uint16_t len)
   message.len    = len;
 
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(1), &message) < 0) {
-    log_.ERR("SPI", "could not submit TRANSFER message");
+    log_.error("could not submit TRANSFER message");
   }
 }
 #else
@@ -200,19 +198,19 @@ void SPI::transfer(uint8_t *tx, uint8_t *, uint16_t len)
   for (uint16_t x = 0; x < len; x++) {
     // log_.INFO("SPI_TEST","channel 0 status before: %d", 10);
     // while(!(ch0->status & 0x2));
-    log_.INFO("SPI_TEST", "Status register: %x", ch_->stat);
+    log_.info("Status register: %x", ch_->stat);
     ch_->ctrl = ch_->ctrl | 0x1;
     ch_->conf = ch_->conf & 0xfffcffff;
     ch_->tx   = tx[x];
-    log_.INFO("SPI_TEST", "Status register: %x", ch_->stat);
-    log_.INFO("SPI_TEST", "Config register: %x", ch_->conf);
-    log_.INFO("SPI_TEST", "Control register: %x", ch_->ctrl);
+    log_.info("Status register: %x", ch_->stat);
+    log_.info("Config register: %x", ch_->conf);
+    log_.info("Control register: %x", ch_->ctrl);
 
     while (!(ch_->stat & 0x1)) {
       utils::concurrent::Thread::sleep(1000);
-      log_.INFO("SPI_TEST", "Status register: %d", ch_->stat);
+      log_.info("Status register: %d", ch_->stat);
     }
-    log_.INFO("SPI_TEST", "Status register: %d", ch_->stat);
+    log_.info("Status register: %d", ch_->stat);
     // log_.INFO("SPI_TEST","Read buffer: %d", ch0->rx_buf);
     // log_.INFO("SPI_TEST","channel 0 status after: %d", 10);
     // write_buffer++;
@@ -238,7 +236,7 @@ void SPI::read(uint8_t addr, uint8_t *rx, uint16_t len)
   message[1].len    = len;
 
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(2), message) < 0) {
-    log_.ERR("SPI", "could not submit 2 TRANSFER messages");
+    log_.error("could not submit 2 TRANSFER messages");
   }
 }
 
@@ -258,7 +256,7 @@ void SPI::write(uint8_t addr, uint8_t *tx, uint16_t len)
   message[1].len    = len;
 
   if (ioctl(spi_fd_, SPI_IOC_MESSAGE(2), message) < 0) {
-    log_.ERR("SPI", "could not submit 2 TRANSFER messages");
+    log_.error("could not submit 2 TRANSFER messages");
   }
 }
 

@@ -5,22 +5,15 @@
 #include <cstdint>
 
 #include <data/data.hpp>
+#include <state_machine/state.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::state_machine {
 
-using data::ModuleStatus;
-using utils::Logger;
-using utils::concurrent::Thread;
-
-namespace state_machine {
-
-class State;  // Forward declaration
-
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
-  explicit Main(uint8_t id, Logger &log);
+  Main();
 
   /**
    *  @brief  Runs state machine thread.
@@ -33,5 +26,4 @@ class Main : public Thread {
   State *current_state_;
 };
 
-}  // namespace state_machine
-}  // namespace hyped
+}  // namespace hyped::state_machine

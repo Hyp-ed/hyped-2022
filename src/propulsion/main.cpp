@@ -2,11 +2,11 @@
 
 namespace hyped::propulsion {
 
-Main::Main(const uint8_t id, utils::Logger &log)
-    : Thread(id, log),
+Main::Main()
+    : utils::concurrent::Thread(
+      utils::Logger("PROPULSION", utils::System::getSystem().config_.log_level_propulsion)),
       is_running_(true),
-      log_(log),
-      state_processor_(log)
+      state_processor_(log_)
 {
 }
 
@@ -15,7 +15,7 @@ bool Main::handleTransition()
   if (current_state_ == previous_state_) return false;
   previous_state_ = current_state_;
 
-  log_.INFO("Motor", "Entered %s state", data::states[current_state_]);
+  log_.info("Entered %s state", data::stateToString(current_state_)->c_str());
   return true;
 }
 
@@ -28,9 +28,9 @@ void Main::handleCriticalFailure(data::Data &data, data::Motors &motor_data)
 
 void Main::run()
 {
-  const auto &system = utils::System::getSystem();
-  auto &data         = data::Data::getInstance();
-  auto motor_data    = data.getMotorData();
+  auto &system    = utils::System::getSystem();
+  auto &data      = data::Data::getInstance();
+  auto motor_data = data.getMotorData();
 
   // Initialise states
   current_state_  = data.getStateMachineData().current_state;
@@ -39,9 +39,9 @@ void Main::run()
   // kInit for state machine transition
   motor_data.module_status = data::ModuleStatus::kInit;
   data.setMotorData(motor_data);
-  log_.INFO("Motor", "Initialisation complete");
+  log_.info("Initialisation complete");
 
-  while (is_running_ && system.running_) {
+  while (is_running_ && system.isRunning()) {
     // Get the current state of the system from the state machine's data
     data::Motors motor_data     = data.getMotorData();
     data::State current_state_  = data.getStateMachineData().current_state;
@@ -85,6 +85,6 @@ void Main::run()
     }
   }
 
-  log_.INFO("Motor", "Thread shutting down");
+  log_.info("Thread shutting down");
 }
 }  // namespace hyped::propulsion

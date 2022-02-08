@@ -5,31 +5,32 @@
 #include "interface.hpp"
 
 #include <cstdint>
+#include <memory>
+#include <string>
 
 #include <utils/system.hpp>
 
-namespace hyped {
-
-namespace sensors {
+namespace hyped::sensors {
 
 /**
  * @brief Initialise sensors, data instances to be pulled in managers
  *        gpio threads and adc checks declared in main
  */
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
-  Main(uint8_t id, utils::Logger &log);
+  using KeyencePins = std::array<uint32_t, data::Sensors::kNumKeyence>;
+  using ImuPins     = std::array<uint32_t, data::Sensors::kNumImus>;
+
+  Main();
   void run() override;  // from thread
 
- private:
-  /**
-   * @brief as long as at least one keyence value is updated
-   *
-   * @return true
-   * @return false
-   */
-  bool keyencesUpdated();
+  static std::optional<KeyencePins> keyencePinsFromFile(utils::Logger &log,
+                                                        const std::string &path);
+  static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
+  static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
+                                                        const std::string &path);
 
+ private:
   /**
    * @brief checks range of pod temperature
    *
@@ -44,33 +45,19 @@ class Main : public Thread {
    */
   void checkTemperature();
 
-  data::Data &data_;
   utils::System &sys_;
-  utils::Logger &log_;
+  data::Data &data_;
 
   // master data structures
   data::Sensors sensors_;
   data::Batteries batteries_;
-  data::StripeCounter stripe_counter_;
+  data::CounterData stripe_counter_;
 
-  uint8_t pins_[data::Sensors::kNumKeyence];
-  GpioInterface *keyences_[data::Sensors::kNumKeyence];  // 0 L and 1 R
-  ImuManager *imu_manager_;
-  BmsManager *battery_manager_;
-  TemperatureInterface *temperature_;
+  std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
+  std::unique_ptr<ImuManager> imu_manager_;
+  std::unique_ptr<BmsManager> battery_manager_;
+  std::unique_ptr<ITemperature> temperature_;
   bool log_error_ = false;
-
-  /**
-   * @brief update this from GpioCounter::getStripeCounter();
-   */
-  array<data::StripeCounter, data::Sensors::kNumKeyence> keyence_stripe_counter_arr_;
-
-  /**
-   * @brief use this to compare with keyence_stripe_counter_arr_
-   *        update when keyenceUpdated() == true
-   */
-  array<data::StripeCounter, data::Sensors::kNumKeyence> prev_keyence_stripe_count_arr_;
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

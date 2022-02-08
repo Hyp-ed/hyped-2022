@@ -10,7 +10,7 @@ FakeCanSender::FakeCanSender(utils::Logger &log_, uint8_t)
 
 bool FakeCanSender::sendMessage(utils::io::can::Frame &)
 {
-  log_.INFO("MOTOR", "sending");
+  log_.info("sending");
   is_sending_ = true;
   can_endpoint_.start();
   while (is_sending_) {
@@ -25,7 +25,7 @@ void FakeCanSender::registerController()
 
 void FakeCanSender::processNewData(utils::io::can::Frame &)
 {
-  log_.INFO("MOTOR", "processNewData");
+  log_.info("processNewData");
   is_sending_ = false;
 }
 

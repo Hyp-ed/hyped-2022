@@ -5,49 +5,41 @@
 #include <utils/io/gpio.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::Data;
-using data::StripeCounter;
-using hyped::utils::Logger;
-using utils::io::GPIO;
-
-namespace sensors {
-
-GpioCounter::GpioCounter(utils::Logger &log, int pin)
-    : pin_(pin),
-      sys_(utils::System::getSystem()),
-      log_(log)
+GpioCounter::GpioCounter(const std::uint32_t pin)
+    : utils::concurrent::Thread(
+      utils::Logger("GPIO-COUNTER", utils::System::getSystem().config_.log_level_sensors)),
+      pin_(pin),
+      sys_(utils::System::getSystem())
 {
 }
 
 void GpioCounter::run()
 {
-  GPIO thepin(pin_, utils::io::gpio::kIn);          // exports pin
-  uint8_t val                     = thepin.wait();  // Ignore first reading
-  stripe_counter_.count.value     = 0;
-  stripe_counter_.count.timestamp = utils::Timer::getTimeMicros();
+  utils::io::GPIO thepin(pin_, utils::io::GPIO::Direction::kIn);  // exports pin
+  uint8_t val             = thepin.wait();                        // Ignore first reading
+  counter_data_.value     = 0;
+  counter_data_.timestamp = utils::Timer::getTimeMicros();
 
-  while (sys_.running_) {
+  while (sys_.isRunning()) {
     val = thepin.wait();
     if (val == 1) {
-      stripe_counter_.count.value = stripe_counter_.count.value + 1;
-      log_.DBG3("TEST-KEYENCE", "Stripe Count: %d", stripe_counter_.count.value);
-      stripe_counter_.count.timestamp = utils::Timer::getTimeMicros();
-      stripe_counter_.operational     = true;
+      counter_data_.value = counter_data_.value + 1;
+      log_.debug("Stripe Count: %d", counter_data_.value);
+      counter_data_.timestamp   = utils::Timer::getTimeMicros();
+      counter_data_.operational = true;
     }
   }
 }
 
-void GpioCounter::getData(StripeCounter *stripe_counter)
+data::CounterData GpioCounter::getData()
 {
-  stripe_counter->count       = stripe_counter_.count;
-  stripe_counter->operational = stripe_counter_.operational;
+  return counter_data_;
 }
 
 bool GpioCounter::isOnline()
 {
-  return stripe_counter_.operational;
+  return counter_data_.operational;
 }
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

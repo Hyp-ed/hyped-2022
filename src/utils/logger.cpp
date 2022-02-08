@@ -1,30 +1,29 @@
 #include "utils/logger.hpp"
 
 #include <stdarg.h>
-#include <stdio.h>
 
 #include <chrono>
 #include <ctime>
-#include <iomanip>
+#include <unordered_map>
 
-#include <utils/concurrent/lock.hpp>
+namespace hyped::utils {
 
-namespace hyped {
-namespace utils {
+std::optional<Logger::Level> Logger::levelFromInt(const int level)
+{
+  static const std::unordered_map<int, Level> kIntToLevel
+    = {{-1, Level::kNone}, {0, Level::kError}, {1, Level::kInfo}, {2, Level::kDebug}};
+  const auto it = kIntToLevel.find(level);
+  if (it == kIntToLevel.end()) { return std::nullopt; }
+  return it->second;
+}
 
-using concurrent::Lock;
-using concurrent::ScopedLock;
-
-namespace {
-Lock logger_lock;
-
-void myPrint(FILE *file, const char *format, va_list args)
+void Logger::print(FILE *file, const char *format, va_list args)
 {
   vfprintf(file, format, args);
   fprintf(file, "\n");
 }
 
-void logHead(FILE *file, const char *title, const char *module)
+void Logger::printHead(FILE *file, const char *title) const
 {
   using namespace std::chrono;
   std::time_t t = std::time(nullptr);
@@ -39,87 +38,59 @@ void logHead(FILE *file, const char *title, const char *module)
   } else {
     fprintf(file, " ");
   }
-  fprintf(file, "%s[%s]: ", title, module);
+  fprintf(file, "%s[%s]: ", title, module_);
 }
 
-}  // namespace
-
-Logger::Logger(bool verbose, int8_t debug) : verbose_(verbose), debug_(debug)
-{ /* EMPTY */
+Logger::Logger(const char *const module, const Level level) : module_(module), level_(level)
+{
 }
 
-void Logger::ERR(const char *module, const char *format, ...)
+Logger::Logger(const char *const module) : module_(module), level_(Level::kInfo)
+{
+}
+
+void Logger::setLevel(const Logger::Level level)
+{
+  level_ = level;
+}
+
+void Logger::error(const char *format, ...) const
+{
+  static FILE *file = stderr;
+  if (level_ == Level::kDebug || level_ == Level::kInfo || level_ == Level::kError) {
+    utils::concurrent::ScopedLock scoped_lock(&output_lock_);
+    printHead(file, "ERROR");
+    va_list args;
+    va_start(args, format);
+    print(file, format, args);
+    va_end(args);
+  }
+}
+
+void Logger::info(const char *format, ...) const
 {
   static FILE *file = stdout;
-  ScopedLock L(&logger_lock);
-  logHead(file, "ERR", module);
-  va_list args;
-  va_start(args, format);
-  myPrint(file, format, args);
-  va_end(args);
+  if (level_ == Level::kDebug || level_ == Level::kInfo) {
+    utils::concurrent::ScopedLock scoped_lock(&output_lock_);
+    printHead(file, "INFO");
+    va_list args;
+    va_start(args, format);
+    print(file, format, args);
+    va_end(args);
+  }
 }
 
-void Logger::INFO(const char *module, const char *format, ...)
+void Logger::debug(const char *format, ...) const
 {
   static FILE *file = stdout;
-  if (verbose_) {
-    ScopedLock L(&logger_lock);
-    logHead(file, "INFO", module);
+  if (level_ == Level::kDebug) {
+    utils::concurrent::ScopedLock scoped_lock(&output_lock_);
+    printHead(file, "DEBUG");
     va_list args;
     va_start(args, format);
-    myPrint(file, format, args);
+    print(file, format, args);
     va_end(args);
   }
 }
 
-void Logger::DBG(const char *module, const char *format, ...)
-{
-  static FILE *file = stderr;
-  if (debug_ >= 0) {
-    ScopedLock L(&logger_lock);
-    logHead(file, "DBG0", module);
-    va_list args;
-    va_start(args, format);
-    myPrint(file, format, args);
-    va_end(args);
-  }
-}
-
-void Logger::DBG1(const char *module, const char *format, ...)
-{
-  static FILE *file = stderr;
-  if (debug_ >= 1) {
-    ScopedLock L(&logger_lock);
-    logHead(file, "DBG1", module);
-    va_list args;
-    va_start(args, format);
-    myPrint(file, format, args);
-    va_end(args);
-  }
-}
-void Logger::DBG2(const char *module, const char *format, ...)
-{
-  static FILE *file = stderr;
-  if (debug_ >= 2) {
-    ScopedLock L(&logger_lock);
-    logHead(file, "DBG2", module);
-    va_list args;
-    va_start(args, format);
-    myPrint(file, format, args);
-    va_end(args);
-  }
-}
-void Logger::DBG3(const char *module, const char *format, ...)
-{
-  static FILE *file = stderr;
-  if (debug_ >= 3) {
-    ScopedLock L(&logger_lock);
-    logHead(file, "DBG3", module);
-    va_list args;
-    va_start(args, format);
-    myPrint(file, format, args);
-    va_end(args);
-  }
-}
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils

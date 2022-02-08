@@ -160,7 +160,7 @@ TEST_F(WriterPackData, packsStateMachineData)
   data::StateMachine state_machine_data = data.getStateMachineData();
 
   state_machine_data.critical_failure = false;
-  state_machine_data.current_state    = data::kAccelerating;
+  state_machine_data.current_state    = data::State::kAccelerating;
 
   data.setStateMachineData(state_machine_data);
 

@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "telemetry/writer.hpp"
 
-namespace hyped {
+namespace hyped::testing {
 
 /**
  * Tests packing of data in CDS to json
@@ -175,4 +175,4 @@ TEST_F(WriterPackData, packsStateMachineData)
   ASSERT_TRUE(writer.isValidJson()) << "State machine json invalid.";
 }
 
-}  // namespace hyped
+}  // namespace hyped::testing

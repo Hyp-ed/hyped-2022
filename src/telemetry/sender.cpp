@@ -36,6 +36,7 @@ void Sender::run()
     writer.packNavigationData();
     writer.end();
 
+    data::Telemetry telemetry_data = data_.getTelemetryData();
     if (!client_.sendData(writer.getString())) {
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);

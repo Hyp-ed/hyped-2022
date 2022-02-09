@@ -72,8 +72,8 @@ class StateTest : public hyped::testing::Test {
  * Testing Idle behaviour with respect to data
  */
 class IdleTest : public StateTest {
-  protected:
-    state_machine::Idle *state = state_machine::Idle::getInstance();
+ protected:
+  state_machine::Idle *state = state_machine::Idle::getInstance();
 };
 
 /**
@@ -133,8 +133,8 @@ TEST_F(IdleTest, handlesAllInitialised)
 //---------------------------------------------------------------------------
 
 class PreCalibratingTest : public StateTest {
-  protected:
-    state_machine::PreCalibrating *state = state_machine::PreCalibrating::getInstance();
+ protected:
+  state_machine::PreCalibrating *state = state_machine::PreCalibrating::getInstance();
 };
 
 /**
@@ -198,8 +198,8 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
  */
 
 class CalibratingTest : public StateTest {
-  protected:
-    state_machine::Calibrating *state = state_machine::Calibrating::getInstance();
+ protected:
+  state_machine::Calibrating *state = state_machine::Calibrating::getInstance();
 };
 
 /**
@@ -263,8 +263,8 @@ TEST_F(CalibratingTest, handlesAllReady)
  * Testing Ready behaviour with respect to data
  */
 class ReadyTest : public StateTest {
-  protected:
-    state_machine::Ready *state = state_machine::Ready::getInstance();
+ protected:
+  state_machine::Ready *state = state_machine::Ready::getInstance();
 };
 
 /**
@@ -330,8 +330,8 @@ TEST_F(ReadyTest, handlesLaunchCommand)
  * Testing Accelerating behaviour with respect to data
  */
 class AcceleratingTest : public StateTest {
-  protected:
-    state_machine::Accelerating *state = state_machine::Accelerating::getInstance();
+ protected:
+  state_machine::Accelerating *state = state_machine::Accelerating::getInstance();
 };
 
 /**
@@ -439,8 +439,8 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
  * Testing Cruising behaviour with respect to data
  */
 class CruisingTest : public StateTest {
-  protected:
-    state_machine::Cruising *state = state_machine::Cruising::getInstance();
+ protected:
+  state_machine::Cruising *state = state_machine::Cruising::getInstance();
 };
 
 /**
@@ -505,8 +505,8 @@ TEST_F(CruisingTest, handlesInBrakingZone)
  * Testing PreBraking behaviour with respect to data
  */
 class PreBrakingTest : public StateTest {
-  protected:
-    state_machine::PreBraking *state = state_machine::PreBraking::getInstance();
+ protected:
+  state_machine::PreBraking *state = state_machine::PreBraking::getInstance();
 };
 
 /**
@@ -571,8 +571,8 @@ TEST_F(PreBrakingTest, handlesHighPowerOff)
  * Testing NominalBraking behaviour with respect to data
  */
 class NominalBrakingTest : public StateTest {
-  protected:
-    state_machine::NominalBraking *state = state_machine::NominalBraking::getInstance();
+ protected:
+  state_machine::NominalBraking *state = state_machine::NominalBraking::getInstance();
 };
 
 /**
@@ -637,8 +637,8 @@ TEST_F(NominalBrakingTest, handlesStopped)
  * Testing Finished behaviour with respect to data
  */
 class FinishedTest : public StateTest {
-  protected:
-    state_machine::Finished *state = state_machine::Finished::getInstance();
+ protected:
+  state_machine::Finished *state = state_machine::Finished::getInstance();
 };
 
 /**
@@ -673,8 +673,8 @@ TEST_F(FinishedTest, handlesShutdownCommand)
  * Testing failure pre-braking behaviour with respect to data
  */
 class FailurePreBrakingTest : public StateTest {
-  protected:
-    state_machine::FailurePreBraking *state = state_machine::FailurePreBraking::getInstance();
+ protected:
+  state_machine::FailurePreBraking *state = state_machine::FailurePreBraking::getInstance();
 };
 
 /**
@@ -709,8 +709,8 @@ TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
  * Testing failure Braking behaviour with respect to data
  */
 class FailureBrakingTest : public StateTest {
-  protected:
-    state_machine::FailureBraking *state = state_machine::FailureBraking::getInstance();
+ protected:
+  state_machine::FailureBraking *state = state_machine::FailureBraking::getInstance();
 };
 
 /**
@@ -745,8 +745,8 @@ TEST_F(FailureBrakingTest, handlesStopped)
  * Testing FailureStopped behaviour with respect to data
  */
 class FailureStoppedTest : public StateTest {
-  protected:
-    state_machine::FailureStopped *state = state_machine::FailureStopped::getInstance();
+ protected:
+  state_machine::FailureStopped *state = state_machine::FailureStopped::getInstance();
 };
 
 /**

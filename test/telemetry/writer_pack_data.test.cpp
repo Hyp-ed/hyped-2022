@@ -7,7 +7,7 @@ namespace hyped::testing {
 /**
  * Tests packing of data in CDS to json
  */
-struct WriterPackData : public ::testing::Test {
+class WriterPackData : public ::testing::Test {
  protected:
   data::Data &data = data::Data::getInstance();
   void SetUp() {}

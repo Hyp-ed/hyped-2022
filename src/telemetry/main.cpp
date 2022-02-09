@@ -55,4 +55,4 @@ void Main::run()
   log_.DBG("Telemetry", "Exiting Telemetry Main thread");
 }
 
-}  // namespace telemetry
+}  // namespace hyped::telemetry

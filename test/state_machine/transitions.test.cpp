@@ -49,10 +49,6 @@ class TransitionFunctionality : public Test {
   // ---- Utility function ----
 
   int randomInRange(int, int);
-
-  void SetUp() { disableOutput(); }
-
-  void TearDown() { enableOutput(); }
 };
 
 int TransitionFunctionality::randomInRange(int min, int max)
@@ -92,9 +88,7 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, false) << "falsely detected emergency";
-    disableOutput();
   }
 }
 
@@ -125,9 +119,7 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect brake emergency";
-    disableOutput();
   }
 }
 
@@ -158,9 +150,7 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Navigation";
-    disableOutput();
   }
 }
 
@@ -191,9 +181,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Batteries";
-    disableOutput();
   }
 }
 
@@ -224,9 +212,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Telemetry";
-    disableOutput();
   }
 }
 
@@ -257,9 +243,7 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Sensors";
-    disableOutput();
   }
 }
 
@@ -290,9 +274,7 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in motors";
-    disableOutput();
   }
 }
 
@@ -323,9 +305,7 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
     telemetry_data.emergency_stop_command = true;
     const bool has_emergency              = state_machine::checkEmergency(
                    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    enableOutput();
     ASSERT_EQ(has_emergency, true) << "failed to register stop command";
-    disableOutput();
   }
 }
 
@@ -588,7 +568,6 @@ TEST_F(TransitionFunctionality, handlesAllReady)
   const auto all_ready         = state_machine::checkModulesReady(
             log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
   ASSERT_EQ(all_ready, true) << "failed to detect that all modules are ready";
-  disableOutput();
 }
 
 /**
@@ -618,7 +597,6 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
     const bool all_ready         = state_machine::checkModulesReady(
               log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Brakes not being ready";
-    disableOutput();
   }
 }
 
@@ -649,7 +627,6 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
     const bool all_ready         = state_machine::checkModulesReady(
               log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Navigation not being ready";
-    disableOutput();
   }
 }
 
@@ -769,7 +746,6 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
     const bool all_ready         = state_machine::checkModulesReady(
               log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Motors not being ready";
-    disableOutput();
   }
 }
 
@@ -792,7 +768,6 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
     telemetry_data.calibrate_command = static_cast<bool>(i & 1);
     telemetry_data.launch_command    = static_cast<bool>((i >> 1) & 1);
     telemetry_data.shutdown_command  = static_cast<bool>((i >> 2) & 1);
-    enableOutput();
     ASSERT_EQ(telemetry_data.calibrate_command,
               state_machine::checkCalibrateCommand(telemetry_data))
       << "failed to react based on calibrate command";
@@ -800,7 +775,6 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
       << "failed to react based on launch command";
     ASSERT_EQ(telemetry_data.shutdown_command, state_machine::checkShutdownCommand(telemetry_data))
       << "failed to react based on shutdown command";
-    disableOutput();
   }
 }
 
@@ -834,10 +808,8 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
     nav_data.velocity                   = static_cast<data::nav_t>(rand());
     nav_data.acceleration               = nav_data.velocity;
     nav_data.emergency_braking_distance = nav_data.velocity;
-    enableOutput();
     ASSERT_EQ(false, state_machine::checkEnteredBrakingZone(log_, nav_data))
       << "falsely detected braking zone";
-    disableOutput();
   }
 }
 
@@ -865,10 +837,8 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
     nav_data.velocity                   = static_cast<data::nav_t>(rand());
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<data::nav_t>(rand());
-    enableOutput();
     ASSERT_EQ(true, state_machine::checkEnteredBrakingZone(log_, nav_data))
       << "failed to detect braking zone";
-    disableOutput();
   }
 }
 
@@ -895,7 +865,6 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
     const data::nav_t critical_displacement
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.braking_distance;
 
-    enableOutput();
     for (int j = 0; j < kTestSize; j++) {
       nav_data.displacement = critical_displacement - 0.5 + kStepSize * static_cast<data::nav_t>(j);
       if (j < kTestSize / 2) {
@@ -906,7 +875,6 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
           << "failed to detect braking zone";
       }
     }
-    disableOutput();
   }
 }
 
@@ -935,7 +903,6 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
     critical_braking_distance
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.displacement;
 
-    enableOutput();
     for (int j = 0; j < kTestSize; j++) {
       nav_data.braking_distance
         = critical_braking_distance - 0.5 + kStepSize * static_cast<data::nav_t>(j);
@@ -947,7 +914,6 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
           << "failed to detect braking zone";
       }
     }
-    disableOutput();
   }
 }
 
@@ -971,10 +937,8 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
     nav_data.displacement               = static_cast<data::nav_t>(rand());
     nav_data.braking_distance           = static_cast<data::nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<data::nav_t>(rand());
-    enableOutput();
     ASSERT_EQ(false, state_machine::checkPodStopped(log_, nav_data))
       << "falsely detected pod has stopped";
-    disableOutput();
   }
 }
 
@@ -998,10 +962,8 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
     nav_data.displacement               = static_cast<data::nav_t>(rand());
     nav_data.braking_distance           = static_cast<data::nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<data::nav_t>(rand());
-    enableOutput();
     ASSERT_EQ(true, state_machine::checkPodStopped(log_, nav_data))
       << "failed to detect pod has stopped";
-    disableOutput();
   }
 }
 

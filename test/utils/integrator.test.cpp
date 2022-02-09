@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data_point.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data_point.hpp>
 #include <utils/math/integrator.hpp>
 
 namespace hyped {

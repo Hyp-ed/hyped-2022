@@ -8,18 +8,11 @@
 #include <utils/io/spi.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::NavigationVector;
-using hyped::utils::io::SPI;
-using utils::Logger;
-using utils::io::GPIO;
-
-namespace sensors {
-
-class Imu : public ImuInterface {
+class Imu : public IImu {
  public:
-  Imu(Logger &log, uint32_t pin, bool is_fifo);
+  Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo);
   ~Imu();
   /*
    *  @brief Returns if the sensor is online
@@ -30,7 +23,7 @@ class Imu : public ImuInterface {
   /*
    *  @brief Get the Imu data and update the pointer
    */
-  void getData(ImuData *data) override;
+  data::ImuData getData() override;
 
   /**
    * @brief calculates number of bytes in FIFO and reads number of full sets (6 bytes) into vector
@@ -39,7 +32,7 @@ class Imu : public ImuInterface {
    * @param data ImuData vector to read number of full sets into
    * @return 0 if empty
    */
-  int readFifo(ImuData *data);
+  int readFifo(data::ImuData &data);
 
  private:
   /*
@@ -73,7 +66,7 @@ class Imu : public ImuInterface {
    */
   bool whoAmI();
 
-  void selectBank(uint8_t switch_bank);
+  void selectBank(const uint8_t switch_bank);
 
   /**
    * @brief chipselects and and writes data (byte) to register address
@@ -81,7 +74,7 @@ class Imu : public ImuInterface {
    * @param write_reg write register address
    * @param write_data byte of data to write
    */
-  void writeByte(uint8_t write_reg, uint8_t write_data);
+  void writeByte(const uint8_t write_reg, const uint8_t write_data);
 
   /**
    * @brief uses chip select and reads necessary data
@@ -89,7 +82,7 @@ class Imu : public ImuInterface {
    * @param read_reg read register address
    * @param read_data pointer to data desired to read
    */
-  void readByte(uint8_t read_reg, uint8_t *read_data);
+  void readByte(const uint8_t read_reg, uint8_t *read_data);
 
   /**
    * @brief same as readByte but with desired length
@@ -98,12 +91,12 @@ class Imu : public ImuInterface {
    * @param read_buff
    * @param length number of bytes to read
    */
-  void readBytes(uint8_t read_reg, uint8_t *read_buff, uint8_t length);
+  void readBytes(const uint8_t read_reg, uint8_t *read_buff, const uint8_t length);
 
  private:
-  SPI &spi_;
-  Logger &log_;
-  GPIO gpio_;
+  utils::io::SPI &spi_;
+  utils::Logger &log_;
+  utils::io::GPIO gpio_;
   uint32_t pin_;
   bool is_fifo_;
   double acc_divider_;
@@ -113,5 +106,4 @@ class Imu : public ImuInterface {
   size_t kFrameSize_;  // initialised as 6 in enableFifo()
 };
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

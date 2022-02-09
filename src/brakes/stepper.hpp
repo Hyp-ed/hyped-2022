@@ -17,7 +17,7 @@ using utils::io::GPIO;
 
 namespace brakes {
 
-class Stepper : public StepperInterface {
+class Stepper : public IStepper {
  public:
   /**
    * @brief Construct a new Stepper object
@@ -26,7 +26,7 @@ class Stepper : public StepperInterface {
   Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id);
 
   /**
-   * @brief Deconstruct a Stepper object even if behind `StepperInterface *`
+   * @brief Deconstruct a Stepper object even if behind `IStepper *`
    */
   ~Stepper() {}
 

@@ -13,7 +13,7 @@ namespace hyped ::propulsion {
 
 class Main : public utils::concurrent::Thread {
  public:
-  Main(const uint8_t id, utils::Logger &log);
+  Main();
 
   /**
    * @brief {This function is the entrypoint to the propulsion module and reacts to the certain
@@ -23,7 +23,6 @@ class Main : public utils::concurrent::Thread {
 
  private:
   bool is_running_;
-  utils::Logger &log_;
   StateProcessor state_processor_;
   data::State current_state_;
   data::State previous_state_;

@@ -1,3 +1,0 @@
-> Telemetry
-IP      localhost
-Port    9090

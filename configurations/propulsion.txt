@@ -1,2 +1,0 @@
-> MotorControl
-isFaulty 0 

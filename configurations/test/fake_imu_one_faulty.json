@@ -1,0 +1,17 @@
+{
+  "fake_imu": [
+    {
+      "noise": 0.02
+    },
+    {
+      "noise": 0.001
+    },
+    {
+      "failure_in_state": "Cruising",
+      "noise": 0.01
+    },
+    {
+      "noise": 0.005
+    }
+  ]
+}

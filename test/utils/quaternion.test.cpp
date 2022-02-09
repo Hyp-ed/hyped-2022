@@ -3,8 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include <data/data_point.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data_point.hpp>
 #include <utils/math/quaternion.hpp>
 #include <utils/math/vector.hpp>
 #include <utils/system.hpp>

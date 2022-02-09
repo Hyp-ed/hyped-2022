@@ -9,12 +9,12 @@ namespace hyped::telemetry {
 
 class Receiver : public utils::concurrent::Thread {
  public:
-  explicit Receiver(utils::Logger &log, data::Data &data, Client &client);
+  explicit Receiver(data::Data &data, Client &client);
   void run() override;
 
  private:
-  Client &client_;
   data::Data &data_;
+  Client &client_;
 };
 
 }  // namespace hyped::telemetry

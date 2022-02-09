@@ -8,27 +8,19 @@
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
-
-namespace sensors {
-
-class GpioCounter : public GpioInterface, public Thread {  // interface.hpp
+class GpioCounter : public ICounter, public utils::concurrent::Thread {
  public:
-  GpioCounter(utils::Logger &log, int pin);
+  GpioCounter(std::uint32_t pin);
   ~GpioCounter() {}
-  void getData(StripeCounter *stripe_counter) override;
+  data::CounterData getData() override;
   bool isOnline() override;
   void run() override;
 
  private:
   int pin_;
-  System &sys_;
-  utils::Logger &log_;
-  data::StripeCounter stripe_counter_;
+  utils::System &sys_;
+  data::CounterData counter_data_;
 };
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

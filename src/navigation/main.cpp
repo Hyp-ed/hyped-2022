@@ -2,28 +2,22 @@
 
 #include <iostream>
 
-namespace hyped {
-namespace navigation {
+namespace hyped::navigation {
 
-Main::Main(uint8_t id, utils::Logger &log)
-    : utils::concurrent::Thread(id, log),
-      log_(log),
-      sys_(utils::System::getSystem()),
-      nav_(log, sys_.axis)
+Main::Main()
+    : utils::concurrent::Thread(
+      utils::Logger("NAVIGATION", utils::System::getSystem().config_.log_level_navigation))
 {
 }
 
 void Main::run()
 {
-  log_.INFO("NAV", "Axis: %d", sys_.axis);
-  log_.INFO("NAV", "Navigation waiting for calibration");
+  auto &system = utils::System::getSystem();
+  log_.info("Axis: %d", system.config_.axis);
+  log_.info("Navigation waiting for calibration");
 
-  data::Data &data         = data::Data::getInstance();
+  auto &data               = data::Data::getInstance();
   bool navigation_complete = false;
-
-  if (!sys_.official_run) nav_.disableKeyenceUsage();
-  if (sys_.fake_keyence) nav_.setKeyenceFake();
-  if (sys_.enable_nav_write) nav_.logWrite();
 
   // Setting module status for state machine transition
   data::Navigation nav_data = data.getNavigationData();
@@ -31,12 +25,13 @@ void Main::run()
   data.setNavigationData(nav_data);
 
   // wait for calibration state for calibration
-  while (sys_.running_ && !navigation_complete) {
-    data::State current_state = data.getStateMachineData().current_state;
+  while (system.isRunning() && !navigation_complete) {
+    auto current_state = data.getStateMachineData().current_state;
 
     switch (current_state) {
       case data::State::kIdle:
       case data::State::kReady:
+      case data::State::kPreCalibrating:
         break;
       case data::State::kCalibrating:
         if (nav_.getModuleStatus() == data::ModuleStatus::kInit) { nav_.calibrateGravity(); }
@@ -61,5 +56,4 @@ void Main::run()
     }
   }
 }
-}  // namespace navigation
-}  // namespace hyped
+}  // namespace hyped::navigation

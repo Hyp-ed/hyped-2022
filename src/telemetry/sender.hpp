@@ -4,15 +4,16 @@
 
 #include <string>
 
-#include <data/data.hpp>
 #include <rapidjson/writer.h>
+
+#include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 
 namespace hyped::telemetry {
 
 class Sender : public utils::concurrent::Thread {
  public:
-  explicit Sender(utils::Logger &log, data::Data &data, Client &client);
+  explicit Sender(data::Data &data, Client &client);
   void run() override;
 
  private:

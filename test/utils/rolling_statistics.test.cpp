@@ -6,6 +6,7 @@
 #include <string>
 
 #include <gtest/gtest.h>
+
 #include <utils/math/statistics.hpp>
 
 namespace hyped {

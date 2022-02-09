@@ -26,14 +26,14 @@ void FakeStepper::checkHome()
 
 void FakeStepper::sendRetract()
 {
-  log_.INFO("Fake Stepper", "Sending a retract message to brake %i", brake_id_);
+  log_.info("Sending a retract message to brake %i", brake_id_);
   fake_button_ = true;  // false = brakes are retracted
   is_clamped_  = false;
 }
 
 void FakeStepper::sendClamp()
 {
-  log_.INFO("Fake Stepper", "Sending a engage message to brake %i", brake_id_);
+  log_.info("Sending a engage message to brake %i", brake_id_);
   fake_button_ = false;  // false = brakes are clamped
   is_clamped_  = true;
 }
@@ -41,7 +41,7 @@ void FakeStepper::sendClamp()
 void FakeStepper::checkAccFailure()
 {
   if (!fake_button_) {  // false = brakes are clamped
-    log_.ERR("Brakes", "Brake %b failure", brake_id_);
+    log_.error("Brake %b failure", brake_id_);
     brakes_data_.module_status = ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(brakes_data_);
   }
@@ -51,7 +51,7 @@ void FakeStepper::checkAccFailure()
 void FakeStepper::checkBrakingFailure()
 {
   if (fake_button_) {  // true = brakes are retracted
-    log_.ERR("Brakes", "Brake %b failure", brake_id_);
+    log_.error("Brake %b failure", brake_id_);
     brakes_data_.module_status = ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(brakes_data_);
   }

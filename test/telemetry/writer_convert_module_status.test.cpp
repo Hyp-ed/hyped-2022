@@ -9,7 +9,7 @@ namespace hyped::testing {
 /**
  * Tests the conversion of Module Status from Enum to String as required for GUI
  */
-struct WriterConvertModuleStatus : public ::testing::Test {
+class WriterConvertModuleStatus : public ::testing::Test {
  protected:
   void SetUp() {}
   void TearDown() {}

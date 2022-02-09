@@ -9,7 +9,7 @@ namespace hyped::testing {
 /**
  * Tests the conversion of State from Enum to String as required for GUI
  */
-struct WriterConvertStateMachineState : public ::testing::Test {
+class WriterConvertStateMachineState : public ::testing::Test {
  protected:
   void SetUp() {}
   void TearDown() {}

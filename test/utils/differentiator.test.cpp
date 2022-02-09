@@ -15,11 +15,11 @@ using hyped::utils::math::Differentiator;
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used for test fixtures testing functionality.
+ * Class used for test fixtures testing functionality.
  * Constructor sets the values of the DataPoint objects.
  * Helper functions defined to assist in testing
  */
-struct DifferentiatorFunctionality : public ::testing::Test {
+class DifferentiatorFunctionality : public ::testing::Test {
  protected:
   Differentiator<float> diff_test;
   DataPoint<float> test_point;
@@ -123,11 +123,11 @@ TEST_F(DifferentiatorFunctionality, derivativeOfSameValue)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used in Testing the Differentiator special cases for linear and constants.
+ * Class used in Testing the Differentiator special cases for linear and constants.
  * Constructor populates an array of DataPoints with sample data for each of the functions.
  * These arrays are then accessed in the Test's for Test data.
  */
-struct SpecialCases : public ::testing::Test {
+class SpecialCases : public ::testing::Test {
  protected:
   Differentiator<float> diff_linear;
   DataPoint<float> linear_data[100];
@@ -179,11 +179,11 @@ TEST_F(SpecialCases, differentiatorConstantCase)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used for checking the Sum of Derivatives property
+ * Class used for checking the Sum of Derivatives property
  * Creates an Array of DataPoints for the linear, quadratic, and function data.
  * These arrays are later accessed in the tests for Test Data.
  */
-struct DifferentiatorProperty : public ::testing::Test {
+class DifferentiatorProperty : public ::testing::Test {
  protected:
   Differentiator<float> diff_linear;
   Differentiator<float> diff_quadratic;

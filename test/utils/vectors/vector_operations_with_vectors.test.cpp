@@ -41,12 +41,13 @@ std::array<int, 3> RandomNonZeroArrayForOperations()
 }
 
 /**
- * @brief Struct used to set up all the variables (vectors) used in the tests for basic operations
+ * @brief Class used to set up all the variables (vectors) used in the tests for basic operations
  * of vector with other vectors.
  * This tests will check if that basic operations are performed the way that they should. However,
  * they do not test properties.
  */
-struct OperationsTest : public ::testing::Test {
+class OperationsTest : public ::testing::Test {
+ protected:
   const int dimension = 3;
   std::array<int, 3> array_one;
   std::array<int, 3> array_two;
@@ -230,9 +231,10 @@ TEST_F(OperationsTest, allowsToUnitVector)
 }
 
 /**
- * @brief Struct used to set up all the variables used in the test the equality operation of vectors
+ * @brief Class used to set up all the variables used in the test the equality operation of vectors
  */
-struct EqualityOperation : public ::testing::Test {
+class EqualityOperation : public ::testing::Test {
+ protected:
   const int dimension = 3;
   std::array<int, 3> values;
   Vector<int, 3> vector_one;

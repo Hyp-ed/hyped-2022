@@ -11,7 +11,8 @@
 #include <utils/config.hpp>
 #include <utils/system.hpp>
 
-struct utils_config : public ::testing::Test {
+class utils_config : public ::testing::Test {
+ protected:
   hyped::utils::Config *config;
 
   void SetUp()

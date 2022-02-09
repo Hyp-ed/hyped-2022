@@ -80,10 +80,10 @@ double CalculateVectorMagnitude(std::array<float, 100> vector_T)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief Struct used for test fixtures checking class functionality and properties for float
+ * @brief Class used for test fixtures checking class functionality and properties for float
  * values.
  */
-struct VectorFloatTests : public ::testing::Test {
+class VectorFloatTests : public ::testing::Test {
  protected:
   Vector<float, 100> test_vector1_float;
   Vector<float, 100> test_vector2_float;

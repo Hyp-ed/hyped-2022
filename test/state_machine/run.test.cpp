@@ -681,7 +681,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     const bool has_stopped        = checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = checkHighPowerOff(sensors_data_);
 
@@ -784,7 +784,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     const bool has_stopped        = checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = checkHighPowerOff(sensors_data_);
 
@@ -830,7 +830,7 @@ class RunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency      = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+                                                   telemetry_data_, sensors_data_, motors_data_);
     const bool has_stopped        = checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = checkHighPowerOff(sensors_data_);
 

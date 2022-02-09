@@ -40,12 +40,13 @@ std::array<int, 3> RandomNonZeroArrayForProperties()
 }
 
 /**
- * @brief Struct used to set up all the variables used in the tests one property present in some
+ * @brief Class used to set up all the variables used in the tests one property present in some
  * of the operations defined for vectors
  * Associativity.
  * This tests will check if Associativity holds in multiplication and addition.
  */
-struct VectorAssociativity : public ::testing::Test {
+class VectorAssociativity : public ::testing::Test {
+ protected:
   const int dimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
@@ -125,13 +126,14 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
 }
 
 /**
- * @brief Struct used to set up all the variables used in the tests for checking if
+ * @brief Class used to set up all the variables used in the tests for checking if
  * one property is resent in some of the operations defined for vectors
  * Commutativity.
  * This tests will check if Commutativity holds in multiplication and addition.
  * Also checks that substraction is anticommutative.
  */
-struct VectorCommutativity : public ::testing::Test {
+class VectorCommutativity : public ::testing::Test {
+ protected:
   const int dimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
@@ -232,11 +234,12 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
 }
 
 /**
- * @brief Struct used to set up all the variables used in the tests for checking if
+ * @brief Class used to set up all the variables used in the tests for checking if
  * some porperties with the identity vectors (0,0,0) or (1,1,1) hold for the operations defined for
  * vectors
  */
-struct VectorIdentityOperations : public ::testing::Test {
+class VectorIdentityOperations : public ::testing::Test {
+ protected:
   std::array<int, 3> values;
   const int dimension = 3;
   Vector<int, 3> identity_vector;

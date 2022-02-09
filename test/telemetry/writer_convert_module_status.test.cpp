@@ -43,4 +43,4 @@ TEST_F(WriterConvertModuleStatus, convertsCriticalFailureState)
   ASSERT_EQ(convertedModuleStatus, "CRITICAL_FAILURE") << "Should convert Critical Failure status.";
 }
 
-}  // namespace hyped
+}  // namespace hyped::testing

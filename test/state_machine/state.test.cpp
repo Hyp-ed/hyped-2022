@@ -74,7 +74,8 @@ class StateTest : public hyped::testing::Test {
 /**
  * Testing Idle behaviour with respect to data
  */
-struct IdleTest : public StateTest {
+class IdleTest : public StateTest {
+ protected:
   Idle *state = Idle::getInstance();
 };
 
@@ -138,7 +139,8 @@ TEST_F(IdleTest, handlesAllInitialised)
 // Pre- Calibrating Tests
 //---------------------------------------------------------------------------
 
-struct PreCalibratingTest : public StateTest {
+class PreCalibratingTest : public StateTest {
+ protected:
   PreCalibrating *state = PreCalibrating::getInstance();
 };
 
@@ -206,7 +208,8 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
  * Testing Calibrating behaviour with respect to data
  */
 
-struct CalibratingTest : public StateTest {
+class CalibratingTest : public StateTest {
+ protected:
   Calibrating *state = Calibrating::getInstance();
 };
 
@@ -271,7 +274,8 @@ TEST_F(CalibratingTest, handlesAllReady)
 /**
  * Testing Ready behaviour with respect to data
  */
-struct ReadyTest : public StateTest {
+class ReadyTest : public StateTest {
+ protected:
   Ready *state = Ready::getInstance();
 };
 
@@ -341,7 +345,8 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 /**
  * Testing Accelerating behaviour with respect to data
  */
-struct AcceleratingTest : public StateTest {
+class AcceleratingTest : public StateTest {
+ protected:
   Accelerating *state = Accelerating::getInstance();
 };
 
@@ -457,7 +462,8 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
 /**
  * Testing Cruising behaviour with respect to data
  */
-struct CruisingTest : public StateTest {
+class CruisingTest : public StateTest {
+ protected:
   Cruising *state = Cruising::getInstance();
 };
 
@@ -526,7 +532,8 @@ TEST_F(CruisingTest, handlesInBrakingZone)
 /**
  * Testing PreBraking behaviour with respect to data
  */
-struct PreBrakingTest : public StateTest {
+class PreBrakingTest : public StateTest {
+ protected:
   PreBraking *state = PreBraking::getInstance();
 };
 
@@ -595,7 +602,8 @@ TEST_F(PreBrakingTest, handlesHighPowerOff)
 /**
  * Testing NominalBraking behaviour with respect to data
  */
-struct NominalBrakingTest : public StateTest {
+class NominalBrakingTest : public StateTest {
+ protected:
   NominalBraking *state = NominalBraking::getInstance();
 };
 
@@ -664,7 +672,8 @@ TEST_F(NominalBrakingTest, handlesStopped)
 /**
  * Testing Finished behaviour with respect to data
  */
-struct FinishedTest : public StateTest {
+class FinishedTest : public StateTest {
+ protected:
   Finished *state = Finished::getInstance();
 };
 
@@ -699,7 +708,8 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 /**
  * Testing failure pre-braking behaviour with respect to data
  */
-struct FailurePreBrakingTest : public StateTest {
+class FailurePreBrakingTest : public StateTest {
+ protected:
   FailurePreBraking *state = FailurePreBraking::getInstance();
 };
 
@@ -736,7 +746,8 @@ TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
 /**
  * Testing failure Braking behaviour with respect to data
  */
-struct FailureBrakingTest : public StateTest {
+class FailureBrakingTest : public StateTest {
+ protected:
   FailureBraking *state = FailureBraking::getInstance();
 };
 
@@ -773,7 +784,8 @@ TEST_F(FailureBrakingTest, handlesStopped)
 /**
  * Testing FailureStopped behaviour with respect to data
  */
-struct FailureStoppedTest : public StateTest {
+class FailureStoppedTest : public StateTest {
+ protected:
   FailureStopped *state = FailureStopped::getInstance();
 };
 

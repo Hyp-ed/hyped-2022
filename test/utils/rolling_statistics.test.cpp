@@ -50,9 +50,9 @@ T meanCalc(T a[], int size_a)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used to verify/test integer values/properties for RollingStatistics
+ * @brief class used to verify/test integer values/properties for RollingStatistics
  */
-struct RollingStatisticsTestInt : public ::testing::Test {
+class RollingStatisticsTestInt : public ::testing::Test {
  protected:
   std::size_t window                    = 2000;
   RollingStatistics<int> test_stats_int = RollingStatistics<int>(window);
@@ -181,9 +181,9 @@ TEST_F(RollingStatisticsTestInt, testWindowIntRolling)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used to verify/test float values/properties for RollingStatistics
+ * @brief class used to verify/test float values/properties for RollingStatistics
  */
-struct RollingStatisticsTestFloat : public ::testing::Test {
+class RollingStatisticsTestFloat : public ::testing::Test {
  protected:
   std::size_t window                        = 2000;
   RollingStatistics<float> test_stats_float = RollingStatistics<float>(window);

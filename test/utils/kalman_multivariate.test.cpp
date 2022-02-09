@@ -14,12 +14,12 @@ using hyped::utils::math::KalmanMultivariate;
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used for test fixtures testing the functionality of Kalman_Multivaraite.hpp. Constructor
+ * Class used for test fixtures testing the functionality of Kalman_Multivaraite.hpp. Constructor
  * sets the values of relevant Vector and Matrix objects using Random values. Naming for these
  * vectors and matrices are based off the implementation in kalman_filter.cpp and
  * the variable names within the kalman_multivariate.hpp
  */
-struct KalmanFunctionality : public ::testing::Test {
+class KalmanFunctionality : public ::testing::Test {
  protected:
   unsigned int n = 2;
   unsigned int m = 3;
@@ -162,16 +162,16 @@ TEST_F(KalmanFunctionality, handlesUpdateInR)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used for testing the mathematical properties of kalman_multivariate. Constructor initiates
+ * Class used for testing the mathematical properties of kalman_multivariate. Constructor initiates
  * an array of Vectors and Matrices to store arbitrary vectors for testing purposes. The arrays are
  * then populated with values so they can be tested.
  */
-struct KalmanMathematics : public ::testing::Test {
+class KalmanMathematics : public ::testing::Test {
+ protected:
   unsigned int n = 3;
   unsigned int m = 2;
   unsigned int k = 1;
 
- protected:
   KalmanMultivariate kalmanMathWithoutControl = KalmanMultivariate(n, m, 0);
   KalmanMultivariate kalmanMathWithControl    = KalmanMultivariate(n, m, k);
   static constexpr int NUM_TESTDATA           = 50;
@@ -340,10 +340,10 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
   }
 }
 /**
- * Struct used for testing the properties of the kalman filter under identity operations, those that
+ * Class used for testing the properties of the kalman filter under identity operations, those that
  * do not modify neither the state vector nor the vocariance matrix on each filter().
  */
-struct KalmanIdentity : public ::testing::Test {
+class KalmanIdentity : public ::testing::Test {
  protected:
   unsigned int n = 2;
   unsigned int m = 3;
@@ -394,9 +394,9 @@ TEST_F(KalmanIdentity, handlesIdentity)
 }
 
 /**
- * Struct used for testing the excpetions thrown by the class KalmanMultivariate
+ * Class used for testing the excpetions thrown by the class KalmanMultivariate
  */
-struct KalmanExceptions : public ::testing::Test {
+class KalmanExceptions : public ::testing::Test {
  public:
   unsigned int n = 2;
   unsigned int m = 3;

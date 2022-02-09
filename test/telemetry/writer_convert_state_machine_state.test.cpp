@@ -87,4 +87,4 @@ TEST_F(WriterConvertStateMachineState, convertsInvalidState)
   ASSERT_EQ(convertedState, "INVALID") << "Should convert Invalid state.";
 }
 
-}  // namespace hyped
+}  // namespace hyped::testing

@@ -24,12 +24,13 @@ std::array<int, 3> createRandomArrayForBasic()
 }
 
 /**
- * @brief Struct used to set up all the variables used in the tests for basic operationsof a vector
+ * @brief Class used to set up all the variables used in the tests for basic operationsof a vector
  * with constants.
  * This tests will check if that basic operations with constants are performed the way  they should.
  * However, they do not test properties.
  */
-struct OperationsByConstant : public ::testing::Test {
+class OperationsByConstant : public ::testing::Test {
+ protected:
   const int dimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;

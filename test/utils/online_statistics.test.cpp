@@ -54,10 +54,10 @@ T meanCalc(T a[], int size_a)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used for test fixtures checking class functionality and properties for integer
+ * @brief class used for test fixtures checking class functionality and properties for integer
  * values.
  */
-struct OnlineStatisticsTestInt : public ::testing::Test {
+class OnlineStatisticsTestInt : public ::testing::Test {
  protected:
   hyped::utils::math::OnlineStatistics<int> test_stats_int;
   int values_counter = 1000;
@@ -154,10 +154,10 @@ TEST_F(OnlineStatisticsTestInt, testOutliersIntOnline)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used for test fixtures checking class functionality and properties for float
+ * @brief class used for test fixtures checking class functionality and properties for float
  * values.
  */
-struct OnlineStatisticsTestFloat : public ::testing::Test {
+class OnlineStatisticsTestFloat : public ::testing::Test {
  protected:
   hyped::utils::math::OnlineStatistics<float> test_stats_float;
   // Declaring variables to be used

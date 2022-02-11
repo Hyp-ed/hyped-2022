@@ -90,10 +90,11 @@ const int kSizeOfQuaternion = 4;
 // -------------------------------------------------------------------------------------------------
 
 /**
- * Struct used for testing the construction
+ * Class used for testing the construction
  * of quaternion.hpp
  */
-struct QuaternionConstruction : public ::testing::Test {
+class QuaternionConstruction : public ::testing::Test {
+ protected:
   /* data */
   Vector<int, 4> test_vector;
   Vector<int, 3> test_vector_3d;
@@ -112,10 +113,11 @@ struct QuaternionConstruction : public ::testing::Test {
 };
 
 /**
- * Struct used for testing the functionality
+ * Class used for testing the functionality
  * of quaternion.hpp
  */
-struct QuaternionFunctionality : public ::testing::Test {
+class QuaternionFunctionality : public ::testing::Test {
+ protected:
   /* data */
   Quaternion<int> quaternion_one;
   Quaternion<int> quaternion_two;

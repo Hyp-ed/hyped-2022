@@ -50,6 +50,11 @@ class Controller : public IController {
    */
   void sendTargetVelocity(int32_t target_velocity) override;
   /**
+   * @brief Send the target frequency to the STM board.
+   * @param target_frequency in Hz
+   */
+  void sendStmFrequency(const int32_t target_frequency);
+  /**
    * @brief Send the target torque to the motor controller.
    *
    * @param target_torque

@@ -115,7 +115,11 @@ void Controller::sendTargetVelocity(const int32_t target_velocity)
 void Controller::sendStmFrequency(const int32_t target_frequency)
 {
   log_.info("STM board: Setting frequency to &d", target_frequency);
-  sdo_message_.data[] sender_.sendMessage(sdo_message_)
+  stm_message_.data[1] = target_frequency & 0xFF;
+  stm_message_.data[2] = (target_frequency >> 8) & 0xFF;
+  stm_message_.data[3] = (target_frequency >> 16) & 0xFF;
+  stm_message_.data[4] = (target_frequency >> 24) & 0xFF;
+  sender_.sendMessage(stm_message_);
 }
 
 void Controller::sendTargetTorque(const int16_t target_torque)

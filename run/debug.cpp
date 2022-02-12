@@ -40,6 +40,8 @@ class Debug {
 
   void printOptions();
 
+  void handleOption();
+
   void handleShutdown();
 };
 
@@ -53,17 +55,39 @@ Debug::Debug()
 void Debug::run()
 {
   auto &system = utils::System::getSystem();
-  while (system.isRunning()) {}
+  while (system.isRunning()) {
+    printOptions();
+    handleOption();
+  }
 }
 
 void Debug::printOptions()
 {
-  std::cout << "Choose an option" << std::endl;
-  std::cout << "[0] Turn system off" << std::endl;
+  std::cout << "Choose an option:" << std::endl;
+  for (auto &option : options_) {
+    std::cout << " * " << option.identifier;
+    std::cout << " - " << option.description;
+    std::cout << std::endl;
+  }
+  std::cout << "> ";
+}
+
+void Debug::handleOption()
+{
+  std::string command;
+  std::cin >> command;
+  for (auto &option : options_) {
+    if (option.identifier == command) {
+      option.action();
+      return;
+    }
+  }
+  std::cout << "Command \"" << command << "\" not found" << std::endl;
 }
 
 void Debug::handleShutdown()
 {
+  system_.stop();
 }
 
 }  // namespace hyped::debug

@@ -108,6 +108,12 @@ void Controller::sendTargetVelocity(const int32_t target_velocity)
   sender_.sendMessage(sdo_message_);
 }
 
+void Controller::sendStmFrequency(const int32_t target_frequency)
+{
+  log_.info("STM board: Setting frequency to &d", target_frequency);
+  sdo_message_.data[] sender_.sendMessage(sdo_message_)
+}
+
 void Controller::sendTargetTorque(const int16_t target_torque)
 {
   log_.info("Controller %d: Setting target torque to %d", node_id_, target_torque);

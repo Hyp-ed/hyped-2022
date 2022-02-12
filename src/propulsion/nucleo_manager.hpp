@@ -4,8 +4,12 @@
 
 namespace hyped::propulsion {
 
-class StateProcessor {
+class NucleoManager {
  public:
+  /**
+   * @brief Initializes the nucleo manager with the logger
+   * */
+  NucleoManager(utils::Logger &log);
   /**
    * @brief Send the target frequency to the nucleo board.
    * @param target_frequency in Hz
@@ -13,7 +17,8 @@ class StateProcessor {
   void sendNucleoFrequency(const uint32_t target_frequency);
 
  private:
+  utils::Logger &log_;
   utils::io::can::Frame nucleo_message_;
-  CanSender sender_;
+  CanSender transceiver_;
 };
 }  // namespace hyped::propulsion

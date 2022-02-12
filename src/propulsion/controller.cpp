@@ -13,7 +13,7 @@ Controller::Controller(utils::Logger &log, uint8_t id)
       actual_torque_(0),
       motor_temperature_(0),
       controller_temperature_(0),
-      sender_(log, node_id_, *this)
+      transceiver_(log, node_id_, *this)
 {
   sdo_message_.id       = kSdoReceive + node_id_;
   sdo_message_.extended = false;
@@ -33,7 +33,7 @@ bool Controller::sendControllerMessage(const ControllerMessage message_template)
 
 void Controller::registerController()
 {
-  sender_.registerController();
+  transceiver_.registerController();
 }
 
 void Controller::configure()
@@ -54,7 +54,7 @@ void Controller::enterOperational()
   nmt_message_.data[1] = node_id_;
 
   log_.info("Controller %d: Sending NMT Operational command", node_id_);
-  sender_.sendMessage(nmt_message_);
+  transceiver_.sendMessage(nmt_message_);
   // leave time for the controller to enter NMT Operational
   utils::concurrent::Thread::sleep(100);
 
@@ -105,7 +105,7 @@ void Controller::sendTargetVelocity(const int32_t target_velocity)
   sdo_message_.data[6] = (target_velocity >> 16) & 0xFF;
   sdo_message_.data[7] = (target_velocity >> 24) & 0xFF;
 
-  sender_.sendMessage(sdo_message_);
+  transceiver_.sendMessage(sdo_message_);
 }
 
 void Controller::sendTargetTorque(const int16_t target_torque)
@@ -161,7 +161,7 @@ void Controller::updateControllerTemp()
 
 void Controller::sendSdoMessage(utils::io::can::Frame &message)
 {
-  if (!sender_.sendMessage(message)) {
+  if (!transceiver_.sendMessage(message)) {
     log_.error("Controller %d: No response from controller", node_id_);
     throwCriticalFailure();
   }
@@ -181,7 +181,7 @@ void Controller::requestStateTransition(utils::io::can::Frame &message, Controll
   // Wait for max of 3 seconds, checking if the state has changed every second
   // If it hasn't changed by the end then throw critical failure.
   for (state_count = 0; state_count < 3; state_count++) {
-    sender_.sendMessage(message);
+    transceiver_.sendMessage(message);
     utils::concurrent::Thread::sleep(1000);
     checkState();
     if (state_ == state) { return; }

@@ -7,7 +7,7 @@
 #include <atomic>
 
 #include <data/data.hpp>
-#include <propulsion/can/can_sender.hpp>
+#include <propulsion/can/can_transceiver.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
@@ -176,7 +176,7 @@ class Controller : public IController {
   std::atomic<int16_t> actual_torque_;
   std::atomic<uint8_t> motor_temperature_;
   std::atomic<uint8_t> controller_temperature_;
-  CanSender sender_;
+  CanSender transceiver_;
   utils::io::can::Frame sdo_message_;
   utils::io::can::Frame nmt_message_;
 

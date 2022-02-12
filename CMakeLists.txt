@@ -148,3 +148,20 @@ target_link_libraries(${target}
     utils_io
     utils_math
 )
+
+set(target "debug")
+add_executable(${target} ${CMAKE_SOURCE_DIR}/run/debug.cpp)
+target_link_libraries(${target}
+    data
+    brakes
+    navigation
+    propulsion
+    propulsion_can
+    sensors
+    state_machine
+    telemetry
+    utils
+    utils_concurrent
+    utils_io
+    utils_math
+)

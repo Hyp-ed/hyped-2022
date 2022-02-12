@@ -22,6 +22,10 @@ Controller::Controller(utils::Logger &log, uint8_t id)
   nmt_message_.id       = kNmtReceive;
   nmt_message_.extended = false;
   nmt_message_.len      = 2;
+
+  stm_message_.id       = kStnTransmit;
+  stm_message_.extended = false;
+  stm_message_.len      = 4;
 }
 
 bool Controller::sendControllerMessage(const ControllerMessage message_template)

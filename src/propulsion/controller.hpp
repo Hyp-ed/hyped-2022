@@ -177,6 +177,7 @@ class Controller : public IController {
   CanSender sender_;
   utils::io::can::Frame sdo_message_;
   utils::io::can::Frame nmt_message_;
+  utils::io::can::Frame stm_message_;
 
   // Network management CAN commands:
   const uint8_t kNmtOperational = 0x01;

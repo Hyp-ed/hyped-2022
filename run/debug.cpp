@@ -33,7 +33,7 @@ class Debug {
   void run();
 
  private:
-  static constexpr std::size_t kNumOptions = 1;
+  static constexpr std::size_t kNumOptions = 2;
   data::Data &data_;
   utils::System &system_;
   const std::array<Option, kNumOptions> options_;
@@ -43,12 +43,17 @@ class Debug {
   void handleOption();
 
   void handleShutdown();
+
+  void handleKeyence();
 };
 
 Debug::Debug()
     : data_(data::Data::getInstance()),
       system_(utils::System::getSystem()),
-      options_({Option("shutdown", "Turn system off", std::bind(&Debug::handleShutdown, this))})
+      options_{
+        Option("shutdown", "Turn system off", std::bind(&Debug::handleShutdown, this)),
+        Option("keyence", "Toggle keyence", std::bind(&Debug::handleKeyence, this)),
+      }
 {
 }
 
@@ -88,6 +93,10 @@ void Debug::handleOption()
 void Debug::handleShutdown()
 {
   system_.stop();
+}
+
+void Debug::handleKeyence()
+{
 }
 
 }  // namespace hyped::debug

@@ -6,6 +6,7 @@
 #include <brakes/main.hpp>
 #include <navigation/main.hpp>
 #include <propulsion/main.hpp>
+#include <sensors/gpio_counter.hpp>
 #include <sensors/main.hpp>
 #include <state_machine/main.hpp>
 #include <telemetry/main.hpp>
@@ -24,6 +25,12 @@ struct Option {
         action(action)
   {
   }
+};
+
+struct KeyenceInstance {
+  sensors::GpioCounter sensor;
+  std::string path;
+  std::ofstream file;
 };
 
 class Debug {

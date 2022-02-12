@@ -17,12 +17,13 @@ GpioCounter::GpioCounter(const std::uint32_t pin)
 
 void GpioCounter::run()
 {
+  is_running_ = true;
   utils::io::GPIO thepin(pin_, utils::io::GPIO::Direction::kIn);  // exports pin
   uint8_t val             = thepin.wait();                        // Ignore first reading
   counter_data_.value     = 0;
   counter_data_.timestamp = utils::Timer::getTimeMicros();
 
-  while (sys_.isRunning()) {
+  while (sys_.isRunning() && is_running_) {
     val = thepin.wait();
     if (val == 1) {
       counter_data_.value = counter_data_.value + 1;

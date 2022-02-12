@@ -1,4 +1,5 @@
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <memory>
 
@@ -10,40 +11,66 @@
 #include <telemetry/main.hpp>
 #include <utils/system.hpp>
 
+namespace hyped::debug {
+
+struct Option {
+  std::string identifier;
+  std::string description;
+  std::function<void()> action;
+
+  Option(std::string identifier, std::string description, std::function<void()> action)
+      : identifier(identifier),
+        description(description),
+        action(action)
+  {
+  }
+};
+
+class Debug {
+ public:
+  Debug();
+
+  void run();
+
+ private:
+  static constexpr std::size_t kNumOptions = 1;
+  data::Data &data_;
+  utils::System &system_;
+  const std::array<Option, kNumOptions> options_;
+
+  void printOptions();
+
+  void handleShutdown();
+};
+
+Debug::Debug()
+    : data_(data::Data::getInstance()),
+      system_(utils::System::getSystem()),
+      options_({Option("shutdown", "Turn system off", std::bind(&Debug::handleShutdown, this))})
+{
+}
+
+void Debug::run()
+{
+  auto &system = utils::System::getSystem();
+  while (system.isRunning()) {}
+}
+
+void Debug::printOptions()
+{
+  std::cout << "Choose an option" << std::endl;
+  std::cout << "[0] Turn system off" << std::endl;
+}
+
+void Debug::handleShutdown()
+{
+}
+
+}  // namespace hyped::debug
+
 int main(int argc, char *argv[])
 {
   hyped::utils::System::parseArgs(argc, argv);
-  // print HYPED logo at system startup
-  std::ifstream file("main_logo.txt");
-  if (file.is_open()) {
-    std::string buffer;
-    file >> buffer;
-    std::cout << buffer;
-  }
-
-  // Initalise the threads here
-  hyped::brakes::Main brakes;
-  hyped::navigation::Main navigation;
-  hyped::propulsion::Main propulsion;
-  hyped::sensors::Main sensors;
-  hyped::state_machine::Main state_machine;
-  hyped::telemetry::Main telemetry;
-
-  // Start the threads here
-  brakes.start();
-  navigation.start();
-  propulsion.start();
-  sensors.start();
-  state_machine.start();
-  telemetry.start();
-
-  // Join the threads here
-  brakes.join();
-  navigation.join();
-  propulsion.join();
-  sensors.join();
-  state_machine.join();
-  telemetry.join();
-
-  return 0;
+  hyped::debug::Debug debug;
+  debug.run();
 }

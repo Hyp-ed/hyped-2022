@@ -89,10 +89,11 @@ void StateProcessor::accelerate()
 
   const auto now = utils::Timer::getTimeMicros();
   if (now - previous_acceleration_time_ > 5000) {
-    previous_acceleration_time_ = now;
-    const auto velocity         = data_.getNavigationData().velocity;
-    const auto act_rpm          = calculateAverageRpm();
-    const auto rpm              = rpm_regulator_.calculateRpm(velocity, act_rpm);
+    previous_acceleration_time_     = now;
+    const auto velocity             = data_.getNavigationData().velocity;
+    const auto act_rpm              = calculateAverageRpm();
+    const auto rpm                  = rpm_regulator_.calculateRpm(velocity, act_rpm);
+    const uint32_t target_frequency = 0;  // get target frequency curve from sims
     log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);

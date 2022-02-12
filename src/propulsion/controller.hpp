@@ -50,10 +50,10 @@ class Controller : public IController {
    */
   void sendTargetVelocity(int32_t target_velocity) override;
   /**
-   * @brief Send the target frequency to the STM board.
+   * @brief Send the target frequency to the nucleo board.
    * @param target_frequency in Hz
    */
-  void sendStmFrequency(const int32_t target_frequency);
+  void sendNucleoFrequency(const int32_t target_frequency);
   /**
    * @brief Send the target torque to the motor controller.
    *
@@ -182,7 +182,7 @@ class Controller : public IController {
   CanSender sender_;
   utils::io::can::Frame sdo_message_;
   utils::io::can::Frame nmt_message_;
-  utils::io::can::Frame stm_message_;
+  utils::io::can::Frame nucleo_message_;
 
   // Network management CAN commands:
   const uint8_t kNmtOperational = 0x01;

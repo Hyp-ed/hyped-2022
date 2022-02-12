@@ -23,9 +23,9 @@ Controller::Controller(utils::Logger &log, uint8_t id)
   nmt_message_.extended = false;
   nmt_message_.len      = 2;
 
-  stm_message_.id       = kStnTransmit;
-  stm_message_.extended = false;
-  stm_message_.len      = 4;
+  nucleo_message_.id       = kNucleoTransmit;
+  nucleo_message_.extended = false;
+  nucleo_message_.len      = 4;
 }
 
 bool Controller::sendControllerMessage(const ControllerMessage message_template)
@@ -67,6 +67,7 @@ void Controller::enterOperational()
 
   // set the velocity to zero
   sendTargetVelocity(0);
+  sendNucleoFrequency(0);
 
   // apply break
   if (sendControllerMessage(kEnterOperationalMessages.at(1))) return;
@@ -112,14 +113,14 @@ void Controller::sendTargetVelocity(const int32_t target_velocity)
   sender_.sendMessage(sdo_message_);
 }
 
-void Controller::sendStmFrequency(const int32_t target_frequency)
+void Controller::sendNucleoFrequency(const int32_t target_frequency)
 {
-  log_.info("STM board: Setting frequency to &d", target_frequency);
-  stm_message_.data[1] = target_frequency & 0xFF;
-  stm_message_.data[2] = (target_frequency >> 8) & 0xFF;
-  stm_message_.data[3] = (target_frequency >> 16) & 0xFF;
-  stm_message_.data[4] = (target_frequency >> 24) & 0xFF;
-  sender_.sendMessage(stm_message_);
+  log_.info("Nucleo board: Setting frequency to &d", target_frequency);
+  nucleo_message_.data[1] = target_frequency & 0xFF;
+  nucleo_message_.data[2] = (target_frequency >> 8) & 0xFF;
+  nucleo_message_.data[3] = (target_frequency >> 16) & 0xFF;
+  nucleo_message_.data[4] = (target_frequency >> 24) & 0xFF;
+  sender_.sendMessage(nucleo_message_);
 }
 
 void Controller::sendTargetTorque(const int16_t target_torque)

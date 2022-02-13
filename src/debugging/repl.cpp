@@ -19,14 +19,16 @@ Repl::Repl(const Repl::Config &config)
 
 void Repl::run()
 {
-  while (system_.isRunning()) {}
+  while (system_.isRunning()) {
+    printAvailableCommands();
+    readAndHandleCommand();
+  }
 }
 
-std::optional<Repl> Repl::fromArgs(const int argc, const char **argv)
+std::optional<Repl> Repl::fromFile(const std::string &path)
 {
-  utils::Logger log("REPL", utils::Logger::Level::kInfo);
-  if (argc != 2) { log.error("found %d arguments but %d were expected", argc - 1, 1); }
-  std::string path(argv[1]);
+  auto &system = utils::System::getSystem();
+  utils::Logger log("REPL", system.config_.log_level_debugger);
   const auto config_optional = readConfig(log, path);
   if (!config_optional) {
     log.error("Failed to read config file at %s. Could not construct object.", path.c_str());
@@ -76,17 +78,18 @@ std::optional<Repl::Config> Repl::readConfig(utils::Logger &log, const std::stri
     log.error("Failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
-  if (!document.HasMember("debug")) {
-    log.error("Missing required field 'debug' in configuration file at %s", path.c_str());
+  if (!document.HasMember("debugger")) {
+    log.error("Missing required field 'debugger' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  const auto config_object = document["debug"].GetObject();
+  const auto config_object = document["debugger"].GetObject();
   Config config;
   if (!config_object.HasMember("use_keyence")) {
     log.error("Missing required field 'use_keyence' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
   config.use_keyence = config_object["use_keyence"].GetBool();
+  return config;
 }
 
 }  // namespace hyped::debugging

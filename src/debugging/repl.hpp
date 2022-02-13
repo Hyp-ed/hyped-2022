@@ -26,7 +26,7 @@ class Repl {
 
   void run();
 
-  static std::optional<Repl> fromArgs(const int argc, const char **argv);
+  static std::optional<Repl> fromFile(const std::string &path);
 
  private:
   utils::System &system_;

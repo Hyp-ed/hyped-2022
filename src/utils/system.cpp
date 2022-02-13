@@ -62,6 +62,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
   config.fake_trajectory_config_path = std::string(argv[1]);
   config.bms_config_path             = std::string(argv[1]);
   config.brakes_config_path          = std::string(argv[1]);
+  config.debugger_config_path        = std::string(argv[1]);
   config.run_id                      = newRunId();
   // System log level
   if (config_object.HasMember("log_level")) {
@@ -177,6 +178,21 @@ void System::parseArgs(const int argc, const char *const *const argv)
       "value",
       argv[1]);
     config.log_level_telemetry = config.log_level;
+  }
+  // Debugger log level
+  if (config_object.HasMember("log_level_debugger")) {
+    const auto log_level_raw = config_object["log_level_debugger"].GetInt();
+    const auto log_level     = Logger::levelFromInt(log_level_raw);
+    if (!log_level) {
+      kInitialisationErrorLogger.error(
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
+      exit(1);
+    }
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.log_level_debugger' in config file at %s; using default value",
+      argv[1]);
+    config.log_level_debugger = config.log_level;
   }
   // Use fake trajectory?
   if (config_object.HasMember("use_fake_trajectory")) {

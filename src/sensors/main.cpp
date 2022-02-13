@@ -225,6 +225,9 @@ void Main::run()
 
   int temp_count = 0;
   while (sys_.isRunning()) {
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+      current_keyence.at(i) = keyences_[i]->getData();
+    }
     bool keyence_updated = false;
     for (size_t i = 0; i < current_keyence.size(); ++i) {
       if (current_keyence.at(i).timestamp > previous_keyence.at(i).timestamp) {
@@ -235,9 +238,6 @@ void Main::run()
     if (keyence_updated) {
       data_.setSensorsKeyenceData(current_keyence);
       previous_keyence = current_keyence;
-    }
-    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
-      current_keyence.at(i) = keyences_[i]->getData();
     }
     Thread::sleep(10);
     temp_count++;

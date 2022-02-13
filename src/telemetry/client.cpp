@@ -104,7 +104,6 @@ std::string Client::receiveData()
   return std::string(buffer);
 }
 
-<<<<<<< HEAD
 std::unique_ptr<Client> Client::fromFile(const std::string &path)
 {
   auto &system = utils::System::getSystem();
@@ -153,6 +152,4 @@ std::optional<Client::Config> Client::readConfig(utils::Logger &log, const std::
   return config;
 }
 
-=======
->>>>>>> development/arn-fix-compile
 }  // namespace hyped::telemetry

@@ -1,6 +1,7 @@
 # binaries
 bin
 build
+gui-build
 
 # Executables
 *.exe

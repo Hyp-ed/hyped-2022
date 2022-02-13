@@ -14,7 +14,10 @@ Repl::Repl(const Repl::Config &config)
       data_(data::Data::getInstance()),
       config_(config)
 {
-  commands_.push_back({"shutdown", "Turn the system off", std::bind(&Repl::handleShutdown, this)});
+  commands_.push_back({"shutdown", "Turn the system off", std::bind(&Repl::handleShutdown, *this)});
+  for (const auto &command : commands_) {
+    handlers_by_identifier_.emplace(command.identifier, command.handler);
+  }
 }
 
 void Repl::run()
@@ -62,6 +65,7 @@ void Repl::readAndHandleCommand()
 
 void Repl::handleShutdown()
 {
+  system_.stop();
 }
 
 std::optional<Repl::Config> Repl::readConfig(utils::Logger &log, const std::string &path)

@@ -17,6 +17,7 @@ class BmsManager : public utils::concurrent::Thread {
     uint64_t bms_startup_time_micros;
   };
   void run() override;
+  void updateBatteriesData();
   explicit BmsManager(utils::Logger log, const Config &config);
   static std::unique_ptr<BmsManager> fromFile(const std::string &path);
 

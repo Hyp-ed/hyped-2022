@@ -115,43 +115,48 @@ bool BmsManager::checkIMD()
 
 void BmsManager::run()
 {
-  // TODO(miltfra): Refactor this into stages
-  while (sys_.isRunning()) {
-    batteries_ = data_.getBatteriesData();
-
-    // keep updating data_ based on values read from sensors
-    for (size_t i = 0; i < data::Batteries::kNumLPBatteries; ++i) {
-      batteries_.low_power_batteries.at(i) = bms_[i]->getData();
-      if (!bms_[i]->isOnline()) { batteries_.low_power_batteries[i].voltage = 0; }
-    }
-    for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
-      batteries_.high_power_batteries.at(i) = bms_[i + data::Batteries::kNumLPBatteries]->getData();
-      if (!bms_[i + data::Batteries::kNumLPBatteries]->isOnline()) {
-        batteries_.high_power_batteries[i].voltage = 0;
-      }
-    }
-
-    // Check if BMS is ready at this point.
-    // waiting time for BMS boot up is a fixed time.
-    if (utils::Timer::getTimeMicros() - start_time_ > config_.bms_startup_time_micros) {
-      // if previous state is kInit, turn it to ready
-      if (batteries_.module_status == data::ModuleStatus::kInit) {
-        log_.debug("Batteries are ready");
-        batteries_.module_status = data::ModuleStatus::kReady;
-      }
-      if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
-        if (!(batteriesInRange() && checkIMD())) {
-          if (batteries_.module_status != previous_status_) log_.error("battery failure detected");
-          batteries_.module_status = data::ModuleStatus::kCriticalFailure;
-        }
-        previous_status_ = batteries_.module_status;
-      }
-    }
-
+  while (utils::Timer::getTimeMicros() - start_time_ < config_.bms_startup_time_micros) {
+    updateBatteriesData();
     // publish the new data
     data_.setBatteriesData(batteries_);
 
     sleep(100);
+  }
+  while (sys_.isRunning()) {
+    updateBatteriesData();
+    // if previous state is kInit, turn it to ready
+    if (batteries_.module_status == data::ModuleStatus::kInit) {
+      log_.debug("Batteries are ready");
+      batteries_.module_status = data::ModuleStatus::kReady;
+    }
+    if (batteries_.module_status != data::ModuleStatus::kCriticalFailure) {
+      if (!(batteriesInRange() && checkIMD())) {
+        if (batteries_.module_status != previous_status_) log_.error("battery failure detected");
+        batteries_.module_status = data::ModuleStatus::kCriticalFailure;
+      }
+      previous_status_ = batteries_.module_status;
+    }
+    // publish the new data
+    data_.setBatteriesData(batteries_);
+
+    sleep(100);
+  }
+}
+
+void updateBatteriesData()
+{
+  batteries_ = data_.getBatteriesData();
+
+  // keep updating data_ based on values read from sensors
+  for (size_t i = 0; i < data::Batteries::kNumLPBatteries; ++i) {
+    batteries_.low_power_batteries.at(i) = bms_[i]->getData();
+    if (!bms_[i]->isOnline()) { batteries_.low_power_batteries[i].voltage = 0; }
+  }
+  for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
+    batteries_.high_power_batteries.at(i) = bms_[i + data::Batteries::kNumLPBatteries]->getData();
+    if (!bms_[i + data::Batteries::kNumLPBatteries]->isOnline()) {
+      batteries_.high_power_batteries[i].voltage = 0;
+    }
   }
 }
 

@@ -2,7 +2,9 @@
 
 namespace hyped::propulsion {
 
-NucleoManager::NucleoManager(utils::Logger &log) : log_(log), transceiver_(log, node_id_, *this)
+NucleoManager::NucleoManager(utils::Logger &log)
+    : log_(log),
+      sender_(log, utils::io::Can::getInstance())
 {
   nucleo_message_.id       = kNucleoTransmit;
   nucleo_message_.extended = false;
@@ -16,6 +18,6 @@ void NucleoManager::sendNucleoFrequency(const uint32_t target_frequency)
   nucleo_message_.data[2] = (target_frequency >> 8) & 0xFF;
   nucleo_message_.data[3] = (target_frequency >> 16) & 0xFF;
   nucleo_message_.data[4] = (target_frequency >> 24) & 0xFF;
-  transceiver_.sendMessage(nucleo_message_);
+  sender_.sendMessage(nucleo_message_);
 }
 }  // namespace hyped::propulsion

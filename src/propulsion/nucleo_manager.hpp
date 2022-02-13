@@ -1,4 +1,5 @@
 #include <propulsion/can/can_sender.hpp>
+#include <propulsion/can/sender_interface.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
 
@@ -19,6 +20,6 @@ class NucleoManager {
  private:
   utils::Logger &log_;
   utils::io::can::Frame nucleo_message_;
-  CanSender transceiver_;
+  CanSender sender_;
 };
 }  // namespace hyped::propulsion

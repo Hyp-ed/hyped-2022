@@ -2,29 +2,31 @@
 
 namespace hyped::propulsion {
 
-CanSender::CanSender(utils::Logger &log, const uint8_t node_id, IController &controller)
+CanTransceiver::CanTransceiver(utils::Logger &log, const uint8_t node_id, IController &controller)
     : log_(log),
       node_id_(node_id),
       can_(utils::io::Can::getInstance()),
-      sender_(propulsion::can::can_sender::Sender(log_)),
+      sender_(log_, can_),
       controller_(controller)
 {
   is_sending_ = false;
   can_.start();
 }
 
-void /*bool*/ CanSender::sendMessage(utils::io::can::Frame &message)
+bool CanTransceiver::sendMessage(utils::io::can::Frame &message)
 {
   log_.info("Sending Message");
-  sender_.send(&message);
+  bool messageSuccess = sender_.sendMessage(message);
+  is_sending_         = true;
+  return messageSuccess;
 }
 
-void CanSender::registerController()
+void CanTransceiver::registerController()
 {
   can_.registerProcessor(this);
 }
 
-void CanSender::processNewData(utils::io::can::Frame &message)
+void CanTransceiver::processNewData(utils::io::can::Frame &message)
 {
   is_sending_ = false;
   uint32_t id = message.id;
@@ -39,7 +41,7 @@ void CanSender::processNewData(utils::io::can::Frame &message)
   }
 }
 
-bool CanSender::hasId(uint32_t id, bool)
+bool CanTransceiver::hasId(uint32_t id, bool)
 {
   for (uint32_t cobId : canIds) {
     if (cobId + node_id_ == id) { return true; }
@@ -47,7 +49,7 @@ bool CanSender::hasId(uint32_t id, bool)
   return false;
 }
 
-bool CanSender::getIsSending()
+bool CanTransceiver::getIsSending()
 {
   return is_sending_;
 }

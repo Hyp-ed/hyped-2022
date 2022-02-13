@@ -2,7 +2,6 @@
 
 #include "controller_interface.hpp"
 #include "messages.hpp"
-#include "nucleo_manager.hpp"
 
 #include <atomic>
 
@@ -176,7 +175,7 @@ class Controller : public IController {
   std::atomic<int16_t> actual_torque_;
   std::atomic<uint8_t> motor_temperature_;
   std::atomic<uint8_t> controller_temperature_;
-  CanSender transceiver_;
+  CanTransceiver transceiver_;
   utils::io::can::Frame sdo_message_;
   utils::io::can::Frame nmt_message_;
 

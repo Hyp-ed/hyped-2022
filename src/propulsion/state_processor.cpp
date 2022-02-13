@@ -9,7 +9,8 @@ StateProcessor::StateProcessor(utils::Logger &log)
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
       is_initialised_(false),
-      rpm_regulator_()
+      rpm_regulator_(),
+      nucleo_manager_(NucleoManager(log))
 {
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");
@@ -63,6 +64,7 @@ void StateProcessor::prepareMotors()
   for (auto &controller : controllers_) {
     controller->enterOperational();
   }
+  nucleo_manager_.sendNucleoFrequency(0);  // Might not be correct value
   previous_acceleration_time_ = 0;
 }
 
@@ -89,15 +91,15 @@ void StateProcessor::accelerate()
 
   const auto now = utils::Timer::getTimeMicros();
   if (now - previous_acceleration_time_ > 5000) {
-    previous_acceleration_time_     = now;
-    const auto velocity             = data_.getNavigationData().velocity;
-    const auto act_rpm              = calculateAverageRpm();
-    const auto rpm                  = rpm_regulator_.calculateRpm(velocity, act_rpm);
-    const uint32_t target_frequency = 0;  // get target frequency curve from sims
+    previous_acceleration_time_ = now;
+    const auto velocity         = data_.getNavigationData().velocity;
+    const auto act_rpm          = calculateAverageRpm();
+    const auto rpm              = rpm_regulator_.calculateRpm(velocity, act_rpm);
     log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }
+    nucleo_manager_.sendNucleoFrequency(rpm / 60);
   }
 }
 

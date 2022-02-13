@@ -1,3 +1,5 @@
+#pragma once
+
 #include "sender_interface.hpp"
 
 #include <utils/io/can.hpp>

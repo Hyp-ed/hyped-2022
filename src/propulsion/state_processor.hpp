@@ -1,6 +1,7 @@
 #pragma once
 
 #include "controller_interface.hpp"
+#include "nucleo_manager.hpp"
 #include "rpm_regulator.hpp"
 
 #include <array>
@@ -108,6 +109,7 @@ class StateProcessor {
   std::array<std::unique_ptr<IController>, data::Motors::kNumMotors> controllers_;
   RpmRegulator rpm_regulator_;
   uint64_t previous_acceleration_time_;
+  NucleoManager nucleo_manager_;
 };
 
 }  // namespace hyped::propulsion

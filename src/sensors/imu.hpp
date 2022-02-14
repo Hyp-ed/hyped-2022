@@ -103,7 +103,7 @@ class Imu : public IImu {
   bool is_online_;
   uint8_t user_bank_;
   static const uint64_t time_start;
-  size_t kFrameSize_;  // initialised as 6 in enableFifo()
+  static constexpr size_t kFrameSize = 6;
 };
 
 }  // namespace hyped::sensors

@@ -73,7 +73,9 @@ void Main::run()
         state_processor_.accelerate();
         break;
       case data::State::kCruising:
+      case data::State::kPreBraking:
       case data::State::kNominalBraking:
+      case data::State::kFailurePreBraking:
       case data::State::kEmergencyBraking:
         state_processor_.quickStopAll();
         break;

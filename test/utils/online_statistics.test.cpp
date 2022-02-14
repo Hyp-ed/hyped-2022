@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <numeric>
+#include <random>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -25,10 +26,10 @@ namespace math {
  */
 float RandomFloatOnline(float lower, float upper)
 {
-  float random = (static_cast<float>(rand())) / RAND_MAX;
-  float diff   = upper - lower;
-  float r      = random * diff;
-  return lower + r;
+  static std::random_device random_device;
+  static std::default_random_engine random_engine(random_device());
+  std::uniform_real_distribution<> distr(lower, upper);
+  return distr(random_engine);
 }
 
 /**

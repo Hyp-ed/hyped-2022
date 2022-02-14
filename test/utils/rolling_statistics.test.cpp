@@ -1,3 +1,5 @@
+#include "randomiser.hpp"
+
 #include <cmath>
 #include <math.h>
 
@@ -16,20 +18,6 @@ namespace math {
 // -------------------------------------------------------------------------------------------------
 // Helper Functions
 // -------------------------------------------------------------------------------------------------
-
-/**
- * @brief generates a random float between two given floats. Code from: https://tinyurl.com/y2phu2q2
- * @tparam T Underlying numeric type
- * @param lower Lower bound for randomly generated values
- * @param upper Upper bound for randomly generated values
- */
-float RandomFloatRolling(float a, float b)
-{
-  float random = (static_cast<float>(rand())) / RAND_MAX;
-  float diff   = b - a;
-  float r      = random * diff;
-  return a + r;
-}
 
 /**
  * @brief calculates the mean of the elements of a given array
@@ -64,7 +52,7 @@ struct RollingStatisticsTestInt : public ::testing::Test {
   int sum  = 0;
   int mean = 0;
   int var;
-  float c                        = RandomFloatRolling(1, 1000);
+  float c                        = testing::Randomiser::randomInRange(1, 1000);
   std::string messageVarStdDev   = "Standard deviation is not the root of the variance as expected";
   std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
   std::string messageOutlierVar  = "Outliers do not affect the variance as expected.";
@@ -195,7 +183,7 @@ struct RollingStatisticsTestFloat : public ::testing::Test {
   float sum_f  = 0.0;
   float mean_f = 0.0;
   float var_f;
-  float c                        = RandomFloatRolling(1, 1000);
+  float c                        = testing::Randomiser::randomInRange(1, 1000);
   std::string messageVarStdDev   = "Standard deviation is not the root of the variance as expected";
   std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
   std::string messageOutlierVar  = "Outliers do not affect the variance as expected.";
@@ -204,7 +192,7 @@ struct RollingStatisticsTestFloat : public ::testing::Test {
   void SetUp()
   {
     for (int i = 0; i < values_counter; i++) {
-      values_f[i] = RandomFloatRolling(1, 1000);
+      values_f[i] = testing::Randomiser::randomInRange(1, 1000);
     }
   }
   void TearDown() {}
@@ -267,7 +255,7 @@ TEST_F(RollingStatisticsTestFloat, testOutliersFloatRolling)
   float threshold    = mean_prev + 3 * std_dev_prev;
 
   for (int i = 0; i < (static_cast<int>(values_counter / 10)); i++) {
-    test_stats_float.update(threshold + RandomFloatRolling(100, 200));
+    test_stats_float.update(threshold + testing::Randomiser::randomInRange(100, 200));
   }
 
   EXPECT_LT(mean_prev, test_stats_float.getMean()) << messageOutlierMean;
@@ -287,7 +275,7 @@ TEST_F(RollingStatisticsTestFloat, testWindowsFloatRolling)
   }
   // Filling up the rest of the window - 2000 items
   for (int i = 0; i < values_counter; i++) {
-    test_stats_float.update(RandomFloatRolling(0, 1000));
+    test_stats_float.update(testing::Randomiser::randomInRange(0, 1000));
   }
 
   float mean_prev    = test_stats_float.getMean();
@@ -297,7 +285,7 @@ TEST_F(RollingStatisticsTestFloat, testWindowsFloatRolling)
 
   for (int i = 0; i <= (static_cast<int>(values_counter / 10)); i++) {
     // We will purposely assign a larger value for easy comparison
-    float new_variable = RandomFloatRolling(2000, 3000);
+    float new_variable = testing::Randomiser::randomInRange(2000, 3000);
     test_stats_float.update(new_variable);
   }
 

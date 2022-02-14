@@ -7,8 +7,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
 #include <utils/logger.hpp>
@@ -31,6 +32,13 @@ class Randomiser {
     static std::default_random_engine generator;
     static std::uniform_real_distribution<data::nav_t> distribution(0.0, 1.0);
     return distribution(generator);
+  }
+
+  static data::nav_t randomInRange(const data::nav_t lower, const data::nav_t upper)
+  {
+    static std::default_random_engine random_engine;
+    std::uniform_real_distribution<> distribution(lower, upper);
+    return distribution(random_engine);
   }
 
   // Randomises a module status to any of the possible values.
@@ -79,7 +87,8 @@ class Randomiser {
       imu_data.acc[i] = static_cast<data::nav_t>((rand() % 100 + 75) + randomDecimal());
     }
     for (int i = 0; i < 3; i++) {
-      imu_data.fifo.push_back(static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
+      imu_data.fifo.push_back(
+        static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
   }
 

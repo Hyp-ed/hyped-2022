@@ -43,8 +43,10 @@ void Main::run()
         }
         nav_.navigate();
         break;
+      case data::State::kPreBraking:
       case data::State::kNominalBraking:
       case data::State::kCruising:
+      case data::State::kFailurePreBraking:
       case data::State::kEmergencyBraking:
         nav_.navigate();
         break;

@@ -312,24 +312,22 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::na
 {
   std::vector<data::nav_t> data_vector;
 
-  for (size_t i = 0; i < data::Sensors::kNumImus; ++i){
-    if (is_imu_reliable_.at(i)) {
-      data_vector.push_back(data_array.at(i));
-    }
+  for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
+    if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
   }
   std::sort(data_vector.begin(), data_vector.end());
   data::nav_t q1, q2, q3;
-  q1 = (data_vector.at(0) + data_vector.at(1))/2.;
-  q3 = (data_vector.at(data_vector.size()-2) + data_vector.at(data_vector.size()-1))/2.;
+  q1 = (data_vector.at(0) + data_vector.at(1)) / 2.;
+  q3 = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
   if (num_outlier_imus_ == 0) {
-    q2 = (data_vector.at(1) + data_vector.at(2))/2.;
-  } else if (num_outlier_imus_ == 1){
+    q2 = (data_vector.at(1) + data_vector.at(2)) / 2.;
+  } else if (num_outlier_imus_ == 1) {
     q2 = data_vector.at(1);
   } else {
     status_ = data::ModuleStatus::kCriticalFailure;
     log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
   }
-  
+
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
   const auto iqr         = std::min(q3 - q1, kMaxInterQuartileRange);

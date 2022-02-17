@@ -136,8 +136,8 @@ class Navigation {
 
   static constexpr int kPrintFreq                     = 1;
   static constexpr data::nav_t kEmergencyDeceleration = 24;
-  static constexpr data::nav_t kIqrScaler        = 1;  // 0.75
-  static constexpr data::nav_t kMinIQRBound         = 3;
+  static constexpr data::nav_t kIqrScaler             = 1;  // 0.75
+  static constexpr data::nav_t kMaxInterQuartileRange = 3;
 
   static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²

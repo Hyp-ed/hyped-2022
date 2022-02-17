@@ -210,7 +210,7 @@ void Navigation::queryImus()
   log_.debug("Raw acceleration values: %.3f, %.3f, %.3f, %.3f", raw_acceleration_moving[0],
              raw_acceleration_moving[1], raw_acceleration_moving[2], raw_acceleration_moving[3]);
   // Run outlier detection on moving axis
-  imuOutlierDetection(raw_acceleration_moving, kIqrScaler);
+  (raw_acceleration_moving, kIqrScaler);
   // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
   // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
 
@@ -332,7 +332,7 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::na
   
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
-  const auto iqr         = std::min(q3 - q1, kMinIQRBound);
+  const auto iqr         = std::min(q3 - q1, kMaxInterQuartileRange);
   const auto upper_limit = q3 + threshold * iqr;
   const auto lower_limit = q1 - threshold * iqr;
   // replace any outliers with the median

@@ -9,12 +9,12 @@ namespace hyped::telemetry {
 
 class Main : public utils::concurrent::Thread {
  public:
-  Main(const uint8_t id, utils::Logger &log);
+  Main();
   void run() override;
 
  private:
   data::Data &data_;
-  Client client_;
+  std::unique_ptr<Client> client_;
 };
 
 }  // namespace hyped::telemetry

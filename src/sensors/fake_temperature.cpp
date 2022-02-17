@@ -4,11 +4,10 @@
 
 #include <utils/timer.hpp>
 
-namespace hyped {
-namespace sensors {
+namespace hyped::sensors {
 
-FakeTemperature::FakeTemperature(Logger &log, bool is_fail)
-    : data_(Data::getInstance()),
+FakeTemperature::FakeTemperature(utils::Logger &log, bool is_fail)
+    : data_(data::Data::getInstance()),
       log_(log),
       failure_(300),
       success_(30),
@@ -20,9 +19,9 @@ FakeTemperature::FakeTemperature(Logger &log, bool is_fail)
 {
   temp_.temp = success_;
   if (is_fail_) {
-    log_.INFO("Fake-Temperature", "Fake Temperature Fail initialised");
+    log_.info("fail initialised");
   } else {
-    log_.INFO("Fake-Temperature", "Fake Temperature initialised");
+    log_.info("initialised");
   }
 }
 
@@ -57,5 +56,4 @@ uint8_t FakeTemperature::getData()
   return temp_.temp;
 }
 
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

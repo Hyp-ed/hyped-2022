@@ -7,29 +7,16 @@
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::navigation {
 
-using data::Data;
-using data::State;
-using hyped::data::ModuleStatus;
-using hyped::data::StateMachine;
-using utils::Logger;
-using utils::System;
-using utils::concurrent::Thread;
-
-namespace navigation {
-
-class Main : public Thread {
+class Main : public utils::concurrent::Thread {
  public:
-  explicit Main(uint8_t id, Logger &log);
+  Main();
   void run() override;
   bool isCalibrated();
 
  private:
-  Logger &log_;
-  System &sys_;
   Navigation nav_;
 };
 
-}  // namespace navigation
-}  // namespace hyped
+}  // namespace hyped::navigation

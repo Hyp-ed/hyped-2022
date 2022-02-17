@@ -20,9 +20,9 @@ void Pressure::run()
   pressure_.pressure          = 0;
   uint16_t raw_temp_value     = temppin.read();
   uint16_t raw_pressure_value = pressurepin.read();
-  log_.DBG3("PRESSURE", "Raw Data: %d", raw_temp_value, raw_pressure_value);
+  log_.debug("PRESSURE", "Raw Data: %d", raw_temp_value, raw_pressure_value);
   pressure_.pressure = scaleData(raw_temp_value, raw_pressure_value);
-  log_.DBG3("PRESSURE", "Scaled Data: %d", pressure_.pressure);
+  log_.debug("PRESSURE", "Scaled Data: %d", pressure_.pressure);
   pressure_.operational = true;
 }
 

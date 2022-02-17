@@ -9,7 +9,7 @@
 
 namespace hyped::sensors {
 
-class Pressure : public PressureInterface {
+class Pressure : public IPressure {
  public:
   /**
    * @brief Construct a new Pressure object

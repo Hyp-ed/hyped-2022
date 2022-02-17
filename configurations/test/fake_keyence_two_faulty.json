@@ -1,0 +1,12 @@
+{
+  "fake_keyence": [
+    {
+      "failure_in_state": "Accelerating",
+      "noise": 0.1
+    },
+    {
+      "failure_in_state": "NominalBraking",
+      "noise": 0.2
+    }
+  ]
+}

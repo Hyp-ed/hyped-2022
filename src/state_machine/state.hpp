@@ -1,6 +1,5 @@
 #pragma once
 
-#include "main.hpp"
 #include "transitions.hpp"
 
 #include <string>
@@ -10,24 +9,17 @@
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
-
-using data::ModuleStatus;
-using utils::Logger;
-
-namespace state_machine {
-
-class Main;  // Forward declaration
+namespace hyped::state_machine {
 
 class State {
  public:
   State();
   static State *getInstance();
 
-  virtual void enter(Logger &log) = 0;
-  virtual void exit(Logger &log)  = 0;
+  virtual void enter(utils::Logger &log) = 0;
+  virtual void exit(utils::Logger &log)  = 0;
 
-  virtual State *checkTransition(Logger &log) = 0;
+  virtual State *checkTransition(utils::Logger &log) = 0;
 
   data::Data &data_;
 
@@ -41,8 +33,6 @@ class State {
   void updateModuleData();
 };
 
-class Messages;
-
 /*
  * @brief   Generates a specific state S following the pattern of State.
  */
@@ -52,16 +42,16 @@ class Messages;
     S() {}                                                                                         \
     static S *getInstance() { return &S::instance_; }                                              \
                                                                                                    \
-    State *checkTransition(Logger &log);                                                           \
+    State *checkTransition(utils::Logger &log);                                                    \
     /* @brief   Prints log message and sets appropriate public enum value.*/                       \
-    void enter(Logger &log)                                                                        \
+    void enter(utils::Logger &log)                                                                 \
     {                                                                                              \
-      log.INFO("STM", "entering %s state", S::string_representation_);                             \
+      log.info("entering %s state", S::string_representation_);                                    \
       data::StateMachine sm_data = data_.getStateMachineData();                                    \
       sm_data.current_state      = S::enum_value_;                                                 \
       data_.setStateMachineData(sm_data);                                                          \
     }                                                                                              \
-    void exit(Logger &log) { log.INFO("STM", "exiting %s state", S::string_representation_); }     \
+    void exit(utils::Logger &log) { log.info("exiting %s state", S::string_representation_); }     \
                                                                                                    \
    private:                                                                                        \
     static S instance_;                                                                            \
@@ -74,17 +64,19 @@ class Messages;
  * Generating structs for all the states
  */
 
-MAKE_STATE(Idle)            // State on startup
-MAKE_STATE(PreCalibrating)  // Sub-state between Idle and Calibrating
-MAKE_STATE(Calibrating)     // Calibrating starts after user input is given
-MAKE_STATE(Ready)           // After calibration has finished
-MAKE_STATE(Accelerating)    // First phase of the run
-MAKE_STATE(Cruising)        // Intermediate phase to not exceed maximum velocity
-MAKE_STATE(NominalBraking)  // Second phase of the run
-MAKE_STATE(Finished)        // State after the run
-MAKE_STATE(FailureBraking)  // Entered upon failure during the run
-MAKE_STATE(FailureStopped)  // Entered upon failure before the run or after
-                            // FailureBraking
+MAKE_STATE(Idle)               // State on startup
+MAKE_STATE(PreCalibrating)     // Sub-state between Idle and Calibrating
+MAKE_STATE(Calibrating)        // Calibrating starts after user input is given
+MAKE_STATE(Ready)              // After calibration has finished
+MAKE_STATE(Accelerating)       // First phase of the run
+MAKE_STATE(Cruising)           // Intermediate phase to not exceed maximum velocity
+MAKE_STATE(PreBraking)         // Sub-state between Accelerating/Cruising and Nominal Braking
+MAKE_STATE(NominalBraking)     // Second phase of the run
+MAKE_STATE(Finished)           // State after the run
+MAKE_STATE(FailurePreBraking)  // Sub-state entered before FailureBraking
+MAKE_STATE(FailureBraking)     // Entered upon failure during the run
+MAKE_STATE(FailureStopped)     // Entered upon failure before the run or after
+                               // FailureBraking
 
 #undef MAKE_STATE
 
@@ -94,16 +86,16 @@ class Off : public State {
   Off() {}
   static Off *getInstance() { return &Off::instance_; }
 
-  State *checkTransition(Logger &log);
+  State *checkTransition(utils::Logger &log);
 
-  void enter(Logger &log)
+  void enter(utils::Logger &log)
   {
-    log.INFO("STM", "shutting down");
+    log.info("shutting down");
     utils::System &sys = utils::System::getSystem();
-    sys.running_       = false;
+    sys.stop();
   }
 
-  void exit(Logger &)
+  void exit(utils::Logger &)
   {  // We never exit this state
   }
 
@@ -111,5 +103,4 @@ class Off : public State {
   static Off instance_;
 };
 
-}  // namespace state_machine
-}  // namespace hyped
+}  // namespace hyped::state_machine

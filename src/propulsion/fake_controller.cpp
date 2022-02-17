@@ -21,7 +21,7 @@ void FakeController::registerController()
 
 void FakeController::configure()
 {
-  log_.INFO("FAKE-CONTROLLER", "Controller %d: Configuring", id_);
+  log_.info("Controller %d: Configuring", id_);
 }
 
 void FakeController::startTimer()
@@ -34,28 +34,25 @@ void FakeController::startTimer()
 void FakeController::enterOperational()
 {
   state_ = kOperationEnabled;
-  log_.DBG1("FAKE-CONTROLLER", "Controller %d: entering operational", id_);
+  log_.debug("Controller %d: entering operational", id_);
 }
 
 void FakeController::enterPreOperational()
 {
-  if (state_ != kSwitchOnDisabled) {
-    log_.DBG1("FAKE-CONTROLLER", "Controller %d: shutting down motor", id_);
-  }
+  if (state_ != kSwitchOnDisabled) { log_.debug("Controller %d: shutting down motor", id_); }
   state_           = kSwitchOnDisabled;
   actual_velocity_ = 0;
 }
 
 void FakeController::checkState()
 {
-  log_.DBG1("FAKE-CONTROLLER", "Controller %d: checking status", id_);
+  log_.debug("Controller %d: checking status", id_);
 }
 
 void FakeController::sendTargetVelocity(const int32_t target_velocity)
 {
   if (!timer_started_) { startTimer(); }
-  log_.DBG2("FAKE-CONTROLLER", "Controller %d: updating target velocity to %d", id_,
-            target_velocity);
+  log_.debug("Controller %d: updating target velocity to %d", id_, target_velocity);
   actual_velocity_ = target_velocity;
 }
 
@@ -70,7 +67,7 @@ int32_t FakeController::getVelocity()
 
 void FakeController::quickStop()
 {
-  log_.DBG1("FAKE-CONTROLLER", "Controller %d: sending quick stop command", id_);
+  log_.debug("Controller %d: sending quick stop command", id_);
 }
 
 void FakeController::healthCheck()
@@ -83,7 +80,7 @@ void FakeController::healthCheck()
   }
   if (fail_time_ <= (timer_.getMicros() - start_time_)) {
     critical_failure_ = true;
-    log_.ERR("FAKE-CONTROLLER", "fake critical failure");
+    log_.error("fake critical failure");
   }
 }
 

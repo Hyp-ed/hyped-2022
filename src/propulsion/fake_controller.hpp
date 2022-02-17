@@ -8,7 +8,7 @@
 
 namespace hyped::propulsion {
 
-class FakeController : public ControllerInterface {
+class FakeController : public IController {
  public:
   /**
    * @brief  Construct a new Fake Controller object

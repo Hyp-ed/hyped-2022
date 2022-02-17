@@ -1,54 +1,61 @@
 #include "imu_manager.hpp"
 
+#include <memory>
+
 #include <sensors/fake_imu.hpp>
 #include <sensors/imu.hpp>
-#include <utils/config.hpp>
+#include <utils/system.hpp>
 #include <utils/timer.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::Data;
-using data::Sensors;
-using utils::System;
-
-namespace sensors {
-ImuManager::ImuManager(Logger &log)
-    : Thread(log),
-      sys_(System::getSystem()),
-      data_(Data::getInstance()),
-      imu_{0}
+ImuManager::ImuManager(utils::Logger log,
+                       const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins)
+    : Thread(log)
 {
-  if (!(sys_.fake_imu || sys_.fake_imu_fail)) {
-    utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
-
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {  // creates new real IMU objects
-      imu_[i] = new Imu(log, sys_.config->sensors.chip_select[i], false);
-    }
-  } else if (sys_.fake_imu_fail) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      // change params to fail in kAcccelerating or kNominalBraking states
-      imu_[i] = new FakeImuFromFile(log, "data/in/acc_state.txt", "data/in/decel_state.txt",
-                                    "data/in/decel_state.txt", (i % 2 == 0), false);
-    }
-  } else {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      imu_[i] = new FakeImuFromFile(log, "data/in/acc_state.txt", "data/in/decel_state.txt",
-                                    "data/in/decel_state.txt", false, false);
-    }
+  utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
+  for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
+    imus_.at(i) = std::make_unique<Imu>(log, imu_pins.at(i), false);
   }
-  log_.INFO("IMU-MANAGER", "imu manager has been initialised");
+}
+
+ImuManager::ImuManager(utils::Logger log,
+                       std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus)
+    : Thread(log),
+      imus_(std::move(imus))
+{
+}
+
+std::unique_ptr<ImuManager> ImuManager::fromFile(const std::string &path,
+                                                 std::shared_ptr<FakeTrajectory> fake_trajectory)
+{
+  auto &system = utils::System::getSystem();
+  utils::Logger log("IMU-MANAGER", system.config_.log_level_sensors);
+  const auto fake_imus_optional = FakeImu::fromFile(path, fake_trajectory);
+  if (!fake_imus_optional) {
+    log.error("failed to initialise fake imus");
+    system.stop();
+    return nullptr;
+  }
+  std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus;
+  for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
+    imus.at(i) = std::make_unique<FakeImu>(fake_imus_optional->at(i));
+  }
+  return std::make_unique<ImuManager>(ImuManager(log, std::move(imus)));
 }
 
 void ImuManager::run()
 {
-  // collect real data while system is running
-  while (sys_.running_) {
-    for (int i = 0; i < data::Sensors::kNumImus; i++) {
-      if (imu_[i]) imu_[i]->getData(&(sensors_imu_.value[i]));
+  auto &sys  = utils::System::getSystem();
+  auto &data = data::Data::getInstance();
+  while (sys.isRunning()) {
+    data::DataPoint<std::array<data::ImuData, data::Sensors::kNumImus>> imu_data;
+    for (size_t i = 0; i < imus_.size(); ++i) {
+      imu_data.value[i] = imus_.at(i)->getData();
     }
-    sensors_imu_.timestamp = utils::Timer::getTimeMicros();
-    data_.setSensorsImuData(sensors_imu_);
+    imu_data.timestamp = utils::Timer::getTimeMicros();
+    data.setSensorsImuData(imu_data);
   }
 }
-}  // namespace sensors
-}  // namespace hyped
+
+}  // namespace hyped::sensors

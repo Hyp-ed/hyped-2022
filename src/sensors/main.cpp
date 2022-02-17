@@ -1,70 +1,103 @@
 #include "main.hpp"
 
-#include <sensors/fake_gpio_counter.hpp>
+#include <fstream>
+
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/stringbuffer.h>
+
+#include <sensors/fake_keyence.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
 #include <sensors/temperature.hpp>
-#include <utils/config.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::Data;
-using data::Sensors;
-using data::StripeCounter;
-using hyped::utils::concurrent::Thread;
-using utils::System;
-
-namespace sensors {
-
-Main::Main(uint8_t id, utils::Logger &log)
-    : Thread(id, log),
-      data_(data::Data::getInstance()),
+Main::Main()
+    : utils::concurrent::Thread(
+      utils::Logger("SENSORS", utils::System::getSystem().config_.log_level_sensors)),
       sys_(utils::System::getSystem()),
-      log_(log),
-      pins_{static_cast<uint8_t>(sys_.config->sensors.keyence_l),
-            static_cast<uint8_t>(sys_.config->sensors.keyence_r)},  // NOLINT
-      imu_manager_(new ImuManager(log)),
-      battery_manager_(new BmsManager(log))
+      data_(data::Data::getInstance())
 {
-  if (!(sys_.fake_keyence || sys_.fake_keyence_fail)) {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      GpioCounter *keyence = new GpioCounter(log_, pins_[i]);
-      keyence->start();
-      keyences_[i] = keyence;
+  battery_manager_ = BmsManager::fromFile(sys_.config_.bms_config_path);
+  if (!battery_manager_) {
+    log_.error("failed to initialise bms");
+    sys_.stop();
+    return;
+  }
+  if (sys_.config_.use_fake_trajectory) {
+    const auto fake_trajectory_optional
+      = FakeTrajectory::fromFile(sys_.config_.fake_trajectory_config_path);
+    if (!fake_trajectory_optional) {
+      log_.error("failed to initialise fake trajectory");
+      sys_.stop();
+      return;
     }
-  } else if (sys_.fake_keyence_fail) {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      // miss four stripes in a row after 20th, 2000 micros during peak velocity
-      keyences_[i] = new FakeGpioCounter(log_, true, "data/in/gpio_counter_fail_run.txt");
+    const auto fake_trajectory = std::make_shared<FakeTrajectory>(*fake_trajectory_optional);
+    const auto fake_keyences_optional
+      = FakeKeyence::fromFile(sys_.config_.keyence_config_path, fake_trajectory);
+    if (!fake_keyences_optional) {
+      log_.error("failed to initialise fake keyence");
+      sys_.stop();
+      return;
+    }
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+      keyences_.at(i) = std::make_unique<FakeKeyence>(fake_keyences_optional->at(i));
+    }
+    imu_manager_ = ImuManager::fromFile(sys_.config_.imu_config_path, fake_trajectory);
+    if (!imu_manager_) {
+      log_.error("failed to initialise fake imus");
+      sys_.stop();
+      return;
     }
   } else {
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      keyences_[i] = new FakeGpioCounter(log_, false, "data/in/gpio_counter_normal_run.txt");
+    // Real trajectory sensors
+    auto keyence_pins = keyencePinsFromFile(log_, sys_.config_.keyence_config_path);
+    if (!keyence_pins) {
+      log_.error("failed to initialise keyence");
+      sys_.stop();
+      return;
+    }
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+      auto keyence = std::make_unique<GpioCounter>(keyence_pins->at(i));
+      keyence->start();
+      keyences_[i] = std::move(keyence);
+    }
+    auto imu_pins = imuPinsFromFile(log_, sys_.config_.imu_config_path);
+    if (!imu_pins) {
+      log_.error("failed to initialise IMUs");
+      sys_.stop();
+      return;
+    }
+    imu_manager_ = std::make_unique<ImuManager>(
+      utils::Logger("IMU-MANAGER", sys_.config_.log_level_sensors), *imu_pins);
+    if (!imu_manager_) {
+      log_.error("failed to initialise imus");
+      sys_.stop();
+      return;
     }
   }
-  if (!(sys_.fake_temperature || sys_.fake_temperature_fail)) {
-    temperature_ = new Temperature(log_, sys_.config->sensors.thermistor);
-  } else if (sys_.fake_temperature_fail) {
-    // fake temperature fail case
-    temperature_ = new FakeTemperature(log_, true);
+
+  // Temperature
+  if (sys_.config_.use_fake_temperature_fail) {
+    temperature_ = std::make_unique<FakeTemperature>(log_, true);
+  } else if (sys_.config_.use_fake_temperature) {
+    temperature_ = std::make_unique<FakeTemperature>(log_, false);
   } else {
-    temperature_ = new FakeTemperature(log_, false);
+    auto temperature_pin = temperaturePinFromFile(log_, sys_.config_.temperature_config_path);
+    if (!temperature_pin) {
+      log_.error("failed to initialise temperature sensor");
+      sys_.stop();
+      return;
+    }
+    temperature_ = std::make_unique<Temperature>(log_, *temperature_pin);
   }
 
   // kReady for state machine transition
   sensors_               = data_.getSensorsData();
   sensors_.module_status = data::ModuleStatus::kReady;
   data_.setSensorsData(sensors_);
-  log_.INFO("Sensors", "Sensors have been initialised");
-}
-
-bool Main::keyencesUpdated()
-{
-  for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-    if (prev_keyence_stripe_count_arr_[i].count.value != keyence_stripe_counter_arr_[i].count.value)
-      return true;
-  }
-  return false;
+  log_.info("Sensors have been initialised");
 }
 
 void Main::checkTemperature()
@@ -73,7 +106,7 @@ void Main::checkTemperature()
 
   converted_temp_ = temperature_->getData();
   if (converted_temp_ > 85 && !log_error_) {
-    log_.INFO("Sensors", "PCB temperature is getting a wee high...sorry Cheng");
+    log_.info("Sensors", "PCB temperature is getting a wee high...sorry Cheng");
     log_error_ = true;
   }
 }
@@ -84,36 +117,143 @@ void Main::checkPressure()
 
   converted_pressure_ = pressure_->getData();
   if (converted_pressure_ > 1200 && !log_error_) {
-    log_.INFO("Sensors", "PCB pressure is above what can be sensed");
+    log_.info("Sensors", "PCB pressure is above what can be sensed");
     log_error_ = true;
   }
 }
 
+std::optional<Main::KeyencePins> Main::keyencePinsFromFile(utils::Logger &log,
+                                                           const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("keyence_pins")) {
+    log.error("Missing required field 'sensors.keyence_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  auto keyence_pin_array = config_object["keyence_pins"].GetArray();
+  if (keyence_pin_array.Size() != data::Sensors::kNumKeyence) {
+    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
+              keyence_pin_array.Size(), data::Sensors::kNumKeyence, path.c_str());
+  }
+  KeyencePins keyence_pins;
+  std::size_t i = 0;
+  for (auto &keyence_pin : keyence_pin_array) {
+    keyence_pins.at(i) = static_cast<uint32_t>(keyence_pin.GetUint());
+    ++i;
+  }
+  return keyence_pins;
+}
+
+std::optional<Main::ImuPins> Main::imuPinsFromFile(utils::Logger &log, const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("imu_pins")) {
+    log.error("Missing required field 'sensors.imu_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  auto imu_pin_array = config_object["imu_pins"].GetArray();
+  if (imu_pin_array.Size() != data::Sensors::kNumImus) {
+    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
+              imu_pin_array.Size(), data::Sensors::kNumImus, path.c_str());
+  }
+  ImuPins imu_pins;
+  std::size_t i = 0;
+  for (auto &imu_pin : imu_pin_array) {
+    imu_pins.at(i) = static_cast<uint32_t>(imu_pin.GetUint());
+    ++i;
+  }
+  return imu_pins;
+}
+
+std::optional<std::uint32_t> Main::temperaturePinFromFile(utils::Logger &log,
+                                                          const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("temperature_pin")) {
+    log.error("Missing required field 'sensors.temperature_pin' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  return static_cast<std::uint32_t>(config_object["temperature_pin"].GetUint());
+}
+
 void Main::run()
 {
-  // start all managers
   battery_manager_->start();
   imu_manager_->start();
 
-  // Initalise the keyence arrays
-  keyence_stripe_counter_arr_    = data_.getSensorsData().keyence_stripe_counter;
-  prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
+  auto current_keyence  = data_.getSensorsKeyenceData();
+  auto previous_keyence = current_keyence;
 
   // Intialise temperature and pressure
   temp_ = data_.getSensorsData().temperature;
   pres_ = data_.getSensorsData().pressure;
 
   std::size_t iteration_count = 0;
-  while (sys_.running_) {
-    // We need to read the gpio counters and write to the data structure
-    // If previous is not equal to the new data then update
-    if (keyencesUpdated()) {
-      // Update data structure, make prev reading same as this reading
-      data_.setSensorsKeyenceData(keyence_stripe_counter_arr_);
-      prev_keyence_stripe_count_arr_ = keyence_stripe_counter_arr_;
+  while (sys_.isRunning()) {
+    bool keyence_updated = false;
+    for (size_t i = 0; i < current_keyence.size(); ++i) {
+      if (current_keyence.at(i).timestamp > previous_keyence.at(i).timestamp) {
+        keyence_updated = true;
+        break;
+      }
     }
-    for (int i = 0; i < data::Sensors::kNumKeyence; i++) {
-      keyences_[i]->getData(&keyence_stripe_counter_arr_[i]);
+    if (keyence_updated) {
+      data_.setSensorsKeyenceData(current_keyence);
+      previous_keyence = current_keyence;
+    }
+    for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
+      current_keyence.at(i) = keyences_[i]->getData();
     }
     Thread::sleep(10);  // Sleep for 10ms
     ++iteration_count;
@@ -124,9 +264,7 @@ void Main::run()
       iteration_count = 0;
     }
   }
-
   imu_manager_->join();
   battery_manager_->join();
 }
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

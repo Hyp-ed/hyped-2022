@@ -14,7 +14,7 @@
 
 namespace hyped::propulsion {
 
-class Controller : public ControllerInterface {
+class Controller : public IController {
  public:
   /**
    * @brief Construct a new Controller object

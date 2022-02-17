@@ -4,21 +4,45 @@
 #include "utils.hpp"
 
 #include <cstdint>
+#include <memory>
+
+#include <rapidjson/document.h>
 
 #include <utils/concurrent/barrier.hpp>
 
-namespace hyped {
-
-using utils::concurrent::Barrier;
-
-namespace utils {
-
-// forward declaration
-class Config;
+namespace hyped::utils {
 
 class System {
  public:
-  static void parseArgs(int argc, char *argv[]);
+  struct Config {
+    std::string client_config_path;
+    std::string imu_config_path;
+    std::string keyence_config_path;
+    std::string temperature_config_path;
+    std::string fake_trajectory_config_path;
+    std::string bms_config_path;
+    std::string brakes_config_path;
+    Logger::Level log_level;
+    Logger::Level log_level_brakes;
+    Logger::Level log_level_navigation;
+    Logger::Level log_level_propulsion;
+    Logger::Level log_level_sensors;
+    Logger::Level log_level_state_machine;
+    Logger::Level log_level_telemetry;
+    bool use_fake_trajectory;
+    bool use_fake_batteries;
+    bool use_fake_batteries_fail;
+    bool use_fake_temperature;
+    bool use_fake_temperature_fail;
+    bool use_fake_brakes;
+    bool use_fake_controller;
+    bool use_fake_high_power;
+    std::uint8_t axis;
+    std::uint64_t run_id;
+  };
+  System(const Config &config);
+  static void parseArgs(const int argc, const char *const *const argv);
+  static std::uint64_t newRunId();
   static System &getSystem();
   static Logger &getLogger();
 
@@ -27,85 +51,23 @@ class System {
    */
   static bool setExitFunction();
 
-  // runtime arguments to configure the whole system
-  int8_t verbose;
-  int8_t verbose_motor;
-  int8_t verbose_nav;
-  int8_t verbose_sensor;
-  int8_t verbose_state;
-  int8_t verbose_tlm;
-  int8_t verbose_brakes;
+  bool isRunning();
+  void stop();
 
-  int8_t debug;
-  int8_t debug_motor;
-  int8_t debug_nav;
-  int8_t debug_sensor;
-  int8_t debug_state;
-  int8_t debug_tlm;
-  int8_t debug_brakes;
-
-  // Fake System variables below
-  bool fake_imu;
-  bool fake_batteries;
-  bool fake_keyence;
-  bool fake_temperature;
-  bool fake_brakes;
-  bool fake_motors;
-
-  // Fake Fail System variables below
-  bool fake_imu_fail;
-  bool fake_batteries_fail;
-  bool fake_keyence_fail;
-  bool fake_temperature_fail;
-
-  // sensor test variables below
-  bool battery_test;
-  bool fake_highpower;
-
-  // Navigation System IDs
-  int8_t imu_id;
-  int8_t run_id;
-  // Navigation IMU axis
-  int8_t axis;
-  // Navigation kind of run
-  bool official_run;
-  bool elevator_run;
-  bool stationary_run;
-  bool outside_run;
-  // Write acc,vel,pos to file
-  bool enable_nav_write;
-
-  // Telemetry
-  bool telemetry_off;
-
-  // barriers
-  /**
-   * @brief Barrier used by navigation and motor control modules on state machine transition
-   *        to accelerating state. Navigation must finish calibration before motors start spinning.
-   */
-  Barrier navigation_motors_sync_ = Barrier(2);
-  bool running_;
-
-  char config_file[250];
-  Config *config;
+  const Config config_;
 
  private:
-  Logger *log_;
+  utils::concurrent::Lock lock_;
+  bool running_;
+  Logger log_;
+
+  inline static std::unique_ptr<System> system_;
+
+  static void interruptHandler(int);
+  static void segfaultHandler(int);
+
   System() = delete;
-
-  /**
-   * @brief Construct a new System object, parameters used by getopt_long to set verbose and debug
-   *
-   * @param argc argument count
-   * @param argv argument array
-   */
-  System(int argc, char *argv[]);
-  ~System();
-  static System *system_;
-
-  // macro to help implemet singleton
   NO_COPY_ASSIGN(System)
 };
 
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils

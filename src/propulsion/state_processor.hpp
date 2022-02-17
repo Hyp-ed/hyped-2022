@@ -82,8 +82,6 @@ class StateProcessor {
 
   /**
    * @brief Calculate the Average rpm of all motors
-   *
-   * @param controllers
    * @return int32_t
    */
   int32_t calculateAverageRpm();
@@ -91,7 +89,6 @@ class StateProcessor {
   /**
    * @brief calculate the max Current drawn out of all the motors
    *
-   * @param controllers
    * @return int32_t
    */
   int16_t calculateMaximumCurrent();
@@ -99,16 +96,16 @@ class StateProcessor {
   /**
    * @brief Calculate the max temperature out of all the motors
    *
-   * @param controllers
    * @return int32_t
    */
+
   int32_t calculateMaximumTemperature();
 
   utils::Logger &log_;
   utils::System &sys_;
   data::Data &data_;
   bool is_initialised_;
-  std::array<std::unique_ptr<ControllerInterface>, data::Motors::kNumMotors> controllers_;
+  std::array<std::unique_ptr<IController>, data::Motors::kNumMotors> controllers_;
   RpmRegulator rpm_regulator_;
   uint64_t previous_acceleration_time_;
 };

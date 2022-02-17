@@ -22,9 +22,9 @@ void Temperature::run()
   ADC thepin(pin_);
   temp_.temp         = 0;
   uint16_t raw_value = thepin.read();
-  log_.DBG3("TEMPERATURE", "Raw Data: %d", raw_value);
+  log_.debug("Raw Data: %d", raw_value);
   temp_.temp = scaleData(raw_value);
-  log_.DBG3("TEMPERATURE", "Scaled Data: %d", temp_.temp);
+  log_.debug("Scaled Data: %d", temp_.temp);
   temp_.operational = true;
 }
 

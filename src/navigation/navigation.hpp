@@ -87,7 +87,7 @@ class Navigation {
    *
    * @param pointer to array of original acceleration readings
    */
-  void calculate_imu_quartiles(NavigationArray &data_array);
+  void calculateImuQuartiles(NavigationArray &data_array);
   /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *

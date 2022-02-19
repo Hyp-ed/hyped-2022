@@ -308,7 +308,7 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold)
+void Navigation::calculateImuQuartiles(NavigationArray &data_array)
 {
   std::vector<data::nav_t> data_vector;
 
@@ -316,30 +316,35 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::na
     if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
   }
   std::sort(data_vector.begin(), data_vector.end());
-  data::nav_t q1, q2, q3;
-  q1 = (data_vector.at(0) + data_vector.at(1)) / 2.;
-  q3 = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
+  quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
+  quartile_bounds.at(2)
+    = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
   if (num_outlier_imus_ == 0) {
-    q2 = (data_vector.at(1) + data_vector.at(2)) / 2.;
+    quartile_bounds.at(1) = (data_vector.at(1) + data_vector.at(2)) / 2.;
   } else if (num_outlier_imus_ == 1) {
-    q2 = data_vector.at(1);
+    quartile_bounds.at(1) = data_vector.at(1);
   } else {
     status_ = data::ModuleStatus::kCriticalFailure;
     log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
   }
+}
+
+void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold)
+{
+  calculateImuQuartiles(data_array);
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
-  const auto iqr         = std::min(q3 - q1, kMaxInterQuartileRange);
-  const auto upper_limit = q3 + threshold * iqr;
-  const auto lower_limit = q1 - threshold * iqr;
+  const auto iqr = std::min(quartile_bounds.at(2) - quartile_bounds.at(0), kMaxInterQuartileRange);
+  const auto upper_limit = quartile_bounds.at(2) + threshold * iqr;
+  const auto lower_limit = quartile_bounds.at(0) - threshold * iqr;
   // replace any outliers with the median
   for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_imu_reliable_.at(i)) {
       log_.debug("Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
-                 i + 1, data_array.at(i), lower_limit, upper_limit, q2);
-      data_array.at(i) = q2;
+                 i + 1, data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
+      data_array.at(i) = quartile_bounds.at(1);
       imu_outlier_counter_.at(i)++;
       // If this counter exceeds some threshold then that IMU is deemed unreliable
       if (imu_outlier_counter_.at(i) > 1000 && is_imu_reliable_.at(i)) {

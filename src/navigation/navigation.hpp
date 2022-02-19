@@ -83,6 +83,12 @@ class Navigation {
    */
   void calibrateGravity();
   /**
+   * @brief Calculate quartiles for an array of readings. Updates quartile_bounds array
+   *
+   * @param pointer to array of original acceleration readings
+   */
+  void calculate_imu_quartiles(NavigationArray &data_array);
+  /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *
    * @param pointer to array of original acceleration readings
@@ -159,6 +165,8 @@ class Navigation {
   std::array<data::nav_t, 3> calibration_limits_;
   // Calibration variances in each dimension, necessary for vibration checking
   std::array<data::nav_t, 3> calibration_variance_;
+  // Quartiles of reliable IMU readings of form (q1, q2(\median), q3)
+  std::array<data::nav_t, 3> quartile_bounds;
 
   // Array of previous measurements
   std::array<ImuAxisData, kPreviousMeasurements> previous_measurements_;

@@ -5,8 +5,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data_point.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data_point.hpp>
 #include <utils/math/integrator.hpp>
 
 namespace hyped {
@@ -62,10 +63,11 @@ TEST(IntegratorFunctionalityTest, handlesInitializationTest)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used to setup all needed variables to make property tests of Integrator
+ * @brief class used to setup all needed variables to make property tests of Integrator
  *
  */
-struct IntegratorPropertyTest : public ::testing::Test {
+class IntegratorPropertyTest : public ::testing::Test {
+ protected:
   int number_of_points = 101;
   DataPoint<float> datafunction[101];
 
@@ -179,10 +181,11 @@ TEST_F(IntegratorPropertyTest, ConstantMultiplyTest)
 // Linear Tests
 // -------------------------------------------------------------------------------------------------
 /**
- * @brief struct used to set up all needed variables to make linear tests of Integrator
+ * @brief class used to set up all needed variables to make linear tests of Integrator
  *
  */
-struct IntegratorTestLinear : public ::testing::Test {
+class IntegratorTestLinear : public ::testing::Test {
+ protected:
   int max_time = 100;
   DataPoint<float> datatry[101];
   DataPoint<float> datatry2[101];

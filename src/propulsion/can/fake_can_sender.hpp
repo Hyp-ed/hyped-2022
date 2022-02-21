@@ -11,7 +11,7 @@
 
 namespace hyped::propulsion {
 
-class FakeCanSender : public utils::io::CanProccesor, public SenderInterface {
+class FakeCanSender : public utils::io::CanProccesor, public ISender {
  public:
   FakeCanSender(utils::Logger &log_, uint8_t id);
 

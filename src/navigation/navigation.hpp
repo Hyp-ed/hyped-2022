@@ -16,8 +16,7 @@
 #include <utils/math/integrator.hpp>
 #include <utils/math/statistics.hpp>
 
-namespace hyped {
-namespace navigation {
+namespace hyped::navigation {
 
 class Navigation {
  public:
@@ -35,7 +34,7 @@ class Navigation {
    * @param log System logger
    * @param axis Axis used of acceleration measurements
    */
-  explicit Navigation(utils::Logger &log, uint32_t axis = 0);
+  explicit Navigation(const std::uint32_t axis = 0);
   /**
    * @brief Get the current state of the navigation module
    *
@@ -140,8 +139,6 @@ class Navigation {
   static constexpr data::nav_t kTukeyThreshold        = 1;  // 0.75
   static constexpr data::nav_t kTukeyIQRBound         = 3;
 
-  static constexpr data::nav_t kStripeDistance = 30.48;
-
   static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
   static constexpr uint32_t kNumBrakes               = 4;
@@ -150,11 +147,9 @@ class Navigation {
   static constexpr data::nav_t kSpringCoefficient    = 18;
   static constexpr data::nav_t kEmbrakeAngle         = 0.52;
 
-  static constexpr data::nav_t kPi = 3.14159265359;  // Have to approximate
-
   // System communication
-  utils::Logger &log_;
   data::Data &data_;
+  utils::Logger log_;
   data::ModuleStatus status_;
 
   uint32_t log_counter_;
@@ -211,7 +206,6 @@ class Navigation {
   StripeHandler stripe_counter_;
   // Flags if keyences are used and if real
   bool is_keyence_used_;
-  bool is_keyence_real_;
 
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
@@ -236,5 +230,4 @@ class Navigation {
   void checkVibration();
 };
 
-}  // namespace navigation
-}  // namespace hyped
+}  // namespace hyped::navigation

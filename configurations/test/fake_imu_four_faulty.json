@@ -1,0 +1,20 @@
+{
+  "fake_imu": [
+    {
+      "failure_in_state": "NominalBraking",
+      "noise": 0.04
+    },
+    {
+      "failure_in_state": "Cruising",
+      "noise": 0.021
+    },
+    {
+      "failure_in_state": "EmergencyBraking",
+      "noise": 0.03
+    },
+    {
+      "failure_in_state": "Accelerating",
+      "noise": 0.09
+    }
+  ]
+}

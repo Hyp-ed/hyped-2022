@@ -27,15 +27,8 @@ void KalmanFilter::setup()
   Eigen::MatrixXf H = createMeasurementMatrix();
 
   // check system navigation run for R setup
-  const auto &sys   = utils::System::getSystem();
-  Eigen::MatrixXf R = Eigen::MatrixXf::Zero(m_, m_);
-
-  if (sys.official_run || sys.outside_run)
-    R = createTrackMeasurementCovarianceMatrix();
-  else if (sys.elevator_run)
-    R = createElevatorMeasurementCovarianceMatrix();
-  else if (sys.stationary_run)
-    R = createStationaryMeasurementCovarianceMatrix();
+  Eigen::MatrixXf R;
+  R = createTrackMeasurementCovarianceMatrix();
 
   kalmanFilter_.setModels(A, Q, H, R);
 
@@ -138,7 +131,7 @@ data::nav_t KalmanFilter::getEstimate()
   return estimate;
 }
 
-const data::nav_t KalmanFilter::getEstimateVariance()
+data::nav_t KalmanFilter::getEstimateVariance()
 {
   Eigen::MatrixXf P      = kalmanFilter_.getStateCovariance();
   data::nav_t covariance = P(0, 0);

@@ -7,14 +7,14 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
 #include <utils/logger.hpp>
 
-using namespace hyped::data;
-using namespace hyped::state_machine;
+namespace hyped::testing {
 
 //---------------------------------------------------------------------------
 // Randomiser
@@ -27,19 +27,26 @@ using namespace hyped::state_machine;
 class Randomiser {
  public:
   // Generates a random floating point number in the inverval [0.0, 1.0].
-  static nav_t randomDecimal()
+  static data::nav_t randomDecimal()
   {
     static std::default_random_engine generator;
-    static std::uniform_real_distribution<nav_t> distribution(0.0, 1.0);
+    static std::uniform_real_distribution<data::nav_t> distribution(0.0, 1.0);
     return distribution(generator);
   }
 
+  static data::nav_t randomInRange(const data::nav_t lower, const data::nav_t upper)
+  {
+    static std::default_random_engine random_engine;
+    std::uniform_real_distribution<> distribution(lower, upper);
+    return distribution(random_engine);
+  }
+
   // Randomises a module status to any of the possible values.
-  static void randomiseModuleStatus(ModuleStatus &module_status)
+  static void randomiseModuleStatus(data::ModuleStatus &module_status)
   {
     // Randomises the module status.
     constexpr int num_statuses = 4;
-    module_status              = static_cast<ModuleStatus>(rand() % num_statuses);
+    module_status              = static_cast<data::ModuleStatus>(rand() % num_statuses);
   }
 
   //---------------------------------------------------------------------------
@@ -47,26 +54,26 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::Navigation struct.
-  static void randomiseNavigation(Navigation &nav_data)
+  static void randomiseNavigation(data::Navigation &nav_data)
   {
     randomiseModuleStatus(nav_data.module_status);
 
     // Generates a displacement length between 750 and 1749.
-    nav_data.displacement = static_cast<nav_t>((rand() % 1000 + 750) + randomDecimal());
+    nav_data.displacement = static_cast<data::nav_t>((rand() % 1000 + 750) + randomDecimal());
 
     // Generates a velocity length between -10 and 200.
-    nav_data.velocity = static_cast<nav_t>((rand() % 201 - 10) + randomDecimal());
+    nav_data.velocity = static_cast<data::nav_t>((rand() % 201 - 10) + randomDecimal());
 
     // Generates an acceleration length between 75 and 174.
-    nav_data.acceleration = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
+    nav_data.acceleration = static_cast<data::nav_t>((rand() % 100 + 75) + randomDecimal());
 
     // Generates an emergency braking distance length between 600 and 899.
     nav_data.emergency_braking_distance
-      = static_cast<nav_t>((rand() % 300 + 600) + randomDecimal());
+      = static_cast<data::nav_t>((rand() % 300 + 600) + randomDecimal());
 
     // Generates a braking distance length between 600 and 899.
     // Initially declared braking distance = 750
-    nav_data.braking_distance = static_cast<nav_t>((rand() % 300 + 600) + randomDecimal());
+    nav_data.braking_distance = static_cast<data::nav_t>((rand() % 300 + 600) + randomDecimal());
   }
 
   //---------------------------------------------------------------------------
@@ -74,40 +81,34 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::ImuData struct.
-  static void randomiseImuData(ImuData &imu_data)
+  static void randomiseImuData(data::ImuData &imu_data)
   {
     for (int i = 0; i < 3; i++) {
-      imu_data.acc[i] = static_cast<nav_t>((rand() % 100 + 75) + randomDecimal());
+      imu_data.acc[i] = static_cast<data::nav_t>((rand() % 100 + 75) + randomDecimal());
     }
     for (int i = 0; i < 3; i++) {
-      imu_data.fifo.push_back(static_cast<NavigationVector>((rand() % 100 + 75) + randomDecimal()));
+      imu_data.fifo.push_back(
+        static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
-  }
-
-  // Randomises the entries in a hyped::data::EncoderData struct.
-  static void randomiseEncoderData(EncoderData &encoder_data)
-  {
-    // Generates a disp value between 750 and 1749 in accord to the randomised displacement value.
-    encoder_data.disp = static_cast<nav_t>((rand() % 1000 + 750) + randomDecimal());
   }
 
   // Randomises the entries in a hyped::data::StripeCounter struct.
-  static void randomiseStripeCounter(StripeCounter &stripe_counter)
+  static void randomiseCounter(data::CounterData &stripe_counter)
   {
     // Generates a count timestamp and value between 0 and 10.
-    stripe_counter.count.timestamp = static_cast<uint32_t>(rand() % 11);
-    stripe_counter.count.value     = static_cast<uint32_t>(rand() % 11);
+    stripe_counter.timestamp = static_cast<uint32_t>(rand() % 11);
+    stripe_counter.value     = static_cast<uint32_t>(rand() % 11);
   }
 
   // Randomises the entries in a hyped::data::TemperatureData struct.
-  static void randomiseTemperatureData(TemperatureData &temp_data)
+  static void randomiseTemperatureData(data::TemperatureData &temp_data)
   {
     // Generates a temperature value between 0 and 99 C.
     temp_data.temp = static_cast<int>(rand() % 100);
   }
 
   // Randomises the entries in a hyped::data::Sensors struct.
-  static void randomiseSensorsData(Sensors &sensors_data)
+  static void randomiseSensorsData(data::Sensors &sensors_data)
   {
     randomiseModuleStatus(sensors_data.module_status);
 
@@ -115,12 +116,11 @@ class Randomiser {
     for (auto &sensors_data : sensors_data.imu.value) {
       randomiseImuData(sensors_data);
     }
-    sensors_data.encoder.timestamp = static_cast<uint32_t>(rand() % 11);
-    for (auto &sensors_data : sensors_data.encoder.value) {
-      randomiseEncoderData(sensors_data);
+    for (auto &sensors_data : sensors_data.wheel_encoders) {
+      randomiseCounter(sensors_data);
     }
-    for (auto &sensors_data : sensors_data.keyence_stripe_counter) {
-      randomiseStripeCounter(sensors_data);
+    for (auto &sensors_data : sensors_data.keyence_stripe_counters) {
+      randomiseCounter(sensors_data);
     }
   }
 
@@ -129,7 +129,7 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::BatteryData struct.
-  static void randomiseBatteryData(BatteryData &battery_data)
+  static void randomiseBatteryData(data::BatteryData &battery_data)
   {
     // Generates a voltage data between 0 and 499.
     battery_data.voltage = static_cast<uint16_t>(rand() % 500);
@@ -143,7 +143,7 @@ class Randomiser {
     // Generates an average temperature data between 0 and 99 C.
     battery_data.average_temperature = static_cast<int8_t>(rand() % 100);
 
-    // Below only for BMSHP! Value for BMSLP = 0
+    // Below only for HighPowerBms! Value for BMSLP = 0
     // Generates a cell voltage data between 0 and 50000 mV.
     for (int i = 0; i < 36; i++) {
       battery_data.cell_voltage[i] = static_cast<uint16_t>((rand() % 500) * 100);
@@ -166,7 +166,7 @@ class Randomiser {
   }
 
   // Randomises the entries in a hyped::data::Batteries struct.
-  static void randomiseBatteriesData(Batteries &batteries_data)
+  static void randomiseBatteriesData(data::Batteries &batteries_data)
   {
     randomiseModuleStatus(batteries_data.module_status);
 
@@ -183,7 +183,7 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::EmergencyBrakes struct.
-  static void randomiseBrakes(EmergencyBrakes &brakes_data)
+  static void randomiseBrakes(data::EmergencyBrakes &brakes_data)
   {
     randomiseModuleStatus(brakes_data.module_status);
 
@@ -197,7 +197,7 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::Motors struct.
-  static void randomiseMotors(Motors &motors_data)
+  static void randomiseMotors(data::Motors &motors_data)
   {
     randomiseModuleStatus(motors_data.module_status);
 
@@ -212,7 +212,7 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::Telemetry struct.
-  static void randomiseTelemetry(Telemetry &telemetry_data)
+  static void randomiseTelemetry(data::Telemetry &telemetry_data)
   {
     randomiseModuleStatus(telemetry_data.module_status);
 
@@ -230,8 +230,9 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::StateMachine struct.
-  static void randomiseStateMachine(StateMachine &stm_data)
+  static void randomiseStateMachine(data::StateMachine &stm_data)
   {
     stm_data.critical_failure = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
 };
+}  // namespace hyped::testing

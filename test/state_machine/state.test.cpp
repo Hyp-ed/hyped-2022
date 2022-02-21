@@ -8,8 +8,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
 #include <utils/logger.hpp>
@@ -26,15 +27,15 @@ namespace hyped::testing {
  */
 
 class StateTest : public hyped::testing::Test {
-  Data &data_ = Data::getInstance();
+  data::Data &data_ = data::Data::getInstance();
 
  protected:
-  EmergencyBrakes brakes_data_;
-  Navigation nav_data_;
-  Batteries batteries_data_;
-  Telemetry telemetry_data_;
-  Sensors sensors_data_;
-  Motors motors_data_;
+  data::EmergencyBrakes brakes_data_;
+  data::Navigation nav_data_;
+  data::Batteries batteries_data_;
+  data::Telemetry telemetry_data_;
+  data::Sensors sensors_data_;
+  data::Motors motors_data_;
 
   // ---- Test size -----------
 
@@ -61,10 +62,6 @@ class StateTest : public hyped::testing::Test {
     data_.setSensorsData(sensors_data_);
     data_.setBatteriesData(batteries_data_);
   }
-
-  void SetUp() { disableOutput(); }
-
-  void TearDown() { enableOutput(); }
 };
 
 //---------------------------------------------------------------------------
@@ -74,8 +71,9 @@ class StateTest : public hyped::testing::Test {
 /**
  * Testing Idle behaviour with respect to data
  */
-struct IdleTest : public StateTest {
-  Idle *state = Idle::getInstance();
+class IdleTest : public StateTest {
+ protected:
+  state_machine::Idle *state = state_machine::Idle::getInstance();
 };
 
 /**
@@ -87,19 +85,17 @@ TEST_F(IdleTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from Idle";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Idle";
     }
-    disableOutput();
   }
 }
 
@@ -112,24 +108,22 @@ TEST_F(IdleTest, handlesAllInitialised)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool all_initialised
-        = checkModulesInitialised(log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
-                                  sensors_data_, motors_data_);
+        = state_machine::checkModulesInitialised(log_, brakes_data_, nav_data_, batteries_data_,
+                                                 telemetry_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
-      enableOutput();
       if (all_initialised) {
-        ASSERT_EQ(new_state, PreCalibrating::getInstance())
+        ASSERT_EQ(new_state, state_machine::PreCalibrating::getInstance())
           << "failed to enter PreCalibrating from Idle";
       } else {
-        ASSERT_NE(new_state, PreCalibrating::getInstance())
+        ASSERT_NE(new_state, state_machine::PreCalibrating::getInstance())
           << "falsely entered PreCalibrating from Idle";
       }
-      disableOutput();
     }
   }
 }
@@ -138,8 +132,9 @@ TEST_F(IdleTest, handlesAllInitialised)
 // Pre- Calibrating Tests
 //---------------------------------------------------------------------------
 
-struct PreCalibratingTest : public StateTest {
-  PreCalibrating *state = PreCalibrating::getInstance();
+class PreCalibratingTest : public StateTest {
+ protected:
+  state_machine::PreCalibrating *state = state_machine::PreCalibrating::getInstance();
 };
 
 /**
@@ -151,19 +146,17 @@ TEST_F(PreCalibratingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from PreCalibrating";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from PreCalibrating";
     }
-    disableOutput();
   }
 }
 
@@ -178,22 +171,20 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool calibrate_command = checkCalibrateCommand(telemetry_data_);
+      const bool calibrate_command = state_machine::checkCalibrateCommand(telemetry_data_);
       const auto new_state         = state->checkTransition(log_);
 
-      enableOutput();
       if (calibrate_command) {
-        ASSERT_EQ(new_state, Calibrating::getInstance())
+        ASSERT_EQ(new_state, state_machine::Calibrating::getInstance())
           << "failed to enter Calibrating from PreCalibrating";
       } else {
-        ASSERT_NE(new_state, Calibrating::getInstance())
+        ASSERT_NE(new_state, state_machine::Calibrating::getInstance())
           << "falsely entered Calibrating from PreCalibrating";
       }
-      disableOutput();
     }
   }
 }
@@ -206,8 +197,9 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
  * Testing Calibrating behaviour with respect to data
  */
 
-struct CalibratingTest : public StateTest {
-  Calibrating *state = Calibrating::getInstance();
+class CalibratingTest : public StateTest {
+ protected:
+  state_machine::Calibrating *state = state_machine::Calibrating::getInstance();
 };
 
 /**
@@ -219,19 +211,17 @@ TEST_F(CalibratingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from Calibrating";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Calibrating";
     }
-    disableOutput();
   }
 }
 
@@ -245,21 +235,22 @@ TEST_F(CalibratingTest, handlesAllReady)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                        telemetry_data_, sensors_data_, motors_data_);
+    bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool all_ready = checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
-                                               telemetry_data_, sensors_data_, motors_data_);
+      const bool all_ready
+        = state_machine::checkModulesReady(log_, brakes_data_, nav_data_, batteries_data_,
+                                           telemetry_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
-      enableOutput();
       if (all_ready) {
-        ASSERT_EQ(new_state, Ready::getInstance()) << "failed to enter Ready from Calibrating";
+        ASSERT_EQ(new_state, state_machine::Ready::getInstance())
+          << "failed to enter Ready from Calibrating";
       } else {
-        ASSERT_NE(new_state, Ready::getInstance()) << "falsely entered Ready from Calibrating";
+        ASSERT_NE(new_state, state_machine::Ready::getInstance())
+          << "falsely entered Ready from Calibrating";
       }
-      disableOutput();
     }
   }
 }
@@ -271,8 +262,9 @@ TEST_F(CalibratingTest, handlesAllReady)
 /**
  * Testing Ready behaviour with respect to data
  */
-struct ReadyTest : public StateTest {
-  Ready *state = Ready::getInstance();
+class ReadyTest : public StateTest {
+ protected:
+  state_machine::Ready *state = state_machine::Ready::getInstance();
 };
 
 /**
@@ -286,19 +278,17 @@ TEST_F(ReadyTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from Ready";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Ready";
     }
-    disableOutput();
   }
 }
 
@@ -314,22 +304,20 @@ TEST_F(ReadyTest, handlesLaunchCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool received_launch_command = checkLaunchCommand(telemetry_data_);
+      const bool received_launch_command = state_machine::checkLaunchCommand(telemetry_data_);
       const auto new_state               = state->checkTransition(log_);
 
-      enableOutput();
       if (received_launch_command) {
-        ASSERT_EQ(new_state, Accelerating::getInstance())
+        ASSERT_EQ(new_state, state_machine::Accelerating::getInstance())
           << "failed to enter Accelerating from Ready";
       } else {
-        ASSERT_NE(new_state, Accelerating::getInstance())
+        ASSERT_NE(new_state, state_machine::Accelerating::getInstance())
           << "falsely entered Accelerating from Ready";
       }
-      disableOutput();
     }
   }
 }
@@ -341,8 +329,9 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 /**
  * Testing Accelerating behaviour with respect to data
  */
-struct AcceleratingTest : public StateTest {
-  Accelerating *state = Accelerating::getInstance();
+class AcceleratingTest : public StateTest {
+ protected:
+  state_machine::Accelerating *state = state_machine::Accelerating::getInstance();
 };
 
 /**
@@ -356,19 +345,17 @@ TEST_F(AcceleratingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailurePreBraking::getInstance())
-        << "failed to enter FailurePreBraking from Accelerating";
+      ASSERT_EQ(new_state, state_machine::FailurePreBraking::getInstance())
+        << "failed to enter FailureBraking from Accelerating";
     } else {
-      ASSERT_NE(new_state, FailurePreBraking::getInstance())
-        << "falsely entered FailurePreBraking from Accelerating";
+      ASSERT_NE(new_state, state_machine::FailurePreBraking::getInstance())
+        << "falsely entered FailureBraking from Accelerating";
     }
-    disableOutput();
   }
 }
 
@@ -384,22 +371,20 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool in_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
+      const bool in_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
       const auto new_state       = state->checkTransition(log_);
 
-      enableOutput();
       if (in_braking_zone) {
-        ASSERT_EQ(new_state, PreBraking::getInstance())
+        ASSERT_EQ(new_state, state_machine::PreBraking::getInstance())
           << "failed to enter PreBraking from Accelerating";
       } else {
-        ASSERT_NE(new_state, PreBraking::getInstance())
+        ASSERT_NE(new_state, state_machine::PreBraking::getInstance())
           << "falsely entered PreBraking from Accelerating";
       }
-      disableOutput();
     }
   }
 }
@@ -422,30 +407,26 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
     nav_data_.displacement     = 0;
 
     // Enforce Accelerating -> Cruising
-    nav_data_.velocity = Navigation::kMaximumVelocity;
+    nav_data_.velocity = state_machine::Navigation::kMaximumVelocity;
 
     // reading and writing to the CDS directly to update navigation data
-    Data &data_ = Data::getInstance();
+    auto &data_ = data::Data::getInstance();
     data_.setNavigationData(nav_data_);
-    auto navigation_data = data_.getNavigationData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool in_braking_zone      = checkEnteredBrakingZone(log_, nav_data_);
-      const bool reached_max_velocity = checkReachedMaxVelocity(log_, nav_data_);
+      const bool reached_max_velocity = state_machine::checkReachedMaxVelocity(log_, nav_data_);
       const auto new_state            = state->checkTransition(log_);
 
-      enableOutput();
       if (reached_max_velocity) {
-        ASSERT_EQ(new_state, Cruising::getInstance())
+        ASSERT_EQ(new_state, state_machine::Cruising::getInstance())
           << "failed to enter Cruising from Accelerating";
       } else {
-        ASSERT_NE(new_state, Cruising::getInstance())
+        ASSERT_NE(new_state, state_machine::Cruising::getInstance())
           << "falsely entered Cruising from Accelerating";
       }
-      disableOutput();
     }
   }
 }
@@ -457,8 +438,9 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
 /**
  * Testing Cruising behaviour with respect to data
  */
-struct CruisingTest : public StateTest {
-  Cruising *state = Cruising::getInstance();
+class CruisingTest : public StateTest {
+ protected:
+  state_machine::Cruising *state = state_machine::Cruising::getInstance();
 };
 
 /**
@@ -472,19 +454,17 @@ TEST_F(CruisingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailurePreBraking::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailurePreBraking::getInstance())
         << "failed to enter FailurePreBraking from Cruising";
     } else {
-      ASSERT_NE(new_state, FailurePreBraking::getInstance())
+      ASSERT_NE(new_state, state_machine::FailurePreBraking::getInstance())
         << "falsely entered FailurePreBraking from Cruising";
     }
-    disableOutput();
   }
 }
 
@@ -500,22 +480,20 @@ TEST_F(CruisingTest, handlesInBrakingZone)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool in_braking_zone = checkEnteredBrakingZone(log_, nav_data_);
+      const bool in_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
       const auto new_state       = state->checkTransition(log_);
 
-      enableOutput();
       if (in_braking_zone) {
-        ASSERT_EQ(new_state, PreBraking::getInstance())
+        ASSERT_EQ(new_state, state_machine::PreBraking::getInstance())
           << "failed to enter PreBraking from Cruising";
       } else {
-        ASSERT_NE(new_state, PreBraking::getInstance())
+        ASSERT_NE(new_state, state_machine::PreBraking::getInstance())
           << "falsely entered PreBraking from Cruising";
       }
-      disableOutput();
     }
   }
 }
@@ -526,8 +504,9 @@ TEST_F(CruisingTest, handlesInBrakingZone)
 /**
  * Testing PreBraking behaviour with respect to data
  */
-struct PreBrakingTest : public StateTest {
-  PreBraking *state = PreBraking::getInstance();
+class PreBrakingTest : public StateTest {
+ protected:
+  state_machine::PreBraking *state = state_machine::PreBraking::getInstance();
 };
 
 /**
@@ -541,19 +520,17 @@ TEST_F(PreBrakingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailurePreBraking::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailurePreBraking::getInstance())
         << "failed to enter FailurePreBraking from PreBraking";
     } else {
-      ASSERT_NE(new_state, FailurePreBraking::getInstance())
+      ASSERT_NE(new_state, state_machine::FailurePreBraking::getInstance())
         << "falsely entered FailurePreBraking from PreBraking";
     }
-    disableOutput();
   }
 }
 
@@ -568,22 +545,20 @@ TEST_F(PreBrakingTest, handlesHighPowerOff)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool has_high_power_off = checkHighPowerOff(sensors_data_);
+      const bool has_high_power_off = state_machine::checkHighPowerOff(sensors_data_);
       const auto new_state          = state->checkTransition(log_);
 
-      enableOutput();
       if (has_high_power_off) {
-        ASSERT_EQ(new_state, NominalBraking::getInstance())
+        ASSERT_EQ(new_state, state_machine::NominalBraking::getInstance())
           << "failed to enter NominalBraking from PreBraking";
       } else {
-        ASSERT_NE(new_state, NominalBraking::getInstance())
+        ASSERT_NE(new_state, state_machine::NominalBraking::getInstance())
           << "falsely entered NominalBraking from PreBraking";
       }
-      disableOutput();
     }
   }
 }
@@ -595,8 +570,9 @@ TEST_F(PreBrakingTest, handlesHighPowerOff)
 /**
  * Testing NominalBraking behaviour with respect to data
  */
-struct NominalBrakingTest : public StateTest {
-  NominalBraking *state = NominalBraking::getInstance();
+class NominalBrakingTest : public StateTest {
+ protected:
+  state_machine::NominalBraking *state = state_machine::NominalBraking::getInstance();
 };
 
 /**
@@ -610,19 +586,17 @@ TEST_F(NominalBrakingTest, handlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
-    const auto new_state     = state->checkTransition(log_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (has_emergency) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureBraking::getInstance())
         << "failed to enter FailureBraking from NominalBraking";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureBraking::getInstance())
         << "falsely entered FailureBraking from NominalBraking";
     }
-    disableOutput();
   }
 }
 
@@ -637,22 +611,20 @@ TEST_F(NominalBrakingTest, handlesStopped)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_emergency = checkEmergency(log_, brakes_data_, nav_data_, batteries_data_,
-                                              telemetry_data_, sensors_data_, motors_data_);
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool stopped   = checkPodStopped(log_, nav_data_);
+      const bool stopped   = state_machine::checkPodStopped(log_, nav_data_);
       const auto new_state = state->checkTransition(log_);
 
-      enableOutput();
       if (stopped) {
-        ASSERT_EQ(new_state, Finished::getInstance())
+        ASSERT_EQ(new_state, state_machine::Finished::getInstance())
           << "failed to enter Finished from NominalBraking";
       } else {
-        ASSERT_NE(new_state, Finished::getInstance())
+        ASSERT_NE(new_state, state_machine::Finished::getInstance())
           << "falsely entered Finished from NominalBraking";
       }
-      disableOutput();
     }
   }
 }
@@ -664,8 +636,9 @@ TEST_F(NominalBrakingTest, handlesStopped)
 /**
  * Testing Finished behaviour with respect to data
  */
-struct FinishedTest : public StateTest {
-  Finished *state = Finished::getInstance();
+class FinishedTest : public StateTest {
+ protected:
+  state_machine::Finished *state = state_machine::Finished::getInstance();
 };
 
 /**
@@ -679,16 +652,16 @@ TEST_F(FinishedTest, handlesShutdownCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool received_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
-    enableOutput();
     if (received_shutdown_command) {
-      ASSERT_EQ(new_state, Off::getInstance()) << "failed to enter Off from Finished";
+      ASSERT_EQ(new_state, state_machine::Off::getInstance())
+        << "failed to enter Off from Finished";
     } else {
-      ASSERT_NE(new_state, Off::getInstance()) << "falsely entered Off from Finished";
+      ASSERT_NE(new_state, state_machine::Off::getInstance())
+        << "falsely entered Off from Finished";
     }
-    disableOutput();
   }
 }
 
@@ -699,8 +672,9 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 /**
  * Testing failure pre-braking behaviour with respect to data
  */
-struct FailurePreBrakingTest : public StateTest {
-  FailurePreBraking *state = FailurePreBraking::getInstance();
+class FailurePreBrakingTest : public StateTest {
+ protected:
+  state_machine::FailurePreBraking *state = state_machine::FailurePreBraking::getInstance();
 };
 
 /**
@@ -714,18 +688,16 @@ TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool has_high_power_off = checkHighPowerOff(sensors_data_);
+    const bool has_high_power_off = state_machine::checkHighPowerOff(sensors_data_);
     const auto new_state          = state->checkTransition(log_);
 
-    enableOutput();
     if (has_high_power_off) {
-      ASSERT_EQ(new_state, FailureBraking::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureBraking::getInstance())
         << "failed to enter FailureBraking from FailurePreBraking";
     } else {
-      ASSERT_NE(new_state, FailureBraking::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureBraking::getInstance())
         << "falsely entered FailureBraking from FailurePreBraking";
     }
-    disableOutput();
   }
 }
 
@@ -736,8 +708,9 @@ TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
 /**
  * Testing failure Braking behaviour with respect to data
  */
-struct FailureBrakingTest : public StateTest {
-  FailureBraking *state = FailureBraking::getInstance();
+class FailureBrakingTest : public StateTest {
+ protected:
+  state_machine::FailureBraking *state = state_machine::FailureBraking::getInstance();
 };
 
 /**
@@ -751,18 +724,16 @@ TEST_F(FailureBrakingTest, handlesStopped)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool stopped   = checkPodStopped(log_, nav_data_);
+    const bool stopped   = state_machine::checkPodStopped(log_, nav_data_);
     const auto new_state = state->checkTransition(log_);
 
-    enableOutput();
     if (stopped) {
-      ASSERT_EQ(new_state, FailureStopped::getInstance())
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
         << "failed to enter FailureStopped from FailureBraking";
     } else {
-      ASSERT_NE(new_state, FailureStopped::getInstance())
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from FailureBraking";
     }
-    disableOutput();
   }
 }
 
@@ -773,8 +744,9 @@ TEST_F(FailureBrakingTest, handlesStopped)
 /**
  * Testing FailureStopped behaviour with respect to data
  */
-struct FailureStoppedTest : public StateTest {
-  FailureStopped *state = FailureStopped::getInstance();
+class FailureStoppedTest : public StateTest {
+ protected:
+  state_machine::FailureStopped *state = state_machine::FailureStopped::getInstance();
 };
 
 /**
@@ -788,16 +760,16 @@ TEST_F(FailureStoppedTest, handlesShutdownCommand)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    const bool received_shutdown_command = checkShutdownCommand(telemetry_data_);
+    const bool received_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
     const auto new_state                 = state->checkTransition(log_);
 
-    enableOutput();
     if (received_shutdown_command) {
-      ASSERT_EQ(new_state, Off::getInstance()) << "failed to enter Off from FailureStopped";
+      ASSERT_EQ(new_state, state_machine::Off::getInstance())
+        << "failed to enter Off from FailureStopped";
     } else {
-      ASSERT_NE(new_state, Off::getInstance()) << "falsely entered Off from FailureStopped";
+      ASSERT_NE(new_state, state_machine::Off::getInstance())
+        << "falsely entered Off from FailureStopped";
     }
-    disableOutput();
   }
 }
 

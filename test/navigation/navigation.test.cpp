@@ -16,12 +16,12 @@ struct NavigationTest : public hyped::testing::Test {
   void TearDown() {}
 };
 
-namespace hyped::navigation {
+namespace hyped::testing {
 TEST_F(NavigationTest, correctEmergencyBrakingDistance)
 {
-  Data &data = Data::getInstance();
-  Sensors sensors_data;
-  hyped::navigation::Navigation nav(log_, 0);
+  auto &data = data::Data::getInstance();
+  data::Sensors sensors_data;
+  navigation::Navigation nav(0);
 
   // unsure of how or what to set the sensors data to
   Randomiser::randomiseSensorsData(sensors_data);
@@ -32,4 +32,4 @@ TEST_F(NavigationTest, correctEmergencyBrakingDistance)
   nav.navigate();
   std::cout << data.getNavigationData().velocity;
 }
-}  // namespace hyped::navigation
+}  // namespace hyped::testing

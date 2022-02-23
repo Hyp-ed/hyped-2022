@@ -17,14 +17,15 @@ class Pressure : public IPressure {
    * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Pressure(utils::Logger &log, uint16_t pressure_pin, uint16_t temp_pin);
+  Pressure(utils::Logger &log, uint8_t pressure_pin, uint8_t temp_pin);
+  ~Pressure() {}
 
   /**
    * @brief
    *
    * @return uint16_t to set to data struct in sensors main
    */
-  uint16_t getData() override;
+  uint8_t getData() override;
 
   /**
    * @brief one iteration of checking sensors
@@ -34,13 +35,13 @@ class Pressure : public IPressure {
 
  private:
   /**
-   * @brief scale raw difital data to output in ms??
+   * @brief scale raw digital data to output in ms
    *
    * @param raw_temp_value input temperature voltage
    * @param raw_pressure_value input pressure voltage
    * @return int representation of pressure
    */
-  uint16_t scaleData(uint16_t raw_temp_value, uint16_t raw_pressure_value);
+  uint8_t scaleData(uint8_t raw_temp_value, uint8_t raw_pressure_value);
 
   /**
    * @brief ADC pin
@@ -52,6 +53,6 @@ class Pressure : public IPressure {
   /**
    * @brief int from data structs
    */
-  data::PressureData pressure_;
+  data::PressureData pressure_data_;
 };
 }  // namespace hyped::sensors

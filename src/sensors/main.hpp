@@ -48,7 +48,6 @@ class Main : public utils::concurrent::Thread {
   /**
    * @brief used to check the pressure every twenty times in the main loop,
    *        similar to temperature;
-   *
    */
   void checkPressure();
 
@@ -67,11 +66,8 @@ class Main : public utils::concurrent::Thread {
   std::unique_ptr<IPressure> pressure_;
   bool log_error_ = false;
 
-  data::TemperatureData temp_;
-  data::PressureData pres_;
-
-  uint8_t converted_temp_;
-  uint8_t converted_pressure_;
+  data::TemperatureData temperature_data_;
+  data::PressureData pressure_data_;
 };
 
 }  // namespace hyped::sensors

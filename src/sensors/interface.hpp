@@ -77,8 +77,11 @@ class ITemperature {
 class IPressure {
  public:
   /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IPressure() {}
+  /**
    * @brief checks pressure
-   * @return int pressure bars
    */
   virtual void run() = 0;
 
@@ -86,6 +89,6 @@ class IPressure {
    * @brief returns int representation of pressure
    * @return int pressure bars
    */
-  virtual uint16_t getData() = 0;
+  virtual uint8_t getData() = 0;
 };
 }  // namespace hyped::sensors

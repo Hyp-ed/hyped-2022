@@ -104,9 +104,9 @@ void Main::checkTemperature()
 {
   temperature_->run();  // not a thread
 
-  converted_temp_ = temperature_->getData();
-  if (converted_temp_ > 85 && !log_error_) {
-    log_.info("Sensors", "PCB temperature is getting a wee high...sorry Cheng");
+  uint8_t converted_temperature = temperature_->getData();
+  if (converted_temperature > 85 && !log_error_) {
+    log_.info("PCB temperature is getting a wee high...sorry Cheng");
     log_error_ = true;
   }
 }
@@ -115,9 +115,9 @@ void Main::checkPressure()
 {
   pressure_->run();  // not a thread
 
-  converted_pressure_ = pressure_->getData();
-  if (converted_pressure_ > 1200 && !log_error_) {
-    log_.info("Sensors", "PCB pressure is above what can be sensed");
+  uint8_t converted_pressure = pressure_->getData();
+  if (converted_pressure > 1200 && !log_error_) {
+    log_.info("PCB pressure is above what can be sensed");
     log_error_ = true;
   }
 }
@@ -236,8 +236,8 @@ void Main::run()
   auto previous_keyence = current_keyence;
 
   // Intialise temperature and pressure
-  temp_ = data_.getSensorsData().temperature;
-  pres_ = data_.getSensorsData().pressure;
+  temperature_data_ = data_.getSensorsData().temperature;
+  pressure_data_    = data_.getSensorsData().pressure;
 
   std::size_t iteration_count = 0;
   while (sys_.isRunning()) {

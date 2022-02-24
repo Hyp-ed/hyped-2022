@@ -2,6 +2,7 @@
 bin
 build
 gui-build
+mission-control-2022.jar
 
 # Executables
 *.exe
@@ -40,6 +41,7 @@ binmain.o
 *.ipch.icloud
 .ccls
 .ccls-cache
+TelemetryData.txt
 
 # mac crosscompiler
 mac-crosscompiler

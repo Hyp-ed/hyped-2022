@@ -210,7 +210,7 @@ void Navigation::queryImus()
   log_.debug("Raw acceleration values: %.3f, %.3f, %.3f, %.3f", raw_acceleration_moving[0],
              raw_acceleration_moving[1], raw_acceleration_moving[2], raw_acceleration_moving[3]);
   // Run outlier detection on moving axis
-  (raw_acceleration_moving, kIqrScaler);
+  (raw_acceleration_moving, kInterQuartileScaler);
   // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
   // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
 
@@ -308,8 +308,9 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-void Navigation::calculateImuQuartiles(NavigationArray &data_array)
+Navigation::quartile_bounds Navigation::calculateImuQuartiles(NavigationArray &data_array)
 {
+  std::array<data::nav_t, 3> quartile_bounds;
   std::vector<data::nav_t> data_vector;
 
   for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
@@ -327,11 +328,12 @@ void Navigation::calculateImuQuartiles(NavigationArray &data_array)
     status_ = data::ModuleStatus::kCriticalFailure;
     log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
   }
+  return quartile_bounds;
 }
 
 void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold)
 {
-  calculateImuQuartiles(data_array);
+  std::array<data::nav_t, 3> quartile_bounds = calculateImuQuartiles(data_array);
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers

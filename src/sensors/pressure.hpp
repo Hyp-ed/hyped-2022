@@ -13,11 +13,9 @@ class Pressure : public IPressure {
  public:
   /**
    * @brief Construct a new Pressure object
-   *
-   * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Pressure(utils::Logger &log, uint8_t pressure_pin, uint8_t temp_pin);
+  Pressure(uint8_t pressure_pin, uint8_t temp_pin);
   ~Pressure() {}
 
   /**
@@ -48,7 +46,6 @@ class Pressure : public IPressure {
    */
   int pressure_pin_;
   int temp_pin_;
-  utils::Logger &log_;
 
   /**
    * @brief int from data structs

@@ -3,13 +3,13 @@
 #include <stdio.h>
 
 #include <utils/io/adc.hpp>
+#include <utils/system.hpp>
 
 namespace hyped::sensors {
 
-Pressure::Pressure(utils::Logger &log, uint8_t pressure_pin, uint8_t temp_pin)
+Pressure::Pressure(uint8_t pressure_pin, uint8_t temp_pin)
     : pressure_pin_(pressure_pin),
-      temp_pin_(temp_pin),
-      log_(log)
+      temp_pin_(temp_pin)
 {
 }
 
@@ -17,12 +17,13 @@ void Pressure::run()
 {
   utils::io::ADC temppin(temp_pin_);
   utils::io::ADC pressurepin(pressure_pin_);
+  utils::Logger log("PRESSURE", utils::System::getSystem().config_.log_level_sensors);
   pressure_data_.pressure    = 0;
   uint8_t raw_temp_value     = temppin.read();
   uint8_t raw_pressure_value = pressurepin.read();
-  log_.debug("Raw Pressure Data: %d", raw_temp_value, raw_pressure_value);
+  log.debug("Raw Pressure Data: %d", raw_temp_value, raw_pressure_value);
   pressure_data_.pressure = scaleData(raw_temp_value, raw_pressure_value);
-  log_.debug("Scaled Pressure Data: %d", pressure_data_.pressure);
+  log.debug("Scaled Pressure Data: %d", pressure_data_.pressure);
   pressure_data_.operational = true;
 }
 

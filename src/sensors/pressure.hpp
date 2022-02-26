@@ -5,7 +5,6 @@
 #include <cstdint>
 
 #include <data/data.hpp>
-#include <utils/logger.hpp>
 
 namespace hyped::sensors {
 

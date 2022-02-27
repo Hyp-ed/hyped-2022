@@ -10,7 +10,7 @@ StateProcessor::StateProcessor(utils::Logger &log)
       data_(data::Data::getInstance()),
       is_initialised_(false),
       rpm_regulator_(),
-      nucleo_manager_(NucleoManager(log))
+      nucleo_manager_()
 {
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");

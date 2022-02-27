@@ -18,8 +18,8 @@ class NucleoManager {
   void sendNucleoFrequency(const uint32_t target_frequency);
 
  private:
-  utils::Logger &log_;
-  utils::io::can::Frame nucleo_message_;
+  utils::Logger log_;
+  utils::io::can::Frame can_frame_;
   CanSender sender_;
 };
 }  // namespace hyped::propulsion

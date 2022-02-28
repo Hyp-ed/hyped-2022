@@ -14,7 +14,7 @@ class Pressure : public IPressure {
    * @brief Construct a new Pressure object
    * @param pin for specific ADC pin
    */
-  Pressure(uint8_t pressure_pin, uint8_t temp_pin);
+  Pressure(const uint8_t pressure_pin, const uint8_t temp_pin);
   ~Pressure() {}
 
   /**

@@ -7,7 +7,7 @@
 
 namespace hyped::sensors {
 
-Pressure::Pressure(uint8_t pressure_pin, uint8_t temp_pin)
+Pressure::Pressure(const uint8_t pressure_pin, const uint8_t temp_pin)
     : pressure_pin_(pressure_pin),
       temp_pin_(temp_pin)
 {

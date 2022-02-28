@@ -36,6 +36,12 @@ class Navigation {
    */
   explicit Navigation(const std::uint32_t axis = 0);
   /**
+   * @brief Get the current wheel encoder displacement
+   *
+   * @return encoder_displacement_ the current wheel encoder displacement
+   */
+  data::nav_t getEncoderDisplacement() const;
+  /**
    * @brief Get the current state of the navigation module
    *
    * @return ModuleStatus the current state of the navigation module
@@ -182,6 +188,7 @@ class Navigation {
 
   // To store estimated values
   ImuDataPointArray sensor_readings_;
+  data::DataPoint<data::nav_t> encoder_displacement_;
   data::DataPoint<data::nav_t> acceleration_;
   data::DataPoint<data::nav_t> velocity_;
   data::DataPoint<data::nav_t> displacement_;
@@ -210,7 +217,10 @@ class Navigation {
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
   utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
-
+  /**
+   * @brief Query sensors to determine velocity and distance
+   */
+  void queryWheelEncoders();
   /**
    * @brief Query sensors to determine acceleration, velocity and distance
    */

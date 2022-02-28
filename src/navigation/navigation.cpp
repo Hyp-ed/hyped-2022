@@ -39,6 +39,11 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
   log_.info("Navigation module initialised");
 }
 
+data::nav_t Navigation::getEncoderDisplacement() const
+{
+  return encoder_displacement_.value;
+}
+
 data::ModuleStatus Navigation::getModuleStatus() const
 {
   return status_;
@@ -187,6 +192,19 @@ void Navigation::calibrateGravity()
     updateData();
     log_.error("Navigation module failed on calibration");
   }
+}
+
+void Navigation::queryWheelEncoders()
+{
+  const auto encoder_data = data_.getSensorsWheelEncoderData();
+
+  data::nav_t sum = 0;
+  for (size_t i = 0; i < encoder_data.size(); ++i) {
+    sum += encoder_data.at(i).value;
+  }
+
+  data::nav_t average         = sum / sizeof(encoder_data);
+  encoder_displacement_.value = average * data::Navigation::kWheelCircumfrence;
 }
 
 void Navigation::queryImus()
@@ -389,6 +407,7 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
 void Navigation::updateData()
 {
   data::Navigation nav_data;
+  nav_data.encoder_displacement       = getEncoderDisplacement();
   nav_data.module_status              = getModuleStatus();
   nav_data.displacement               = getDisplacement();
   nav_data.velocity                   = getVelocity();
@@ -420,6 +439,7 @@ void Navigation::navigate()
     if (stripe_counter_.checkFailure(displacement_.value))
       status_ = data::ModuleStatus::kCriticalFailure;
   }
+  queryWheelEncoders();
   if (log_counter_ > 1000) updateUncertainty();
   updateData();
 }

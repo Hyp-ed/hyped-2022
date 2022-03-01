@@ -42,6 +42,12 @@ class Navigation {
    */
   data::nav_t getEncoderDisplacement() const;
   /**
+   * @brief Get the current wheel encoder velocity
+   *
+   * @return encoder_velocity_ the current wheel encoder velocity
+   */
+  data::nav_t getEncoderVelocity() const;
+  /**
    * @brief Get the current state of the navigation module
    *
    * @return ModuleStatus the current state of the navigation module
@@ -189,6 +195,7 @@ class Navigation {
   // To store estimated values
   ImuDataPointArray sensor_readings_;
   data::DataPoint<data::nav_t> encoder_displacement_;
+  data::DataPoint<data::nav_t> encoder_velocity_;
   data::DataPoint<data::nav_t> acceleration_;
   data::DataPoint<data::nav_t> velocity_;
   data::DataPoint<data::nav_t> displacement_;
@@ -238,6 +245,10 @@ class Navigation {
    * @brief Check for vibrations
    */
   void checkVibration();
+  /**
+   * @brief Compare keyence estimate and imu estimate for velocity
+   */
+  void compareKeyenceImu();
 };
 
 }  // namespace hyped::navigation

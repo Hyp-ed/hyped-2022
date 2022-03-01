@@ -44,6 +44,11 @@ data::nav_t Navigation::getEncoderDisplacement() const
   return encoder_displacement_.value;
 }
 
+data::nav_t Navigation::getEncoderVelocity() const
+{
+  return encoder_velocity_.value;
+}
+
 data::ModuleStatus Navigation::getModuleStatus() const
 {
   return status_;
@@ -205,6 +210,8 @@ void Navigation::queryWheelEncoders()
 
   data::nav_t average         = sum / sizeof(encoder_data);
   encoder_displacement_.value = average * data::Navigation::kWheelCircumfrence;
+
+  //TODO(Max): Implement wheel encoder estimate for velocity.
 }
 
 void Navigation::queryImus()
@@ -252,6 +259,16 @@ void Navigation::queryImus()
 
   acceleration_integrator_.update(acceleration_);
   velocity_integrator_.update(velocity_);
+}
+
+void Navigation::compareKeyenceImu()
+{
+  data::nav_t encoder_velocity = getEncoderVelocity();
+  data::nav_t imu_velocity     = getVelocity();
+
+  if (std::abs(encoder_velocity - imu_velocity) > data::Navigation::kImuEncoderMaxErr) {
+    status_ = data::ModuleStatus::kCriticalFailure;
+  }
 }
 
 void Navigation::checkVibration()
@@ -440,6 +457,7 @@ void Navigation::navigate()
       status_ = data::ModuleStatus::kCriticalFailure;
   }
   queryWheelEncoders();
+  compareKeyenceImu();
   if (log_counter_ > 1000) updateUncertainty();
   updateData();
 }

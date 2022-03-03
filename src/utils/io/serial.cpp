@@ -1,4 +1,4 @@
-#include "serial.h"
+#include "serial.hpp"
 
 #include <fcntl.h>
 #include <stdio.h>

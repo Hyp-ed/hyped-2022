@@ -8,7 +8,7 @@ namespace hyped::propulsion {
 class NucleoManager {
  public:
   /**
-   * @brief Initializes the nucleo manager with the logger
+   * @brief Initializes the nucleo manager
    * */
   NucleoManager(utils::Logger &log);
   /**
@@ -18,7 +18,7 @@ class NucleoManager {
   void sendNucleoFrequency(const uint32_t target_frequency);
 
  private:
-  utils::Logger log_;
+  utils::Logger &log_;
   utils::io::can::Frame can_frame_;
   CanSender sender_;
 };

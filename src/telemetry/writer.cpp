@@ -46,8 +46,8 @@ void Writer::packCrucialData()
 
   data::Navigation nav_data  = data_.getNavigationData();
   data::StateMachine sm_data = data_.getStateMachineData();
-  add("distance", 0.0, 1250.0, "m", nav_data.displacement);
-  add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
+  add("distance", 0.0, 1250.0, "m", nav_data.imu_displacement);
+  add("velocity", 0.0, 250.0, "m/s", nav_data.imu_velocity);
   add("acceleration", -50.0, 50.0, "m/s^2", nav_data.acceleration);
   add("status", sm_data.current_state);
 

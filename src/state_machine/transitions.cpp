@@ -117,7 +117,7 @@ bool checkShutdownCommand(const data::Telemetry &telemetry_data)
 
 bool checkEnteredBrakingZone(utils::Logger &log, const data::Navigation &nav_data)
 {
-  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
+  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.imu_displacement;
   data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
   if (remaining_distance > required_distance) return false;
 
@@ -127,7 +127,7 @@ bool checkEnteredBrakingZone(utils::Logger &log, const data::Navigation &nav_dat
 
 bool checkReachedMaxVelocity(utils::Logger &log, const data::Navigation &nav_data)
 {
-  if (nav_data.velocity < Navigation::kMaximumVelocity) return false;
+  if (nav_data.imu_velocity < Navigation::kMaximumVelocity) return false;
 
   log.info("reached maximum velocity");
   return true;
@@ -135,7 +135,7 @@ bool checkReachedMaxVelocity(utils::Logger &log, const data::Navigation &nav_dat
 
 bool checkPodStopped(utils::Logger &log, const data::Navigation &nav_data)
 {
-  if (nav_data.velocity > 0) return false;
+  if (nav_data.imu_velocity > 0) return false;
 
   log.info("pod has stopped");
   return true;

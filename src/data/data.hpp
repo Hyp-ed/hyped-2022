@@ -42,8 +42,8 @@ struct Navigation : public Module {
   static constexpr nav_t kStripeDistance    = 15;         // m
   nav_t encoder_displacement;                             // m
   nav_t encoder_velocity;                                 // m/s
-  nav_t displacement;                                     // m
-  nav_t velocity;                                         // m/s
+  nav_t imu_displacement;                                 // m
+  nav_t imu_velocity;                                     // m/s
   nav_t acceleration;                                     // m/s^2
   nav_t emergency_braking_distance;                       // m
   nav_t braking_distance = 750;                           // m

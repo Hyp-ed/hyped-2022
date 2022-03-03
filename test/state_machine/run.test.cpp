@@ -424,11 +424,11 @@ class RunTest : public Test {
     sensors_data_.high_power_off   = false;
 
     // Prevent Accelerating -> NominalBraking
-    nav_data_.displacement     = 0;
+    nav_data_.imu_displacement     = 0;
     nav_data_.braking_distance = 0;
 
     // Prevent Accelerating -> Cruising
-    nav_data_.velocity = data::Navigation::kMaximumVelocity / 2;
+    nav_data_.imu_velocity = data::Navigation::kMaximumVelocity / 2;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -518,7 +518,7 @@ class RunTest : public Test {
     sensors_data_.high_power_off = false;
 
     // Prevent PreBraking -> Finished
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -571,10 +571,10 @@ class RunTest : public Test {
     // Prevent Accelerating -> NominalBraking
     // Prevent Cruising -> NominalBraking
     nav_data_.braking_distance = 0;
-    nav_data_.displacement     = 0;
+    nav_data_.imu_displacement     = 0;
 
     // Enforce Accelerating -> Cruising
-    nav_data_.velocity = data::Navigation::kMaximumVelocity;
+    nav_data_.imu_velocity = data::Navigation::kMaximumVelocity;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -616,7 +616,7 @@ class RunTest : public Test {
     forceEmergency();
 
     // Prevent FailurePreBraking -> FailureStopped
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -665,7 +665,7 @@ class RunTest : public Test {
     sensors_data_.high_power_off = false;
 
     // Prevent PreBraking -> Finished
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -707,7 +707,7 @@ class RunTest : public Test {
     forceEmergency();
 
     // Prevent FailurePreBraking -> FailureStopped
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -747,7 +747,7 @@ class RunTest : public Test {
     forceEmergency();
 
     // Prevent FailurePreBraking -> FailureStopped
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -794,11 +794,11 @@ class RunTest : public Test {
 
     // Enforce PreBraking -> NominalBraking
     nav_data_.braking_distance   = 1000;
-    nav_data_.displacement       = data::Navigation::kRunLength - nav_data_.braking_distance;
+    nav_data_.imu_displacement       = data::Navigation::kRunLength - nav_data_.braking_distance;
     sensors_data_.high_power_off = true;
 
     // Prevent NominalBraking -> Finished
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -846,7 +846,7 @@ class RunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce NominalBraking -> Finished
-    nav_data_.velocity = 0;
+    nav_data_.imu_velocity = 0;
 
     // Prevent Finished -> Off
     telemetry_data_.shutdown_command = false;
@@ -889,7 +889,7 @@ class RunTest : public Test {
     forceEmergency();
 
     // Prevent FailureBraking -> FailureStopped
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
@@ -955,7 +955,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Prevent FailureBraking -> FailureStopped
-    nav_data_.velocity = 100;
+    nav_data_.imu_velocity = 100;
 
     // Enforce FailurePreBraking -> FailureBraking
     sensors_data_.high_power_off = true;
@@ -992,7 +992,7 @@ class RunTest : public Test {
     randomiseInternally();
 
     // Enforce FailureBraking -> FailureStopped
-    nav_data_.velocity = 0;
+    nav_data_.imu_velocity = 0;
 
     // Prevent FailureStopped -> Off
     telemetry_data_.shutdown_command = false;

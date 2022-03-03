@@ -59,19 +59,19 @@ class Navigation {
    * @return nav_t Returns the forward component of acceleration vector (negative when
    *                        decelerating) [m/s^2]
    */
-  data::nav_t getAcceleration() const;
+  data::nav_t getImuAcceleration() const;
   /**
    * @brief Get the measured velocity [m/s]
    *
    * @return nav_t Returns the forward component of velocity vector [m/s]
    */
-  data::nav_t getVelocity() const;
+  data::nav_t getImuVelocity() const;
   /**
    * @brief Get the measured displacement [m]
    *
    * @return nav_t Returns the forward component of displacement vector [m]
    */
-  data::nav_t getDisplacement() const;
+  data::nav_t getImuDisplacement() const;
   /**
    * @brief Get the emergency braking distance [m]
    *
@@ -196,9 +196,9 @@ class Navigation {
   ImuDataPointArray sensor_readings_;
   data::DataPoint<data::nav_t> encoder_displacement_;
   data::DataPoint<data::nav_t> encoder_velocity_;
-  data::DataPoint<data::nav_t> acceleration_;
-  data::DataPoint<data::nav_t> velocity_;
-  data::DataPoint<data::nav_t> displacement_;
+  data::DataPoint<data::nav_t> imu_acceleration_;
+  data::DataPoint<data::nav_t> imu_velocity_;
+  data::DataPoint<data::nav_t> imu_displacement_;
   NavigationVectorArray gravity_calibration_;
 
   // Initial timestamp (for comparisons)

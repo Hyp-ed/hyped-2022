@@ -137,6 +137,7 @@ enum class State {
   kIdle,
   kPreCalibrating,
   kCalibrating,
+  kPreReady,
   kReady,
   kAccelerating,
   kCruising,

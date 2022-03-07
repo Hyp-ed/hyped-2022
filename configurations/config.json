@@ -1,14 +1,14 @@
 {
   "system": {
     "log_level": 1,
-    "use_fake_trajectory": true,
-    "use_fake_batteries": true,
+    "use_fake_trajectory": false,
+    "use_fake_batteries": false,
     "use_fake_batteries_fail": false,
-    "use_fake_temperature": true,
+    "use_fake_temperature": false,
     "use_fake_temperature_fail": false,
-    "use_fake_brakes": true,
-    "use_fake_controller": true,
-    "use_fake_high_power": true,
+    "use_fake_brakes": false,
+    "use_fake_controller": false,
+    "use_fake_high_power": false,
     "axis": 0
   },
   "brakes": {
@@ -38,46 +38,5 @@
   "telemetry": {
     "server_ip": "127.0.01",
     "server_port": "9090"
-  },
-  "fake_trajectory": {
-    "maximum_acceleration": 1000.0,
-    "braking_deceleration": 2000.0,
-    "cruising_deceleration": 0.01
-  },
-  "fake_wheel_encoder": [
-    {
-      "noise": 0.1
-    },
-    {
-      "noise": 0.2
-    },
-    {
-      "noise": 0.1
-    },
-    {
-      "noise": 0.01
-    }
-  ],
-  "fake_keyence": [
-    {
-      "noise": 0.1
-    },
-    {
-      "noise": 0.2
-    }
-  ],
-  "fake_imu": [
-    {
-      "noise": 0.01
-    },
-    {
-      "noise": 0.02
-    },
-    {
-      "noise": 0.005
-    },
-    {
-      "noise": 0.001
-    }
-  ]
+  }
 }

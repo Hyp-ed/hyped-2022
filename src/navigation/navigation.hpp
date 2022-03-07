@@ -158,7 +158,7 @@ class Navigation {
   // acceptable variances for calibration measurements: {x, y, z}
   std::array<data::nav_t, 3> calibration_limits_;
   // Calibration variances in each dimension, necessary for vibration checking
-  std::array<data::nav_t, 3> calibration_variance_;
+  std::array<data::nav_t, data::Sensors::kNumImus> calibration_variance_;
 
   // Array of previous measurements
   std::array<ImuAxisData, kPreviousMeasurements> previous_measurements_;

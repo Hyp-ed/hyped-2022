@@ -12,13 +12,27 @@
     "axis": 0
   },
   "brakes": {
-    "command_pins": [87, 10],
-    "button_pins": [66, 69]
+    "command_pins": [
+      87,
+      10
+    ],
+    "button_pins": [
+      66,
+      69
+    ]
   },
   "sensors": {
     "bms_startup_time_micros": 5000000,
-    "keyence_pins": [67, 68],
-    "imu_pins": [22, 27, 47, 86],
+    "keyence_pins": [
+      67,
+      68
+    ],
+    "imu_pins": [
+      22,
+      27,
+      47,
+      86
+    ],
     "temperature_pin": 3
   },
   "telemetry": {

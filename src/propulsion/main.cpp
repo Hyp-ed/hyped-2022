@@ -62,6 +62,8 @@ void Main::run()
           if (!state_processor_.isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
         break;
+      case data::State::kPreReady:
+        break;
       case data::State::kReady:
         if (encountered_transition) { state_processor_.sendOperationalCommand(); }
         break;

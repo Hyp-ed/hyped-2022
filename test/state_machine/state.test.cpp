@@ -228,7 +228,7 @@ TEST_F(CalibratingTest, handlesEmergency)
 /**
  * Ensures that if no module reports an emergency and if
  * all modules are ready after calibration, the state
- * changes to the ready state.
+ * changes to the pre-ready state.
  */
 TEST_F(CalibratingTest, handlesAllReady)
 {
@@ -245,11 +245,77 @@ TEST_F(CalibratingTest, handlesAllReady)
       const auto new_state = state->checkTransition(log_);
 
       if (all_ready) {
+        ASSERT_EQ(new_state, state_machine::PreReady::getInstance())
+          << "failed to enter PreReady from Calibrating";
+      } else {
+        ASSERT_NE(new_state, state_machine::PreReady::getInstance())
+          << "falsely entered PreReady from Calibrating";
+      }
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
+// PreReady Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing PreReady behaviour with respect to data
+ */
+class PreReadyTest : public StateTest {
+ protected:
+  state_machine::PreReady *state = state_machine::PreReady::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailureStopped.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreReadyTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
+
+    if (has_emergency) {
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
+        << "failed to enter FailureStopped from PreReady";
+    } else {
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
+        << "falsely entered FailureStopped from PreReady";
+    }
+  }
+}
+
+/**
+ * Ensures that if no module reports an emergency and if
+ * all SSRs are in HP then state changes to the Ready state
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreReadyTest, handlesHighPowerOn)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool has_high_power_on = !state_machine::checkHighPowerOff(sensors_data_);
+      const auto new_state         = state->checkTransition(log_);
+
+      if (has_high_power_on) {
         ASSERT_EQ(new_state, state_machine::Ready::getInstance())
-          << "failed to enter Ready from Calibrating";
+          << "failed to enter Ready from PreReady";
       } else {
         ASSERT_NE(new_state, state_machine::Ready::getInstance())
-          << "falsely entered Ready from Calibrating";
+          << "falsely entered Ready from PreReady";
       }
     }
   }

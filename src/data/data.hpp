@@ -62,13 +62,20 @@ struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
-  int temp;  // C
+  uint16_t temp;  // C
+};
+
+struct PressureData : public SensorData {
+  uint16_t pressure;  // mbar
 };
 
 struct Sensors : public Module {
   static constexpr size_t kNumImus     = 4;
   static constexpr size_t kNumEncoders = 4;
   static constexpr size_t kNumKeyence  = 2;
+
+  TemperatureData temperature;
+  PressureData pressure;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
@@ -78,10 +85,10 @@ struct Sensors : public Module {
 
 struct BatteryData {
   static constexpr int kNumCells = 36;
-  uint16_t voltage;            // dV
-  int16_t current;             // dA
-  uint8_t charge;              // %
-  int8_t average_temperature;  // C
+  uint16_t voltage;             // dV
+  int16_t current;              // dA
+  uint8_t charge;               // %
+  uint8_t average_temperature;  // C
 
   // below only for HighPowerBms! Value for BMSLP = 0
   uint16_t cell_voltage[kNumCells];  // mV
@@ -137,6 +144,7 @@ enum class State {
   kIdle,
   kPreCalibrating,
   kCalibrating,
+  kPreReady,
   kReady,
   kAccelerating,
   kCruising,
@@ -190,20 +198,6 @@ class Data {
    * @brief      Should be called by navigation sub-team whenever they have new data.
    */
   void setNavigationData(const Navigation &nav_data);
-
-  /**
-   * @brief Get the Temperature from averaged thermistor values
-   *
-   * @return int temperature in degrees C
-   */
-  int getTemperature();
-
-  /**
-   * @brief Set the Temperature from averaged thermistor values
-   *
-   * @param temp - temp in degrees C
-   */
-  void setTemperature(const int &temp);
 
   /**
    * @brief      Retrieves data from all sensors
@@ -294,14 +288,12 @@ class Data {
   Batteries batteries_;
   Telemetry telemetry_;
   EmergencyBrakes emergency_brakes_;
-  int temperature_;  // In degrees C
 
   // locks for data substructures
   utils::concurrent::Lock lock_state_machine_;
   utils::concurrent::Lock lock_navigation_;
   utils::concurrent::Lock lock_sensors_;
   utils::concurrent::Lock lock_motors_;
-  utils::concurrent::Lock lock_temp_;
 
   utils::concurrent::Lock lock_telemetry_;
   utils::concurrent::Lock lock_batteries_;

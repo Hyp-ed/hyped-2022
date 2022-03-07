@@ -103,9 +103,21 @@ Main::Main()
 void Main::checkTemperature()
 {
   temperature_->run();  // not a thread
-  data_.setTemperature(temperature_->getData());
-  if (data_.getTemperature() > 85 && !log_error_) {
+
+  uint8_t converted_temperature = temperature_->getData();
+  if (converted_temperature > 85 && !log_error_) {
     log_.info("PCB temperature is getting a wee high...sorry Cheng");
+    log_error_ = true;
+  }
+}
+
+void Main::checkPressure()
+{
+  pressure_->run();  // not a thread
+
+  uint8_t converted_pressure = pressure_->getData();
+  if (converted_pressure > 1200 && !log_error_) {
+    log_.info("PCB pressure is above what can be sensed");
     log_error_ = true;
   }
 }
@@ -223,7 +235,11 @@ void Main::run()
   auto current_keyence  = data_.getSensorsKeyenceData();
   auto previous_keyence = current_keyence;
 
-  int temp_count = 0;
+  // Intialise temperature and pressure
+  temperature_data_ = data_.getSensorsData().temperature;
+  pressure_data_    = data_.getSensorsData().pressure;
+
+  std::size_t iteration_count = 0;
   while (sys_.isRunning()) {
     bool keyence_updated = false;
     for (size_t i = 0; i < current_keyence.size(); ++i) {
@@ -239,13 +255,13 @@ void Main::run()
     for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
       current_keyence.at(i) = keyences_[i]->getData();
     }
-    Thread::sleep(10);
-    temp_count++;
-    // only check every 20 cycles
-    if (temp_count % 20 == 0) {
+    Thread::sleep(10);  // Sleep for 10ms
+    ++iteration_count;
+    if (iteration_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
-      // avoid overflow
-      temp_count = 0;
+      checkPressure();
+      // So that temp_count does not get huge
+      iteration_count = 0;
     }
   }
   imu_manager_->join();

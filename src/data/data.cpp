@@ -109,18 +109,6 @@ std::array<CounterData, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
   return sensors_.keyence_stripe_counters;
 }
 
-int Data::getTemperature()
-{
-  ScopedLock L(&lock_temp_);
-  return temperature_;
-}
-
-void Data::setTemperature(const int &temp)
-{
-  ScopedLock L(&lock_temp_);
-  temperature_ = temp;
-}
-
 void Data::setSensorsData(const Sensors &sensors_data)
 {
   ScopedLock L(&lock_sensors_);

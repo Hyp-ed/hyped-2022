@@ -20,7 +20,7 @@ void Writer::packTime()
 void Writer::packId(const uint16_t id)
 {
   json_writer_.Key("id");
-  add("package_num", id);
+  json_writer_.Int(id);
 }
 
 // Additional data points that are displayed in the GUI data section

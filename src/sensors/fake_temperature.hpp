@@ -12,18 +12,16 @@ class FakeTemperature : public ITemperature {
  public:
   /**
    * @brief Construct a new Fake Temperature object
-   *
-   * @param log
    * @param is_fail
    */
-  FakeTemperature(utils::Logger &log, bool is_fail);
+  FakeTemperature(bool is_fail);
 
   /**
    * @brief returns int representation
    *
    * @return int temperature degrees C
    */
-  int getData() override;
+  uint8_t getData() override;
 
   /**
    * @brief waits for acceleration, generate random time for failure
@@ -32,7 +30,6 @@ class FakeTemperature : public ITemperature {
 
  private:
   data::Data &data_;
-  utils::Logger &log_;
 
   /**
    * @brief dependent on is_fail_, set to fail value

@@ -2,13 +2,13 @@
 
 #include <stdlib.h>
 
+#include <utils/system.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
 
-FakeTemperature::FakeTemperature(utils::Logger &log, bool is_fail)
+FakeTemperature::FakeTemperature(bool is_fail)
     : data_(data::Data::getInstance()),
-      log_(log),
       failure_(300),
       success_(30),
       is_fail_(is_fail),
@@ -17,11 +17,13 @@ FakeTemperature::FakeTemperature(utils::Logger &log, bool is_fail)
       failure_time_(0),
       failure_happened_(false)
 {
-  temp_.temp = success_;
+  temp_.temp   = success_;
+  auto &system = utils::System::getSystem();
+  utils::Logger log("FAKE-TEMPERATURE", system.config_.log_level);
   if (is_fail_) {
-    log_.info("fail initialised");
+    log.info("fail initialised");
   } else {
-    log_.info("initialised");
+    log.info("initialised");
   }
 }
 
@@ -51,7 +53,7 @@ void FakeTemperature::checkFailure()
   }
 }
 
-int FakeTemperature::getData()
+uint8_t FakeTemperature::getData()
 {
   return temp_.temp;
 }

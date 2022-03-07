@@ -80,9 +80,9 @@ Main::Main()
 
   // Temperature
   if (sys_.config_.use_fake_temperature_fail) {
-    temperature_ = std::make_unique<FakeTemperature>(log_, true);
+    temperature_ = std::make_unique<FakeTemperature>(true);
   } else if (sys_.config_.use_fake_temperature) {
-    temperature_ = std::make_unique<FakeTemperature>(log_, false);
+    temperature_ = std::make_unique<FakeTemperature>(false);
   } else {
     auto temperature_pin = temperaturePinFromFile(log_, sys_.config_.temperature_config_path);
     if (!temperature_pin) {
@@ -90,7 +90,7 @@ Main::Main()
       sys_.stop();
       return;
     }
-    temperature_ = std::make_unique<Temperature>(log_, *temperature_pin);
+    temperature_ = std::make_unique<Temperature>(*temperature_pin);
   }
 
   // kReady for state machine transition
@@ -104,7 +104,8 @@ void Main::checkTemperature()
 {
   temperature_->run();  // not a thread
   data_.setTemperature(temperature_->getData());
-  if (data_.getTemperature() > 85 && !log_error_) {
+  if (data_.getTemperature() > 75
+      && !log_error_) {  // critical temperature is 85 so giving 10 degrees for safety.
     log_.info("PCB temperature is getting a wee high...sorry Cheng");
     log_error_ = true;
   }

@@ -71,6 +71,6 @@ class ITemperature {
    * @brief returns int representation of temperature
    * @return int temperature degrees C
    */
-  virtual int getData() = 0;
+  virtual uint8_t getData() = 0;
 };
 }  // namespace hyped::sensors

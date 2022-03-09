@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
 # -------------------------------------------------- #
 
 # List of all libraries for linking purposes
-set(ALL_LIBS "data;brakes;navigation;propulsion;propulsion_can;sensors;state_machine;telemetry;utils;utils_concurrent;utils_io;utils_math")
+set(ALL_LIBS "data;brakes;navigation;propulsion;propulsion_can;sensors;state_machine;demo_state_machine;telemetry;utils;utils_concurrent;utils_io;utils_math")
 function(make_lib target, include_path)
     file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
     file(GLOB code "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
@@ -121,6 +121,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/navigation)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/propulsion)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/demo_state_machine)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
 
@@ -142,6 +143,23 @@ target_link_libraries(${target}
     propulsion_can
     sensors
     state_machine
+    telemetry
+    utils
+    utils_concurrent
+    utils_io
+    utils_math
+)
+
+set(target "hyped_demo")
+add_executable(${target} ${CMAKE_SOURCE_DIR}/run/demo.cpp)
+target_link_libraries(${target}
+    data
+    brakes
+    navigation
+    propulsion
+    propulsion_can
+    sensors
+    demo_state_machine
     telemetry
     utils
     utils_concurrent

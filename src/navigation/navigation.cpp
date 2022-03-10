@@ -325,7 +325,9 @@ Navigation::quartile_bounds Navigation::calculateImuQuartiles(NavigationArray &d
   } else if (num_outlier_imus_ == 1) {
     quartile_bounds.at(1) = data_vector.at(1);
   } else {
-    status_ = data::ModuleStatus::kCriticalFailure;
+    auto navigation_data          = data_.getNavigationData();
+    navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setNavigationData(navigation_data);
     log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
   }
   return quartile_bounds;

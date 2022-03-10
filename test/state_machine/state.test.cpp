@@ -407,7 +407,7 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
     nav_data_.imu_displacement     = 0;
 
     // Enforce Accelerating -> Cruising
-    nav_data_.imu_velocity = state_machine::Navigation::kMaximumVelocity;
+    nav_data_.velocity = state_machine::Navigation::kMaximumVelocity;
 
     // reading and writing to the CDS directly to update navigation data
     auto &data_ = data::Data::getInstance();

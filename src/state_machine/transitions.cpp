@@ -127,7 +127,7 @@ bool checkEnteredBrakingZone(utils::Logger &log, const data::Navigation &nav_dat
 
 bool checkReachedMaxVelocity(utils::Logger &log, const data::Navigation &nav_data)
 {
-  if (nav_data.imu_velocity < Navigation::kMaximumVelocity) return false;
+  if (nav_data.velocity < Navigation::kMaximumVelocity) return false;
 
   log.info("reached maximum velocity");
   return true;
@@ -135,7 +135,7 @@ bool checkReachedMaxVelocity(utils::Logger &log, const data::Navigation &nav_dat
 
 bool checkPodStopped(utils::Logger &log, const data::Navigation &nav_data)
 {
-  if (nav_data.imu_velocity > 0) return false;
+  if (nav_data.velocity > 0) return false;
 
   log.info("pod has stopped");
   return true;

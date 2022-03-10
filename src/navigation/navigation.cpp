@@ -44,11 +44,6 @@ data::nav_t Navigation::getEncoderDisplacement() const
   return encoder_displacement_.value;
 }
 
-data::nav_t Navigation::getEncoderVelocity() const
-{
-  return encoder_velocity_.value;
-}
-
 data::ModuleStatus Navigation::getModuleStatus() const
 {
   return status_;
@@ -210,8 +205,6 @@ void Navigation::queryWheelEncoders()
 
   data::nav_t average         = sum / sizeof(encoder_data);
   encoder_displacement_.value = average * data::Navigation::kWheelCircumfrence;
-
-  // TODO(Max): Implement wheel encoder estimate for velocity.
 }
 
 void Navigation::queryImus()
@@ -263,10 +256,10 @@ void Navigation::queryImus()
 
 void Navigation::compareKeyenceImu()
 {
-  data::nav_t encoder_velocity = getEncoderVelocity();
-  data::nav_t imu_velocity     = getImuVelocity();
+  data::nav_t encoder_displacement = getEncoderDisplacement();
+  data::nav_t imu_displacement     = getImuDisplacement();
 
-  if (std::abs(encoder_velocity - imu_velocity) > data::Navigation::kImuEncoderMaxErr) {
+  if (std::abs(encoder_displacement - imu_displacement) > data::Navigation::kImuEncoderMaxErr) {
     status_ = data::ModuleStatus::kCriticalFailure;
   }
 }
@@ -427,7 +420,7 @@ void Navigation::updateData()
   nav_data.encoder_displacement       = getEncoderDisplacement();
   nav_data.module_status              = getModuleStatus();
   nav_data.imu_displacement           = getImuDisplacement();
-  nav_data.imu_velocity               = getImuVelocity();
+  nav_data.velocity                   = getImuVelocity();
   nav_data.acceleration               = getImuAcceleration();
   nav_data.emergency_braking_distance = getEmergencyBrakingDistance();
   nav_data.braking_distance           = 1.2 * getEmergencyBrakingDistance();
@@ -436,7 +429,7 @@ void Navigation::updateData()
 
   if (log_counter_ % 100 == 0) {
     log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", log_counter_,
-               nav_data.acceleration, nav_data.imu_velocity, nav_data.imu_displacement,
+               nav_data.acceleration, nav_data.velocity, nav_data.imu_displacement,
                stripe_counter_.getStripeCount() * data::Navigation::kStripeDistance);
     log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,
                velocity_uncertainty_, displacement_uncertainty_, stripe_counter_.getFailureCount());

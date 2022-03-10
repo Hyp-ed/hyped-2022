@@ -30,6 +30,7 @@ target_link_libraries(${test_target}
     propulsion_can
     sensors
     state_machine
+    demo_state_machine
     telemetry
     utils
     utils_concurrent

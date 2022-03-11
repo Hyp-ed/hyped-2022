@@ -22,7 +22,7 @@ StateProcessor::StateProcessor(utils::Logger &log)
       controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
   }
-  nucleo_manager_ = std::make_unique<NucleoManager>(log_);
+  nucleo_manager_ = std::make_unique<NucleoManager>();
 }
 
 void StateProcessor::initialiseMotors()

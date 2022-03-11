@@ -9,8 +9,7 @@ StateProcessor::StateProcessor(utils::Logger &log)
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
       is_initialised_(false),
-      rpm_regulator_(),
-      nucleo_manager_(log)
+      rpm_regulator_()
 {
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");
@@ -23,6 +22,7 @@ StateProcessor::StateProcessor(utils::Logger &log)
       controllers_.at(i) = std::make_unique<Controller>(log_, i);
     }
   }
+  nucleo_manager_ = std::make_unique<NucleoManager>(log_);
 }
 
 void StateProcessor::initialiseMotors()
@@ -64,7 +64,7 @@ void StateProcessor::prepareMotors()
   for (auto &controller : controllers_) {
     controller->enterOperational();
   }
-  nucleo_manager_.sendNucleoFrequency(0);  // Might not be correct value
+  nucleo_manager_->sendNucleoFrequency(0);  // Might not be correct value
   previous_acceleration_time_ = 0;
 }
 
@@ -99,7 +99,7 @@ void StateProcessor::accelerate()
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }
-    nucleo_manager_.sendNucleoFrequency(round(rpm / 60.0));
+    nucleo_manager_->sendNucleoFrequency(round(rpm / 60.0));
   }
 }
 

@@ -6,10 +6,6 @@ namespace hyped::propulsion {
 
 class RpmRegulator {
  public:
-  /*
-   * @brief Construct a new rpm regulator object
-   */
-  explicit RpmRegulator();
   /**
    * @brief Calculate the optimal rpm based on criteria from all the motors
    *        as well optimal values produced by simulations.
@@ -21,6 +17,10 @@ class RpmRegulator {
   static int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm);
 
  private:
+  /*
+   * @brief Construct a new rpm regulator object
+   */
+  explicit RpmRegulator();
   /**
    * @brief calculates the optimal rpm based off of the current velocity.
    *

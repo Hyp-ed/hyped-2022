@@ -461,12 +461,13 @@ void Navigation::navigate()
 void Navigation::initialiseTimestamps()
 {
   // First iteration --> set timestamps
-  imu_acceleration_.timestamp = utils::Timer::getTimeMicros();
-  imu_velocity_.timestamp     = utils::Timer::getTimeMicros();
-  imu_displacement_.timestamp = utils::Timer::getTimeMicros();
-  previous_acceleration_      = getImuAcceleration();
-  previous_velocity_          = getImuVelocity();
-  initial_timestamp_          = utils::Timer::getTimeMicros();
+  imu_acceleration_.timestamp     = utils::Timer::getTimeMicros();
+  imu_velocity_.timestamp         = utils::Timer::getTimeMicros();
+  imu_displacement_.timestamp     = utils::Timer::getTimeMicros();
+  encoder_displacement_.timestamp = utils::Timer::getTimeMicros();
+  previous_acceleration_          = getImuAcceleration();
+  previous_velocity_              = getImuVelocity();
+  initial_timestamp_              = utils::Timer::getTimeMicros();
   log_.debug("Initial timestamp:%d", initial_timestamp_);
   previous_timestamp_ = utils::Timer::getTimeMicros();
   stripe_counter_.setInit(initial_timestamp_);

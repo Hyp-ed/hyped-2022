@@ -260,7 +260,10 @@ void Navigation::compareKeyenceImu()
   data::nav_t imu_displacement     = getImuDisplacement();
 
   if (std::abs(encoder_displacement - imu_displacement) > data::Navigation::kImuEncoderMaxErr) {
-    status_ = data::ModuleStatus::kCriticalFailure;
+    auto navigation_data          = data_.getNavigationData();
+    navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setNavigationData(navigation_data);
+    log_.error("Wheel encoder data disagrees with IMU data, entering kCriticalFailure");
   }
 }
 

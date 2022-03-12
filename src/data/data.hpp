@@ -36,7 +36,7 @@ struct Navigation : public Module {
   static constexpr nav_t kMaximumVelocity   = 100;     // m/s
   static constexpr nav_t kRunLength         = 1250.0;  // m
   static constexpr nav_t kBrakingBuffer     = 20.0;    // m
-  static constexpr nav_t kImuEncoderMaxErr  = 10;      // m
+  static constexpr nav_t kImuEncoderMaxErr  = 2.0;      // m
   static constexpr nav_t kPi                = 3.14159265359;
   static constexpr nav_t kWheelCircumfrence = kPi * 0.1;  // m
   static constexpr nav_t kStripeDistance    = 15;         // m

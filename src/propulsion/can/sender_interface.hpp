@@ -36,11 +36,6 @@ class ISender {
    * @brief { Registers the controller to process incoming CAN messages}
    * */
   virtual void registerController() = 0;
-
-  /**
-   * @brief { Return if the can_sender is sending a CAN message right now }
-   */
-  virtual bool getIsSending() = 0;
 };
 
 }  // namespace propulsion

@@ -9,7 +9,6 @@ CanTransceiver::CanTransceiver(const uint8_t node_id, IController &controller)
       sender_(can_),
       controller_(controller)
 {
-  is_sending_ = false;
   can_.start();
 }
 
@@ -17,7 +16,6 @@ bool CanTransceiver::sendMessage(utils::io::can::Frame &message)
 {
   log_.info("Sending Message");
   bool messageSuccess = sender_.sendMessage(message);
-  is_sending_         = true;
   return messageSuccess;
 }
 
@@ -28,7 +26,6 @@ void CanTransceiver::registerController()
 
 void CanTransceiver::processNewData(utils::io::can::Frame &message)
 {
-  is_sending_ = false;
   uint32_t id = message.id;
   if (id == kEmgyTransmit + node_id_) {
     controller_.processEmergencyMessage(message);
@@ -47,10 +44,5 @@ bool CanTransceiver::hasId(uint32_t id, bool)
     if (cobId + node_id_ == id) { return true; }
   }
   return false;
-}
-
-bool CanTransceiver::getIsSending()
-{
-  return is_sending_;
 }
 }  // namespace hyped::propulsion

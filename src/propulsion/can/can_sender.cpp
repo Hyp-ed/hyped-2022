@@ -11,7 +11,6 @@ CanSender::CanSender(utils::io::Can &can)
 bool CanSender::sendMessage(utils::io::can::Frame &message)
 {
   log_.info("Sending Message");
-  bool sendSuccessful = can_.send(message);
-  return sendSuccessful;
+  return can_.send(message);
 }
 }  // namespace hyped::propulsion

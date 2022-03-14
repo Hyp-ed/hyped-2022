@@ -41,16 +41,10 @@ class CanTransceiver : public utils::io::CanProccesor, public ISender {
    */
   bool hasId(uint32_t id, bool extended) override;
 
-  /**
-   * @brief Return if the can_sender is sending a CAN message right now
-   */
-  bool getIsSending() override;
-
  private:
   utils::Logger log_;
   uint8_t node_id_;
   utils::io::Can &can_;
-  std::atomic<bool> is_sending_;
   IController &controller_;
   CanSender sender_;
 

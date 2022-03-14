@@ -24,7 +24,7 @@ class FakeCanSender : public utils::io::CanProccesor, public ISender {
 
   bool hasId(uint32_t id, bool extended) override;
 
-  bool getIsSending() override;
+  bool getIsSending();
 
  private:
   utils::Logger log_;

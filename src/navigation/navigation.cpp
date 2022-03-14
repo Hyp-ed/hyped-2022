@@ -200,7 +200,7 @@ void Navigation::queryWheelEncoders()
 
   data::nav_t sum = 0;
   for (size_t i = 0; i < encoder_data.size(); ++i) {
-    sum += encoder_data.at(i).value;
+    sum += static_cast<data::nav_t>(encoder_data.at(i).value);
   }
 
   data::nav_t average         = sum / encoder_data.size();

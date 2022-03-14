@@ -4,8 +4,8 @@
 
 namespace hyped::propulsion {
 
-StateProcessor::StateProcessor(utils::Logger &log)
-    : log_(log),
+StateProcessor::StateProcessor()
+    : log_("PROPULSION-STATE-PROCESSOR", utils::System::getSystem().config_.log_level_propulsion),
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
       is_initialised_(false),
@@ -14,12 +14,12 @@ StateProcessor::StateProcessor(utils::Logger &log)
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
-      controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
+      controllers_.at(i) = std::make_unique<FakeController>(i, false);
     }
   } else {  // Use real controllers
     log_.info("constructing with real controllers");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
-      controllers_.at(i) = std::make_unique<Controller>(log_, i);
+      controllers_.at(i) = std::make_unique<Controller>(i);
     }
   }
   nucleo_manager_ = std::make_unique<NucleoManager>();

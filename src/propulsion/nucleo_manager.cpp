@@ -2,7 +2,9 @@
 
 namespace hyped::propulsion {
 
-NucleoManager::NucleoManager() : log_("NUCLEOMANAGER"), sender_(log_, utils::io::Can::getInstance())
+NucleoManager::NucleoManager()
+    : log_("NUCLEOMANAGER", utils::System::getSystem().config_.log_level_propulsion),
+      sender_(utils::io::Can::getInstance())
 {
   can_frame_.id       = kNucleoTransmit;
   can_frame_.extended = false;

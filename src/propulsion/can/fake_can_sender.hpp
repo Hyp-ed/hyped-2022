@@ -8,12 +8,13 @@
 
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped::propulsion {
 
 class FakeCanSender : public utils::io::CanProccesor, public ISender {
  public:
-  FakeCanSender(utils::Logger &log_, uint8_t id);
+  FakeCanSender(uint8_t id);
 
   bool sendMessage(utils::io::can::Frame &message) override;
 

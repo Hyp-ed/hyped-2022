@@ -2,8 +2,8 @@
 
 namespace hyped::propulsion {
 
-FakeController::FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty)
-    : log_(log),
+FakeController::FakeController(const uint8_t id, const bool is_faulty)
+    : log_("FAKE-CONTROLLER", utils::System::getSystem().config_.log_level_propulsion),
       data_(data::Data::getInstance()),
       id_(id),
       is_faulty_(is_faulty),

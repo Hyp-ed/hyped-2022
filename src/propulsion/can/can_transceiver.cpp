@@ -2,11 +2,11 @@
 
 namespace hyped::propulsion {
 
-CanTransceiver::CanTransceiver(utils::Logger &log, const uint8_t node_id, IController &controller)
-    : log_(log),
+CanTransceiver::CanTransceiver(const uint8_t node_id, IController &controller)
+    : log_("CAN-TRANSCEIVER", utils::System::getSystem().config_.log_level_propulsion),
       node_id_(node_id),
       can_(utils::io::Can::getInstance()),
-      sender_(log_, can_),
+      sender_(can_),
       controller_(controller)
 {
   is_sending_ = false;

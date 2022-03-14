@@ -16,9 +16,9 @@ namespace hyped::propulsion {
 class StateProcessor {
  public:
   /**
-   * @brief Initializes the state processors with the amount of motors and the logger
+   * @brief Initializes the state processors with the amount of motors
    * */
-  StateProcessor(utils::Logger &log);
+  StateProcessor();
 
   /**
    * @brief Sends the desired settings to the motors
@@ -102,7 +102,7 @@ class StateProcessor {
 
   int32_t calculateMaximumTemperature();
 
-  utils::Logger &log_;
+  utils::Logger log_;
   utils::System &sys_;
   data::Data &data_;
   bool is_initialised_;

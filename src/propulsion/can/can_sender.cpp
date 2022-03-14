@@ -1,7 +1,9 @@
 #include "can_sender.hpp"
 
 namespace hyped::propulsion {
-CanSender::CanSender(utils::Logger &log, utils::io::Can &can) : log_(log), can_(can)
+CanSender::CanSender(utils::io::Can &can)
+    : log_("CAN-SENDER", utils::System::getSystem().config_.log_level_propulsion),
+      can_(can)
 {
   can_.start();
 }

@@ -18,10 +18,9 @@ class Controller : public IController {
  public:
   /**
    * @brief Construct a new Controller object
-   * @param log
    * @param id
    */
-  Controller(utils::Logger &log, uint8_t id);
+  Controller(uint8_t id);
   /**
    * @brief Registers controller to recieve and transmit CAN messages.
    */
@@ -165,7 +164,7 @@ class Controller : public IController {
    */
   void throwCriticalFailure();
 
-  utils::Logger &log_;
+  utils::Logger log_;
   data::Data &data_;
   data::Motors motor_data_;
   std::atomic<ControllerState> state_;

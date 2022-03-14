@@ -16,10 +16,10 @@ namespace hyped::propulsion {
 class CanTransceiver : public utils::io::CanProccesor, public ISender {
  public:
   /**
-   * @brief Initialise the CanTransceiver with the logger, the id and the controller as an
+   * @brief Initialise the CanTransceiver with the id and the controller as an
    * attribute, to access it's attributes
    */
-  CanTransceiver(utils::Logger &log, const uint8_t node_id, IController &controller);
+  CanTransceiver(const uint8_t node_id, IController &controller);
 
   /**
    * @brief Sends CAN messages
@@ -47,7 +47,7 @@ class CanTransceiver : public utils::io::CanProccesor, public ISender {
   bool getIsSending() override;
 
  private:
-  utils::Logger &log_;
+  utils::Logger log_;
   uint8_t node_id_;
   utils::io::Can &can_;
   std::atomic<bool> is_sending_;

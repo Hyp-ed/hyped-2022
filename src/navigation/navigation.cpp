@@ -310,13 +310,14 @@ void Navigation::logWrite()
 
 Navigation::quartile_bounds Navigation::calculateImuQuartiles(NavigationArray &data_array)
 {
-  std::array<data::nav_t, 3> quartile_bounds;
   std::vector<data::nav_t> data_vector;
 
   for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
   }
   std::sort(data_vector.begin(), data_vector.end());
+  std::array<data::nav_t, 3> quartile_bounds;
+
   quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
   quartile_bounds.at(2)
     = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;

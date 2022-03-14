@@ -211,8 +211,8 @@ void Navigation::queryImus()
 {
   NavigationArray raw_acceleration_moving;  // Raw values in moving axis
 
-  const auto imu_data = data_.getSensorsImuData();
-  uint32_t t          = imu_data.timestamp;
+  const auto imu_data                 = data_.getSensorsImuData();
+  uint32_t current_trajectory_micros = imu_data.timestamp;
   // process raw values
   ImuAxisData raw_acceleration;  // All raw data, four values per axis
   for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
@@ -248,7 +248,7 @@ void Navigation::queryImus()
   if (previous_filled_) checkVibration();
 
   imu_acceleration_.value     = acceleration_average_filter.getMean();
-  imu_acceleration_.timestamp = t;
+  imu_acceleration_.timestamp = current_trajectory_micros;
 
   acceleration_integrator_.update(imu_acceleration_);
   velocity_integrator_.update(imu_velocity_);

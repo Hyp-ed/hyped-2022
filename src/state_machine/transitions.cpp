@@ -117,7 +117,7 @@ bool checkShutdownCommand(const data::Telemetry &telemetry_data)
 
 bool checkEnteredBrakingZone(utils::Logger &log, const data::Navigation &nav_data)
 {
-  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.imu_displacement;
+  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
   data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
   if (remaining_distance > required_distance) return false;
 

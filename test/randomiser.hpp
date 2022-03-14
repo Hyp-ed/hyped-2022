@@ -51,7 +51,7 @@ class Randomiser {
     randomiseModuleStatus(nav_data.module_status);
 
     // Generates a displacement length between 750 and 1749.
-    nav_data.imu_displacement = static_cast<data::nav_t>((rand() % 1000 + 750) + randomDecimal());
+    nav_data.displacement = static_cast<data::nav_t>((rand() % 1000 + 750) + randomDecimal());
 
     // Generates a velocity length between -10 and 200.
     nav_data.velocity = static_cast<data::nav_t>((rand() % 201 - 10) + randomDecimal());

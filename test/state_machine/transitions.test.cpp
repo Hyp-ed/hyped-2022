@@ -803,7 +803,7 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t max_displacement
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.braking_distance;
-    nav_data.imu_displacement
+    nav_data.displacement
       = static_cast<data::nav_t>(randomInRange(kMinDisplacement, max_displacement));
     nav_data.velocity                   = static_cast<data::nav_t>(rand());
     nav_data.acceleration               = nav_data.velocity;
@@ -832,7 +832,7 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t min_displacement
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.braking_distance;
-    nav_data.imu_displacement
+    nav_data.displacement
       = static_cast<data::nav_t>(randomInRange(min_displacement, kMaxDisplacement));
     nav_data.velocity                   = static_cast<data::nav_t>(rand());
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
@@ -866,7 +866,7 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.braking_distance;
 
     for (int j = 0; j < kTestSize; j++) {
-      nav_data.imu_displacement = critical_displacement - 0.5 + kStepSize * static_cast<data::nav_t>(j);
+      nav_data.displacement = critical_displacement - 0.5 + kStepSize * static_cast<data::nav_t>(j);
       if (j < kTestSize / 2) {
         ASSERT_EQ(false, state_machine::checkEnteredBrakingZone(log_, nav_data))
           << "falsely detected braking zone";
@@ -898,10 +898,10 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
   constexpr data::nav_t kStepSize = 1.0 / static_cast<data::nav_t>(kTestSize);
 
   for (int i = 0; i < kTestSize; i++) {
-    nav_data.imu_displacement
+    nav_data.displacement
       = static_cast<data::nav_t>(randomInRange(kMinDisplacement, kMaxDisplacement));
     critical_braking_distance
-      = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.imu_displacement;
+      = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.displacement;
 
     for (int j = 0; j < kTestSize; j++) {
       nav_data.braking_distance
@@ -934,7 +934,7 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
   for (int i = 1; i <= kTestSize; i++) {
     nav_data.velocity                   = kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
-    nav_data.imu_displacement               = static_cast<data::nav_t>(rand());
+    nav_data.displacement               = static_cast<data::nav_t>(rand());
     nav_data.braking_distance           = static_cast<data::nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<data::nav_t>(rand());
     ASSERT_EQ(false, state_machine::checkPodStopped(log_, nav_data))
@@ -959,7 +959,7 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
   for (int i = 0; i < kTestSize; i++) {
     nav_data.velocity                   = -1.0 * kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
-    nav_data.imu_displacement               = static_cast<data::nav_t>(rand());
+    nav_data.displacement               = static_cast<data::nav_t>(rand());
     nav_data.braking_distance           = static_cast<data::nav_t>(rand());
     nav_data.emergency_braking_distance = static_cast<data::nav_t>(rand());
     ASSERT_EQ(true, state_machine::checkPodStopped(log_, nav_data))

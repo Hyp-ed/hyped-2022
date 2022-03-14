@@ -424,7 +424,7 @@ class RunTest : public Test {
     sensors_data_.high_power_off   = false;
 
     // Prevent Accelerating -> NominalBraking
-    nav_data_.imu_displacement     = 0;
+    nav_data_.displacement     = 0;
     nav_data_.braking_distance = 0;
 
     // Prevent Accelerating -> Cruising
@@ -571,7 +571,7 @@ class RunTest : public Test {
     // Prevent Accelerating -> NominalBraking
     // Prevent Cruising -> NominalBraking
     nav_data_.braking_distance = 0;
-    nav_data_.imu_displacement     = 0;
+    nav_data_.displacement     = 0;
 
     // Enforce Accelerating -> Cruising
     nav_data_.velocity = data::Navigation::kMaximumVelocity;
@@ -794,7 +794,7 @@ class RunTest : public Test {
 
     // Enforce PreBraking -> NominalBraking
     nav_data_.braking_distance   = 1000;
-    nav_data_.imu_displacement       = data::Navigation::kRunLength - nav_data_.braking_distance;
+    nav_data_.displacement       = data::Navigation::kRunLength - nav_data_.braking_distance;
     sensors_data_.high_power_off = true;
 
     // Prevent NominalBraking -> Finished

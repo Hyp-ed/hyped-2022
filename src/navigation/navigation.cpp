@@ -203,7 +203,7 @@ void Navigation::queryWheelEncoders()
     sum += encoder_data.at(i).value;
   }
 
-  data::nav_t average         = sum / sizeof(encoder_data);
+  data::nav_t average         = sum / encoder_data.size();
   encoder_displacement_.value = average * data::Navigation::kWheelCircumfrence;
 }
 
@@ -256,8 +256,8 @@ void Navigation::queryImus()
 
 void Navigation::compareKeyenceImu()
 {
-  data::nav_t encoder_displacement = getEncoderDisplacement();
-  data::nav_t imu_displacement     = getImuDisplacement();
+  const data::nav_t encoder_displacement = getEncoderDisplacement();
+  const data::nav_t imu_displacement     = getImuDisplacement();
 
   if (std::abs(encoder_displacement - imu_displacement) > data::Navigation::kImuEncoderMaxErr) {
     auto navigation_data          = data_.getNavigationData();

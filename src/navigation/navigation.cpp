@@ -308,7 +308,7 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-Navigation::quartile_bounds Navigation::calculateImuQuartiles(NavigationArray &data_array)
+Navigation::QuartileBounds Navigation::calculateImuQuartiles(NavigationArray &data_array)
 {
   std::vector<data::nav_t> data_vector;
 

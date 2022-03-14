@@ -27,7 +27,7 @@ class Navigation {
   using NavigationArray          = std::array<data::nav_t, data::Sensors::kNumImus>;
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
-  using quartile_bounds          = std::array<data::nav_t, 3>;
+  using QuartileBounds          = std::array<data::nav_t, 3>;
 
   /**
    * @brief Construct a new Navigation object
@@ -90,7 +90,7 @@ class Navigation {
    *
    * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
    */
-  quartile_bounds calculateImuQuartiles(NavigationArray &data_array);
+  QuartileBounds calculateImuQuartiles(NavigationArray &data_array);
   /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *

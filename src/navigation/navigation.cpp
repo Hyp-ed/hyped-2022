@@ -210,7 +210,7 @@ void Navigation::queryImus()
   log_.debug("Raw acceleration values: %.3f, %.3f, %.3f, %.3f", raw_acceleration_moving[0],
              raw_acceleration_moving[1], raw_acceleration_moving[2], raw_acceleration_moving[3]);
   // Run outlier detection on moving axis
-  (raw_acceleration_moving, kInterQuartileScaler);
+  imuOutlierDetection(raw_acceleration_moving, kInterQuartileScaler);
   // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
   // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
 

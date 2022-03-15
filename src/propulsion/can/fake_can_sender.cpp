@@ -8,7 +8,7 @@ FakeCanSender::FakeCanSender(uint8_t)
 {
 }
 
-bool FakeCanSender::sendMessage(utils::io::can::Frame &)
+bool FakeCanSender::transmitMessage(utils::io::can::Frame &)
 {
   log_.info("sending");
   is_sending_ = true;

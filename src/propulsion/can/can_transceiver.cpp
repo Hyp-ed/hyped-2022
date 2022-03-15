@@ -5,18 +5,15 @@ namespace hyped::propulsion {
 CanTransceiver::CanTransceiver(const uint8_t node_id, IController &controller)
     : log_("CAN-TRANSCEIVER", utils::System::getSystem().config_.log_level_propulsion),
       node_id_(node_id),
-      can_(utils::io::Can::getInstance()),
-      sender_(can_),
       controller_(controller)
 {
   can_.start();
 }
 
-bool CanTransceiver::sendMessage(utils::io::can::Frame &message)
+bool CanTransceiver::transmitMessage(utils::io::can::Frame &message)
 {
   log_.info("Sending Message");
-  bool messageSuccess = sender_.sendMessage(message);
-  return messageSuccess;
+  return sendMessage(message);
 }
 
 void CanTransceiver::registerController()

@@ -13,7 +13,7 @@
 
 namespace hyped::propulsion {
 
-class CanTransceiver : public utils::io::CanProccesor, public ISender {
+class CanTransceiver : public utils::io::CanProccesor, public CanSender, public ISender {
  public:
   /**
    * @brief Initialise the CanTransceiver with the id and the controller as an
@@ -24,7 +24,7 @@ class CanTransceiver : public utils::io::CanProccesor, public ISender {
   /**
    * @brief Sends CAN messages
    */
-  bool sendMessage(utils::io::can::Frame &message) override;
+  bool transmitMessage(utils::io::can::Frame &message) override;
 
   /**
    * @brief Registers the controller to process incoming CAN messages
@@ -44,9 +44,7 @@ class CanTransceiver : public utils::io::CanProccesor, public ISender {
  private:
   utils::Logger log_;
   uint8_t node_id_;
-  utils::io::Can &can_;
   IController &controller_;
-  CanSender sender_;
 
   static constexpr uint32_t kEmgyTransmit = 0x80;
   static constexpr uint32_t kSdoTransmit  = 0x580;

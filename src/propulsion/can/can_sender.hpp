@@ -9,12 +9,14 @@
 namespace hyped::propulsion {
 class CanSender {
  public:
-  CanSender(utils::io::Can &can);
+  CanSender();
 
   bool sendMessage(utils::io::can::Frame &message);
 
+ protected:
+  utils::io::Can &can_;
+
  private:
   utils::Logger log_;
-  utils::io::Can &can_;
 };
 }  // namespace hyped::propulsion

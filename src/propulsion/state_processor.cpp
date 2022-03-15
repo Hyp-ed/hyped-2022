@@ -9,7 +9,8 @@ StateProcessor::StateProcessor()
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
       is_initialised_(false),
-      rpm_regulator_()
+      rpm_regulator_(),
+      nucleo_manager_(std::make_unique<NucleoManager>())
 {
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");
@@ -22,7 +23,6 @@ StateProcessor::StateProcessor()
       controllers_.at(i) = std::make_unique<Controller>(i);
     }
   }
-  nucleo_manager_ = std::make_unique<NucleoManager>();
 }
 
 void StateProcessor::initialiseMotors()

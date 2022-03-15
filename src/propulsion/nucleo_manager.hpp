@@ -1,3 +1,4 @@
+#include <propulsion/can/can_ids.hpp>
 #include <propulsion/can/can_sender.hpp>
 #include <propulsion/can/sender_interface.hpp>
 #include <utils/io/can.hpp>

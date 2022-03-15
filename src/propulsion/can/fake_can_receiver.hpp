@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fake_can_endpoint.hpp"
-#include "sender_interface.hpp"
+#include "receiver_interface.hpp"
 
 #include <atomic>
 #include <iostream>
@@ -12,11 +12,15 @@
 
 namespace hyped::propulsion {
 
-class FakeCanSender : public utils::io::CanProccesor, public ISender {
+class FakeCanReceiver : public utils::io::CanProccesor, public IReceiver {
  public:
-  FakeCanSender(uint8_t id);
+  FakeCanReceiver(uint8_t id);
 
-  bool sendMessage(utils::io::can::Frame &message) override;
+  void registerController() override;
+
+  void processNewData(utils::io::can::Frame &message) override;
+
+  bool hasId(uint32_t id, bool extended) override;
 
   bool getIsSending();
 

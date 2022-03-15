@@ -1,7 +1,7 @@
 #pragma once
 
-#include "can_sender.hpp"
-#include "sender_interface.hpp"
+#include "can_ids.hpp"
+#include "receiver_interface.hpp"
 
 #include <atomic>
 #include <iostream>
@@ -10,21 +10,17 @@
 #include <utils/concurrent/thread.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
+#include <utils/system.hpp>
 
 namespace hyped::propulsion {
 
-class CanTransceiver : public utils::io::CanProccesor, public CanSender, public ISender {
+class CanReceiver : public utils::io::CanProccesor, public IReceiver {
  public:
   /**
-   * @brief Initialise the CanTransceiver with the id and the controller as an
+   * @brief Initialise the CanReceiver with the id and the controller as an
    * attribute, to access it's attributes
    */
-  CanTransceiver(const uint8_t node_id, IController &controller);
-
-  /**
-   * @brief Sends CAN messages
-   */
-  bool transmitMessage(utils::io::can::Frame &message) override;
+  CanReceiver(const uint8_t node_id, IController &controller);
 
   /**
    * @brief Registers the controller to process incoming CAN messages
@@ -44,6 +40,7 @@ class CanTransceiver : public utils::io::CanProccesor, public CanSender, public 
  private:
   utils::Logger log_;
   uint8_t node_id_;
+  utils::io::Can &can_;
   IController &controller_;
 
   static constexpr uint32_t kEmgyTransmit = 0x80;

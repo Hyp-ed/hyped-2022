@@ -7,16 +7,14 @@
 #include <utils/system.hpp>
 
 namespace hyped::propulsion {
-class CanSender {
+class CanSender : public ISender {
  public:
   CanSender();
 
-  bool sendMessage(utils::io::can::Frame &message);
-
- protected:
-  utils::io::Can &can_;
+  bool sendMessage(utils::io::can::Frame &message) override;
 
  private:
+  utils::io::Can &can_;
   utils::Logger log_;
 };
 }  // namespace hyped::propulsion

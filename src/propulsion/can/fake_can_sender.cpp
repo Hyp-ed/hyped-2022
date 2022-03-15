@@ -8,7 +8,7 @@ FakeCanSender::FakeCanSender(uint8_t)
 {
 }
 
-bool FakeCanSender::transmitMessage(utils::io::can::Frame &)
+bool FakeCanSender::sendMessage(utils::io::can::Frame &)
 {
   log_.info("sending");
   is_sending_ = true;
@@ -16,21 +16,6 @@ bool FakeCanSender::transmitMessage(utils::io::can::Frame &)
   while (is_sending_) {
     utils::concurrent::Thread::yield();
   }
-  return true;
-}
-
-void FakeCanSender::registerController()
-{
-}
-
-void FakeCanSender::processNewData(utils::io::can::Frame &)
-{
-  log_.info("processNewData");
-  is_sending_ = false;
-}
-
-bool FakeCanSender::hasId(uint32_t, bool)
-{
   return true;
 }
 

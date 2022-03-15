@@ -1,27 +1,22 @@
-#include "can_transceiver.hpp"
+#include "can_receiver.hpp"
 
 namespace hyped::propulsion {
 
-CanTransceiver::CanTransceiver(const uint8_t node_id, IController &controller)
+CanReceiver::CanReceiver(const uint8_t node_id, IController &controller)
     : log_("CAN-TRANSCEIVER", utils::System::getSystem().config_.log_level_propulsion),
       node_id_(node_id),
-      controller_(controller)
+      controller_(controller),
+      can_(utils::io::Can::getInstance())
 {
   can_.start();
 }
 
-bool CanTransceiver::transmitMessage(utils::io::can::Frame &message)
-{
-  log_.info("Sending Message");
-  return sendMessage(message);
-}
-
-void CanTransceiver::registerController()
+void CanReceiver::registerController()
 {
   can_.registerProcessor(this);
 }
 
-void CanTransceiver::processNewData(utils::io::can::Frame &message)
+void CanReceiver::processNewData(utils::io::can::Frame &message)
 {
   uint32_t id = message.id;
   if (id == kEmgyTransmit + node_id_) {
@@ -35,7 +30,7 @@ void CanTransceiver::processNewData(utils::io::can::Frame &message)
   }
 }
 
-bool CanTransceiver::hasId(uint32_t id, bool)
+bool CanReceiver::hasId(uint32_t id, bool)
 {
   for (uint32_t cobId : canIds) {
     if (cobId + node_id_ == id) { return true; }

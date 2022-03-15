@@ -7,7 +7,7 @@
 #include <utils/system.hpp>
 
 namespace hyped::propulsion {
-class CanSender : public ISender {
+class CanSender : public ICanSender {
  public:
   CanSender();
 

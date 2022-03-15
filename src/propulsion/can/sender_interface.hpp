@@ -6,7 +6,7 @@ namespace hyped {
 
 namespace propulsion {
 
-class ISender {
+class ICanSender {
  public:
   /**
    * @brief { Sends CAN messages }

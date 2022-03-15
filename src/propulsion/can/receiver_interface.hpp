@@ -6,7 +6,7 @@ namespace hyped {
 
 namespace propulsion {
 
-class IReceiver {
+class ICanReceiver {
  public:
   /**
    * @brief { Registers the controller to process incoming CAN messages}

@@ -12,7 +12,7 @@
 
 namespace hyped::propulsion {
 
-class FakeCanSender : public utils::io::CanProccesor, public ISender {
+class FakeCanSender : public utils::io::CanProccesor, public ICanSender {
  public:
   FakeCanSender(uint8_t id);
 

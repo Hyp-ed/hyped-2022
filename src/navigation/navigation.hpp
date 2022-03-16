@@ -241,7 +241,7 @@ class Navigation {
   /**
    * @brief Compare keyence estimate and imu estimate for velocity
    */
-  void compareKeyenceImu();
+  void compareEncoderImu();
 };
 
 }  // namespace hyped::navigation

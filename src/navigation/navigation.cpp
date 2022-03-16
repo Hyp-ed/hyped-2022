@@ -254,7 +254,7 @@ void Navigation::queryImus()
   velocity_integrator_.update(imu_velocity_);
 }
 
-void Navigation::compareKeyenceImu()
+void Navigation::compareEncoderImu()
 {
   const data::nav_t encoder_displacement = getEncoderDisplacement();
   const data::nav_t imu_displacement     = getImuDisplacement();
@@ -454,7 +454,7 @@ void Navigation::navigate()
       status_ = data::ModuleStatus::kCriticalFailure;
   }
   queryWheelEncoders();
-  compareKeyenceImu();
+  compareEncoderImu();
   if (log_counter_ > 1000) updateUncertainty();
   updateData();
 }

@@ -211,7 +211,7 @@ void Navigation::queryImus()
 {
   NavigationArray raw_acceleration_moving;  // Raw values in moving axis
 
-  const auto imu_data                 = data_.getSensorsImuData();
+  const auto imu_data                = data_.getSensorsImuData();
   uint32_t current_trajectory_micros = imu_data.timestamp;
   // process raw values
   ImuAxisData raw_acceleration;  // All raw data, four values per axis
@@ -464,7 +464,7 @@ void Navigation::initialiseTimestamps()
   // First iteration --> set timestamps
   imu_acceleration_.timestamp     = utils::Timer::getTimeMicros();
   imu_velocity_.timestamp         = utils::Timer::getTimeMicros();
-  imu_displacement_.timestamp         = utils::Timer::getTimeMicros();
+  imu_displacement_.timestamp     = utils::Timer::getTimeMicros();
   encoder_displacement_.timestamp = utils::Timer::getTimeMicros();
   previous_acceleration_          = getImuAcceleration();
   previous_velocity_              = getImuVelocity();

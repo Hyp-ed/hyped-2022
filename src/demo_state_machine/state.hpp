@@ -30,6 +30,7 @@ class State {
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;
+  data::StateMachine stm_data_;
   void updateModuleData();
 };
 

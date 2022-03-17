@@ -14,6 +14,7 @@ using hyped::data::EmergencyBrakes;
 using hyped::data::Motors;
 using hyped::data::Navigation;
 using hyped::data::Sensors;
+using hyped::data::StateMachine;
 using hyped::data::Telemetry;
 using utils::Logger;
 
@@ -99,6 +100,16 @@ bool checkReachedMaxVelocity(Logger &log, const data::Navigation &nav_data);
  * @brief   Returns true iff the pod has reached zero velocity.
  */
 bool checkPodStopped(Logger &log, const data::Navigation &nav_data);
+
+//--------------------------------------------------------------------------------------
+// State Machine Data Events
+//--------------------------------------------------------------------------------------
+
+/*
+ * @brief   Returns true iff acceleration time is exceeded
+ */
+bool checkAccelerationTimeExceeded(const data::StateMachine &stm_data);
+
 }  // namespace demo_state_machine
 
 }  // namespace hyped

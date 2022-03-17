@@ -1,5 +1,7 @@
 #include "state.hpp"
 
+#include <chrono>
+
 namespace hyped {
 
 namespace demo_state_machine {
@@ -20,6 +22,7 @@ void State::updateModuleData()
   telemetry_data_ = data_.getTelemetryData();
   sensors_data_   = data_.getSensorsData();
   motors_data_    = data_.getMotorData();
+  stm_data_       = data_.getStateMachineData();
 }
 
 //--------------------------------------------------------------------------------------
@@ -129,7 +132,10 @@ State *Ready::checkTransition(Logger &log)
   if (emergency) { return FailureStopped::getInstance(); }
 
   bool recieved_launch_command = checkLaunchCommand(telemetry_data_);
-  if (recieved_launch_command) { return Accelerating::getInstance(); }
+  if (recieved_launch_command) {
+    stm_data_.acceleration_start = std::chrono::steady_clock::now();
+    return Accelerating::getInstance();
+  }
 
   return nullptr;
 }
@@ -146,6 +152,10 @@ State *Accelerating::checkTransition(Logger &log)
 {
   updateModuleData();
 
+  // reading from the CDS directly to get state-machine data
+  data::Data &data_           = data::Data::getInstance();
+  data::StateMachine stm_data = data_.getStateMachineData();
+
   bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
   if (emergency) { return FailurePreBraking::getInstance(); }
@@ -153,8 +163,8 @@ State *Accelerating::checkTransition(Logger &log)
   bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
   if (in_braking_zone) { return PreBraking::getInstance(); }
 
-  bool reached_max_velocity = checkReachedMaxVelocity(log, nav_data_);
-  if (reached_max_velocity) { return Cruising::getInstance(); }
+  bool acceleration_time_exceeded = checkAccelerationTimeExceeded(stm_data_);
+  if (acceleration_time_exceeded) { return Cruising::getInstance(); }
 
   return nullptr;
 }

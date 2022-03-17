@@ -1,4 +1,4 @@
-#include "randomiser.hpp"
+#include "demorandomiser.hpp"
 #include "test.hpp"
 
 #include <random>
@@ -15,7 +15,7 @@
 
 namespace hyped::testing {
 
-class RunTest : public Test {
+class DemoRunTest : public Test {
  protected:
   static constexpr int kTestSize = 10;
 
@@ -519,8 +519,9 @@ class RunTest : public Test {
     nav_data_.displacement     = 0;
     nav_data_.braking_distance = 0;
 
-    // Prevent Accelerating -> Cruising
-    nav_data_.velocity = data::Navigation::kMaximumVelocity / 2;
+    // Preventing Accelerating -> Cruising
+    stm_data_.acceleration_start = std::chrono::steady_clock::now();
+    data_.setStateMachineData(stm_data_);
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -528,14 +529,14 @@ class RunTest : public Test {
     const bool has_launch_command = demo_state_machine::checkLaunchCommand(telemetry_data_);
     const bool has_entered_braking_zone
       = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_reached_max_velocity
-      = demo_state_machine::checkReachedMaxVelocity(log_, nav_data_);
+    const bool has_acceleration_time_exceeeded
+      = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_launch_command);
     ASSERT_EQ(false, has_entered_braking_zone);
-    ASSERT_EQ(false, has_reached_max_velocity);
+    ASSERT_EQ(false, has_acceleration_time_exceeeded);
     ASSERT_EQ(false, has_high_power_off);
 
     // Let STM do its thing
@@ -611,20 +612,25 @@ class RunTest : public Test {
     // Prevent PreBraking -> NominalBraking
     sensors_data_.high_power_off = false;
 
+    // Prevent Accelerating -> Cruising by setting start time to now
+    stm_data_.acceleration_start = std::chrono::steady_clock::now();
+
     // Prevent PreBraking -> Finished
     nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
-    const bool has_entered_braking_zone
-      = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
-    const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
+    const bool has_acceleration_time_exceeded
+      = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
+    const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_stopped              = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_high_power_off       = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
-    ASSERT_EQ(true, has_entered_braking_zone);
+    ASSERT_EQ(false, has_acceleration_time_exceeded);
     ASSERT_EQ(false, has_stopped);
+    ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_high_power_off);
 
     // Let STM do its thing
@@ -651,6 +657,9 @@ class RunTest : public Test {
     // Randomise data_
     randomiseInternally();
 
+    // Timestamping entering accelerating
+    stm_data_.acceleration_start = std::chrono::steady_clock::now();
+
     // Prevent Accelerating -> FailureBraking
     brakes_data_.module_status             = data::ModuleStatus::kReady;
     nav_data_.module_status                = data::ModuleStatus::kReady;
@@ -668,21 +677,21 @@ class RunTest : public Test {
     nav_data_.braking_distance = 0;
     nav_data_.displacement     = 0;
 
-    // Enforce Accelerating -> Cruising
-    nav_data_.velocity = data::Navigation::kMaximumVelocity;
+    // Enforcing Accelerting -> Cruising
+    utils::concurrent::Thread::sleep(400);  // 0.4s
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone
       = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_reached_max_velocity
-      = demo_state_machine::checkReachedMaxVelocity(log_, nav_data_);
+    const bool has_acceleration_time_exceeded
+      = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_entered_braking_zone);
-    ASSERT_EQ(true, has_reached_max_velocity);
+    ASSERT_EQ(true, has_acceleration_time_exceeded);
     ASSERT_EQ(false, has_high_power_off);
 
     // Let STM do its thing
@@ -1148,7 +1157,7 @@ class RunTest : public Test {
 /**
  * Verifies the nominal run behaviour without any emergencies and without the Cruising state.
  */
-TEST_F(RunTest, demoNominalRunWithoutCruising)
+TEST_F(DemoRunTest, demoNominalRunWithoutCruising)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1178,7 +1187,7 @@ TEST_F(RunTest, demoNominalRunWithoutCruising)
 /**
  * Verifies the nominal run behaviour without any emergencies but with the Cruising state.
  */
-TEST_F(RunTest, demoNominalRunWithCruising)
+TEST_F(DemoRunTest, demoNominalRunWithCruising)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1209,7 +1218,7 @@ TEST_F(RunTest, demoNominalRunWithCruising)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in Idle.
  */
-TEST_F(RunTest, demoIdleEmergency)
+TEST_F(DemoRunTest, demoIdleEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1232,7 +1241,7 @@ TEST_F(RunTest, demoIdleEmergency)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in PreCalibrating.
  */
-TEST_F(RunTest, demoPreCalibratingEmergency)
+TEST_F(DemoRunTest, demoPreCalibratingEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1256,7 +1265,7 @@ TEST_F(RunTest, demoPreCalibratingEmergency)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in Calibrating.
  */
-TEST_F(RunTest, demoCalibratingEmergency)
+TEST_F(DemoRunTest, demoCalibratingEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1281,7 +1290,7 @@ TEST_F(RunTest, demoCalibratingEmergency)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in PreReady.
  */
-TEST_F(RunTest, demoPreReadyEmergency)
+TEST_F(DemoRunTest, demoPreReadyEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1307,7 +1316,7 @@ TEST_F(RunTest, demoPreReadyEmergency)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in Ready.
  */
-TEST_F(RunTest, demoReadyEmergency)
+TEST_F(DemoRunTest, demoReadyEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1334,7 +1343,7 @@ TEST_F(RunTest, demoReadyEmergency)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in Accelerating.
  */
-TEST_F(RunTest, demoAcceleratingEmergency)
+TEST_F(DemoRunTest, demoAcceleratingEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1364,7 +1373,7 @@ TEST_F(RunTest, demoAcceleratingEmergency)
 /**
  * Verifies the state machine behaviour upon encountering an emergency in Cruising.
  */
-TEST_F(RunTest, demoCruisingEmergency)
+TEST_F(DemoRunTest, demoCruisingEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1396,7 +1405,7 @@ TEST_F(RunTest, demoCruisingEmergency)
  * Verifies the state machine behaviour upon encountering an emergency in PreBraking without
  * the Cruising state
  */
-TEST_F(RunTest, demoPreBrakingWithoutCruisingEmergency)
+TEST_F(DemoRunTest, demoPreBrakingWithoutCruisingEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1428,7 +1437,7 @@ TEST_F(RunTest, demoPreBrakingWithoutCruisingEmergency)
  * Verifies the state machine behaviour upon encountering an emergency in PreBraking with
  * the Cruising state
  */
-TEST_F(RunTest, demoPreBrakingWithCruisingEmergency)
+TEST_F(DemoRunTest, demoPreBrakingWithCruisingEmergency)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);
@@ -1461,7 +1470,7 @@ TEST_F(RunTest, demoPreBrakingWithCruisingEmergency)
  * Verifies the state machine behaviour upon encountering an emergency in Braking without the
  * Cruising state.
  */
-TEST_F(RunTest, demoBrakingEmergencyWithoutCruising)
+TEST_F(DemoRunTest, demoBrakingEmergencyWithoutCruising)
 {
   for (int i = 0; i < kTestSize; i++) {
     utils::System &sys = utils::System::getSystem();
@@ -1493,7 +1502,7 @@ TEST_F(RunTest, demoBrakingEmergencyWithoutCruising)
  * Verifies the state machine behaviour upon encountering an emergency in Braking with the Cruising
  * state.
  */
-TEST_F(RunTest, demoBrakingEmergencyWithCruising)
+TEST_F(DemoRunTest, demoBrakingEmergencyWithCruising)
 {
   for (std::size_t i = 0; i < kTestSize; ++i) {
     utils::System::parseArgs(2, kDefaultArgs);

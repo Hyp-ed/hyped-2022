@@ -86,6 +86,7 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
     case data::State::kIdle:
     case data::State::kPreCalibrating:
     case data::State::kCalibrating:
+    case data::State::kPreReady:
     case data::State::kReady:
     case data::State::kFailureStopped:
     case data::State::kFinished:

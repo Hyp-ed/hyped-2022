@@ -121,6 +121,7 @@ void Main::run()
           f_brake_->checkAccFailure();
         }
         break;
+      case data::State::kPreReady:
       case data::State::kReady:
       case data::State::kFailureStopped:
         break;

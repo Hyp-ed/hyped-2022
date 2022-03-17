@@ -1,9 +1,10 @@
-#include "randomiser.hpp"
+#include "demorandomiser.hpp"
 #include "test.hpp"
 
 #include <fcntl.h>
 #include <stdlib.h>
 
+#include <chrono>
 #include <random>
 #include <string>
 #include <vector>
@@ -13,6 +14,7 @@
 #include <data/data.hpp>
 #include <demo_state_machine/state.hpp>
 #include <demo_state_machine/transitions.hpp>
+#include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 
 namespace hyped::testing {
@@ -36,6 +38,7 @@ class StateTest : public hyped::testing::Test {
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;
+  data::StateMachine stm_data_;
 
   // ---- Test size -----------
 
@@ -432,7 +435,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
  *
  * Time complexity: O(kTestSize)
  */
-TEST_F(DemoAcceleratingTest, demoHandlesInBrakingZone)
+TEST_F(DemoAcceleratingTest, handlesInBrakingZone)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
@@ -463,7 +466,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesInBrakingZone)
  * Time complexity: O(kTestSize)
  */
 
-TEST_F(DemoAcceleratingTest, demoHandlesReachedMaxVelocity)
+TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
@@ -472,8 +475,8 @@ TEST_F(DemoAcceleratingTest, demoHandlesReachedMaxVelocity)
     nav_data_.braking_distance = 0;
     nav_data_.displacement     = 0;
 
-    // Enforce Accelerating -> Cruising
-    nav_data_.velocity = demo_state_machine::Navigation::kMaximumVelocity;
+    // Asserting sufficient time has passed
+    utils::concurrent::Thread::sleep(400);  // 0.4s
 
     // reading and writing to the CDS directly to update navigation data
     auto &data_ = data::Data::getInstance();
@@ -483,11 +486,11 @@ TEST_F(DemoAcceleratingTest, demoHandlesReachedMaxVelocity)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool reached_max_velocity
-        = demo_state_machine::checkReachedMaxVelocity(log_, nav_data_);
+      const bool has_acceleration_time_exceeded
+        = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
       const auto new_state = state->checkTransition(log_);
 
-      if (reached_max_velocity) {
+      if (has_acceleration_time_exceeded) {
         ASSERT_EQ(new_state, demo_state_machine::Cruising::getInstance())
           << "failed to enter Cruising from Accelerating";
       } else {

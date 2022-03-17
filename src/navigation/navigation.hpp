@@ -191,7 +191,7 @@ class Navigation {
   data::DataPoint<data::nav_t> encoder_displacement_;
   data::DataPoint<data::nav_t> imu_acceleration_;
   data::DataPoint<data::nav_t> imu_velocity_;
-  data::DataPoint<data::nav_t> displacement_;
+  data::DataPoint<data::nav_t> imu_displacement_;
   NavigationVectorArray gravity_calibration_;
 
   // Initial timestamp (for comparisons)

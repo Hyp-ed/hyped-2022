@@ -623,7 +623,7 @@ class DemoRunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_acceleration_time_exceeded
       = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
-    const bool has_entered_braking_zone = state_machine::checkEnteredBrakingZone(log_, nav_data_);
+    const bool has_entered_braking_zone = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped              = demo_state_machine::checkPodStopped(log_, nav_data_);
     const bool has_high_power_off       = demo_state_machine::checkHighPowerOff(sensors_data_);
 

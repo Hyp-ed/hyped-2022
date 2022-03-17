@@ -14,15 +14,13 @@ namespace hyped::debugging {
 class Repl {
  public:
   using Handler = std::function<void(void)>;
-  struct Config {
-    bool use_keyence;
-  };
+
   struct Command {
     std::string identifier;
     std::string description;
     Handler handler;
   };
-  Repl(const Config &config);
+  Repl(utils::Logger log);
 
   void run();
 
@@ -30,18 +28,14 @@ class Repl {
 
  private:
   utils::System &system_;
+  utils::Logger &log_;
   data::Data &data_;
-  const Config config_;
   std::vector<Command> commands_;
   std::unordered_map<std::string, Handler> handlers_by_identifier_;
 
   void printAvailableCommands();
-
   void readAndHandleCommand();
-
   void handleShutdown();
-
-  static std::optional<Config> readConfig(utils::Logger &log, const std::string &path);
 };
 
 }  // namespace hyped::debugging

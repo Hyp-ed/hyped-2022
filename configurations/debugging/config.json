@@ -1,24 +1,26 @@
 {
-    "sensors": {
-        "keyence_pins": [
-            63,
-            2
-        ],
-        "output_path": "readings.csv"
-    },
-    "debugger": {
-        "use_keyence": false
-    },
-    "system": {
-        "log_level": 2,
-        "use_fake_trajectory": false,
-        "use_fake_batteries": false,
-        "use_fake_batteries_fail": false,
-        "use_fake_temperature": false,
-        "use_fake_temperature_fail": false,
-        "use_fake_brakes": false,
-        "use_fake_controller": false,
-        "use_fake_high_power": false,
-        "axis": 0
-    }
+  "sensors": {
+    "keyence_pins": [
+      63,
+      2
+    ]
+  },
+  "observer": {
+    "output_path": "readings.json"
+  },
+  "debugger": {
+    "use_keyence": false
+  },
+  "system": {
+    "log_level": 2,
+    "use_fake_trajectory": false,
+    "use_fake_batteries": false,
+    "use_fake_batteries_fail": false,
+    "use_fake_temperature": false,
+    "use_fake_temperature_fail": false,
+    "use_fake_brakes": false,
+    "use_fake_controller": false,
+    "use_fake_high_power": false,
+    "axis": 0
+  }
 }

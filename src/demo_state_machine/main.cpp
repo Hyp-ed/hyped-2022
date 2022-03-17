@@ -5,8 +5,8 @@
 namespace hyped::demo_state_machine {
 
 Main::Main()
-    : utils::concurrent::Thread(
-      utils::Logger("STATE-MACHINE", utils::System::getSystem().config_.log_level_state_machine))
+    : utils::concurrent::Thread(utils::Logger(
+      "DEMO-STATE-MACHINE", utils::System::getSystem().config_.log_level_demo_state_machine))
 {
   current_state_ = Idle::getInstance();
 }

@@ -28,6 +28,7 @@ class System {
     Logger::Level log_level_propulsion;
     Logger::Level log_level_sensors;
     Logger::Level log_level_state_machine;
+    Logger::Level log_level_demo_state_machine;
     Logger::Level log_level_telemetry;
     bool use_fake_trajectory;
     bool use_fake_batteries;

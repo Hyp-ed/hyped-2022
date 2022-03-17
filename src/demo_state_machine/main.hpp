@@ -5,7 +5,7 @@
 #include <cstdint>
 
 #include <data/data.hpp>
-#include <state_machine/state.hpp>
+#include <demo_state_machine/state.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
 

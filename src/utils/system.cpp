@@ -161,6 +161,24 @@ void System::parseArgs(const int argc, const char *const *const argv)
       argv[1]);
     config.log_level_state_machine = config.log_level;
   }
+  // Demo State machine log level
+  if (config_object.HasMember("log_level_demo_state_machine")) {
+    const auto log_level_raw = config_object["log_level_demo_state_machine"].GetInt();
+    const auto log_level     = Logger::levelFromInt(log_level_raw);
+    if (!log_level) {
+      kInitialisationErrorLogger.error(
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
+      exit(1);
+    }
+    config.log_level_demo_state_machine = *log_level;
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.log_level_demo_state_machine' in config filet at %s; using "
+      "default "
+      "value",
+      argv[1]);
+    config.log_level_demo_state_machine = config.log_level;
+  }
   // Telemetry log level
   if (config_object.HasMember("log_level_telemetry")) {
     const auto log_level_raw = config_object["log_level_telemetry"].GetInt();

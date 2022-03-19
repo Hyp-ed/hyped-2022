@@ -66,7 +66,8 @@ class Main : public utils::concurrent::Thread {
   std::unique_ptr<IPressure> pressure_;
   bool log_error_ = false;
 
-  data::TemperatureData temperature_data_;
+  std::array<data::TemperatureData, 2UL> brake_temperature_data_;
+  std::array<data::TemperatureData, 2UL> ambient_temperature_data_;
   data::PressureData pressure_data_;
 };
 

@@ -101,14 +101,18 @@ Main::Main()
 }
 
 void Main::checkTemperature()
+// TODO: edit this so that it checks EACH of the AMBIENT sensors are within the critical limit.
 {
-  temperature_->run();  // not a thread
-
-  uint8_t converted_temperature = temperature_->getData();
-  if ((converted_temperature > 75 || converted_temperature < 1)
-      && !log_error_) {  // 85 is the critical temperature so we alert at 75
-    log_.info("PCB temperature is getting a wee high...sorry Cheng");
-    log_error_ = true;
+  for (size_t i = 0; i < ambient_temperature_data_.size(); ++i) {
+    temperature_->run();  // not a thread
+    // how do we differentiate here between the different runs - i.e. call the different temperature
+    // sensors?
+    uint8_t converted_temperature = temperature_->getData();
+    if ((converted_temperature > 75 || converted_temperature < 1)
+        && !log_error_) {  // 85 is the critical temperature so we alert at 75
+      log_.info("PCB temperature is getting a wee high...sorry Cheng");
+      log_error_ = true;
+    }
   }
 }
 
@@ -241,8 +245,12 @@ void Main::run()
   auto previous_keyence = current_keyence;
 
   // Intialise temperature and pressure
-  temperature_data_ = data_.getSensorsData().temperature;
-  pressure_data_    = data_.getSensorsData().pressure;
+  auto brake_temperature_data_
+    = data_.getSensorsData()
+        .brake_temperature_array;  // BEFORE THIS - GIT PULL! figure how to store these in an array.
+  auto ambient_temperature_data_
+    = data_.getSensorsData().brake_temperature_array;  // figure how to store these in an array.
+  pressure_data_ = data_.getSensorsData().pressure;
 
   std::size_t iteration_count = 0;
   while (sys_.isRunning()) {

@@ -71,7 +71,8 @@ class StateTest : public hyped::testing::Test {
 /**
  * Testing Idle behaviour with respect to data
  */
-struct IdleTest : public StateTest {
+class IdleTest : public StateTest {
+ protected:
   state_machine::Idle *state = state_machine::Idle::getInstance();
 };
 
@@ -131,7 +132,8 @@ TEST_F(IdleTest, handlesAllInitialised)
 // Pre- Calibrating Tests
 //---------------------------------------------------------------------------
 
-struct PreCalibratingTest : public StateTest {
+class PreCalibratingTest : public StateTest {
+ protected:
   state_machine::PreCalibrating *state = state_machine::PreCalibrating::getInstance();
 };
 
@@ -195,7 +197,8 @@ TEST_F(PreCalibratingTest, handlesCalibrateCommand)
  * Testing Calibrating behaviour with respect to data
  */
 
-struct CalibratingTest : public StateTest {
+class CalibratingTest : public StateTest {
+ protected:
   state_machine::Calibrating *state = state_machine::Calibrating::getInstance();
 };
 
@@ -225,7 +228,7 @@ TEST_F(CalibratingTest, handlesEmergency)
 /**
  * Ensures that if no module reports an emergency and if
  * all modules are ready after calibration, the state
- * changes to the ready state.
+ * changes to the pre-ready state.
  */
 TEST_F(CalibratingTest, handlesAllReady)
 {
@@ -242,11 +245,77 @@ TEST_F(CalibratingTest, handlesAllReady)
       const auto new_state = state->checkTransition(log_);
 
       if (all_ready) {
+        ASSERT_EQ(new_state, state_machine::PreReady::getInstance())
+          << "failed to enter PreReady from Calibrating";
+      } else {
+        ASSERT_NE(new_state, state_machine::PreReady::getInstance())
+          << "falsely entered PreReady from Calibrating";
+      }
+    }
+  }
+}
+
+//---------------------------------------------------------------------------
+// PreReady Tests
+//---------------------------------------------------------------------------
+
+/**
+ * Testing PreReady behaviour with respect to data
+ */
+class PreReadyTest : public StateTest {
+ protected:
+  state_machine::PreReady *state = state_machine::PreReady::getInstance();
+};
+
+/**
+ * Ensures that if any module reports an emergency,
+ * the state changes to FailureStopped.
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreReadyTest, handlesEmergency)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const auto new_state = state->checkTransition(log_);
+
+    if (has_emergency) {
+      ASSERT_EQ(new_state, state_machine::FailureStopped::getInstance())
+        << "failed to enter FailureStopped from PreReady";
+    } else {
+      ASSERT_NE(new_state, state_machine::FailureStopped::getInstance())
+        << "falsely entered FailureStopped from PreReady";
+    }
+  }
+}
+
+/**
+ * Ensures that if no module reports an emergency and if
+ * all SSRs are in HP then state changes to the Ready state
+ *
+ * Time complexity: O(kTestSize)
+ */
+TEST_F(PreReadyTest, handlesHighPowerOn)
+{
+  for (int i = 0; i < kTestSize; i++) {
+    randomiseData();
+
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+
+    if (!has_emergency) {
+      const bool has_high_power_on = !state_machine::checkHighPowerOff(sensors_data_);
+      const auto new_state         = state->checkTransition(log_);
+
+      if (has_high_power_on) {
         ASSERT_EQ(new_state, state_machine::Ready::getInstance())
-          << "failed to enter Ready from Calibrating";
+          << "failed to enter Ready from PreReady";
       } else {
         ASSERT_NE(new_state, state_machine::Ready::getInstance())
-          << "falsely entered Ready from Calibrating";
+          << "falsely entered Ready from PreReady";
       }
     }
   }
@@ -259,7 +328,8 @@ TEST_F(CalibratingTest, handlesAllReady)
 /**
  * Testing Ready behaviour with respect to data
  */
-struct ReadyTest : public StateTest {
+class ReadyTest : public StateTest {
+ protected:
   state_machine::Ready *state = state_machine::Ready::getInstance();
 };
 
@@ -325,7 +395,8 @@ TEST_F(ReadyTest, handlesLaunchCommand)
 /**
  * Testing Accelerating behaviour with respect to data
  */
-struct AcceleratingTest : public StateTest {
+class AcceleratingTest : public StateTest {
+ protected:
   state_machine::Accelerating *state = state_machine::Accelerating::getInstance();
 };
 
@@ -433,7 +504,8 @@ TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
 /**
  * Testing Cruising behaviour with respect to data
  */
-struct CruisingTest : public StateTest {
+class CruisingTest : public StateTest {
+ protected:
   state_machine::Cruising *state = state_machine::Cruising::getInstance();
 };
 
@@ -498,7 +570,8 @@ TEST_F(CruisingTest, handlesInBrakingZone)
 /**
  * Testing PreBraking behaviour with respect to data
  */
-struct PreBrakingTest : public StateTest {
+class PreBrakingTest : public StateTest {
+ protected:
   state_machine::PreBraking *state = state_machine::PreBraking::getInstance();
 };
 
@@ -563,7 +636,8 @@ TEST_F(PreBrakingTest, handlesHighPowerOff)
 /**
  * Testing NominalBraking behaviour with respect to data
  */
-struct NominalBrakingTest : public StateTest {
+class NominalBrakingTest : public StateTest {
+ protected:
   state_machine::NominalBraking *state = state_machine::NominalBraking::getInstance();
 };
 
@@ -628,7 +702,8 @@ TEST_F(NominalBrakingTest, handlesStopped)
 /**
  * Testing Finished behaviour with respect to data
  */
-struct FinishedTest : public StateTest {
+class FinishedTest : public StateTest {
+ protected:
   state_machine::Finished *state = state_machine::Finished::getInstance();
 };
 
@@ -663,7 +738,8 @@ TEST_F(FinishedTest, handlesShutdownCommand)
 /**
  * Testing failure pre-braking behaviour with respect to data
  */
-struct FailurePreBrakingTest : public StateTest {
+class FailurePreBrakingTest : public StateTest {
+ protected:
   state_machine::FailurePreBraking *state = state_machine::FailurePreBraking::getInstance();
 };
 
@@ -698,7 +774,8 @@ TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
 /**
  * Testing failure Braking behaviour with respect to data
  */
-struct FailureBrakingTest : public StateTest {
+class FailureBrakingTest : public StateTest {
+ protected:
   state_machine::FailureBraking *state = state_machine::FailureBraking::getInstance();
 };
 
@@ -733,7 +810,8 @@ TEST_F(FailureBrakingTest, handlesStopped)
 /**
  * Testing FailureStopped behaviour with respect to data
  */
-struct FailureStoppedTest : public StateTest {
+class FailureStoppedTest : public StateTest {
+ protected:
   state_machine::FailureStopped *state = state_machine::FailureStopped::getInstance();
 };
 

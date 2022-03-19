@@ -11,6 +11,7 @@ static const std::unordered_map<State, std::string> state_names = {
   {State::kIdle, "Idle"},
   {State::kPreCalibrating, "PreCalibrating"},
   {State::kCalibrating, "Calibrating"},
+  {State::kPreReady, "PreReady"},
   {State::kReady, "Ready"},
   {State::kAccelerating, "Accelerating"},
   {State::kCruising, "Cruising"},
@@ -27,6 +28,7 @@ static const std::unordered_map<std::string, State> states_by_name = {
   {"Idle", State::kIdle},
   {"PreCalibrating", State::kPreCalibrating},
   {"Calibrating", State::kCalibrating},
+  {"PreReady", State::kPreReady},
   {"Ready", State::kReady},
   {"Accelerating", State::kAccelerating},
   {"Cruising", State::kCruising},
@@ -105,18 +107,6 @@ std::array<CounterData, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
 {
   ScopedLock L(&lock_sensors_);
   return sensors_.keyence_stripe_counters;
-}
-
-int Data::getTemperature()
-{
-  ScopedLock L(&lock_temp_);
-  return temperature_;
-}
-
-void Data::setTemperature(const int &temp)
-{
-  ScopedLock L(&lock_temp_);
-  temperature_ = temp;
 }
 
 void Data::setSensorsData(const Sensors &sensors_data)

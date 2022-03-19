@@ -25,7 +25,7 @@ class Temperature : public ITemperature {
    *
    * @return int to set to data struct in sensors main
    */
-  int getData() override;
+  uint8_t getData() override;
 
   /**
    * @brief one interation of checking sensors
@@ -39,7 +39,7 @@ class Temperature : public ITemperature {
    * @param raw_value input voltage
    * @return int representation of temperature
    */
-  int scaleData(uint16_t raw_value);
+  uint8_t scaleData(uint8_t raw_value);
 
   /**
    * @brief ADC pin

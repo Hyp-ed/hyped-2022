@@ -136,7 +136,6 @@ void Imu::enableFifo()
   } else {
     log_.error("ERROR: FIFO not enabled");
   }
-  kFrameSize_ = 6;
 }
 
 bool Imu::whoAmI()
@@ -230,7 +229,7 @@ int Imu::readFifo(data::ImuData &data)
   if (is_online_) {
     data.fifo.clear();
     // get fifo size
-    uint8_t buffer[kFrameSize_];
+    uint8_t buffer[kFrameSize];
     uint8_t size_buffer[2];
     readBytes(kFifoCountH, reinterpret_cast<uint8_t *>(size_buffer), 2);  // from count H/L
     // convert big->little endian of count (2 bytes)
@@ -243,9 +242,9 @@ int Imu::readFifo(data::ImuData &data)
     log_.debug("Buffer size = %d", fifo_size);
     int16_t axcounts, aycounts, azcounts;  // include negative int
     float value_x, value_y, value_z;
-    log_.debug("iterating = %d", (fifo_size / kFrameSize_));
-    for (size_t i = 0; i < (fifo_size / kFrameSize_); i++) {  // make sure is less than array size
-      readBytes(kFifoRW, buffer, kFrameSize_);
+    log_.debug("iterating = %d", (fifo_size / kFrameSize));
+    for (size_t i = 0; i < (fifo_size / kFrameSize); i++) {  // make sure is less than array size
+      readBytes(kFifoRW, buffer, kFrameSize);
       axcounts = (((int16_t)buffer[0]) << 8) | buffer[1];  // 2 byte acc data for xyz
       aycounts = (((int16_t)buffer[2]) << 8) | buffer[3];
       azcounts = (((int16_t)buffer[4]) << 8) | buffer[5];

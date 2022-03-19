@@ -67,7 +67,8 @@ class State {
 MAKE_STATE(Idle)               // State on startup
 MAKE_STATE(PreCalibrating)     // Sub-state between Idle and Calibrating
 MAKE_STATE(Calibrating)        // Calibrating starts after user input is given
-MAKE_STATE(Ready)              // After calibration has finished
+MAKE_STATE(PreReady)           // After calibration has finished
+MAKE_STATE(Ready)              // Entered after high power is on
 MAKE_STATE(Accelerating)       // First phase of the run
 MAKE_STATE(Cruising)           // Intermediate phase to not exceed maximum velocity
 MAKE_STATE(PreBraking)         // Sub-state between Accelerating/Cruising and Nominal Braking

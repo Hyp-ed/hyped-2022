@@ -20,7 +20,7 @@ class KalmanFilter {
   // transfer estimate to NavigationVector
   data::nav_t getEstimate();
   // transfer estimate variances to NavigationVector
-  const data::nav_t getEstimateVariance();
+  data::nav_t getEstimateVariance();
 
  private:
   // state dimensionality

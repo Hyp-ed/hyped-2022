@@ -1,8 +1,11 @@
+#include "randomiser.hpp"
+
 #include <cmath>
 #include <math.h>
 
 #include <iostream>
 #include <numeric>
+#include <random>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -16,20 +19,6 @@ namespace math {
 // -------------------------------------------------------------------------------------------------
 // Helper Functions
 // -------------------------------------------------------------------------------------------------
-
-/**
- * @brief generates a random float between two given floats. Code from: https://tinyurl.com/y2phu2q2
- * @tparam T Underlying numeric type
- * @param lower Lower bound for randomly generated values
- * @param upper Upper bound for randomly generated values
- */
-float RandomFloatOnline(float lower, float upper)
-{
-  float random = (static_cast<float>(rand())) / RAND_MAX;
-  float diff   = upper - lower;
-  float r      = random * diff;
-  return lower + r;
-}
 
 /**
  * @brief calculates the mean of the elements of a given array
@@ -54,10 +43,10 @@ T meanCalc(T a[], int size_a)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used for test fixtures checking class functionality and properties for integer
+ * @brief class used for test fixtures checking class functionality and properties for integer
  * values.
  */
-struct OnlineStatisticsTestInt : public ::testing::Test {
+class OnlineStatisticsTestInt : public ::testing::Test {
  protected:
   hyped::utils::math::OnlineStatistics<int> test_stats_int;
   int values_counter = 1000;
@@ -65,7 +54,7 @@ struct OnlineStatisticsTestInt : public ::testing::Test {
   int sum  = 0;
   int mean = 0;
   int var;
-  float c                        = RandomFloatOnline(1, 1000);
+  float c                        = testing::Randomiser::randomInRange(1, 1000);
   std::string messageVarStdDev   = "Standard deviation is not the root of the variance as expected";
   std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
   std::string messageOutlierVar  = "Outliers do not affect the variance as expected.";
@@ -154,10 +143,10 @@ TEST_F(OnlineStatisticsTestInt, testOutliersIntOnline)
 // -------------------------------------------------------------------------------------------------
 
 /**
- * @brief struct used for test fixtures checking class functionality and properties for float
+ * @brief class used for test fixtures checking class functionality and properties for float
  * values.
  */
-struct OnlineStatisticsTestFloat : public ::testing::Test {
+class OnlineStatisticsTestFloat : public ::testing::Test {
  protected:
   hyped::utils::math::OnlineStatistics<float> test_stats_float;
   // Declaring variables to be used
@@ -166,7 +155,7 @@ struct OnlineStatisticsTestFloat : public ::testing::Test {
   float sum_f  = 0.0;
   float mean_f = 0.0;
   float var_f;
-  float c                        = RandomFloatOnline(1, 1000);
+  float c                        = testing::Randomiser::randomInRange(1, 1000);
   std::string messageVarStdDev   = "Standard deviation is not the root of the variance as expected";
   std::string messageOutlierMean = "Outliers do not affect the mean as expected.";
   std::string messageOutlierVar  = "Outliers do not affect the variance as expected.";
@@ -176,7 +165,7 @@ struct OnlineStatisticsTestFloat : public ::testing::Test {
   {
     // Populating the array to be used with random floats
     for (int i = 0; i < values_counter; i++) {
-      values_f[i] = RandomFloatOnline(1, 1000);
+      values_f[i] = testing::Randomiser::randomInRange(1, 1000);
     }
   }
 
@@ -245,7 +234,7 @@ TEST_F(OnlineStatisticsTestFloat, testOutliersFloatOnline)
 
   //  Introducing the outliers in our data
   for (int i = 0; i < (static_cast<int>(values_counter) / 10); i++) {
-    test_stats_float.update(threshold + RandomFloatOnline(100, 200));
+    test_stats_float.update(threshold + testing::Randomiser::randomInRange(100, 200));
   }
 
   EXPECT_LT(mean_prev, test_stats_float.getMean()) << messageOutlierMean;

@@ -34,6 +34,7 @@ class Writer {
   void packId(const uint16_t id);
 
   // specific functions that allow packing of structs in central data structure
+  void packId(int id);
   void packTelemetryData();
   void packSensorsData();
   void packMotorData();

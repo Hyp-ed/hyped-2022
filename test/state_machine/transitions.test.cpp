@@ -14,7 +14,7 @@
 namespace hyped::testing {
 
 /**
- * Struct used for testing transition functions. Contains
+ * Class used for testing transition functions. Contains
  *
  * 1. Logger
  * 2. Error messages

@@ -21,7 +21,7 @@ void Sender::run()
 {
   log_.debug("Telemetry Sender thread started");
 
-  uint32_t num_packages_sent = 0;
+  int num_packages_sent = 0;
 
   while (true) {
     Writer writer;

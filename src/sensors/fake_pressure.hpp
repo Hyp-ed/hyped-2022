@@ -8,10 +8,10 @@
 
 namespace hyped::sensors {
 
-class FakePressure : public ITemperature {
+class FakePressure : public IPressure {
  public:
   /**
-   * @brief Construct a new Fake Temperature object
+   * @brief Construct a new Fake Pressure object
    *
    * @param log
    * @param is_fail

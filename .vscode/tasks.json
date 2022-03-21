@@ -1,0 +1,53 @@
+{
+  "tasks": [
+    {
+      "label": "cmake build",
+      "command": "cmake",
+      "args": [
+        "-S .",
+        "-B gui-build",
+        "-DPEDANTIC=ON",
+        "-DRELEASE=ON",
+        "-DCOVERAGE=ON",
+        "-DCROSS=OFF",
+        "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
+        "-DCMAKE_BUILD_TYPE=Debug",
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+    },
+    {
+      "label": "make build",
+      "command": "make",
+      "args": [
+        "-j",
+        "-C",
+        "gui-build",
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+    },
+    {
+      "label": "main build for debug",
+      "type": "shell",
+      "command": "echo Compiled",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "cmake build",
+        "make build"
+      ]
+    }
+  ],
+  "version": "2.0.0"
+}

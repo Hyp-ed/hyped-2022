@@ -462,15 +462,16 @@ void Navigation::navigate()
 void Navigation::initialiseTimestamps()
 {
   // First iteration --> set timestamps
-  imu_acceleration_.timestamp     = utils::Timer::getTimeMicros();
-  imu_velocity_.timestamp         = utils::Timer::getTimeMicros();
-  imu_displacement_.timestamp     = utils::Timer::getTimeMicros();
-  encoder_displacement_.timestamp = utils::Timer::getTimeMicros();
+  data::nav_t initial_timestamp   = utils::Timer::getTimeMicros();
+  imu_acceleration_.timestamp     = initial_timestamp;
+  imu_velocity_.timestamp         = initial_timestamp;
+  imu_displacement_.timestamp     = initial_timestamp;
+  encoder_displacement_.timestamp = initial_timestamp;
   previous_acceleration_          = getImuAcceleration();
   previous_velocity_              = getImuVelocity();
-  initial_timestamp_              = utils::Timer::getTimeMicros();
+  initial_timestamp_              = initial_timestamp;
   log_.debug("Initial timestamp:%d", initial_timestamp_);
-  previous_timestamp_ = utils::Timer::getTimeMicros();
+  previous_timestamp_ = initial_timestamp;
   stripe_counter_.setInit(initial_timestamp_);
 }
 }  // namespace hyped::navigation

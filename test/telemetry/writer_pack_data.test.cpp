@@ -87,7 +87,7 @@ TEST_F(WriterPackData, packsSensorsData)
   sensors_data.module_status   = data::ModuleStatus::kInit;
   brakes_data.module_status    = data::ModuleStatus::kReady;
   batteries_data.module_status = data::ModuleStatus::kStart;
-  data_.setTemperature(20);
+  // data_.setTemperature(20); method has been removed
   for (int16_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
     batteries_data.high_power_batteries[i].average_temperature = 8;
     batteries_data.high_power_batteries[i].charge              = 3;
@@ -127,7 +127,7 @@ TEST_F(WriterPackData, packsSensorsData)
       "\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":24,\"imd_"
       "fault\":false}],\"hp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
       "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
-      "24,\"imd_fault\":false}],\"brakes_retracted\":true,\"temperature\":20,\"brakes_status\":"
+      "24,\"imd_fault\":false}],\"brakes_retracted\":true,\"brakes_status\":"
       "\"READY\",\"sensors_status\":\"INIT\",\"batteries_status\":\"START\"}}";
   ASSERT_EQ(actual_json, expected_json) << "Sensors json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Sensors json invalid.";

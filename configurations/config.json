@@ -6,6 +6,8 @@
     "use_fake_batteries_fail": false,
     "use_fake_temperature": false,
     "use_fake_temperature_fail": false,
+    "use_fake_pressure": false,
+    "use_fake_pressure_fail": false,
     "use_fake_brakes": false,
     "use_fake_controller": false,
     "use_fake_high_power": false,

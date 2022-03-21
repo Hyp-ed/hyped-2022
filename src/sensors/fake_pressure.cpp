@@ -45,8 +45,8 @@ void FakePressure::checkFailure()
 {
   if (is_fail_ && failure_time_ != 0 && !failure_happened_) {
     if (utils::Timer::getTimeMicros() - acc_start_time_ >= failure_time_) {
-      pressure_.pressure        = failure_;
-      failure_happened_ = true;
+      pressure_.pressure = failure_;
+      failure_happened_  = true;
     }
   }
 }

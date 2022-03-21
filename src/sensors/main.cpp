@@ -7,8 +7,10 @@
 #include <rapidjson/stringbuffer.h>
 
 #include <sensors/fake_keyence.hpp>
+#include <sensors/fake_pressure.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
+#include <sensors/pressure.hpp>
 #include <sensors/temperature.hpp>
 
 namespace hyped::sensors {
@@ -91,6 +93,21 @@ Main::Main()
       return;
     }
     temperature_ = std::make_unique<Temperature>(log_, *temperature_pin);
+  }
+
+  // Pressure
+  if (sys_.config_.use_fake_pressure_fail) {
+    pressure_ = std::make_unique<FakePressure>(log_, true);
+  } else if (sys_.config_.use_fake_pressure) {
+    pressure_ = std::make_unique<FakePressure>(log_, false);
+  } else {
+    auto pressure_pin = pressurePinFromFile(log_, sys_.config_.pressure_config_path);
+    if (!pressure_pin) {
+      log_.error("failed to initialise pressure sensor");
+      sys_.stop();
+      return;
+    }
+    pressure_ = std::make_unique<Pressure>(log_, *pressure_pin);
   }
 
   // kReady for state machine transition
@@ -225,6 +242,33 @@ std::optional<std::uint32_t> Main::temperaturePinFromFile(utils::Logger &log,
     return std::nullopt;
   }
   return static_cast<std::uint32_t>(config_object["temperature_pin"].GetUint());
+}
+
+std::optional<std::uint32_t> Main::pressurePinFromFile(utils::Logger &log, const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("pressure_pin")) {
+    log.error("Missing required field 'sensors.pressure_pin' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  return static_cast<std::uint32_t>(config_object["pressure_pin"].GetUint());
 }
 
 void Main::run()

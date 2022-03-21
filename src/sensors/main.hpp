@@ -29,6 +29,7 @@ class Main : public utils::concurrent::Thread {
   static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
   static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
                                                         const std::string &path);
+  static std::optional<uint32_t> pressurePinFromFile(utils::Logger &log, const std::string &path);
 
  private:
   /**

@@ -30,7 +30,7 @@ void CanReceiver::processNewData(utils::io::can::Frame &message)
   }
 }
 
-bool CanReceiver::hasId(uint32_t id, bool)
+bool CanReceiver::hasId(const uint32_t id, bool)
 {
   for (uint32_t cobId : kCanIds) {
     if (cobId + node_id_ == id) { return true; }

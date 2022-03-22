@@ -15,7 +15,7 @@ class ICanReceiver {
 
   virtual void processNewData(utils::io::can::Frame &message) = 0;
 
-  virtual bool hasId(uint32_t id, bool extended) = 0;
+  virtual bool hasId(const uint32_t id, bool extended) = 0;
 };
 
 }  // namespace propulsion

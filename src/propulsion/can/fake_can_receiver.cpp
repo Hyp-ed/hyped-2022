@@ -18,7 +18,7 @@ void FakeCanReceiver::processNewData(utils::io::can::Frame &)
   is_sending_ = false;
 }
 
-bool FakeCanReceiver::hasId(uint32_t, bool)
+bool FakeCanReceiver::hasId(const uint32_t, bool)
 {
   return true;
 }

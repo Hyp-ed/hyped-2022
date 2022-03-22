@@ -2,7 +2,7 @@
 
 namespace hyped::propulsion {
 
-Controller::Controller(uint8_t id)
+Controller::Controller(const uint8_t id)
     : log_("CONTROLLER", utils::System::getSystem().config_.log_level_propulsion),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),

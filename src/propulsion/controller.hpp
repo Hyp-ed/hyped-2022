@@ -21,7 +21,7 @@ class Controller : public IController {
    * @brief Construct a new Controller object
    * @param id
    */
-  Controller(uint8_t id);
+  Controller(const uint8_t id);
   /**
    * @brief Registers controller to recieve and transmit CAN messages.
    */
@@ -48,14 +48,14 @@ class Controller : public IController {
    * @brief Send the target velocity to the motor controller.
    * @param target_velocity - in rpm (calculated in speed calculator)
    */
-  void sendTargetVelocity(int32_t target_velocity) override;
+  void sendTargetVelocity(const int32_t target_velocity) override;
 
   /**
    * @brief Send the target torque to the motor controller.
    *
    * @param target_torque
    */
-  void sendTargetTorque(int16_t target_torque);
+  void sendTargetTorque(const int16_t target_torque);
   /**
    * @brief Send a request to the motor controller to get the actual velocity.
    *

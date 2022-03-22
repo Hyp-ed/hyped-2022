@@ -8,7 +8,7 @@ CanSender::CanSender()
   can_.start();
 }
 
-bool CanSender::sendMessage(utils::io::can::Frame &message)
+bool CanSender::sendMessage(const utils::io::can::Frame &message)
 {
   log_.info("Sending Message");
   return can_.send(message);

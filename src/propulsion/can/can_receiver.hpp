@@ -35,7 +35,7 @@ class CanReceiver : public utils::io::CanProccesor, public ICanReceiver {
   /**
    * @brief If this function returns true, the CAN message is ment for this CAN node
    */
-  bool hasId(uint32_t id, bool extended) override;
+  bool hasId(const uint32_t id, bool extended) override;
 
  private:
   utils::Logger log_;

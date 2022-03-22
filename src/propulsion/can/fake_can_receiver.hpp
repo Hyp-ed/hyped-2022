@@ -20,7 +20,7 @@ class FakeCanReceiver : public utils::io::CanProccesor, public ICanReceiver {
 
   void processNewData(utils::io::can::Frame &message) override;
 
-  bool hasId(uint32_t id, bool extended) override;
+  bool hasId(const uint32_t id, bool extended) override;
 
   bool getIsSending();
 

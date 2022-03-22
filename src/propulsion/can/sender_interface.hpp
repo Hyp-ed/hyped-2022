@@ -11,7 +11,7 @@ class ICanSender {
   /**
    * @brief { Sends CAN messages }
    */
-  virtual bool sendMessage(utils::io::can::Frame &message) = 0;
+  virtual bool sendMessage(const utils::io::can::Frame &message) = 0;
 };
 
 }  // namespace propulsion

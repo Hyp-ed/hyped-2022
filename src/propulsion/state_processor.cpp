@@ -92,14 +92,14 @@ void StateProcessor::accelerate()
   const auto now = utils::Timer::getTimeMicros();
   if (now - previous_acceleration_time_ > 5000) {
     previous_acceleration_time_ = now;
-    const auto velocity         = data_.getNavigationData().velocity;
-    const auto act_rpm          = calculateAverageRpm();
-    const auto rpm              = rpm_regulator_.calculateRpm(velocity, act_rpm);
+    const data::nav_t velocity  = data_.getNavigationData().velocity;
+    const uint32_t act_rpm      = calculateAverageRpm();
+    const uint32_t rpm          = rpm_regulator_.calculateRpm(velocity, act_rpm);
     log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }
-    nucleo_manager_->sendNucleoFrequency(round(rpm / 60.0));
+    nucleo_manager_->sendNucleoFrequency(std::round((double)rpm / 60.0));
   }
 }
 
@@ -119,7 +119,7 @@ bool StateProcessor::isOverLimits()
   return over_limits;
 }
 
-int32_t StateProcessor::calculateAverageRpm()
+uint32_t StateProcessor::calculateAverageRpm()
 {
   int32_t total = 0;
   for (auto &controller : controllers_) {

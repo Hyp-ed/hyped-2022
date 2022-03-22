@@ -85,7 +85,7 @@ class StateProcessor {
    * @brief Calculate the Average rpm of all motors
    * @return int32_t
    */
-  int32_t calculateAverageRpm();
+  uint32_t calculateAverageRpm();
 
   /**
    * @brief calculate the max Current drawn out of all the motors

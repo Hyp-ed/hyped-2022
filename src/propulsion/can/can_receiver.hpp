@@ -43,10 +43,7 @@ class CanReceiver : public utils::io::CanProccesor, public ICanReceiver {
   utils::io::Can &can_;
   IController &controller_;
 
-  static constexpr uint32_t kEmgyTransmit = 0x80;
-  static constexpr uint32_t kSdoTransmit  = 0x580;
-  static constexpr uint32_t kNmtTransmit  = 0x700;
-  static constexpr uint64_t kTimeout      = 70000;  // us
+  static constexpr uint64_t kTimeout = 70000;  // us
 };
 
 }  // namespace hyped::propulsion

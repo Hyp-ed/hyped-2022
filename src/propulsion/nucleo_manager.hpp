@@ -16,7 +16,7 @@ class NucleoManager {
    * @brief Send the target frequency to the nucleo board.
    * @param target_frequency in Hz
    */
-  void sendNucleoFrequency(const uint32_t target_frequency);
+  void sendNucleoFrequency(uint32_t target_frequency);
 
  private:
   utils::Logger log_;

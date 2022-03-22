@@ -11,12 +11,12 @@ NucleoManager::NucleoManager()
   can_frame_.len      = 4;
 }
 
-void NucleoManager::sendNucleoFrequency(const uint32_t target_frequency)
+void NucleoManager::sendNucleoFrequency(uint32_t target_frequency)
 {
-  can_frame_.data[1] = target_frequency & 0xFF;
-  can_frame_.data[2] = (target_frequency >> 8) & 0xFF;
-  can_frame_.data[3] = (target_frequency >> 16) & 0xFF;
-  can_frame_.data[4] = (target_frequency >> 24) & 0xFF;
+  for (size_t i = 0; i < 4; i++) {
+    can_frame_.data[i] = target_frequency & 0xff;
+    target_frequency >>= 8;
+  }
   sender_.sendMessage(can_frame_);
 }
 }  // namespace hyped::propulsion

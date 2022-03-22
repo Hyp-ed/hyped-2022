@@ -23,9 +23,9 @@ static constexpr uint32_t kNmtTransmit    = 0x700;
 static constexpr uint32_t kNucleoTransmit = 0x900;  // currently lowest priority, might change
 
 static constexpr std::array<uint32_t, 14> kCanIds
-  = {kEmgyTransmit, kSdoReceive,   kSdoTransmit,  kNmtReceive,    kNmtTransmit,
-     kPdo1Transmit, kPdo1Receive,  kPdo2Transmit, kPdo2Receive,   kPdo3Transmit,
-     kPdo3Receive,  kPdo4Transmit, kPdo4Receive,  kNucleoTransmit};
+  = {kNmtReceive,  kEmgyTransmit, kPdo1Transmit, kPdo1Receive,   kPdo2Transmit,
+     kPdo2Receive, kPdo3Transmit, kPdo3Receive,  kPdo4Transmit,  kPdo4Receive,
+     kSdoTransmit, kSdoReceive,   kNmtTransmit,  kNucleoTransmit};
 
 }  // namespace propulsion
 }  // namespace hyped

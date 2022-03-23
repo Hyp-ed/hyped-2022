@@ -18,8 +18,9 @@ namespace hyped::sensors {
  */
 class Main : public utils::concurrent::Thread {
  public:
-  using KeyencePins = std::array<uint32_t, data::Sensors::kNumKeyence>;
-  using ImuPins     = std::array<uint32_t, data::Sensors::kNumImus>;
+  using KeyencePins            = std::array<uint32_t, data::Sensors::kNumKeyence>;
+  using ImuPins                = std::array<uint32_t, data::Sensors::kNumImus>;
+  using AmbientTemperaturePins = std::array<uint32_t, data::Sensors::kNumAmbientTemp>;
 
   Main();
   void run() override;  // from thread
@@ -27,8 +28,8 @@ class Main : public utils::concurrent::Thread {
   static std::optional<KeyencePins> keyencePinsFromFile(utils::Logger &log,
                                                         const std::string &path);
   static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
-  static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
-                                                        const std::string &path);
+  static std::optional<AmbientTemperaturePins> ambientTemperaturePinsFromFile(
+    utils::Logger &log, const std::string &path);
 
  private:
   /**
@@ -43,7 +44,7 @@ class Main : public utils::concurrent::Thread {
    * @brief used to check the temperature infrequently in main loop,
    *        unnecessary to constantly check temperature;
    */
-  void checkTemperature();
+  void checkAmbientTemperature();
 
   /**
    * @brief used to check the pressure every twenty times in the main loop,
@@ -62,12 +63,12 @@ class Main : public utils::concurrent::Thread {
   std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
-  std::unique_ptr<ITemperature> temperature_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> temperature_;
   std::unique_ptr<IPressure> pressure_;
   bool log_error_ = false;
 
-  std::array<data::TemperatureData, 2UL> brake_temperature_data_;
-  std::array<data::TemperatureData, 2UL> ambient_temperature_data_;
+  // std::array<data::TemperatureData, 2UL> brake_temperature_data_;
+  // std::array<data::TemperatureData, 2UL> ambient_temperature_data_;
   data::PressureData pressure_data_;
 };
 

@@ -80,17 +80,25 @@ Main::Main()
 
   // Temperature
   if (sys_.config_.use_fake_temperature_fail) {
-    temperature_ = std::make_unique<FakeTemperature>(true);
+    // temperature_ = std::make_unique<FakeTemperature>(true);
+    for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
+      temperature_[i] = std::make_unique<FakeTemperature>(true);
+    }
   } else if (sys_.config_.use_fake_temperature) {
-    temperature_ = std::make_unique<FakeTemperature>(false);
+    for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
+      temperature_[i] = std::make_unique<FakeTemperature>(false);
+    }
   } else {
-    auto temperature_pin = temperaturePinFromFile(log_, sys_.config_.temperature_config_path);
-    if (!temperature_pin) {
+    auto temperature_pins
+      = ambientTemperaturePinsFromFile(log_, sys_.config_.temperature_config_path);
+    if (!temperature_pins) {
       log_.error("failed to initialise temperature sensor");
       sys_.stop();
       return;
     }
-    temperature_ = std::make_unique<Temperature>(*temperature_pin);
+    for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
+      temperature_[i] = std::make_unique<Temperature>(*temperature_pins);
+    }
   }
 
   // kReady for state machine transition
@@ -100,21 +108,41 @@ Main::Main()
   log_.info("Sensors have been initialised");
 }
 
-void Main::checkTemperature()
+void Main::checkAmbientTemperature()
 // TODO: edit this so that it checks EACH of the AMBIENT sensors are within the critical limit.
 {
-  for (size_t i = 0; i < ambient_temperature_data_.size(); ++i) {
-    temperature_->run();  // not a thread
-    // how do we differentiate here between the different runs - i.e. call the different temperature
-    // sensors?
-    uint8_t converted_temperature = temperature_->getData();
-    if ((converted_temperature > 75 || converted_temperature < 1)
+  auto ambient_temperature = data_.getSensorsData().ambient_temperature_array;
+  for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
+    temperature_[i]->run();  // not a thread
+    //.temp is maybe not the nicest method...
+    ambient_temperature.at(i).temp = temperature_[i]->getData();
+    if ((ambient_temperature.at(i).temp > 75UL || ambient_temperature.at(i).temp < 1UL)
         && !log_error_) {  // 85 is the critical temperature so we alert at 75
       log_.info("PCB temperature is getting a wee high...sorry Cheng");
       log_error_ = true;
     }
   }
 }
+
+/**
+void Main::checkBrakeTemperature()
+// TODO: edit this so that it checks EACH of the AMBIENT sensors are within the critical limit.
+{
+  auto brake_temperature = data_.getSensorsData().brake_temperature_array;
+  for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
+    temperature_[i]->run();  // not a thread
+    brake_temperature.at(i) = temperature_[i]->getData();
+    // how do we differentiate here between the different runs - i.e. call the different temperature
+    // sensors?
+    // uint8_t converted_temperature = temperature_->getData();
+    if ((brake_temperature.at(i) > 75UL || brake_temperature.at(i) < 1UL)
+        && !log_error_) {  // 85 is the critical temperature so we alert at 75
+      log_.info("PCB temperature is getting a wee high...sorry Cheng");
+      log_error_ = true;
+    }
+  }
+}
+*/
 
 void Main::checkPressure()
 {
@@ -208,8 +236,8 @@ std::optional<Main::ImuPins> Main::imuPinsFromFile(utils::Logger &log, const std
   return imu_pins;
 }
 
-std::optional<std::uint32_t> Main::temperaturePinFromFile(utils::Logger &log,
-                                                          const std::string &path)
+std::optional<Main::AmbientTemperaturePins> Main::ambientTemperaturePinsFromFile(
+  utils::Logger &log, const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -228,12 +256,23 @@ std::optional<std::uint32_t> Main::temperaturePinFromFile(utils::Logger &log,
     return std::nullopt;
   }
   auto config_object = document["sensors"].GetObject();
-  if (!config_object.HasMember("temperature_pin")) {
-    log.error("Missing required field 'sensors.temperature_pin' in configuration file at %s",
+  if (!config_object.HasMember("temperature_pins")) {
+    log.error("Missing required field 'sensors.temperature_pins' in configuration file at %s",
               path.c_str());
     return std::nullopt;
   }
-  return static_cast<std::uint32_t>(config_object["temperature_pin"].GetUint());
+  auto ambient_temperature_pin_array = config_object["temperature_pins"].GetArray();
+  if (ambient_temperature_pin_array.Size() != data::Sensors::kNumAmbientTemp) {
+    log.error("Found %d ambient temperature pins but %d were expected in configuration file at %s",
+              ambient_temperature_pin_array.Size(), data::Sensors::kNumAmbientTemp, path.c_str());
+  }
+  AmbientTemperaturePins ambient_temperature_pins;
+  std::size_t i = 0;
+  for (auto &ambient_temperature_pin : ambient_temperature_pin_array) {
+    ambient_temperature_pins.at(i) = static_cast<uint32_t>(ambient_temperature_pin.GetUint());
+    ++i;
+  }
+  return ambient_temperature_pins;
 }
 
 void Main::run()
@@ -245,12 +284,8 @@ void Main::run()
   auto previous_keyence = current_keyence;
 
   // Intialise temperature and pressure
-  auto brake_temperature_data_
-    = data_.getSensorsData()
-        .brake_temperature_array;  // BEFORE THIS - GIT PULL! figure how to store these in an array.
-  auto ambient_temperature_data_
-    = data_.getSensorsData().brake_temperature_array;  // figure how to store these in an array.
-  pressure_data_ = data_.getSensorsData().pressure;
+  auto brake_temperature = data_.getSensorsData().brake_temperature_array;
+  pressure_data_         = data_.getSensorsData().pressure;
 
   std::size_t iteration_count = 0;
   while (sys_.isRunning()) {
@@ -271,7 +306,7 @@ void Main::run()
     Thread::sleep(10);  // Sleep for 10ms
     ++iteration_count;
     if (iteration_count % 20 == 0) {  // check every 20 cycles of main
-      checkTemperature();
+      checkAmbientTemperature();
       checkPressure();
       // So that temp_count does not get huge
       iteration_count = 0;

@@ -241,7 +241,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
       argv[0]);
     config.use_fake_pressure = false;
   }
-  // Use fake temperature with fail?
+  // Use fake pressure with fail?
   if (config_object.HasMember("use_fake_pressure_fail")) {
     config.use_fake_pressure_fail = config_object["use_fake_pressure_fail"].GetBool();
   } else {

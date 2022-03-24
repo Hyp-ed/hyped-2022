@@ -16,7 +16,7 @@ class FakeTemperature : public ITemperature {
    * @param log
    * @param is_fail
    */
-  FakeTemperature(bool is_fail);
+  FakeTemperature(const bool is_fail);
 
   /**
    * @brief returns int representation

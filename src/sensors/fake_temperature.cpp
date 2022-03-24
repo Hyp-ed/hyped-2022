@@ -7,7 +7,7 @@
 
 namespace hyped::sensors {
 
-FakeTemperature::FakeTemperature(bool is_fail)
+FakeTemperature::FakeTemperature(const bool is_fail)
     : data_(data::Data::getInstance()),
       log_("FAKE-TEMPERATURE", utils::System::getSystem().config_.log_level_sensors),
       failure_(300),

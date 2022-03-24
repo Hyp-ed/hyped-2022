@@ -7,7 +7,7 @@
 
 namespace hyped::sensors {
 
-FakeAmbientPressure::FakeAmbientPressure(bool is_fail)
+FakeAmbientPressure::FakeAmbientPressure(const bool is_fail)
     : data_(data::Data::getInstance()),
       log_("FAKE-AMBIENT-PRESSURE", utils::System::getSystem().config_.log_level_sensors),
       failure_(10000),  // 10 bar

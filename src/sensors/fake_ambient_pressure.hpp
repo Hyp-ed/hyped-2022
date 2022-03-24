@@ -2,8 +2,6 @@
 
 #include "interface.hpp"
 
-#include <string>
-
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {
@@ -15,7 +13,7 @@ class FakeAmbientPressure : public IAmbientPressure {
    *
    * @param is_fail
    */
-  FakeAmbientPressure(bool is_fail);
+  FakeAmbientPressure(const bool is_fail);
 
   /**
    * @brief returns int representation

@@ -1,5 +1,7 @@
 #include "nucleo_manager.hpp"
 
+#include <utils/system.hpp>
+
 namespace hyped::propulsion {
 
 NucleoManager::NucleoManager()

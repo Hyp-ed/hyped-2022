@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <utils/system.hpp>
+
 namespace hyped::propulsion {
 
 RpmRegulator::RpmRegulator()

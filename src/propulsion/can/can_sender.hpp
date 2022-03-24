@@ -4,7 +4,6 @@
 
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
-#include <utils/system.hpp>
 
 namespace hyped::propulsion {
 class CanSender : public ICanSender {

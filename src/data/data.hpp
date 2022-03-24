@@ -62,11 +62,11 @@ struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
-  uint16_t temp;  // C
+  uint16_t temperature;  // C
 };
 
-struct PressureData : public SensorData {
-  uint16_t pressure;  // mbar
+struct AmbientPressureData : public SensorData {
+  uint16_t ambient_pressure;  // mbar
 };
 
 struct Sensors : public Module {
@@ -75,7 +75,7 @@ struct Sensors : public Module {
   static constexpr size_t kNumKeyence  = 2;
 
   TemperatureData temperature;
-  PressureData pressure;
+  AmbientPressureData ambient_pressure;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;

@@ -8,22 +8,21 @@
 
 namespace hyped::sensors {
 
-class FakePressure : public IPressure {
+class FakeAmbientPressure : public IAmbientPressure {
  public:
   /**
-   * @brief Construct a new Fake Pressure object
+   * @brief Construct a new Fake AmbientPressure object
    *
-   * @param log
    * @param is_fail
    */
-  FakePressure(utils::Logger &log, bool is_fail);
+  FakeAmbientPressure(bool is_fail);
 
   /**
    * @brief returns int representation
    *
    * @return int pressure mbar
    */
-  uint8_t getData() override;
+  uint16_t getData() override;
 
   /**
    * @brief waits for acceleration, generate random time for failure
@@ -32,7 +31,7 @@ class FakePressure : public IPressure {
 
  private:
   data::Data &data_;
-  utils::Logger &log_;
+  utils::Logger log_;
 
   /**
    * @brief dependent on is_fail_, set to fail value
@@ -42,7 +41,7 @@ class FakePressure : public IPressure {
   // values mbar
   int failure_;
   int success_;
-  data::PressureData pressure_;
+  data::AmbientPressureData pressure_data_;
 
   bool is_fail_;
 

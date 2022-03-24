@@ -5,8 +5,8 @@
 #include <cstdint>
 
 #include <data/data.hpp>
+#include <utils/io/adc.hpp>
 #include <utils/logger.hpp>
-
 namespace hyped::sensors {
 
 class Temperature : public ITemperature {
@@ -14,10 +14,9 @@ class Temperature : public ITemperature {
   /**
    * @brief Construct a new Temperature object
    *
-   * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Temperature(utils::Logger &log, int pin);
+  Temperature(const uint8_t pin);
   ~Temperature() {}
 
   /**
@@ -44,13 +43,13 @@ class Temperature : public ITemperature {
   /**
    * @brief ADC pin
    */
-  int pin_;
-  utils::Logger &log_;
+  utils::io::ADC pin_;
+  utils::Logger log_;
 
   /**
    * @brief int from data structs
    */
-  data::TemperatureData temp_;
+  data::TemperatureData temperature_data_;
 };
 
 }  // namespace hyped::sensors

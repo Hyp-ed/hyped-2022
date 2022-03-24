@@ -74,21 +74,21 @@ class ITemperature {
   virtual uint8_t getData() = 0;
 };
 
-class IPressure {
+class IAmbientPressure {
  public:
   /**
    * @brief empty virtual deconstructor for proper deletion of derived classes
    */
-  virtual ~IPressure() {}
+  virtual ~IAmbientPressure() {}
+
   /**
    * @brief checks pressure
    */
   virtual void run() = 0;
 
   /**
-   * @brief returns int representation of pressure
-   * @return int pressure bars
+   * @return pressure in mbars
    */
-  virtual uint8_t getData() = 0;
+  virtual uint16_t getData() = 0;
 };
 }  // namespace hyped::sensors

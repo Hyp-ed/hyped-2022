@@ -20,6 +20,10 @@ class Main : public utils::concurrent::Thread {
  public:
   using KeyencePins = std::array<uint32_t, data::Sensors::kNumKeyence>;
   using ImuPins     = std::array<uint32_t, data::Sensors::kNumImus>;
+  struct AmbientPressurePins {
+    uint8_t pressure_pin;
+    uint8_t temperature_pin;
+  };
 
   Main();
   void run() override;  // from thread
@@ -29,7 +33,8 @@ class Main : public utils::concurrent::Thread {
   static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
   static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
                                                         const std::string &path);
-  static std::optional<uint32_t> pressurePinFromFile(utils::Logger &log, const std::string &path);
+  static std::optional<AmbientPressurePins> ambientPressurePinsFromFile(utils::Logger &log,
+                                                                        const std::string &path);
 
  private:
   /**
@@ -50,7 +55,7 @@ class Main : public utils::concurrent::Thread {
    * @brief used to check the pressure every twenty times in the main loop,
    *        similar to temperature;
    */
-  void checkPressure();
+  void checkAmbientPressure();
 
   utils::System &sys_;
   data::Data &data_;
@@ -64,11 +69,10 @@ class Main : public utils::concurrent::Thread {
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
   std::unique_ptr<ITemperature> temperature_;
-  std::unique_ptr<IPressure> pressure_;
-  bool log_error_ = false;
+  std::unique_ptr<IAmbientPressure> ambient_pressure_;
 
   data::TemperatureData temperature_data_;
-  data::PressureData pressure_data_;
+  data::AmbientPressureData pressure_data_;
 };
 
 }  // namespace hyped::sensors

@@ -35,6 +35,7 @@ class AmbientPressure : public IAmbientPressure {
   std::optional<uint16_t> scaleData(const uint32_t digital_pressure_value,
                                     const uint32_t digital_temperature_value);
 
+  // WARNING, TODO: This sensor doesn't actually use an analog signal!!!!
   utils::io::ADC pressure_pin_;
   utils::io::ADC temperature_pin_;
 

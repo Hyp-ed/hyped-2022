@@ -74,7 +74,7 @@ struct Sensors : public Module {
   static constexpr size_t kNumEncoders    = 4;
   static constexpr size_t kNumKeyence     = 2;
   static constexpr size_t kNumBrakeTemp   = 2;
-  static constexpr size_t kNumAmbientTemp = 2;
+  static constexpr size_t kNumAmbientTemp = 3;
 
   // TemperatureData temperature;
   PressureData pressure;

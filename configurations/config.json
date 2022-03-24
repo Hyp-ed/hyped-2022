@@ -33,7 +33,12 @@
       47,
       86
     ],
-    "temperature_pin": 3
+    "temperature_pins": [
+      3,
+      4,
+      5,
+      6
+    ]
   },
   "telemetry": {
     "server_ip": "127.0.01",

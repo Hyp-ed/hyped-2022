@@ -79,14 +79,15 @@ Main::Main()
   }
 
   // Temperature
+  // TODO: can I just configure them both in this bit here or split them up?...
   if (sys_.config_.use_fake_temperature_fail) {
     // temperature_ = std::make_unique<FakeTemperature>(true);
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      temperature_[i] = std::make_unique<FakeTemperature>(true);
+      ambientTemperature_[i] = std::make_unique<FakeTemperature>(true);
     }
   } else if (sys_.config_.use_fake_temperature) {
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      temperature_[i] = std::make_unique<FakeTemperature>(false);
+      ambientTemperature_[i] = std::make_unique<FakeTemperature>(false);
     }
   } else {
     auto temperature_pins
@@ -97,7 +98,7 @@ Main::Main()
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      temperature_[i] = std::make_unique<Temperature>(*temperature_pins);
+      ambientTemperature_[i] = std::make_unique<Temperature>(*temperature_pins);
     }
   }
 
@@ -113,9 +114,9 @@ void Main::checkAmbientTemperature()
 {
   auto ambient_temperature = data_.getSensorsData().ambient_temperature_array;
   for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-    temperature_[i]->run();  // not a thread
+    ambientTemperature_[i]->run();  // not a thread
     //.temp is maybe not the nicest method...
-    ambient_temperature.at(i).temp = temperature_[i]->getData();
+    ambient_temperature.at(i).temp = ambientTemperature_[i]->getData();
     if ((ambient_temperature.at(i).temp > 75UL || ambient_temperature.at(i).temp < 1UL)
         && !log_error_) {  // 85 is the critical temperature so we alert at 75
       log_.info("PCB temperature is getting a wee high...sorry Cheng");
@@ -124,25 +125,23 @@ void Main::checkAmbientTemperature()
   }
 }
 
-/**
 void Main::checkBrakeTemperature()
 // TODO: edit this so that it checks EACH of the AMBIENT sensors are within the critical limit.
 {
   auto brake_temperature = data_.getSensorsData().brake_temperature_array;
   for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-    temperature_[i]->run();  // not a thread
-    brake_temperature.at(i) = temperature_[i]->getData();
+    brakeTemperature_[i]->run();  // not a thread
+    brake_temperature.at(i).temp = brakeTemperature_[i]->getData();
     // how do we differentiate here between the different runs - i.e. call the different temperature
     // sensors?
     // uint8_t converted_temperature = temperature_->getData();
-    if ((brake_temperature.at(i) > 75UL || brake_temperature.at(i) < 1UL)
+    if ((brake_temperature.at(i).temp > 75UL || brake_temperature.at(i).temp < 1UL)
         && !log_error_) {  // 85 is the critical temperature so we alert at 75
       log_.info("PCB temperature is getting a wee high...sorry Cheng");
       log_error_ = true;
     }
   }
 }
-*/
 
 void Main::checkPressure()
 {
@@ -273,6 +272,45 @@ std::optional<Main::AmbientTemperaturePins> Main::ambientTemperaturePinsFromFile
     ++i;
   }
   return ambient_temperature_pins;
+}
+
+std::optional<Main::BrakeTemperaturePins> Main::brakeTemperaturePinsFromFile(
+  utils::Logger &log, const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("temperature_pins")) {
+    log.error("Missing required field 'sensors.temperature_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  auto brake_temperature_pin_array = config_object["temperature_pins"].GetArray();
+  if (brake_temperature_pin_array.Size() != data::Sensors::kNumAmbientTemp) {
+    log.error("Found %d brake temperature pins but %d were expected in configuration file at %s",
+              brake_temperature_pin_array.Size(), data::Sensors::kNumBrakeTemp, path.c_str());
+  }
+  BrakeTemperaturePins brake_temperature_pins;
+  std::size_t i = 0;
+  for (auto &brake_temperature_pin : brake_temperature_pin_array) {
+    brake_temperature_pins.at(i) = static_cast<uint32_t>(brake_temperature_pin.GetUint());
+    ++i;
+  }
+  return brake_temperature_pins;
 }
 
 void Main::run()

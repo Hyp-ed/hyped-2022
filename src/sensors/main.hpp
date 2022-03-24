@@ -21,6 +21,7 @@ class Main : public utils::concurrent::Thread {
   using KeyencePins            = std::array<uint32_t, data::Sensors::kNumKeyence>;
   using ImuPins                = std::array<uint32_t, data::Sensors::kNumImus>;
   using AmbientTemperaturePins = std::array<uint32_t, data::Sensors::kNumAmbientTemp>;
+  using BrakeTemperaturePins   = std::array<uint32_t, data::Sensors::kNumBrakeTemp>;
 
   Main();
   void run() override;  // from thread
@@ -30,6 +31,8 @@ class Main : public utils::concurrent::Thread {
   static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
   static std::optional<AmbientTemperaturePins> ambientTemperaturePinsFromFile(
     utils::Logger &log, const std::string &path);
+  static std::optional<BrakeTemperaturePins> brakeTemperaturePinsFromFile(utils::Logger &log,
+                                                                          const std::string &path);
 
  private:
   /**
@@ -41,10 +44,16 @@ class Main : public utils::concurrent::Thread {
   bool temperatureInRange();
 
   /**
-   * @brief used to check the temperature infrequently in main loop,
-   *        unnecessary to constantly check temperature;
+   * @brief used to check the temperature of the ambient temperature sensors
+   *        infrequently in main loop, unnecessary to constantly check temperature;
    */
   void checkAmbientTemperature();
+
+  /**
+   * @brief used to check the temperature of the brake temperature sensors
+   *        infrequently in main loop, unnecessary to constantly check temperature;
+   */
+  void checkBrakeTemperature();
 
   /**
    * @brief used to check the pressure every twenty times in the main loop,
@@ -63,7 +72,8 @@ class Main : public utils::concurrent::Thread {
   std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
-  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> temperature_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> ambientTemperature_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brakeTemperature_;
   std::unique_ptr<IPressure> pressure_;
   bool log_error_ = false;
 

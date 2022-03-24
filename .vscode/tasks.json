@@ -5,10 +5,7 @@
       "command": "cmake",
       "args": [
         "-S .",
-        "-B gui-build",
-        "-DPEDANTIC=ON",
-        "-DRELEASE=ON",
-        "-DCOVERAGE=ON",
+        "-B build",
         "-DCROSS=OFF",
         "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
         "-DCMAKE_BUILD_TYPE=Debug",
@@ -26,7 +23,7 @@
       "args": [
         "-j",
         "-C",
-        "gui-build",
+        "build",
       ],
       "options": {
         "cwd": "${workspaceFolder}",

@@ -8,7 +8,7 @@
       "name": "Debug main",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/gui-build/hyped",
+      "program": "${workspaceFolder}/build/hyped",
       "args": [
         "./configurations/config.server.json"
       ],

@@ -31,10 +31,9 @@ class Writer {
 
   // functions to pack timestamp and number of packages
   void packTime();
-  void packId(const uint16_t id);
+  void packId(const uint32_t id);
 
   // specific functions that allow packing of structs in central data structure
-  void packId(int id);
   void packTelemetryData();
   void packSensorsData();
   void packMotorData();

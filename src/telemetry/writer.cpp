@@ -12,7 +12,7 @@ Writer::Writer() : json_writer_(string_buffer_), data_(data::Data::getInstance()
 {
 }
 
-// The current time in milliseconds that will be used later
+// The current time in milliseconds
 void Writer::packTime()
 {
   json_writer_.Key("time");
@@ -21,7 +21,9 @@ void Writer::packTime()
                         .count());
 }
 
-void Writer::packId(const int id)
+// Will overflow if 4,294,967,295 packages are sent or after about 13
+// years if we send a package every 100ms
+void Writer::packId(const uint32_t id)
 {
   json_writer_.Key("id");
   json_writer_.Int(id);
@@ -105,6 +107,8 @@ void Writer::packSensorsData()
   json_writer_.Bool(brakes_data.brakes_retracted);
   json_writer_.Key("temperature");
   json_writer_.Int(sensors_data.temperature.temp);
+  json_writer_.Key("pressure");
+  json_writer_.Int(sensors_data.pressure.pressure);
   // ImuData, EncoderData, StripeCounter data types not currently supported by json writer
 
   // Module statuses

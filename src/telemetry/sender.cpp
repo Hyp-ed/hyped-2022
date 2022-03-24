@@ -4,13 +4,13 @@
 #include <string>
 
 #include <data/data.hpp>
-#include <utils/system.hpp>
 
 namespace hyped::telemetry {
 
 Sender::Sender(data::Data &data, Client &client)
     : utils::concurrent::Thread(
       utils::Logger("SENDER", utils::System::getSystem().config_.log_level_telemetry)),
+      sys_(utils::System::getSystem()),
       data_(data),
       client_(client)
 {
@@ -23,7 +23,7 @@ void Sender::run()
 
   int num_packages_sent = 0;
 
-  while (true) {
+  while (sys_.isRunning()) {
     Writer writer;
 
     writer.start();

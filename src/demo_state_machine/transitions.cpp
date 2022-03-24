@@ -1,6 +1,5 @@
 #include "transitions.hpp"
 
-#include <iostream>
 namespace hyped::demo_state_machine {
 
 //--------------------------------------------------------------------------------------

@@ -1,7 +1,5 @@
 #include "main.hpp"
 
-#include <cstdint>
-
 namespace hyped::demo_state_machine {
 
 Main::Main()

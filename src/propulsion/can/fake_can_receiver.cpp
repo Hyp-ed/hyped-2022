@@ -1,7 +1,7 @@
 #include "fake_can_receiver.hpp"
 
 namespace hyped::propulsion {
-FakeCanReceiver::FakeCanReceiver(uint8_t)
+FakeCanReceiver::FakeCanReceiver()
     : log_("FAKE-CAN-SENDER", utils::System::getSystem().config_.log_level_propulsion),
       is_sending_(false),
       can_endpoint_(*this)

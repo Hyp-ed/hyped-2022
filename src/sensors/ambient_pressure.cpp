@@ -47,7 +47,6 @@ std::optional<uint16_t> AmbientPressure::scaleData(const uint32_t digital_pressu
   static constexpr uint16_t kTemperatureCoefficientOfPressureSensitivity = 29059;  // C3
   static constexpr uint16_t kTemperatureCoefficientOfPressureOffset      = 27842;  // C4
   static constexpr uint16_t kReferenceTemperature                        = 31553;  // C5
-  static constexpr uint16_t kTemperatureCoefficientOfTheTemperature      = 28165;  // C6
 
   // method for conversion follows a method by David Edwards on the
   // datasheet link here:

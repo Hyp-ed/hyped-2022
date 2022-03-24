@@ -78,15 +78,14 @@ TEST_F(TransitionFunctionality, demoHandlesNoEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = other;
+    nav_data.module_status       = other;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = other;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, false) << "falsely detected emergency";
   }
@@ -109,15 +108,14 @@ TEST_F(TransitionFunctionality, demoHandlesBrakeEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = data::ModuleStatus::kCriticalFailure;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = data::ModuleStatus::kCriticalFailure;
+    nav_data.module_status       = other;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = other;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect brake emergency";
   }
@@ -140,15 +138,14 @@ TEST_F(TransitionFunctionality, demoHandlesNavEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = data::ModuleStatus::kCriticalFailure;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = other;
+    nav_data.module_status       = data::ModuleStatus::kCriticalFailure;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = other;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Navigation";
   }
@@ -171,15 +168,14 @@ TEST_F(TransitionFunctionality, demoHandlesBatteriesEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = data::ModuleStatus::kCriticalFailure;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = other;
+    nav_data.module_status       = other;
+    batteries_data.module_status = data::ModuleStatus::kCriticalFailure;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = other;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Batteries";
   }
@@ -202,15 +198,14 @@ TEST_F(TransitionFunctionality, demoHandlesTelemetryEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = data::ModuleStatus::kCriticalFailure;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = other;
+    nav_data.module_status       = other;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = other;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Telemetry";
   }
@@ -233,15 +228,14 @@ TEST_F(TransitionFunctionality, demoHandlesSensorsEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = data::ModuleStatus::kCriticalFailure;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = other;
+    nav_data.module_status       = other;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = data::ModuleStatus::kCriticalFailure;
+    motors_data.module_status    = other;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Sensors";
   }
@@ -264,48 +258,16 @@ TEST_F(TransitionFunctionality, demoHandlesMotorsEmergency)
 
   for (int i = kNoEmergencyFirst; i <= kLast; i++) {
     // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = data::ModuleStatus::kCriticalFailure;
-    telemetry_data.emergency_stop_command = false;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
+    const auto other             = static_cast<data::ModuleStatus>(i);
+    brakes_data.module_status    = other;
+    nav_data.module_status       = other;
+    batteries_data.module_status = other;
+    telemetry_data.module_status = other;
+    sensors_data.module_status   = other;
+    motors_data.module_status    = data::ModuleStatus::kCriticalFailure;
+    const bool has_emergency     = demo_state_machine::checkEmergency(
       log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in motors";
-  }
-}
-
-/*
- * Ensures that if an emergency stop command has been received,
- * checkEmergency always returns true.
- *
- * Time complexity: O(num_module_statuses) = O(1)
- */
-TEST_F(TransitionFunctionality, demoHandlesStopCommand)
-{
-  data::EmergencyBrakes brakes_data;
-  data::Navigation nav_data;
-  data::Batteries batteries_data;
-  data::Telemetry telemetry_data;
-  data::Sensors sensors_data;
-  data::Motors motors_data;
-
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
-    // Making sure checkEmergency is unaffected by status of other values.
-    const auto other                      = static_cast<data::ModuleStatus>(i);
-    brakes_data.module_status             = other;
-    nav_data.module_status                = other;
-    batteries_data.module_status          = other;
-    telemetry_data.module_status          = other;
-    sensors_data.module_status            = other;
-    motors_data.module_status             = other;
-    telemetry_data.emergency_stop_command = true;
-    const bool has_emergency              = demo_state_machine::checkEmergency(
-      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
-    ASSERT_EQ(has_emergency, true) << "failed to register stop command";
   }
 }
 

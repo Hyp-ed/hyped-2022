@@ -15,10 +15,7 @@ bool checkEmergency(utils::Logger &log, const data::EmergencyBrakes &brakes_data
                     const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                     const data::Motors &motors_data)
 {
-  if (telemetry_data.emergency_stop_command) {
-    log.error("stop command received");
-    return true;
-  } else if (nav_data.module_status == data::ModuleStatus::kCriticalFailure) {
+  if (nav_data.module_status == data::ModuleStatus::kCriticalFailure) {
     log.error("critical failure in navigation");
     return true;
   } else if (telemetry_data.module_status == data::ModuleStatus::kCriticalFailure) {
@@ -109,6 +106,13 @@ bool checkLaunchCommand(const data::Telemetry &telemetry_data)
 bool checkShutdownCommand(const data::Telemetry &telemetry_data)
 {
   if (!telemetry_data.shutdown_command) return false;
+
+  return true;
+}
+
+bool checkBrakingCommand(const data::Telemetry &telemetry_data)
+{
+  if (!telemetry_data.emergency_stop_command) return false;
 
   return true;
 }

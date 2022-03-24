@@ -82,6 +82,11 @@ bool checkLaunchCommand(const data::Telemetry &telemetry_data);
  */
 bool checkShutdownCommand(const data::Telemetry &telemetry_data);
 
+/*
+ * @brief    Returns true iff the braking command has been received.
+ */
+bool checkBrakingCommand(const data::Telemetry &telemetry_data);
+
 //--------------------------------------------------------------------------------------
 // Navigation Data Events
 //--------------------------------------------------------------------------------------

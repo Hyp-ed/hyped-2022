@@ -160,8 +160,8 @@ State *Accelerating::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailurePreBraking::getInstance(); }
 
-  bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
-  if (in_braking_zone) { return PreBraking::getInstance(); }
+  bool recieved_braking_command = checkBrakingCommand(telemetry_data_);
+  if (recieved_braking_command) { return PreBraking::getInstance(); }
 
   bool acceleration_time_exceeded = checkAccelerationTimeExceeded(stm_data_);
   if (acceleration_time_exceeded) { return Cruising::getInstance(); }
@@ -185,8 +185,8 @@ State *Cruising::checkTransition(Logger &log)
                                   sensors_data_, motors_data_);
   if (emergency) { return FailurePreBraking::getInstance(); }
 
-  bool in_braking_zone = checkEnteredBrakingZone(log, nav_data_);
-  if (in_braking_zone) { return PreBraking::getInstance(); }
+  bool recieved_braking_command = checkBrakingCommand(telemetry_data_);
+  if (recieved_braking_command) { return PreBraking::getInstance(); }
 
   return nullptr;
 }

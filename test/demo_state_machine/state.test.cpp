@@ -414,6 +414,13 @@ TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
+    // Preventing Accelerating -> PreBraking
+    telemetry_data_.emergency_stop_command = false;
+
+    // reading and writing to the CDS directly to update telemetry data
+    auto &data_ = data::Data::getInstance();
+    data_.setTelemetryData(telemetry_data_);
+
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
@@ -430,24 +437,32 @@ TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
 
 /**
  * Ensures that if no emergency is reported from any module and
- * if the pod is in the braking zone, the state changes to the
+ * if the pod has received the braking command, the state changes to the
  * pre-braking state.
  *
  * Time complexity: O(kTestSize)
  */
-TEST_F(DemoAcceleratingTest, handlesInBrakingZone)
+TEST_F(DemoAcceleratingTest, handlesBrakingCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
+
+    // Preventing Accelerating -> PreBraking
+    telemetry_data_.emergency_stop_command = true;
+
+    // reading and writing to the CDS directly to update telemetry data
+    auto &data_ = data::Data::getInstance();
+    data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool in_braking_zone = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
-      const auto new_state       = state->checkTransition(log_);
+      const bool has_received_braking_command
+        = demo_state_machine::checkBrakingCommand(telemetry_data_);
+      const auto new_state = state->checkTransition(log_);
 
-      if (in_braking_zone) {
+      if (has_received_braking_command) {
         ASSERT_EQ(new_state, demo_state_machine::PreBraking::getInstance())
           << "failed to enter PreBraking from Accelerating";
       } else {
@@ -471,16 +486,15 @@ TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
-    // Assert not in braking zone
-    nav_data_.braking_distance = 0;
-    nav_data_.displacement     = 0;
+    // Prevent Accelerating -> PreBraking
+    telemetry_data_.emergency_stop_command = false;
 
     // Asserting sufficient time has passed
-    utils::concurrent::Thread::sleep(400);  // 0.4s
+    utils::concurrent::Thread::sleep(120);  // 0.12s
 
     // reading and writing to the CDS directly to update navigation data
     auto &data_ = data::Data::getInstance();
-    data_.setNavigationData(nav_data_);
+    data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
@@ -524,6 +538,13 @@ TEST_F(DemoCruisingTest, demoHandlesEmergency)
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
 
+    // Preventing Cruising -> PreBraking
+    telemetry_data_.emergency_stop_command = false;
+
+    // reading and writing to the CDS directly to update telemetry data
+    auto &data_ = data::Data::getInstance();
+    data_.setTelemetryData(telemetry_data_);
+
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
@@ -540,24 +561,32 @@ TEST_F(DemoCruisingTest, demoHandlesEmergency)
 
 /**
  * Ensures that if no emergency is reported from any module and
- * if the pod is in the braking zone, the state changes to the
+ * if the pod has recevied the braking command, the state changes to the
  * pre-braking state.
  *
  * Time complexity: O(kTestSize)
  */
-TEST_F(DemoCruisingTest, demoHandlesInBrakingZone)
+TEST_F(DemoCruisingTest, demoHandlesBrakingCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
     randomiseData();
+
+    // Enforcing Cruising -> PreBraking
+    telemetry_data_.emergency_stop_command = true;
+
+    // reading and writing to the CDS directly to update telemetry data
+    auto &data_ = data::Data::getInstance();
+    data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool in_braking_zone = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
-      const auto new_state       = state->checkTransition(log_);
+      const bool has_received_braking_command
+        = demo_state_machine::checkBrakingCommand(telemetry_data_);
+      const auto new_state = state->checkTransition(log_);
 
-      if (in_braking_zone) {
+      if (has_received_braking_command) {
         ASSERT_EQ(new_state, demo_state_machine::PreBraking::getInstance())
           << "failed to enter PreBraking from Cruising";
       } else {

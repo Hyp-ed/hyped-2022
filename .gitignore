@@ -43,6 +43,7 @@ binmain.o
 .ccls-cache
 TelemetryData.txt
 config.server.json
+mission-control-20222.jar
 
 # mac crosscompiler
 mac-crosscompiler

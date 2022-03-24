@@ -99,7 +99,7 @@ void StateProcessor::accelerate()
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }
-    nucleo_manager_->sendNucleoFrequency(std::round((double)rpm / 60.0));
+    nucleo_manager_->sendNucleoFrequency(std::round(static_cast<double>(rpm) / 60.0));
   }
 }
 

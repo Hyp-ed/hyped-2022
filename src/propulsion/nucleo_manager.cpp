@@ -15,7 +15,7 @@ NucleoManager::NucleoManager()
 
 void NucleoManager::sendNucleoFrequency(uint32_t target_frequency)
 {
-  for (size_t i = 0; i < 4; i++) {
+  for (size_t i = 0; i < 4; ++i) {
     can_frame_.data[i] = target_frequency & 0xff;
     target_frequency >>= 8;
   }

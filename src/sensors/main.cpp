@@ -58,19 +58,26 @@ Main::Main()
       sys_.stop();
       return;
     }
+    if (keyence_pins->size() != data::Sensors::kNumKeyence) {
+      log_.error("found %d keyence pins but %d were expected", keyence_pins->size(),
+                 data::Sensors::kNumKeyence);
+      sys_.stop();
+      return;
+    }
     for (size_t i = 0; i < data::Sensors::kNumKeyence; ++i) {
       auto keyence = std::make_unique<GpioCounter>(keyence_pins->at(i));
       keyence->start();
       keyences_[i] = std::move(keyence);
     }
-    auto imu_pins = imuPinsFromFile(log_, sys_.config_.imu_config_path);
-    if (!imu_pins) {
+    auto imu_pin_vector = imuPinsFromFile(log_, sys_.config_.imu_config_path);
+    if (!imu_pin_vector) {
       log_.error("failed to initialise IMUs");
       sys_.stop();
       return;
     }
-    imu_manager_ = std::make_unique<ImuManager>(
-      utils::Logger("IMU-MANAGER", sys_.config_.log_level_sensors), *imu_pins);
+    ImuPins imu_pins;
+    std::copy(imu_pin_vector->begin(), imu_pin_vector->end(), imu_pins.begin());
+    imu_manager_ = std::make_unique<ImuManager>(imu_pins);
     if (!imu_manager_) {
       log_.error("failed to initialise imus");
       sys_.stop();
@@ -110,8 +117,8 @@ void Main::checkTemperature()
   }
 }
 
-std::optional<Main::KeyencePins> Main::keyencePinsFromFile(utils::Logger &log,
-                                                           const std::string &path)
+std::optional<std::vector<uint8_t>> Main::keyencePinsFromFile(utils::Logger &log,
+                                                              const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -136,20 +143,15 @@ std::optional<Main::KeyencePins> Main::keyencePinsFromFile(utils::Logger &log,
     return std::nullopt;
   }
   auto keyence_pin_array = config_object["keyence_pins"].GetArray();
-  if (keyence_pin_array.Size() != data::Sensors::kNumKeyence) {
-    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
-              keyence_pin_array.Size(), data::Sensors::kNumKeyence, path.c_str());
-  }
-  KeyencePins keyence_pins;
-  std::size_t i = 0;
+  std::vector<uint8_t> keyence_pins;
   for (auto &keyence_pin : keyence_pin_array) {
-    keyence_pins.at(i) = static_cast<uint32_t>(keyence_pin.GetUint());
-    ++i;
+    keyence_pins.push_back(static_cast<uint8_t>(keyence_pin.GetUint()));
   }
   return keyence_pins;
 }
 
-std::optional<Main::ImuPins> Main::imuPinsFromFile(utils::Logger &log, const std::string &path)
+std::optional<std::vector<uint8_t>> Main::imuPinsFromFile(utils::Logger &log,
+                                                          const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -174,15 +176,9 @@ std::optional<Main::ImuPins> Main::imuPinsFromFile(utils::Logger &log, const std
     return std::nullopt;
   }
   auto imu_pin_array = config_object["imu_pins"].GetArray();
-  if (imu_pin_array.Size() != data::Sensors::kNumImus) {
-    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
-              imu_pin_array.Size(), data::Sensors::kNumImus, path.c_str());
-  }
-  ImuPins imu_pins;
-  std::size_t i = 0;
+  std::vector<uint8_t> imu_pins;
   for (auto &imu_pin : imu_pin_array) {
-    imu_pins.at(i) = static_cast<uint32_t>(imu_pin.GetUint());
-    ++i;
+    imu_pins.push_back(static_cast<uint8_t>(imu_pin.GetUint()));
   }
   return imu_pins;
 }

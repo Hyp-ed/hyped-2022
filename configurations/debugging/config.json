@@ -1,9 +1,6 @@
 {
   "sensors": {
-    "keyence_pins": [
-      63,
-      2
-    ]
+    "imu_pins": []
   },
   "observer": {
     "output_path": "readings.json"
@@ -13,7 +10,7 @@
   },
   "system": {
     "log_level": 2,
-    "use_fake_trajectory": false,
+    "use_fake_trajectory": true,
     "use_fake_batteries": false,
     "use_fake_batteries_fail": false,
     "use_fake_temperature": false,
@@ -22,5 +19,10 @@
     "use_fake_controller": false,
     "use_fake_high_power": false,
     "axis": 0
+  },
+  "fake_trajectory": {
+    "maximum_acceleration": 1000.0,
+    "braking_deceleration": 2000.0,
+    "cruising_deceleration": 0.01
   }
 }

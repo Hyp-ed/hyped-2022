@@ -20,7 +20,7 @@ class Repl {
     std::string description;
     Handler handler;
   };
-  Repl(utils::Logger log);
+  Repl();
 
   void run();
 
@@ -28,7 +28,7 @@ class Repl {
 
  private:
   utils::System &system_;
-  utils::Logger &log_;
+  utils::Logger log_;
   data::Data &data_;
   std::vector<Command> commands_;
   std::unordered_map<std::string, Handler> handlers_by_identifier_;

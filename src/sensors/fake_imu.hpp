@@ -20,7 +20,7 @@ class FakeImu : public IImu {
   data::ImuData getData() override;
   bool isOnline() override { return true; }
   const Config &getConfig() const;
-  static std::optional<std::array<FakeImu, data::Sensors::kNumImus>> fromFile(
+  static std::optional<std::vector<FakeImu>> fromFile(
     const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
  private:
@@ -30,8 +30,8 @@ class FakeImu : public IImu {
   bool is_operational_;
 
   FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
-  static std::optional<std::array<Config, data::Sensors::kNumImus>> readConfigs(
-    utils::Logger &log, const std::string &path);
+  static std::optional<std::vector<Config>> readConfigs(utils::Logger &log,
+                                                        const std::string &path);
 
   data::NavigationVector getAccurateAcceleration();
   data::NavigationVector addNoiseToAcceleration(const data::NavigationVector acceleration) const;

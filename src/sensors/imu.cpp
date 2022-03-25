@@ -6,6 +6,7 @@
 
 #include <utils/concurrent/thread.hpp>
 #include <utils/math/statistics.hpp>
+#include <utils/system.hpp>
 
 // user bank addresse
 static constexpr uint8_t kRegBankSel = 0x7F;
@@ -57,10 +58,10 @@ namespace hyped::sensors {
 
 static constexpr utils::io::GPIO::Direction kDirection = utils::io::GPIO::Direction::kOut;
 
-Imu::Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo)
+Imu::Imu(const uint32_t pin, const bool is_fifo)
     : spi_(utils::io::SPI::getInstance()),
-      log_(log),
-      gpio_(pin, kDirection, log),
+      log_("IMU", utils::System::getSystem().config_.log_level_sensors),
+      gpio_(pin, kDirection, log_),
       pin_(pin),
       is_fifo_(is_fifo),
       is_online_(false)
@@ -105,10 +106,10 @@ void Imu::init()
   enableFifo();
 
   if (check_init) {
-    log_.info("Imu sensor %d created. Initialisation complete.", pin_);
+    log_.info("sensor %d created. Initialisation complete.", pin_);
     selectBank(0);
   } else {
-    log_.error("ERROR: Imu sensor %d not initialised.", pin_);
+    log_.error("sensor %d not initialised.", pin_);
   }
 }
 

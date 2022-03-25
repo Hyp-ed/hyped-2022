@@ -15,8 +15,8 @@ class ImuManager : public utils::concurrent::Thread {
  public:
   static std::unique_ptr<ImuManager> fromFile(const std::string &path,
                                               std::shared_ptr<FakeTrajectory> fake_trajectory);
-  ImuManager(utils::Logger log, const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins);
-  ImuManager(utils::Logger log, std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus);
+  ImuManager(const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins);
+  ImuManager(std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus);
 
   /**
    * @brief Calibrate IMUs then begin collecting data.

@@ -9,19 +9,17 @@
 
 namespace hyped::sensors {
 
-ImuManager::ImuManager(utils::Logger log,
-                       const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins)
-    : Thread(log)
+ImuManager::ImuManager(const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins)
+    : Thread(utils::Logger("IMU-MANAGER", utils::System::getSystem().config_.log_level_sensors))
 {
   utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
   for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
-    imus_.at(i) = std::make_unique<Imu>(log, imu_pins.at(i), false);
+    imus_.at(i) = std::make_unique<Imu>(imu_pins.at(i), false);
   }
 }
 
-ImuManager::ImuManager(utils::Logger log,
-                       std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus)
-    : Thread(log),
+ImuManager::ImuManager(std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus)
+    : Thread(utils::Logger("IMU-MANAGER", utils::System::getSystem().config_.log_level_sensors)),
       imus_(std::move(imus))
 {
 }
@@ -37,11 +35,17 @@ std::unique_ptr<ImuManager> ImuManager::fromFile(const std::string &path,
     system.stop();
     return nullptr;
   }
+  if (fake_imus_optional->size() != data::Sensors::kNumImus) {
+    log.error("found %d fake imus but %d were expected", fake_imus_optional->size(),
+              data::Sensors::kNumImus);
+    system.stop();
+    return nullptr;
+  }
   std::array<std::unique_ptr<IImu>, data::Sensors::kNumImus> imus;
   for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     imus.at(i) = std::make_unique<FakeImu>(fake_imus_optional->at(i));
   }
-  return std::make_unique<ImuManager>(log, std::move(imus));
+  return std::make_unique<ImuManager>(std::move(imus));
 }
 
 void ImuManager::run()

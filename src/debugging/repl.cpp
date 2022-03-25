@@ -12,9 +12,9 @@
 
 namespace hyped::debugging {
 
-Repl::Repl(utils::Logger log)
+Repl::Repl()
     : system_(utils::System::getSystem()),
-      log_(log),
+      log_("REPL", utils::System::getSystem().config_.log_level),
       data_(data::Data::getInstance())
 {
   commands_.push_back({"shutdown", "Turn the system off", std::bind(&Repl::handleShutdown, *this)});
@@ -29,6 +29,11 @@ void Repl::run()
     printAvailableCommands();
     readAndHandleCommand();
   }
+}
+
+std::optional<Repl> Repl::fromFile(const std::string &path)
+{
+  return Repl();
 }
 
 void Repl::printAvailableCommands()

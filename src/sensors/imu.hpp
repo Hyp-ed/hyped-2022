@@ -12,7 +12,7 @@ namespace hyped::sensors {
 
 class Imu : public IImu {
  public:
-  Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo);
+  Imu(const uint32_t pin, const bool is_fifo);
   ~Imu();
   /*
    *  @brief Returns if the sensor is online
@@ -95,7 +95,7 @@ class Imu : public IImu {
 
  private:
   utils::io::SPI &spi_;
-  utils::Logger &log_;
+  utils::Logger log_;
   utils::io::GPIO gpio_;
   uint32_t pin_;
   bool is_fifo_;

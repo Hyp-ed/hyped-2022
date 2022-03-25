@@ -54,7 +54,7 @@ const FakeImu::Config &FakeImu::getConfig() const
   return config_;
 }
 
-std::optional<std::array<FakeImu, data::Sensors::kNumImus>> FakeImu::fromFile(
+std::optional<std::vector<FakeImu>> FakeImu::fromFile(
   const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
   auto &system = utils::System::getSystem();
@@ -64,7 +64,7 @@ std::optional<std::array<FakeImu, data::Sensors::kNumImus>> FakeImu::fromFile(
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
-  return std::array<FakeImu, data::Sensors::kNumImus>({
+  return std::vector<FakeImu>({
     FakeImu(configs->at(0), fake_trajectory),
     FakeImu(configs->at(1), fake_trajectory),
     FakeImu(configs->at(2), fake_trajectory),
@@ -72,8 +72,8 @@ std::optional<std::array<FakeImu, data::Sensors::kNumImus>> FakeImu::fromFile(
   });
 }
 
-std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::readConfigs(
-  utils::Logger &log, const std::string &path)
+std::optional<std::vector<FakeImu::Config>> FakeImu::readConfigs(utils::Logger &log,
+                                                                 const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -97,7 +97,7 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
               config_object_array.Size(), data::Sensors::kNumImus, path.c_str());
     return std::nullopt;
   }
-  std::array<FakeImu::Config, data::Sensors::kNumImus> configs;
+  std::vector<Config> configs;
   size_t i = 0;
   for (const auto &config_value : config_object_array) {
     const auto config_object = config_value.GetObject();
@@ -120,7 +120,7 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
       }
       config.failure_in_state = state_optional;
     }
-    configs.at(i) = config;
+    configs.push_back(config);
     ++i;
   }
   return configs;

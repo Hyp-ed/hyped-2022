@@ -24,9 +24,10 @@ class Main : public utils::concurrent::Thread {
   Main();
   void run() override;  // from thread
 
-  static std::optional<KeyencePins> keyencePinsFromFile(utils::Logger &log,
-                                                        const std::string &path);
-  static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
+  static std::optional<std::vector<uint8_t>> keyencePinsFromFile(utils::Logger &log,
+                                                                 const std::string &path);
+  static std::optional<std::vector<uint8_t>> imuPinsFromFile(utils::Logger &log,
+                                                             const std::string &path);
   static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
                                                         const std::string &path);
 

@@ -116,10 +116,10 @@ void Observer::addImuTask(const uint8_t pin)
 
 void Observer::addFakeImuTasks(std::vector<sensors::FakeImu> fake_imus)
 {
-  size_t i = 0;
+  uint32_t i = 0;
   char name_buffer[16];
   for (auto fake_imu : fake_imus) {
-    snprintf(name_buffer, 16, "fake_imu-%lu", i++);
+    snprintf(name_buffer, 16, "fake_imu-%u", i++);
     auto fake_imu_ptr = std::make_shared<sensors::FakeImu>(fake_imu);
     Task fake_imu_task;
     fake_imu_task.name    = name_buffer;

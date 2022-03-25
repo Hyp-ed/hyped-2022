@@ -203,7 +203,7 @@ void Navigation::queryWheelEncoders()
     sum += static_cast<data::nav_t>(encoder_data.at(i).value);
   }
 
-  data::nav_t average         = sum / encoder_data.size();
+  const data::nav_t average   = sum / encoder_data.size();
   encoder_displacement_.value = average * data::Navigation::kWheelCircumfrence;
 }
 
@@ -259,7 +259,7 @@ void Navigation::compareEncoderImu()
   const data::nav_t encoder_displacement = getEncoderDisplacement();
   const data::nav_t imu_displacement     = getImuDisplacement();
 
-  if (std::abs(encoder_displacement - imu_displacement) > data::Navigation::kImuEncoderMaxErr) {
+  if (std::abs(encoder_displacement - imu_displacement) > data::Navigation::kImuEncoderMaxError) {
     auto navigation_data          = data_.getNavigationData();
     navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setNavigationData(navigation_data);
@@ -407,7 +407,7 @@ void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t thre
       // If this counter exceeds some threshold then that IMU is deemed unreliable
       if (imu_outlier_counter_.at(i) > 1000 && is_imu_reliable_.at(i)) {
         is_imu_reliable_.at(i) = false;
-        num_outlier_imus_++;
+        ++num_outlier_imus_;
       }
       if (num_outlier_imus_ > 1) {
         status_ = data::ModuleStatus::kCriticalFailure;
@@ -438,7 +438,7 @@ void Navigation::updateData()
     log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,
                velocity_uncertainty_, displacement_uncertainty_, stripe_counter_.getFailureCount());
   }
-  log_counter_++;
+  ++log_counter_;
   // Update all prev measurements
   previous_timestamp_    = imu_displacement_.timestamp;
   previous_acceleration_ = getImuAcceleration();

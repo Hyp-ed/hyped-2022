@@ -1,9 +1,8 @@
 #include "stepper.hpp"
 
-namespace hyped {
-namespace brakes {
+namespace hyped::brakes {
 
-Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id)
+Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, utils::Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
       brakes_data_(data_.getEmergencyBrakesData()),
@@ -12,8 +11,8 @@ Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id
       brake_id_(id),
       is_clamped_(true)
 {
-  GPIO command_pin_(enable_pin, utils::io::GPIO::Direction::kOut, log_);
-  GPIO button_(button_pin, utils::io::GPIO::Direction::kIn, log_);
+  utils::io::GPIO command_pin_(enable_pin, utils::io::GPIO::Direction::kOut, log_);
+  utils::io::GPIO button_(button_pin, utils::io::GPIO::Direction::kIn, log_);
 }
 
 void Stepper::checkHome()
@@ -45,7 +44,7 @@ void Stepper::checkAccFailure()
 {
   if (!button_.read()) {  // false = brakes are clamped
     log_.error("Brake %b failure", brake_id_);
-    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(brakes_data_);
   }
 }
@@ -54,7 +53,7 @@ void Stepper::checkBrakingFailure()
 {
   if (button_.read()) {  // true = brakes are retracted
     log_.error("Brake %b failure", brake_id_);
-    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(brakes_data_);
   }
 }
@@ -64,5 +63,4 @@ bool Stepper::checkClamped()
   return is_clamped_;
 }
 
-}  // namespace brakes
-}  // namespace hyped
+}  // namespace hyped::brakes

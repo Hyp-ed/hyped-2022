@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fake_trajectory.hpp"
-#include "interface.hpp"
+#include "imu.hpp"
 
 #include <memory>
 #include <string>

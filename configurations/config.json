@@ -17,7 +17,6 @@
   },
   "sensors": {
     "bms_startup_time_micros": 5000000,
-    "keyence_pins": [67, 68],
     "imu_pins": [22, 27, 47, 86],
     "temperature_pin": 3
   },

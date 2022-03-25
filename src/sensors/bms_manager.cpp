@@ -15,7 +15,7 @@ namespace hyped::sensors {
 BmsManager::BmsManager(utils::Logger log, const Config &config)
     : Thread(log),
       sys_(utils::System::getSystem()),
-      data_(Data::getInstance()),
+      data_(data::Data::getInstance()),
       config_(config)
 {
   if (sys_.config_.use_fake_batteries) {

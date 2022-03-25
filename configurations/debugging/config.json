@@ -3,11 +3,10 @@
     "imu_pins": []
   },
   "observer": {
-    "output_path": "readings.json"
+    "output_path": "readings.json",
+    "use_imu_manager": false
   },
-  "debugger": {
-    "use_keyence": false
-  },
+  "debugger": {},
   "system": {
     "log_level": 2,
     "use_fake_trajectory": true,

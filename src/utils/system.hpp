@@ -17,7 +17,6 @@ class System {
   struct Config {
     std::string client_config_path;
     std::string imu_config_path;
-    std::string keyence_config_path;
     std::string temperature_config_path;
     std::string fake_trajectory_config_path;
     std::string bms_config_path;

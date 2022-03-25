@@ -1,19 +1,13 @@
 #pragma once
 
-#include "interface.hpp"
+#include "stepper.hpp"
 
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
-
-using data::ModuleStatus;
-using utils::Logger;
-using utils::concurrent::Thread;
-
-namespace brakes {
+namespace hyped::brakes {
 
 class FakeStepper : public IStepper {
  public:
@@ -21,7 +15,7 @@ class FakeStepper : public IStepper {
    * @brief Construct a new Stepper object
    * @param log, node id
    */
-  FakeStepper(Logger &log, uint8_t id);
+  FakeStepper(utils::Logger &log, uint8_t id);
 
   /**
    * @brief Deconstruct a Stepper object even if behind `IStepper *`
@@ -62,5 +56,4 @@ class FakeStepper : public IStepper {
   bool fake_button_;
 };
 
-}  // namespace brakes
-}  // namespace hyped
+}  // namespace hyped::brakes

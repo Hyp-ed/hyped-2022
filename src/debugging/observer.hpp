@@ -10,7 +10,7 @@
 #include <sensors/bms_manager.hpp>
 #include <sensors/fake_imu.hpp>
 #include <sensors/imu_manager.hpp>
-#include <sensors/interface.hpp>
+#include <sensors/main.hpp>
 #include <utils/concurrent/thread.hpp>
 
 namespace hyped::debugging {
@@ -34,7 +34,8 @@ class Observer : public utils::concurrent::Thread {
   const std::string path_;
 
   void addImuTask(const uint8_t pin);
-  void addFakeImuTasks(std::vector<sensors::FakeImu> fake_imus);
+  void addFakeImuTasks(const std::vector<sensors::FakeImu> &fake_imus);
+  void addImuManagerTask(const sensors::ImuPins &imu_pins);
 };
 
 }  // namespace hyped::debugging

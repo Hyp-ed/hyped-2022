@@ -1,5 +1,6 @@
 #include "bms.hpp"
 
+#include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/timer.hpp>
 

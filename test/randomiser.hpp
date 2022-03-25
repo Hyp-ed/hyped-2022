@@ -7,8 +7,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
 #include <utils/logger.hpp>
@@ -79,7 +80,8 @@ class Randomiser {
       imu_data.acc[i] = static_cast<data::nav_t>((rand() % 100 + 75) + randomDecimal());
     }
     for (int i = 0; i < 3; i++) {
-      imu_data.fifo.push_back(static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
+      imu_data.fifo.push_back(
+        static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
   }
 
@@ -108,9 +110,6 @@ class Randomiser {
       randomiseImuData(sensors_data);
     }
     for (auto &sensors_data : sensors_data.wheel_encoders) {
-      randomiseCounter(sensors_data);
-    }
-    for (auto &sensors_data : sensors_data.keyence_stripe_counters) {
       randomiseCounter(sensors_data);
     }
   }

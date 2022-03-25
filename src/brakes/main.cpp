@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "stepper.hpp"
 
 #include <fstream>
 
@@ -33,7 +34,7 @@ void Main::run()
 {
   // Setting module status for state machine transition
   brakes_               = data_.getEmergencyBrakesData();
-  brakes_.module_status = ModuleStatus::kInit;
+  brakes_.module_status = data::ModuleStatus::kInit;
   data_.setEmergencyBrakesData(brakes_);
 
   log_.info("Thread started");
@@ -73,7 +74,7 @@ void Main::run()
         if (f_brake_->checkClamped()) { f_brake_->sendRetract(); }
 
         if (!m_brake_->checkClamped() && !f_brake_->checkClamped()) {
-          brakes_.module_status = ModuleStatus::kReady;
+          brakes_.module_status = data::ModuleStatus::kReady;
           data_.setEmergencyBrakesData(brakes_);
         }
 

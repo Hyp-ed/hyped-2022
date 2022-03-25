@@ -68,11 +68,9 @@ struct TemperatureData : public SensorData {
 struct Sensors : public Module {
   static constexpr size_t kNumImus     = 4;
   static constexpr size_t kNumEncoders = 4;
-  static constexpr size_t kNumKeyence  = 2;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
-  std::array<CounterData, kNumKeyence> keyence_stripe_counters;
   bool high_power_off = false;  // true if all SSRs are not in HP
 };
 
@@ -221,11 +219,6 @@ class Data {
   std::array<CounterData, Sensors::kNumEncoders> getSensorsWheelEncoderData();
 
   /**
-   * @brief retrieves gpio_counter data from Sensors
-   */
-  std::array<CounterData, Sensors::kNumKeyence> getSensorsKeyenceData();
-
-  /**
    * @brief      Should be called to update sensor data.
    */
   void setSensorsData(const Sensors &sensors_data);
@@ -239,12 +232,6 @@ class Data {
    * @brief      Should be called to update sensor encoder data.
    */
   void setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNumEncoders> &imu);
-
-  /**
-   * @brief      Should be called to update sensor keyence data.
-   */
-  void setSensorsKeyenceData(
-    const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter);
 
   /**
    * @brief      Retrieves data from the batteries.

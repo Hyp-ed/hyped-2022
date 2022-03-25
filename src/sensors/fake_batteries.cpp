@@ -2,12 +2,13 @@
 
 #include <stdlib.h>
 
+#include <data/data.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
 
-FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
-    : data_(Data::getInstance()),
+FakeBatteries::FakeBatteries(utils::Logger &log, bool is_lp, bool is_fail)
+    : data_(data::Data::getInstance()),
       log_(log),
       lp_failure_{{100, 1000, 0, 0, 100, 0, 0, 0}},
       lp_success_{{245, 450, 70, 0, 35, 0, 0, 0}},

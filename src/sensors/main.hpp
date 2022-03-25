@@ -2,7 +2,8 @@
 
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
-#include "interface.hpp"
+#include "sensor.hpp"
+#include "temperature.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -12,20 +13,17 @@
 
 namespace hyped::sensors {
 
+using ImuPins = std::array<uint32_t, data::Sensors::kNumImus>;
+
 /**
  * @brief Initialise sensors, data instances to be pulled in managers
  *        gpio threads and adc checks declared in main
  */
 class Main : public utils::concurrent::Thread {
  public:
-  using KeyencePins = std::array<uint32_t, data::Sensors::kNumKeyence>;
-  using ImuPins     = std::array<uint32_t, data::Sensors::kNumImus>;
-
   Main();
   void run() override;  // from thread
 
-  static std::optional<std::vector<uint8_t>> keyencePinsFromFile(utils::Logger &log,
-                                                                 const std::string &path);
   static std::optional<std::vector<uint8_t>> imuPinsFromFile(utils::Logger &log,
                                                              const std::string &path);
   static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
@@ -54,7 +52,6 @@ class Main : public utils::concurrent::Thread {
   data::Batteries batteries_;
   data::CounterData stripe_counter_;
 
-  std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
   std::unique_ptr<ITemperature> temperature_;

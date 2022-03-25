@@ -1,9 +1,8 @@
 #include "fake_stepper.hpp"
 
-namespace hyped {
-namespace brakes {
+namespace hyped::brakes {
 
-FakeStepper::FakeStepper(Logger &log, uint8_t id)
+FakeStepper::FakeStepper(utils::Logger &log, uint8_t id)
     : log_(log),
       data_(data::Data::getInstance()),
       brakes_data_(data_.getEmergencyBrakesData()),
@@ -42,7 +41,7 @@ void FakeStepper::checkAccFailure()
 {
   if (!fake_button_) {  // false = brakes are clamped
     log_.error("Brake %b failure", brake_id_);
-    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(brakes_data_);
   }
   return;
@@ -52,7 +51,7 @@ void FakeStepper::checkBrakingFailure()
 {
   if (fake_button_) {  // true = brakes are retracted
     log_.error("Brake %b failure", brake_id_);
-    brakes_data_.module_status = ModuleStatus::kCriticalFailure;
+    brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setEmergencyBrakesData(brakes_data_);
   }
   return;
@@ -62,5 +61,4 @@ bool FakeStepper::checkClamped()
 {
   return is_clamped_;
 }
-}  // namespace brakes
-}  // namespace hyped
+}  // namespace hyped::brakes

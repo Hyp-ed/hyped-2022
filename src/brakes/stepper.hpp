@@ -1,29 +1,31 @@
 #pragma once
 
-#include "interface.hpp"
-
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/io/gpio.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::brakes {
+class IStepper {
+ public:
+  virtual void checkHome()           = 0;
+  virtual void sendRetract()         = 0;
+  virtual void sendClamp()           = 0;
+  virtual void checkAccFailure()     = 0;
+  virtual void checkBrakingFailure() = 0;
+  virtual bool checkClamped()        = 0;
 
-using data::ModuleStatus;
-using utils::Logger;
-using utils::concurrent::Thread;
-using utils::io::GPIO;
-
-namespace brakes {
-
+  // Explicit virtual deconstructor needs to be declared *and* defined
+  virtual ~IStepper() {}
+};
 class Stepper : public IStepper {
  public:
   /**
    * @brief Construct a new Stepper object
    * @param log, node id
    */
-  Stepper(uint8_t enable_pin, uint8_t button_pin, Logger &log, uint8_t id);
+  Stepper(uint8_t enable_pin, uint8_t button_pin, utils::Logger &log, uint8_t id);
 
   /**
    * @brief Deconstruct a Stepper object even if behind `IStepper *`
@@ -58,11 +60,10 @@ class Stepper : public IStepper {
   utils::Logger &log_;
   data::Data &data_;
   data::EmergencyBrakes brakes_data_;
-  GPIO command_pin_;
-  GPIO button_;
+  utils::io::GPIO command_pin_;
+  utils::io::GPIO button_;
   uint8_t brake_id_;
   uint8_t is_clamped_;
 };
 
-}  // namespace brakes
-}  // namespace hyped
+}  // namespace hyped::brakes

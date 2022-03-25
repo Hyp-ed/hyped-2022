@@ -101,12 +101,6 @@ std::array<CounterData, Sensors::kNumEncoders> Data::getSensorsWheelEncoderData(
   return sensors_.wheel_encoders;
 }
 
-std::array<CounterData, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
-{
-  ScopedLock L(&lock_sensors_);
-  return sensors_.keyence_stripe_counters;
-}
-
 int Data::getTemperature()
 {
   ScopedLock L(&lock_temp_);
@@ -135,13 +129,6 @@ void Data::setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNu
 {
   ScopedLock L(&lock_sensors_);
   sensors_.wheel_encoders = encoder;
-}
-
-void Data::setSensorsKeyenceData(
-  const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter)
-{
-  ScopedLock L(&lock_sensors_);
-  sensors_.keyence_stripe_counters = keyence_stripe_counter;
 }
 
 Batteries Data::getBatteriesData()

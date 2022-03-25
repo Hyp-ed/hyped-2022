@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interface.hpp"
+#include "bms.hpp"
 
 #include <cstdint>
 #include <memory>

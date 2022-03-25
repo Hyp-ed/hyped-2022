@@ -1,13 +1,30 @@
 #pragma once
 
-#include "interface.hpp"
-
 #include <cstdint>
 
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {
+
+class ITemperature {
+ public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~ITemperature() {}
+
+  /**
+   * @brief not a thread, checks temperature
+   */
+  virtual void run() = 0;
+
+  /**
+   * @brief returns int representation of temperature
+   * @return int temperature degrees C
+   */
+  virtual int getData() = 0;
+};
 
 class Temperature : public ITemperature {
  public:

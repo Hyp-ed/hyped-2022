@@ -1,7 +1,6 @@
 #pragma once
 
 #include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 
 #include <math.h>
 
@@ -112,14 +111,7 @@ class Navigation {
    * @brief Set initialisation of timestamps to true
    */
   void setHasInit();
-  /**
-   * @brief Disable keyence readings to have any impact on the run.
-   */
-  void disableKeyenceUsage();
-  /**
-   * @brief Set the keyence used to fake, so the system knows to use central timestamps.
-   */
-  void setKeyenceFake();
+
   /**
    * @brief Enable writing to file nav_data.csv
    */
@@ -202,11 +194,6 @@ class Navigation {
   // Have initial timestamps been set?
   bool has_initial_time_;
 
-  // Stripe counter object
-  StripeHandler stripe_counter_;
-  // Flags if keyences are used and if real
-  bool is_keyence_used_;
-
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
   utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
@@ -215,11 +202,6 @@ class Navigation {
    * @brief Query sensors to determine acceleration, velocity and distance
    */
   void queryImus();
-  /**
-   * @brief Query Keyence sensors to determine whether a stripe is found, update stripe_counter_
-   * accordingly
-   */
-  void queryKeyence();
   /**
    * @brief Update uncertainty in distance obtained through IMU measurements.
    */

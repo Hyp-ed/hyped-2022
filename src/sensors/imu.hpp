@@ -1,14 +1,29 @@
 #pragma once
 
-#include "interface.hpp"
+#include "sensor.hpp"
 
 #include <vector>
 
+#include <data/data.hpp>
 #include <utils/io/gpio.hpp>
 #include <utils/io/spi.hpp>
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {
+
+class IImu : public ISensor {
+ public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IImu() {}
+
+  /**
+   * @brief Get IMU data
+   * @param imu - output pointer to be filled by this sensor
+   */
+  virtual data::ImuData getData() = 0;
+};
 
 class Imu : public IImu {
  public:

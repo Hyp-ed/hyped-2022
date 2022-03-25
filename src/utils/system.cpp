@@ -57,7 +57,6 @@ void System::parseArgs(const int argc, const char *const *const argv)
   Config config;
   config.client_config_path          = std::string(argv[1]);
   config.imu_config_path             = std::string(argv[1]);
-  config.keyence_config_path         = std::string(argv[1]);
   config.temperature_config_path     = std::string(argv[1]);
   config.fake_trajectory_config_path = std::string(argv[1]);
   config.bms_config_path             = std::string(argv[1]);

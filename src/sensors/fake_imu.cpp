@@ -57,7 +57,6 @@ const FakeImu::Config &FakeImu::getConfig() const
 std::optional<std::vector<FakeImu>> FakeImu::fromFile(
   const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
-  auto &system = utils::System::getSystem();
   utils::Logger log("FAKE-IMU");
   const auto configs = readConfigs(log, path);
   if (!configs) {

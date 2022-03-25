@@ -50,6 +50,7 @@ std::unique_ptr<ImuManager> ImuManager::fromFile(const std::string &path,
 
 void ImuManager::run()
 {
+  log_.info("started");
   auto &sys  = utils::System::getSystem();
   auto &data = data::Data::getInstance();
   while (sys.isRunning()) {
@@ -60,6 +61,7 @@ void ImuManager::run()
     imu_data.timestamp = utils::Timer::getTimeMicros();
     data.setSensorsImuData(imu_data);
   }
+  log_.info("stopped");
 }
 
 }  // namespace hyped::sensors

@@ -4,7 +4,7 @@
   },
   "observer": {
     "output_path": "readings.json",
-    "use_imu_manager": false
+    "use_imu_manager": true
   },
   "debugger": {},
   "system": {
@@ -24,5 +24,18 @@
     "braking_deceleration": 2000.0,
     "cruising_deceleration": 0.01
   },
-  "fake_imu": []
+  "fake_imu": [
+    {
+      "noise": 0.01
+    },
+    {
+      "noise": 0.02
+    },
+    {
+      "noise": 0.005
+    },
+    {
+      "noise": 0.001
+    }
+  ]
 }

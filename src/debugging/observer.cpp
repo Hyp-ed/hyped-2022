@@ -69,26 +69,50 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
               path.c_str());
     return std::nullopt;
   }
+  // OUTPUT PATH
   const auto output_path = config_object["output_path"].GetString();
   auto observer          = std::make_unique<Observer>(output_path);
-  const auto imu_pins    = sensors::Main::imuPinsFromFile(log, path);
-  if (imu_pins) {
-    log.debug("adding imu tasks");
-    for (const auto imu_pin : *imu_pins) {
-      observer->addImuTask(imu_pin);
-    }
+  if (!config_object.HasMember("use_imu_manager")) {
+    log.error("missing required field 'observer.use_imu_manager' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
   }
+  // USE IMU MANAGER? & IMU PINS
+  const auto use_imu_manager = config_object["use_imu_manager"].GetBool();
+  const auto imu_pin_vector  = sensors::Main::imuPinsFromFile(log, path);
+  if (!imu_pin_vector) {
+    log.error("failed to read IMU pins");
+    return std::nullopt;
+  }
+  // FAKE TRAJECTORY?
+  std::shared_ptr<sensors::FakeTrajectory> fake_trajectory;
   if (system.config_.use_fake_trajectory) {
     const auto fake_trajectory_optional = sensors::FakeTrajectory::fromFile(path);
     if (!fake_trajectory_optional) {
       log.error("failed to initialise fake trajectory");
       return std::nullopt;
     }
-    log.debug("adding fake imu tasks");
-    const auto fake_trajectory
-      = std::make_shared<sensors::FakeTrajectory>(*fake_trajectory_optional);
-    const auto fake_imus = sensors::FakeImu::fromFile(path, fake_trajectory);
-    if (fake_imus) { observer->addFakeImuTasks(*fake_imus); }
+    fake_trajectory = std::make_shared<sensors::FakeTrajectory>(*fake_trajectory_optional);
+  }
+  // IMUs
+  if (use_imu_manager) {
+    if (fake_trajectory) {
+      observer->addFakeImuManagerTask(fake_trajectory);
+    } else {
+      sensors::ImuPins imu_pins;
+      std::copy(imu_pin_vector->begin(), imu_pin_vector->end(), imu_pins.begin());
+      observer->addImuManagerTask(imu_pins);
+    }
+  } else {  // use individual IMUs
+    log.debug("adding imu tasks");
+    for (const auto imu_pin : *imu_pin_vector) {
+      observer->addImuTask(imu_pin);
+    }
+    if (fake_trajectory) {
+      log.debug("adding fake imu tasks");
+      const auto fake_imus = sensors::FakeImu::fromFile(path, fake_trajectory);
+      if (fake_imus) { observer->addFakeImuTasks(*fake_imus); }
+    }
   }
   return observer;
 }
@@ -136,6 +160,74 @@ void Observer::addFakeImuTasks(const std::vector<sensors::FakeImu> &fake_imus)
     };
     tasks_.push_back(fake_imu_task);
   }
+}
+
+void Observer::addImuManagerTask(const sensors::ImuPins &imu_pins)
+{
+  auto imu_manager = std::make_shared<sensors::ImuManager>(imu_pins);
+  imu_manager->start();
+  Task imu_manager_task;
+  imu_manager_task.name    = "imu_manager";
+  imu_manager_task.handler = [imu_manager](JsonWriter &json_writer) {
+    json_writer.Key("thread_id");
+    json_writer.Uint(imu_manager->getId());
+    auto &data          = data::Data::getInstance();
+    const auto imu_data = data.getSensorsImuData();
+    json_writer.Key("timestamp");
+    json_writer.Uint64(imu_data.timestamp);
+    const auto imus = imu_data.value;
+    json_writer.Key("imus");
+    json_writer.StartArray();
+    for (const auto &imu : imus) {
+      json_writer.StartObject();
+      json_writer.Key("operational");
+      json_writer.Bool(imu.operational);
+      json_writer.Key("acceleration");
+      json_writer.StartArray();
+      json_writer.Double(imu.acc[0]);
+      json_writer.Double(imu.acc[1]);
+      json_writer.Double(imu.acc[2]);
+      json_writer.EndArray();
+      json_writer.EndObject();
+    }
+    json_writer.EndArray();
+  };
+  tasks_.push_back(imu_manager_task);
+}
+
+void Observer::addFakeImuManagerTask(std::shared_ptr<sensors::FakeTrajectory> fake_trajectory)
+{
+  auto &system = utils::System::getSystem();
+  std::shared_ptr<sensors::ImuManager> imu_manager
+    = sensors::ImuManager::fromFile(system.config_.imu_config_path, fake_trajectory);
+  imu_manager->start();
+  Task imu_manager_task;
+  imu_manager_task.name    = "imu_manager";
+  imu_manager_task.handler = [imu_manager](JsonWriter &json_writer) {
+    json_writer.Key("thread_id");
+    json_writer.Uint(imu_manager->getId());
+    auto &data          = data::Data::getInstance();
+    const auto imu_data = data.getSensorsImuData();
+    json_writer.Key("timestamp");
+    json_writer.Uint64(imu_data.timestamp);
+    const auto imus = imu_data.value;
+    json_writer.Key("imus");
+    json_writer.StartArray();
+    for (const auto &imu : imus) {
+      json_writer.StartObject();
+      json_writer.Key("operational");
+      json_writer.Bool(imu.operational);
+      json_writer.Key("acceleration");
+      json_writer.StartArray();
+      json_writer.Double(imu.acc[0]);
+      json_writer.Double(imu.acc[1]);
+      json_writer.Double(imu.acc[2]);
+      json_writer.EndArray();
+      json_writer.EndObject();
+    }
+    json_writer.EndArray();
+  };
+  tasks_.push_back(imu_manager_task);
 }
 
 }  // namespace hyped::debugging

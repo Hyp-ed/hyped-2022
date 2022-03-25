@@ -24,7 +24,7 @@ class Repl {
 
   void run();
 
-  static std::optional<Repl> fromFile(const std::string &path);
+  static std::optional<std::unique_ptr<Repl>> fromFile(const std::string &path);
 
  private:
   utils::System &system_;

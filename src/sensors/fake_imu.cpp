@@ -64,12 +64,11 @@ std::optional<std::vector<FakeImu>> FakeImu::fromFile(
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
-  return std::vector<FakeImu>({
-    FakeImu(configs->at(0), fake_trajectory),
-    FakeImu(configs->at(1), fake_trajectory),
-    FakeImu(configs->at(2), fake_trajectory),
-    FakeImu(configs->at(3), fake_trajectory),
-  });
+  std::vector<FakeImu> fake_imus;
+  for (const auto &config : *configs) {
+    fake_imus.push_back(FakeImu(config, fake_trajectory));
+  }
+  return fake_imus;
 }
 
 std::optional<std::vector<FakeImu::Config>> FakeImu::readConfigs(utils::Logger &log,
@@ -92,11 +91,6 @@ std::optional<std::vector<FakeImu::Config>> FakeImu::readConfigs(utils::Logger &
     return std::nullopt;
   }
   auto config_object_array = document["fake_imu"].GetArray();
-  if (data::Sensors::kNumImus != config_object_array.Size()) {
-    log.error("Found %d config objects but %d were expected in configuration file at %s",
-              config_object_array.Size(), data::Sensors::kNumImus, path.c_str());
-    return std::nullopt;
-  }
   std::vector<Config> configs;
   size_t i = 0;
   for (const auto &config_value : config_object_array) {

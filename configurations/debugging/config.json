@@ -24,5 +24,6 @@
     "maximum_acceleration": 1000.0,
     "braking_deceleration": 2000.0,
     "cruising_deceleration": 0.01
-  }
+  },
+  "fake_imu": []
 }

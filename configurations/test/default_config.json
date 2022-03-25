@@ -11,6 +11,10 @@
     "use_fake_high_power": false,
     "axis": 0
   },
+  "observer": {
+    "output_path": "readings.json",
+    "use_imu_manager": false
+  },
   "brakes": {
     "command_pins": [0, 0],
     "button_pins": [1, 1]

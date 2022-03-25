@@ -24,6 +24,7 @@ include_directories(
 )
 target_link_libraries(${test_target}
     data
+    debugging
     brakes
     navigation
     propulsion

@@ -300,11 +300,11 @@ void Navigation::checkVibration()
 void Navigation::updateUncertainty()
 {
   // time difference in milliseconds
-  const auto time_delta_millis
+  const auto time_delta_micros
     = static_cast<data::nav_t>(imu_displacement_.timestamp - previous_timestamp_) / 1e6;
   const auto absolute_acceleration_delta = std::abs(getImuAcceleration() - previous_acceleration_);
   // Random walk uncertainty
-  velocity_uncertainty_ += absolute_acceleration_delta * time_delta_millis / 2.;
+  velocity_uncertainty_ += absolute_acceleration_delta * time_delta_micros / 2.;
   // Processing uncertainty
   data::nav_t acceleration_variance_ = 0.0;
   for (auto &filter : filters_) {
@@ -313,11 +313,11 @@ void Navigation::updateUncertainty()
   acceleration_variance_                     = acceleration_variance_ / data::Sensors::kNumImus;
   const auto acceleration_standard_deviation = std::sqrt(acceleration_variance_);
   // uncertainty in velocity is the std deviation of acceleration integrated
-  velocity_uncertainty_ += acceleration_standard_deviation * time_delta_millis;
-  displacement_uncertainty_ += velocity_uncertainty_ * time_delta_millis;
+  velocity_uncertainty_ += acceleration_standard_deviation * time_delta_micros;
+  displacement_uncertainty_ += velocity_uncertainty_ * time_delta_micros;
   // Random walk uncertainty
   displacement_uncertainty_
-    += std::abs(getImuVelocity() - previous_velocity_) * time_delta_millis / 2.;
+    += std::abs(getImuVelocity() - previous_velocity_) * time_delta_micros / 2.;
 }
 
 void Navigation::disableKeyenceUsage()

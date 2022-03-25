@@ -17,19 +17,21 @@ class FakeImu : public IImu {
     std::optional<data::State> failure_in_state;
     data::nav_t noise;
   };
+  FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
+  ~FakeImu();
   data::ImuData getData() override;
   bool isOnline() override { return true; }
   const Config &getConfig() const;
-  static std::optional<std::vector<FakeImu>> fromFile(
+  static std::optional<std::vector<std::unique_ptr<FakeImu>>> fromFile(
     const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
  private:
   const Config config_;
+  utils::Logger log_;
   data::Data &data_;
   std::shared_ptr<FakeTrajectory> fake_trajectory_;
   bool is_operational_;
 
-  FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
   static std::optional<std::vector<Config>> readConfigs(utils::Logger &log,
                                                         const std::string &path);
 

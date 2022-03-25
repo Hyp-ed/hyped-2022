@@ -67,8 +67,7 @@ Imu::Imu(const uint32_t pin, const bool is_fifo)
       is_fifo_(is_fifo),
       is_online_(false)
 {
-  log_.debug("pin is %d", pin);
-  log_.info("creating sensor");
+  log_.info("started for pin %u", pin);
   init();
 }
 
@@ -134,9 +133,9 @@ void Imu::enableFifo()
   readByte(kUserCtrl, &check_enable);  // in user control
 
   if (check_enable == (data | 0x40)) {
-    log_.info("FIFO Enabled");
+    log_.info("enabled FIFO for pin %u", pin_);
   } else {
-    log_.error("ERROR: FIFO not enabled");
+    log_.error("failed to enable FIFO for pin %u", pin_);
   }
   kFrameSize_ = 6;
 }
@@ -165,7 +164,7 @@ bool Imu::whoAmI()
 
 Imu::~Imu()
 {
-  log_.info("Deconstructing sensor %d object", pin_);
+  log_.info("stopped for pin %u", pin_);
 }
 
 void Imu::selectBank(uint8_t switch_bank)

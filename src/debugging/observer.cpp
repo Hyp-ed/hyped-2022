@@ -110,8 +110,8 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
     }
     if (fake_trajectory) {
       log.debug("adding fake imu tasks");
-      const auto fake_imus = sensors::FakeImu::fromFile(path, fake_trajectory);
-      if (fake_imus) { observer->addFakeImuTasks(*fake_imus); }
+      auto fake_imus = sensors::FakeImu::fromFile(path, fake_trajectory);
+      if (fake_imus) { observer->addFakeImuTasks(std::move(*fake_imus)); }
     }
   }
   return observer;
@@ -138,13 +138,13 @@ void Observer::addImuTask(const uint8_t pin)
   tasks_.push_back(imu_task);
 }
 
-void Observer::addFakeImuTasks(const std::vector<sensors::FakeImu> &fake_imus)
+void Observer::addFakeImuTasks(std::vector<std::unique_ptr<sensors::FakeImu>> fake_imus)
 {
   uint32_t i = 0;
   char name_buffer[16];
-  for (const auto &fake_imu : fake_imus) {
+  for (auto &fake_imu : fake_imus) {
     snprintf(name_buffer, 16, "fake_imu-%u", i++);
-    auto fake_imu_ptr = std::make_shared<sensors::FakeImu>(fake_imu);
+    std::shared_ptr<sensors::FakeImu> fake_imu_ptr = std::move(fake_imu);
     Task fake_imu_task;
     fake_imu_task.name    = name_buffer;
     fake_imu_task.handler = [fake_imu_ptr](JsonWriter &json_writer) {

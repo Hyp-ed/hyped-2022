@@ -13,10 +13,17 @@ namespace hyped::sensors {
 
 FakeImu::FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory)
     : config_(config),
+      log_("FAKE-IMU", utils::System::getSystem().config_.log_level_sensors),
       data_(data::Data::getInstance()),
       fake_trajectory_(fake_trajectory),
       is_operational_(true)
 {
+  log_.info("started");
+}
+
+FakeImu::~FakeImu()
+{
+  log_.info("stopped");
 }
 
 data::NavigationVector FakeImu::getAccurateAcceleration()
@@ -54,7 +61,7 @@ const FakeImu::Config &FakeImu::getConfig() const
   return config_;
 }
 
-std::optional<std::vector<FakeImu>> FakeImu::fromFile(
+std::optional<std::vector<std::unique_ptr<FakeImu>>> FakeImu::fromFile(
   const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
   utils::Logger log("FAKE-IMU");
@@ -63,9 +70,9 @@ std::optional<std::vector<FakeImu>> FakeImu::fromFile(
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
-  std::vector<FakeImu> fake_imus;
+  std::vector<std::unique_ptr<FakeImu>> fake_imus;
   for (const auto &config : *configs) {
-    fake_imus.push_back(FakeImu(config, fake_trajectory));
+    fake_imus.push_back(std::make_unique<FakeImu>(config, fake_trajectory));
   }
   return fake_imus;
 }

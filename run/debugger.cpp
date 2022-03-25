@@ -19,5 +19,7 @@ int main(const int argc, const char **argv)
   auto repl = std::move(*repl_optional);
   repl->run();
 
+  observer->join();
+
   return 0;
 }

@@ -22,9 +22,9 @@ void Observer::run()
   auto &system = utils::System::getSystem();
 
   std::ofstream output_stream(path_);
-  rapidjson::StringBuffer string_buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> json_writer(string_buffer);
-
+  rapidjson::OStreamWrapper output_stream_wrapper(output_stream);
+  JsonWriter json_writer(output_stream_wrapper);
+  json_writer.StartArray();
   while (is_running_ && system.isRunning()) {
     // Write CSV line
     json_writer.StartObject();
@@ -36,15 +36,11 @@ void Observer::run()
       task.handler(json_writer);
       json_writer.EndObject();
     }
-    output_stream << std::endl;
     json_writer.EndObject();
-    output_stream << string_buffer.GetString();
-    output_stream << ';' << std::endl;
-    output_stream.flush();
-    string_buffer.Clear();
-    json_writer.Reset(string_buffer);
     sleep(kSleepTimeMillis);
   }
+  json_writer.EndArray();
+  json_writer.Flush();
 }
 
 std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &path)
@@ -104,7 +100,7 @@ void Observer::addImuTask(const uint8_t pin)
   snprintf(name_buffer, 16, "imu-%u", pin);
   Task imu_task;
   imu_task.name    = name_buffer;
-  imu_task.handler = [imu](rapidjson::Writer<rapidjson::StringBuffer> &json_writer) {
+  imu_task.handler = [imu](JsonWriter &json_writer) {
     const auto imu_data = imu->getData();
     json_writer.Key("operational");
     json_writer.Bool(imu_data.operational);
@@ -126,19 +122,18 @@ void Observer::addFakeImuTasks(std::vector<sensors::FakeImu> fake_imus)
     snprintf(name_buffer, 16, "fake_imu-%lu", i++);
     auto fake_imu_ptr = std::make_shared<sensors::FakeImu>(fake_imu);
     Task fake_imu_task;
-    fake_imu_task.name = name_buffer;
-    fake_imu_task.handler
-      = [fake_imu_ptr](rapidjson::Writer<rapidjson::StringBuffer> &json_writer) {
-          const auto fake_imu_data = fake_imu_ptr->getData();
-          json_writer.Key("operational");
-          json_writer.Bool(fake_imu_data.operational);
-          json_writer.Key("acceleration");
-          json_writer.StartArray();
-          json_writer.Double(fake_imu_data.acc[0]);
-          json_writer.Double(fake_imu_data.acc[1]);
-          json_writer.Double(fake_imu_data.acc[2]);
-          json_writer.EndArray();
-        };
+    fake_imu_task.name    = name_buffer;
+    fake_imu_task.handler = [fake_imu_ptr](JsonWriter &json_writer) {
+      const auto fake_imu_data = fake_imu_ptr->getData();
+      json_writer.Key("operational");
+      json_writer.Bool(fake_imu_data.operational);
+      json_writer.Key("acceleration");
+      json_writer.StartArray();
+      json_writer.Double(fake_imu_data.acc[0]);
+      json_writer.Double(fake_imu_data.acc[1]);
+      json_writer.Double(fake_imu_data.acc[2]);
+      json_writer.EndArray();
+    };
     tasks_.push_back(fake_imu_task);
   }
 }

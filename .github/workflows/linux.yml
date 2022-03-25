@@ -1,6 +1,6 @@
 name: Linux x64 build, test & coverage
 
-on: [push, pull_request]
+on: push
 
 jobs:
   build:

@@ -15,5 +15,9 @@ jobs:
         run: mkdir build; cd build; ../install-cc.sh
       - name: CMake
         run: cmake -S . -B build -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=OFF -DCROSS=ON
-      - name: Build
-        run: cd build; make -j8
+      - name: Build libs
+        run: cd build; make eigen rapidjson -j
+      - name: Build hyped
+        run: cd build; make -j
+      - name: Build debugger
+        run: cd build; make debugger -j

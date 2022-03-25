@@ -10,10 +10,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: CMake
         run: cmake -S . -B build -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=ON -DCROSS=OFF -DCMAKE_CXX_COMPILER=$(which clang++)
-      - name: Build executable and test binary
-        run: |
-          cd build
-          make testrunner -j8
+      - name: Build libs
+        run: cd build; make eigen rapidjson googletest -j
+      - name: Build hyped
+        run: cd build; make -j
+      - name: Build debugger
+        run: cd build; make debugger -j
+      - name: Build testrunner
+        run: cd build; make testrunner -j
       - name: Cache LLVM and Clang
         id: cache-llvm
         uses: actions/cache@v2

@@ -99,7 +99,7 @@ std::optional<uint16_t> AmbientPressure::scaleData(const uint32_t digital_pressu
   return static_cast<uint8_t>(actual_pressure / 100);  // mbar
 }
 
-uint16_t AmbientPressure::getData()
+uint16_t AmbientPressure::getData() const
 {
   return pressure_data_.ambient_pressure;
 }

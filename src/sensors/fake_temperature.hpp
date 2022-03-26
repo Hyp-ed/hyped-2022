@@ -23,7 +23,7 @@ class FakeTemperature : public ITemperature {
    *
    * @return int temperature degrees C
    */
-  uint8_t getData() override;
+  uint8_t getData() const override;
 
   /**
    * @brief waits for acceleration, generate random time for failure

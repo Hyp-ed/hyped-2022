@@ -20,7 +20,7 @@ class FakeAmbientPressure : public IAmbientPressure {
    *
    * @return int pressure mbar
    */
-  uint16_t getData() override;
+  uint16_t getData() const override;
 
   /**
    * @brief waits for acceleration, generate random time for failure
@@ -37,8 +37,8 @@ class FakeAmbientPressure : public IAmbientPressure {
   void checkFailure();
 
   // values mbar
-  int failure_;
-  int success_;
+  const int failure_;
+  const int success_;
   data::AmbientPressureData pressure_data_;
 
   bool is_fail_;

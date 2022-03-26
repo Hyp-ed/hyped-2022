@@ -21,7 +21,7 @@ void Temperature::run()
   temperature_data_.operational = true;
 }
 
-uint8_t Temperature::scaleData(uint8_t raw_value)
+uint8_t Temperature::scaleData(const uint8_t raw_value)
 {
   // convert to degrees C
   double temp = static_cast<double>(raw_value) / 4095;
@@ -29,7 +29,7 @@ uint8_t Temperature::scaleData(uint8_t raw_value)
   return static_cast<uint8_t>(temp);
 }
 
-uint8_t Temperature::getData()
+uint8_t Temperature::getData() const
 {
   return temperature_data_.temperature;
 }

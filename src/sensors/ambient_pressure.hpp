@@ -23,7 +23,7 @@ class AmbientPressure : public IAmbientPressure {
    *
    * @return uint16_t to set to data struct in sensors main
    */
-  uint16_t getData() override;
+  uint16_t getData() const override;
 
   /**
    * @brief one iteration of checking sensors

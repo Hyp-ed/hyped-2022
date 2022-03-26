@@ -52,7 +52,7 @@ void FakeTemperature::checkFailure()
   }
 }
 
-uint8_t FakeTemperature::getData()
+uint8_t FakeTemperature::getData() const
 {
   return temperature_data_.temperature;
 }

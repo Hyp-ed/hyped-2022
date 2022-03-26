@@ -62,7 +62,7 @@ struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
-  uint16_t temperature;  // C
+  int16_t temperature;  // C
 };
 
 struct AmbientPressureData : public SensorData {

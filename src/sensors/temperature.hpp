@@ -38,7 +38,7 @@ class Temperature : public ITemperature {
    * @param raw_value input voltage
    * @return int representation of temperature
    */
-  static uint8_t scaleData(uint8_t raw_value);
+  static int8_t scaleData(uint8_t raw_value);
 
   /**
    * @brief ADC pin

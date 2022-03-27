@@ -1,4 +1,4 @@
-name: x86-64 build, test & coverage
+name: x86-64 Clang build, test & coverage
 
 on: push
 

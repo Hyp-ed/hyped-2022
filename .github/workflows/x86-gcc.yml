@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: CMake
-        run: cmake -S . -B build -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=ON -DCROSS=OFF -DCMAKE_CXX_COMPILER=$(which g++)
+        run: cmake -S . -B build -DPEDANTIC=ON -DRELEASE=ON -DCOVERAGE=OFF -DCROSS=OFF -DCMAKE_CXX_COMPILER=$(which g++)
       - name: Build libs
         run: cd build; make eigen rapidjson googletest -j
       - name: Build hyped

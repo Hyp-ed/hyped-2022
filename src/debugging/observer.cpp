@@ -167,10 +167,10 @@ void Observer::addImuManagerTask(const sensors::ImuPins &imu_pins)
   auto imu_manager = std::make_shared<sensors::ImuManager>(imu_pins);
   imu_manager->start();
   Task imu_manager_task;
-  imu_manager_task.name    = "imu_manager";
+  imu_manager_task.name = "imu_manager";
+  // The imu_manager needs to be captured even though it's not used to stop it from being
+  // deallocated.
   imu_manager_task.handler = [imu_manager](JsonWriter &json_writer) {
-    json_writer.Key("thread_id");
-    json_writer.Uint(imu_manager->getId());
     auto &data          = data::Data::getInstance();
     const auto imu_data = data.getSensorsImuData();
     json_writer.Key("timestamp");
@@ -202,10 +202,10 @@ void Observer::addFakeImuManagerTask(std::shared_ptr<sensors::FakeTrajectory> fa
     = sensors::ImuManager::fromFile(system.config_.imu_config_path, fake_trajectory);
   imu_manager->start();
   Task imu_manager_task;
-  imu_manager_task.name    = "imu_manager";
+  imu_manager_task.name = "imu_manager";
+  // The imu_manager needs to be captured even though it's not used to stop it from being
+  // deallocated.
   imu_manager_task.handler = [imu_manager](JsonWriter &json_writer) {
-    json_writer.Key("thread_id");
-    json_writer.Uint(imu_manager->getId());
     auto &data          = data::Data::getInstance();
     const auto imu_data = data.getSensorsImuData();
     json_writer.Key("timestamp");

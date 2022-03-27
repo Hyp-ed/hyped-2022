@@ -76,7 +76,7 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -107,7 +107,7 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = data::ModuleStatus::kCriticalFailure;
@@ -138,7 +138,7 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -169,7 +169,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -200,7 +200,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -231,7 +231,7 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -262,7 +262,7 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -293,7 +293,7 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -328,7 +328,7 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kInitFirst; i <= kLast; i++) {
+  for (int i = kInitFirst; i <= kLast; ++i) {
     const auto goal              = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status    = goal;
     nav_data.module_status       = goal;
@@ -357,7 +357,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     for (int j = kInitFirst; j <= kLast; j++) {
@@ -390,7 +390,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     for (int j = kInitFirst; j <= kLast; j++) {
@@ -423,7 +423,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     for (int j = kInitFirst; j <= kLast; j++) {
@@ -457,7 +457,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     for (int j = kInitFirst; j <= kLast; j++) {
@@ -491,7 +491,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     for (int j = kInitFirst; j <= kLast; j++) {
@@ -525,7 +525,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     for (int j = kInitFirst; j <= kLast; j++) {
@@ -585,7 +585,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = other;
@@ -615,7 +615,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -645,7 +645,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -674,7 +674,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -704,7 +704,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -734,7 +734,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -763,7 +763,7 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
 {
   data::Telemetry telemetry_data;
   static constexpr int kNumCommands = 3;
-  for (int i = 0; i < 1 << kNumCommands; i++) {  // 2^num_commands posssible setups
+  for (size_t i = 0; i < 1 << kNumCommands; ++i) {  // 2^num_commands posssible setups
     // extracting bits
     telemetry_data.calibrate_command = static_cast<bool>(i & 1);
     telemetry_data.launch_command    = static_cast<bool>((i >> 1) & 1);
@@ -798,7 +798,7 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
   constexpr int kMaxBrakingDistance
     = static_cast<int>(data::Navigation::kRunLength - data::Navigation::kBrakingBuffer);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t max_displacement
@@ -827,7 +827,7 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
   constexpr int kMinBrakingDistance = 0;
   constexpr int kMaxBrakingDistance = data::Navigation::kRunLength;
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t min_displacement
@@ -859,7 +859,7 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
   constexpr int kMaxBrakingDistance = data::Navigation::kRunLength;
   constexpr data::nav_t kStepSize   = 1.0 / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t critical_displacement
@@ -897,7 +897,7 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
     = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - 1;
   constexpr data::nav_t kStepSize = 1.0 / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.displacement
       = static_cast<data::nav_t>(randomInRange(kMinDisplacement, kMaxDisplacement));
     critical_braking_distance
@@ -931,7 +931,7 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
   constexpr data::nav_t kStepSize
     = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 1; i <= kTestSize; i++) {
+  for (int i = 1; i <= kTestSize; ++i) {
     nav_data.velocity                   = kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.displacement               = static_cast<data::nav_t>(rand());
@@ -956,7 +956,7 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
   constexpr data::nav_t kStepSize
     = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.velocity                   = -1.0 * kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.displacement               = static_cast<data::nav_t>(rand());

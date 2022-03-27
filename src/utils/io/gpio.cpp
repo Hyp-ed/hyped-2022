@@ -80,7 +80,7 @@ void GPIO::initialise()
     return;
   }
 
-  for (int i = 0; i < GPIO::kBankNum; i++) {
+  for (size_t i = 0; i < GPIO::kBankNum; ++i) {
     offset = GPIO::kBases[i];
     /**
      * @brief mmap() creates a new mapping in the virtual address space of the calling process

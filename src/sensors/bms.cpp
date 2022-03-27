@@ -100,12 +100,12 @@ void Bms::processNewData(utils::io::can::Frame &message)
   uint8_t offset = message.id - (bms::kIdBase + (bms::kIdIncrement * id_));
   switch (offset) {
     case 0x1:  // cells 1-4
-      for (int i = 0; i < 4; i++) {
+      for (size_t i = 0; i < 4; ++i) {
         data_.voltage[i] = (message.data[2 * i] << 8) | message.data[2 * i + 1];
       }
       break;
     case 0x2:  // cells 5-7
-      for (int i = 0; i < 3; i++) {
+      for (size_t i = 0; i < 3; ++i) {
         data_.voltage[4 + i] = (message.data[2 * i] << 8) | message.data[2 * i + 1];
       }
       break;

@@ -36,7 +36,7 @@ void ImuDataLogger::setupKalman(const int imu_id, const int run_id)
 void ImuDataLogger::dataToFileSimulation(const data::NavigationVector &acceleration,
                                          const uint32_t timestamp)
 {
-  for (std::size_t i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; ++i) {
     outfile_ << acceleration[i] << ",";
   }
   outfile_ << timestamp << std::endl;
@@ -46,10 +46,10 @@ void ImuDataLogger::dataToFile(const data::NavigationVector &raw_acceleration,
                                const data::NavigationVector &calibrated_acceleration,
                                const uint32_t timestamp)
 {
-  for (std::size_t i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; ++i) {
     outfile_ << raw_acceleration[i] << ",";
   }
-  for (std::size_t i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; ++i) {
     outfile_ << calibrated_acceleration[i] << ",";
   }
   outfile_ << timestamp << std::endl;
@@ -59,13 +59,13 @@ void ImuDataLogger::dataToFileKalman(const data::NavigationVector &raw_accelerat
                                      const data::NavigationVector &calibrated_acceleration,
                                      const data::NavigationVector &x, const uint32_t timestamp)
 {
-  for (std::size_t i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; ++i) {
     outfile_ << raw_acceleration[i] << ",";
   }
-  for (std::size_t i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; ++i) {
     outfile_ << calibrated_acceleration[i] << ",";
   }
-  for (std::size_t i = 0; i < 3; i++) {
+  for (std::size_t i = 0; i < 3; ++i) {
     outfile_ << x[i] << ",";
   }
   outfile_ << timestamp << std::endl;

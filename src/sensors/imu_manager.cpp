@@ -13,7 +13,7 @@ ImuManager::ImuManager(const std::array<uint32_t, data::Sensors::kNumImus> &imu_
     : Thread(utils::Logger("IMU-MANAGER", utils::System::getSystem().config_.log_level_sensors))
 {
   utils::io::SPI::getInstance().setClock(utils::io::SPI::Clock::k4MHz);
-  for (size_t i = 0; i < data::Sensors::kNumImus; i++) {
+  for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     imus_.at(i) = std::make_unique<Imu>(imu_pins.at(i), false);
   }
 }

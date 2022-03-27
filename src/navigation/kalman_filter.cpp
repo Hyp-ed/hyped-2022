@@ -132,7 +132,7 @@ data::nav_t KalmanFilter::getEstimate()
   return estimate;
 }
 
-const data::nav_t KalmanFilter::getEstimateVariance()
+data::nav_t KalmanFilter::getEstimateVariance()
 {
   Eigen::MatrixXf P      = kalmanFilter_.getStateCovariance();
   data::nav_t covariance = P(0, 0);

@@ -191,7 +191,7 @@ class KalmanMathematics : public ::testing::Test {
   void SetUp()
   {
     // Populates the arrays defined above with 50 random values
-    for (int i = 0; i < 50; i++) {
+    for (size_t i = 0; i < 50; ++i) {
       x1_Data[i] = VectorXf::Random(n);
       z_Data[i]  = VectorXf::Random(m);
       u_Data[i]  = VectorXf::Random(k);
@@ -225,7 +225,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
   kalmanMathWithControl.setInitial(x1_Data[0], P_Data[0]);
   VectorXf x = kalmanMathWithControl.getStateEstimate();
   MatrixXf p = kalmanMathWithControl.getStateCovariance();
-  for (int i = 0; i < 50; i++) {
+  for (size_t i = 0; i < 50; ++i) {
     kalmanMathWithControl.filter(u, z);
     // Mimicks filter(VectorXf& u, VectorXf& z)
     x = A * x + B * u;
@@ -257,7 +257,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
   kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
   VectorXf x = kalmanMathWithoutControl.getStateEstimate();
   MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
-  for (int i = 0; i < NUM_TESTDATA; i++) {
+  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
     kalmanMathWithoutControl.filter(z);
     // Mimicks filter(VectorXf& u, VectorXf& z)
     x = A * x;
@@ -279,7 +279,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithoutControl)
 {
-  for (int i = 0; i < NUM_TESTDATA; i++) {
+  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
     MatrixXf A = A_Data[i];
     MatrixXf H = H_Data[i];
     MatrixXf R = R_Data[i];
@@ -313,7 +313,7 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithControl)
 {
-  for (int i = 0; i < NUM_TESTDATA; i++) {
+  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
     MatrixXf A = A_Data[i];
     MatrixXf B = B_Data[i];
     MatrixXf Q = Q_Data[i];
@@ -387,7 +387,7 @@ class KalmanIdentity : public ::testing::Test {
  */
 TEST_F(KalmanIdentity, handlesIdentity)
 {
-  for (int i = 0; i < NUM_TESTDATA; i++) {
+  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
     kalman.filter(u, z);
     ASSERT_EQ(kalman.getStateEstimate(), x0) << identity_err;
     ASSERT_EQ(kalman.getStateCovariance(), P) << identity_err;

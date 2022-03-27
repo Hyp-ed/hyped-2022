@@ -38,11 +38,11 @@ float RandomFloatOnline(float lower, float upper)
  * @param size_a Size of said array
  */
 template<class T>
-T meanCalc(T a[], int size_a)
+T meanCalc(T a[], size_t size_a)
 {
   T sum  = 0;
   T mean = 0;
-  for (int i = 0; i < size_a; i++) {
+  for (size_t i = 0; i < size_a; ++i) {
     sum = sum + a[i];
   }
   mean = sum / size_a;
@@ -60,8 +60,8 @@ T meanCalc(T a[], int size_a)
 class OnlineStatisticsTestInt : public ::testing::Test {
  protected:
   hyped::utils::math::OnlineStatistics<int> test_stats_int;
-  int values_counter = 1000;
-  int values[1000];
+  static constexpr size_t kNumValues = 1000;
+  int values[kNumValues];
   int sum  = 0;
   int mean = 0;
   int var;
@@ -74,7 +74,7 @@ class OnlineStatisticsTestInt : public ::testing::Test {
   void SetUp()
   {
     // Populating the array to be used with random integers
-    for (int i = 0; i < values_counter; i++) {
+    for (size_t i = 0; i < kNumValues; ++i) {
       values[i] = rand() % 1000 + 1;
     }
   }
@@ -101,14 +101,14 @@ TEST_F(OnlineStatisticsTestInt, testDefaultIntOnline)
  */
 TEST_F(OnlineStatisticsTestInt, testMeanSumIntOnline)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
   }
-  mean = meanCalc<int>(values, values_counter);
-  sum  = std::accumulate(values, values + values_counter, sum);
+  mean = meanCalc<int>(values, kNumValues);
+  sum  = std::accumulate(values, values + kNumValues, sum);
   ASSERT_EQ(mean, test_stats_int.getMean());
-  int sum_test = static_cast<int>(test_stats_int.getSum());
-  ASSERT_EQ(sum_test / values_counter, test_stats_int.getMean());
+  const auto sum_test = test_stats_int.getSum();
+  ASSERT_EQ(sum_test / static_cast<ssize_t>(kNumValues), test_stats_int.getMean());
   ASSERT_EQ(sum, test_stats_int.getSum());
 }
 
@@ -118,7 +118,7 @@ TEST_F(OnlineStatisticsTestInt, testMeanSumIntOnline)
  */
 TEST_F(OnlineStatisticsTestInt, testVarStdIntOnline)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
     int var_test = static_cast<int>(sqrt(test_stats_int.getVariance()));
     ASSERT_EQ(var_test, test_stats_int.getStdDev()) << messageVarStdDev;
@@ -132,7 +132,7 @@ TEST_F(OnlineStatisticsTestInt, testVarStdIntOnline)
  */
 TEST_F(OnlineStatisticsTestInt, testOutliersIntOnline)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
   }
   int var_prev     = test_stats_int.getVariance();
@@ -141,7 +141,7 @@ TEST_F(OnlineStatisticsTestInt, testOutliersIntOnline)
   int threshold    = mean_prev + 3 * std_dev_prev;
 
   // Introducing the outliers in our data
-  for (int i = 0; i < (static_cast<int>(values_counter) / 10); i++) {
+  for (size_t i = 0; i < (static_cast<int>(kNumValues) / 10); ++i) {
     test_stats_int.update(threshold + rand() % 200 + 100);
   }
   EXPECT_LT(mean_prev, test_stats_int.getMean()) << messageOutlierMean;
@@ -161,8 +161,8 @@ class OnlineStatisticsTestFloat : public ::testing::Test {
  protected:
   hyped::utils::math::OnlineStatistics<float> test_stats_float;
   // Declaring variables to be used
-  int values_counter = 1000;
-  float values_f[1000];
+  static constexpr size_t kNumValues = 1000;
+  float values_f[kNumValues];
   float sum_f  = 0.0;
   float mean_f = 0.0;
   float var_f;
@@ -175,7 +175,7 @@ class OnlineStatisticsTestFloat : public ::testing::Test {
   void SetUp()
   {
     // Populating the array to be used with random floats
-    for (int i = 0; i < values_counter; i++) {
+    for (size_t i = 0; i < kNumValues; ++i) {
       values_f[i] = RandomFloatOnline(1, 1000);
     }
   }
@@ -203,14 +203,14 @@ TEST_F(OnlineStatisticsTestFloat, testDefaultFloatOnline)
  */
 TEST_F(OnlineStatisticsTestFloat, testMeanSumFloatOnline)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
   }
-  mean_f = meanCalc<float>(values_f, values_counter);
-  sum_f  = std::accumulate(values_f, values_f + values_counter, sum_f);
+  mean_f = meanCalc<float>(values_f, kNumValues);
+  sum_f  = std::accumulate(values_f, values_f + kNumValues, sum_f);
   ASSERT_EQ(mean_f, test_stats_float.getMean());
   float sum_f_test = (static_cast<float>(test_stats_float.getSum()));
-  ASSERT_EQ(sum_f_test / values_counter, test_stats_float.getMean());
+  ASSERT_EQ(sum_f_test / kNumValues, test_stats_float.getMean());
   ASSERT_EQ(sum_f, test_stats_float.getSum());
 }
 
@@ -220,7 +220,7 @@ TEST_F(OnlineStatisticsTestFloat, testMeanSumFloatOnline)
  */
 TEST_F(OnlineStatisticsTestFloat, testVarStdFloatOnline)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
     float var_f_test = sqrt(test_stats_float.getVariance());
     ASSERT_EQ(var_f_test, test_stats_float.getStdDev()) << messageVarStdDev;
@@ -234,7 +234,7 @@ TEST_F(OnlineStatisticsTestFloat, testVarStdFloatOnline)
  */
 TEST_F(OnlineStatisticsTestFloat, testOutliersFloatOnline)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
   }
 
@@ -244,7 +244,7 @@ TEST_F(OnlineStatisticsTestFloat, testOutliersFloatOnline)
   float threshold    = mean_prev + 3 * std_dev_prev;
 
   //  Introducing the outliers in our data
-  for (int i = 0; i < (static_cast<int>(values_counter) / 10); i++) {
+  for (size_t i = 0; i < (static_cast<int>(kNumValues) / 10); ++i) {
     test_stats_float.update(threshold + RandomFloatOnline(100, 200));
   }
 

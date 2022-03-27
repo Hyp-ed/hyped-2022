@@ -140,7 +140,7 @@ class SpecialCases : public ::testing::Test {
 
   void SetUp()
   {
-    for (int i = 0; i < 100; i++) {
+    for (size_t i = 0; i < 100; ++i) {
       linear_data_point    = DataPoint<float>(i * pow(10, 6), i);
       linear_data[i]       = linear_data_point;
       constant_data_point  = DataPoint<float>(i * pow(10, 6), kConstant);
@@ -155,7 +155,7 @@ class SpecialCases : public ::testing::Test {
 TEST_F(SpecialCases, differentiatorLinearCase)
 {
   diff_linear.update(linear_data[0]);
-  for (int i = 1; i < 100; i++) {
+  for (int i = 1; i < 100; ++i) {
     float value = diff_linear.update(linear_data[i]).value;
     ASSERT_EQ(1, value) << "You Expect a perfect fit for linear case, please review implementation";
   }
@@ -168,7 +168,7 @@ TEST_F(SpecialCases, differentiatorLinearCase)
 TEST_F(SpecialCases, differentiatorConstantCase)
 {
   diff_constant.update(function_constant[0]);
-  for (int i = 1; i < 100; i++) {
+  for (int i = 1; i < 100; ++i) {
     float value = diff_constant.update(function_constant[i]).value;
     ASSERT_EQ(0, value)
       << "You Expect a perfect fit for constant case, please review implementation";
@@ -197,7 +197,7 @@ class DifferentiatorProperty : public ::testing::Test {
 
   void SetUp()
   {
-    for (int i = 0; i < 100; i++) {
+    for (size_t i = 0; i < 100; ++i) {
       data_point             = DataPoint<float>(i * pow(10, 6), i);
       linear_data[i]         = data_point;
       data_point             = DataPoint<float>(i * pow(10, 6), i * i);
@@ -217,7 +217,7 @@ class DifferentiatorProperty : public ::testing::Test {
  */
 TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
 {
-  for (int i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 100; ++i) {
     float linear    = diff_linear.update(linear_data[i]).value;
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
     float function  = diff_function.update(function_data[i]).value;
@@ -234,7 +234,7 @@ TEST_F(DifferentiatorProperty, differentiatorSumOfDerivatives)
  */
 TEST_F(DifferentiatorProperty, differentiatorDifferenceOfDerivatives)
 {
-  for (int i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 100; ++i) {
     float linear    = diff_linear.update(linear_data[i]).value;
     float quadratic = diff_quadratic.update(quadratic_data[i]).value;
     float function  = diff_function.update(difference_function[i]).value;
@@ -256,7 +256,7 @@ TEST(DifferentiatorChainRule, differentiatorChainRule)
   DataPoint<float> data_point;
 
   // Populates the array of datapoints with the output of functions
-  for (int i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 100; ++i) {
     data_point        = DataPoint<float>(i * 1e6, pow(2 * i + 1, 2));
     inner_function[i] = data_point;
     data_point        = DataPoint<float>(i * 1e6, 3 * inner_function[i].value);
@@ -264,7 +264,7 @@ TEST(DifferentiatorChainRule, differentiatorChainRule)
   }
 
   // Iterates through the arrays testing whether the chain rule holds
-  for (int i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 100; ++i) {
     float inner = diff_inner.update(inner_function[i]).value;
     float outer = diff_outer.update(outer_function[i]).value;
 

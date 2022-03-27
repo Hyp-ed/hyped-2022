@@ -1244,7 +1244,7 @@ TEST_F(RunTest, cruisingEmergency)
  */
 TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     utils::System &sys = utils::System::getSystem();
     sys.parseArgs(2, kDefaultArgs);
     initialiseData();

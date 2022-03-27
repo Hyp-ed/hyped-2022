@@ -27,7 +27,7 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
       velocity_integrator_(&displacement_)
 {
   log_.info("Navigation module started");
-  for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     filters_[i] = KalmanFilter(1, 1);
     filters_[i].setup();
   }

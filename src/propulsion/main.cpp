@@ -50,6 +50,8 @@ void Main::run()
     switch (current_state_) {
       case data::State::kIdle:
       case data::State::kPreCalibrating:
+      case data::State::kNominalBraking:
+      case data::State::kFailureBraking:
         break;
       case data::State::kCalibrating:
         if (state_processor_.isInitialised()) {
@@ -73,8 +75,8 @@ void Main::run()
         state_processor_.accelerate();
         break;
       case data::State::kCruising:
-      case data::State::kNominalBraking:
-      case data::State::kEmergencyBraking:
+      case data::State::kPreBraking:
+      case data::State::kFailurePreBraking:
         state_processor_.quickStopAll();
         break;
       case data::State::kFailureStopped:

@@ -25,7 +25,7 @@ namespace math {
  */
 float RandomFloatOnline(float lower, float upper)
 {
-  float random = (static_cast<float>(rand())) / RAND_MAX;
+  float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
   float diff   = upper - lower;
   float r      = random * diff;
   return lower + r;

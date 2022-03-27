@@ -30,7 +30,7 @@ Idle Idle::instance_;
 data::State Idle::enum_value_       = data::State::kIdle;
 char Idle::string_representation_[] = "Idle";
 
-State *Idle::checkTransition(Logger &log)
+State *Idle::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -53,7 +53,7 @@ PreCalibrating PreCalibrating::instance_;
 data::State PreCalibrating::enum_value_       = data::State::kPreCalibrating;
 char PreCalibrating::string_representation_[] = "PreCalibrating";
 
-State *PreCalibrating::checkTransition(Logger &log)
+State *PreCalibrating::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -75,7 +75,7 @@ Calibrating Calibrating::instance_;
 data::State Calibrating::enum_value_       = data::State::kCalibrating;
 char Calibrating::string_representation_[] = "Calibrating";
 
-State *Calibrating::checkTransition(Logger &log)
+State *Calibrating::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -98,7 +98,7 @@ Ready Ready::instance_;
 data::State Ready::enum_value_       = data::State::kReady;
 char Ready::string_representation_[] = "Ready";
 
-State *Ready::checkTransition(Logger &log)
+State *Ready::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -120,7 +120,7 @@ Accelerating Accelerating::instance_;
 data::State Accelerating::enum_value_       = data::State::kAccelerating;
 char Accelerating::string_representation_[] = "Accelerating";
 
-State *Accelerating::checkTransition(Logger &log)
+State *Accelerating::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -145,7 +145,7 @@ Cruising Cruising::instance_;
 data::State Cruising::enum_value_       = data::State::kCruising;
 char Cruising::string_representation_[] = "Cruising";
 
-State *Cruising::checkTransition(Logger &log)
+State *Cruising::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -167,7 +167,7 @@ PreBraking PreBraking::instance_;
 data::State PreBraking::enum_value_       = data::State::kPreBraking;
 char PreBraking::string_representation_[] = "PreBraking";
 
-State *PreBraking::checkTransition(Logger &log)
+State *PreBraking::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -188,7 +188,7 @@ NominalBraking NominalBraking::instance_;
 data::State NominalBraking::enum_value_       = data::State::kNominalBraking;
 char NominalBraking::string_representation_[] = "NominalBraking";
 
-State *NominalBraking::checkTransition(Logger &log)
+State *NominalBraking::checkTransition(utils::Logger &log)
 {
   updateModuleData();
 
@@ -209,7 +209,7 @@ Finished Finished::instance_;
 data::State Finished::enum_value_       = data::State::kFinished;
 char Finished::string_representation_[] = "Finished";
 
-State *Finished::checkTransition(Logger &)
+State *Finished::checkTransition(utils::Logger &)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
@@ -227,7 +227,7 @@ FailurePreBraking FailurePreBraking::instance_;
 data::State FailurePreBraking::enum_value_       = data::State::kFailurePreBraking;
 char FailurePreBraking::string_representation_[] = "FailurePreBraking";
 
-State *FailurePreBraking::checkTransition(Logger &log)
+State *FailurePreBraking::checkTransition(utils::Logger &)
 {
   updateModuleData();
 
@@ -241,10 +241,10 @@ State *FailurePreBraking::checkTransition(Logger &log)
 //--------------------------------------------------------------------------------------
 
 FailureBraking FailureBraking::instance_;
-data::State FailureBraking::enum_value_       = data::State::kEmergencyBraking;
+data::State FailureBraking::enum_value_       = data::State::kFailureBraking;
 char FailureBraking::string_representation_[] = "FailureBraking";
 
-State *FailureBraking::checkTransition(Logger &log)
+State *FailureBraking::checkTransition(utils::Logger &log)
 {
   // We only need to update navigation data.
   nav_data_ = data_.getNavigationData();
@@ -262,7 +262,7 @@ FailureStopped FailureStopped::instance_;
 data::State FailureStopped::enum_value_       = data::State::kFailureStopped;
 char FailureStopped::string_representation_[] = "FailureStopped";
 
-State *FailureStopped::checkTransition(Logger &)
+State *FailureStopped::checkTransition(utils::Logger &)
 {
   // We only need to update telemetry data.
   telemetry_data_ = data_.getTelemetryData();
@@ -278,7 +278,7 @@ State *FailureStopped::checkTransition(Logger &)
 
 Off Off::instance_;
 
-State *Off::checkTransition(Logger &log)
+State *Off::checkTransition(utils::Logger &log)
 {
   log.error("tried to transition from Off state");
   return nullptr;

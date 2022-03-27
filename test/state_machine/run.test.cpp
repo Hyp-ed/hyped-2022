@@ -906,7 +906,7 @@ class RunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in NominalBraking";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking)
       << "failed to transition from NominalBraking to EmergencyBraking";
   }
 
@@ -974,7 +974,7 @@ class RunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in FailurePreBraking";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking)
       << "failed to transition from FailurePreBraking to FailureBraking";
   }
 
@@ -986,7 +986,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking);
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking);
 
     // Randomise data
     randomiseInternally();

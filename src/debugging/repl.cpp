@@ -31,7 +31,7 @@ void Repl::run()
   }
 }
 
-std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
+std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &)
 {
   return std::make_unique<Repl>();
 }

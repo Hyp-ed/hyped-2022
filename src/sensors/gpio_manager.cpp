@@ -70,7 +70,7 @@ void GpioManager::run()
           clearHighPower();
           log_.error("Failure Braking! HP SSR cleared");
           break;
-        case data::State::kEmergencyBraking:
+        case data::State::kFailureBraking:
         case data::State::kFailureStopped:
           clearHighPower();
           log_.error("Emergency State! HP SSR cleared");

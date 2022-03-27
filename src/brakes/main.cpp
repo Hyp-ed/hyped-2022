@@ -86,11 +86,13 @@ void Main::run()
         break;
       case data::State::kAccelerating:
       case data::State::kCruising:
+      case data::State::kPreBraking:
+      case data::State::kFailurePreBraking:
         m_brake_->checkAccFailure();
         f_brake_->checkAccFailure();
         break;
       case data::State::kNominalBraking:
-      case data::State::kEmergencyBraking:
+      case data::State::kFailureBraking:
       case data::State::kInvalid:
         if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
         if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }

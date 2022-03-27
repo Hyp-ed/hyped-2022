@@ -152,7 +152,7 @@ const std::string Writer::convertStateMachineState(data::State state)
   switch (state) {
     case data::State::kInvalid:
       return "INVALID";
-    case data::State::kEmergencyBraking:
+    case data::State::kFailureBraking:
       return "EMERGENCY_BRAKING";
     case data::State::kFailureStopped:
       return "FAILURE_STOPPED";

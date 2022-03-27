@@ -82,7 +82,7 @@ TEST_F(FakeImuTest, defaultAllOperational)
   }
   {
     auto state_machine_data          = data.getStateMachineData();
-    state_machine_data.current_state = data::State::kEmergencyBraking;
+    state_machine_data.current_state = data::State::kFailureBraking;
     data.setStateMachineData(state_machine_data);
     ASSERT_TRUE(fake_imus.at(0)->getData().operational);
     ASSERT_TRUE(fake_imus.at(1)->getData().operational);
@@ -160,7 +160,7 @@ TEST_F(FakeImuTest, oneFaultyExpectedFailure)
   }
   {
     auto state_machine_data          = data.getStateMachineData();
-    state_machine_data.current_state = data::State::kEmergencyBraking;
+    state_machine_data.current_state = data::State::kFailureBraking;
     data.setStateMachineData(state_machine_data);
     ASSERT_TRUE(fake_imus.at(0)->getData().operational);
     ASSERT_TRUE(fake_imus.at(1)->getData().operational);
@@ -191,7 +191,7 @@ TEST_F(FakeImuTest, fourFaultyParsesConfig)
   ASSERT_TRUE(fake_imus.at(3)->getConfig().failure_in_state);
   ASSERT_EQ(data::State::kNominalBraking, fake_imus.at(0)->getConfig().failure_in_state);
   ASSERT_EQ(data::State::kCruising, fake_imus.at(1)->getConfig().failure_in_state);
-  ASSERT_EQ(data::State::kEmergencyBraking, fake_imus.at(2)->getConfig().failure_in_state);
+  ASSERT_EQ(data::State::kFailureBraking, fake_imus.at(2)->getConfig().failure_in_state);
   ASSERT_EQ(data::State::kAccelerating, fake_imus.at(3)->getConfig().failure_in_state);
 }
 
@@ -241,7 +241,7 @@ TEST_F(FakeImuTest, fourFaultyExpectedFailure)
   }
   {
     auto state_machine_data          = data.getStateMachineData();
-    state_machine_data.current_state = data::State::kEmergencyBraking;
+    state_machine_data.current_state = data::State::kFailureBraking;
     data.setStateMachineData(state_machine_data);
     ASSERT_FALSE(fake_imus.at(0)->getData().operational);
     ASSERT_FALSE(fake_imus.at(1)->getData().operational);

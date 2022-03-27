@@ -25,7 +25,7 @@ namespace math {
  */
 float RandomFloatRolling(float a, float b)
 {
-  float random = (static_cast<float>(rand())) / RAND_MAX;
+  float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
   float diff   = b - a;
   float r      = random * diff;
   return a + r;

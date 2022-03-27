@@ -141,7 +141,7 @@ enum class State {
   kPreBraking,
   kNominalBraking,
   kFailurePreBraking,
-  kEmergencyBraking,
+  kFailureBraking,
   kFailureStopped,
   kFinished,
   kInvalid

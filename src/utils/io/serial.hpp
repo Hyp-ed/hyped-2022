@@ -1,61 +1,58 @@
+#pragma once
+
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
+#include <termios.h>
 
+#include <vector>
+
+#include <utils/logger.hpp>
 namespace hyped::utils::io {
 
-struct ProtocolState {
-    enum Enum 
-    {
-        // The serial object was not set
-        NO_SERIAL = 0,
-
-         // The operation succeeded
-        SUCCESS = 1,
-
-        // There is not (enough) data to process
-        NO_DATA = 2,
-        
-         // The object is being received but the buffer doesn't have all the data
-        WAITING_FOR_DATA = 3,
-
-        // The size of the received payload doesn't match the expected size
-        INVALID_SIZE = 4,
-
-        // The object was received but it is not the same as one sent
-        INVALID_CHECKSUM = 5
-    };
+enum class SerialState {
+  kNoSerial = 0,
+  kSuccess  = 1,
+  // There is not (enough) data to process
+  kNoData = 2,
+  // The object is being received but the buffer doesn't have all the data
+  kWaitingForData = 3,
+  // The size of the received payload doesn't match the expected size
+  kInvalidSize = 4,
+  // The object was received but it is not the same as one sent
+  kInvalidChecksum = 5
 };
 
+enum class BaudRate {
+  kB_300,
+  kB_600,
+  kB_1200,
+  kB_2400,
+  kB_4800,
+  kB_9600,
+  kB_14400,
+  kB_19200,
+  kB_28800
+};
 class SerialProtocol {
-    public:
-        SerialProtocol(int, uint8_t*, uint8_t);
+ public:
+  SerialProtocol(std::string serial, BaudRate baud_rate, Logger &log);
+  ~SerialProtocol();
 
-        // Sends the current payload
-        
-        // Returns a ProtocolState enum value
-        uint8_t send();
+  void configureTermios();
 
-        // Tries to receive the payload from the
-        // current available data
-        // Will replace the payload if the receive succeeds
+  bool serialAvailable();
 
-        // Returns a ProtocolState enum value
-        uint8_t receive();
-        
-        void setSerial(int);
-        bool serialAvailable();
-        void sendData(uint8_t);
-        uint8_t readData();
+  void readData(std::vector<uint8_t> &buffer);
+  void writeData(const std::vector<uint8_t> &buffer);
 
-    private:
-        int serial;
-        uint8_t* payload;
-        uint8_t payloadSize;
+ private:
+  std::string serial_device_;
+  int serial_;
+  BaudRate baud_rate_;
+  utils::Logger &log_;
 
-        uint8_t* inputBuffer;
-        uint8_t bytesRead;
-
-        uint8_t actualChecksum;
-    };
+  std::vector<char> readBuffer_;
+  unsigned char readBufferSize_B_;
 };
+};  // namespace hyped::utils::io

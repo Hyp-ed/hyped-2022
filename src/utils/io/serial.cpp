@@ -5,134 +5,122 @@
 #include <time.h>
 #include <unistd.h>
 
-#define HEADER 'S'
-#define BYTES_TO_PAYLOAD 2
-
-/* Message format:
-    Header       (1 byte)            - Header Byte
-    DataLength   (1 byte)            - The size of the payload
-    Data         (DataLength bytes)  - Actual payload
-    Checksum     (1 byte)            - Message integrity check
-
-    Total message size = (payload size + 3) bytes;
-*/
+#include <iostream>
+#include <sstream>
 
 namespace hyped::utils::io {
 
-SerialProtocol::SerialProtocol(int serial, uint8_t *payload, uint8_t payloadSize)
+SerialProtocol::SerialProtocol(const std::string serial, const BaudRate baud_rate,
+                               utils::Logger &log)
+    : serial_device_(serial),
+      baud_rate_(baud_rate),
+      log_(log)
 {
-  setSerial(serial);
-  this->payload     = payload;
-  this->payloadSize = payloadSize;
-  inputBuffer       = (uint8_t *)malloc(payloadSize);
+  configureTermios();
 }
 
-void SerialProtocol::setSerial(int serial)
+SerialProtocol::~SerialProtocol()
 {
-  this->serial = serial;
+  close(serial_);
 };
-
-uint8_t SerialProtocol::send()
-{
-  if (!serialAvailable()) {
-    // There is no place to send the data
-    return ProtocolState::NO_SERIAL;
-  }
-
-  uint8_t checksum = payloadSize;
-
-  // Write the HEADER
-  sendData(HEADER);
-  sendData(payloadSize);
-
-  // Write the payload
-  for (int i = 0; i < payloadSize; i++) {
-    checksum ^= *(payload + i);
-    sendData(*(payload + i));
-  }
-
-  // Complete with the checksum
-  sendData(checksum);
-
-  return ProtocolState::SUCCESS;
-}
-
-// This method is blocking while there is data in the serial buffer
-uint8_t SerialProtocol::receive()
-{
-  uint8_t data;
-
-  if (!serialAvailable()) {
-    // Cannot get any data
-    return ProtocolState::NO_SERIAL;
-  }
-
-  while (true) {
-    data = readData();
-
-    if (data == -1) {
-      return bytesRead > 0 ? ProtocolState::WAITING_FOR_DATA : ProtocolState::NO_DATA;
-    }
-
-    if (bytesRead == 0) {
-      // Look for HEADER
-      if (data != HEADER) { return ProtocolState::NO_DATA; }
-
-      ++bytesRead;
-      continue;
-    }
-
-    if (bytesRead == 1) {
-      // Look for payload size
-      if (data != payloadSize) {
-        bytesRead = 0;
-        return ProtocolState::INVALID_SIZE;
-      }
-
-      // The checksum starts with the payload size
-      actualChecksum = data;
-      ++bytesRead;
-      continue;
-    }
-
-    // The > check ensures that we don't overflow and
-    // that we discard bad messages
-    if (bytesRead >= (payloadSize + BYTES_TO_PAYLOAD)) {
-      // We are done with the message. Regardless of the outcome
-      // only a new message can come next
-      bytesRead = 0;
-
-      // Before we can be fully done, we need the
-      // checksum to match
-      if (actualChecksum != data) { return ProtocolState::INVALID_CHECKSUM; }
-
-      memcpy(payload, inputBuffer, payloadSize);
-      return ProtocolState::SUCCESS;
-    }
-
-    inputBuffer[bytesRead - BYTES_TO_PAYLOAD] = data;
-    actualChecksum ^= data;
-
-    ++bytesRead;
-  }
-}
 
 bool SerialProtocol::serialAvailable()
 {
-  return serial != -1;
+  return serial_ > 0;
 }
 
-void SerialProtocol::sendData(uint8_t data)
+void SerialProtocol::configureTermios()
 {
-  write(serial, &data, 1);
+  serial_ = open(serial_device_.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+
+  if (serial_ == -1) {
+    log_.error("Unable to open serial device: %s", serial_device_.c_str());
+    return;
+  }
+
+  struct termios options;
+  tcgetattr(serial_, &options);
+  options.c_cflag = CS8 | CLOCAL | CREAD;
+  options.c_iflag = IGNPAR;
+  options.c_oflag = 0;
+  options.c_lflag = 0;
+  switch (baud_rate_) {
+    case BaudRate::kB_300:
+      cfsetispeed(&options, B300);
+      cfsetospeed(&options, B300);
+      break;
+    case BaudRate::kB_600:
+      cfsetispeed(&options, B600);
+      cfsetospeed(&options, B600);
+      break;
+    case BaudRate::kB_1200:
+      cfsetispeed(&options, B1200);
+      cfsetospeed(&options, B1200);
+      break;
+    case BaudRate::kB_2400:
+      cfsetispeed(&options, B2400);
+      cfsetospeed(&options, B2400);
+      break;
+    case BaudRate::kB_4800:
+      cfsetispeed(&options, B4800);
+      cfsetospeed(&options, B4800);
+      break;
+    case BaudRate::kB_9600:
+      cfsetispeed(&options, B9600);
+      cfsetospeed(&options, B9600);
+      break;
+    case BaudRate::kB_14400:
+      cfsetispeed(&options, B14400);
+      cfsetospeed(&options, B14400);
+      break;
+    case BaudRate::kB_19200:
+      cfsetispeed(&options, B19200);
+      cfsetospeed(&options, B19200);
+      break;
+    case BaudRate::kB_28800:
+      cfsetispeed(&options, B28800);
+      cfsetospeed(&options, B28800);
+      break;
+    default:
+      cfsetispeed(&options, B9600);
+      cfsetospeed(&options, B9600);
+      break;
+  }
+  tcflush(serial_, TCIFLUSH);
+  tcsetattr(serial_, TCSANOW, &options);
 }
 
-uint8_t SerialProtocol::readData()
+void SerialProtocol::readData(std::vector<uint8_t> &data)
 {
-  uint8_t data[1];
-  int cnt = read(serial, (void *)data, 1);
-  if (cnt == 0) { return -1; }
+  data.clear();
+  if (!serialAvailable()) {
+    log_.error("Serial device not available for read.");
+    return;
+  }
 
-  return data[0];
+  size_t n = read(serial_, &readBuffer_[0], readBufferSize_B_);
+
+  if (n < 0) {
+    log_.error("Error reading from serial device.");
+    return;
+  }
+
+  copy(readBuffer_.begin(), readBuffer_.begin() + n, back_inserter(data));
+  return;
 }
-};  // namespace hyped::utils::io
+
+void SerialProtocol::writeData(const std::vector<uint8_t> &data)
+{
+  if (!serialAvailable()) {
+    log_.error("Serial device not available for write.");
+    return;
+  }
+
+  int write_result = write(serial_, data.data(), data.size());
+
+  if (write_result == -1) {
+    log_.error("Error writing to serial device.");
+    return;
+  }
+}
+}  // namespace hyped::utils::io

@@ -47,7 +47,7 @@ add_dependencies(${test_target} "${test_target}-format")
 add_custom_target(test
     COMMAND cp -r ${HYPED_CONFIG_DIR} ${CMAKE_BINARY_DIR}/test/
     COMMAND ${TEST_BINARY}
-    DEPENDS testrunner
+    DEPENDS testrunner hyped debugger
 )
 
 # -------------------------------------------------- #

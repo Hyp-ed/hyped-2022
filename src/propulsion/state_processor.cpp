@@ -8,8 +8,7 @@ StateProcessor::StateProcessor(utils::Logger &log)
     : log_(log),
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
-      is_initialised_(false),
-      rpm_regulator_()
+      is_initialised_(false)
 {
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");
@@ -92,7 +91,7 @@ void StateProcessor::accelerate()
     previous_acceleration_time_ = now;
     const auto velocity         = data_.getNavigationData().velocity;
     const auto act_rpm          = calculateAverageRpm();
-    const auto rpm              = rpm_regulator_.calculateRpm(velocity, act_rpm);
+    const auto rpm              = RpmRegulator::calculateRpm(velocity, act_rpm);
     log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);

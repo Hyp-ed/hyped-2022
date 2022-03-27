@@ -69,17 +69,9 @@ void SerialProtocol::configureTermios()
       cfsetispeed(&options, B9600);
       cfsetospeed(&options, B9600);
       break;
-    case BaudRate::kB_14400:
-      cfsetispeed(&options, B14400);
-      cfsetospeed(&options, B14400);
-      break;
     case BaudRate::kB_19200:
       cfsetispeed(&options, B19200);
       cfsetospeed(&options, B19200);
-      break;
-    case BaudRate::kB_28800:
-      cfsetispeed(&options, B28800);
-      cfsetospeed(&options, B28800);
       break;
     default:
       cfsetispeed(&options, B9600);

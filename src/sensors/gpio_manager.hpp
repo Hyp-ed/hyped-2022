@@ -22,7 +22,7 @@ class GpioManager : public utils::concurrent::Thread {
  public:
   struct Config {
     uint32_t master_switch_pin;
-    std::array<uint32_t, data::Batteries::kNumHPBatteries> high_power_ssr_pins;
+    std::array<uint32_t, data::FullBatteryData::kNumHPBatteries> high_power_ssr_pins;
   };
   void run() override;
   static std::unique_ptr<GpioManager> fromFile(const std::string &path);

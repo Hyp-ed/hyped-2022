@@ -131,13 +131,13 @@ void Data::setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNu
   sensors_.wheel_encoders = encoder;
 }
 
-Batteries Data::getBatteriesData()
+FullBatteryData Data::getBatteriesData()
 {
   ScopedLock L(&lock_batteries_);
   return batteries_;
 }
 
-void Data::setBatteriesData(const Batteries &batteries_data)
+void Data::setBatteriesData(const FullBatteryData &batteries_data)
 {
   ScopedLock L(&lock_batteries_);
   batteries_ = batteries_data;

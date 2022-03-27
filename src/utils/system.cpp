@@ -264,16 +264,6 @@ void System::parseArgs(const int argc, const char *const *const argv)
       argv[0]);
     config.use_fake_controller = false;
   }
-  // Use fake high _power?
-  if (config_object.HasMember("use_fake_high_power")) {
-    config.use_fake_high_power = config_object["use_fake_high_power"].GetBool();
-  } else {
-    kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_high_power' in config filet at %s; using default "
-      "value",
-      argv[0]);
-    config.use_fake_high_power = false;
-  }
   // Axis
   if (config_object.HasMember("axis")) {
     config.axis = static_cast<std::uint8_t>(config_object["axis"].GetUint());

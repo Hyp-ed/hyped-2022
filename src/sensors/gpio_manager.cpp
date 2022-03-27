@@ -11,7 +11,7 @@ GpioManager::GpioManager(utils::Logger log, const Config &config)
       config_(config)
 {
   // clear HPSSRs if default is high
-  for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
+  for (size_t i = 0; i < data::FullBatteryData::kNumHPBatteries; ++i) {
     high_power_ssr_.push_back(std::make_unique<utils::io::GPIO>(config_.high_power_ssr_pins.at(i),
                                                                 utils::io::GPIO::Direction::kOut));
     high_power_ssr_.at(i)->clear();
@@ -30,7 +30,7 @@ void GpioManager::clearHighPower()
 {
   data::Sensors sensors_data_struct = data_.getSensorsData();
   master_->clear();  // important to clear this first
-  for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
+  for (size_t i = 0; i < data::FullBatteryData::kNumHPBatteries; ++i) {
     high_power_ssr_[i]->clear();  // HP off until kReady State
   }
   sensors_data_struct.high_power_off = true;  // all SSRs in HP off

@@ -9,7 +9,7 @@ namespace hyped::state_machine {
  * @brief   Local function that determines whether or not there is an emergency.
  */
 bool checkEmergency(utils::Logger &log, const data::EmergencyBrakes &brakes_data,
-                    const data::Navigation &nav_data, const data::Batteries &batteries_data,
+                    const data::Navigation &nav_data, const data::FullBatteryData &batteries_data,
                     const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                     const data::Motors &motors_data)
 {
@@ -44,7 +44,7 @@ bool checkEmergency(utils::Logger &log, const data::EmergencyBrakes &brakes_data
 
 bool checkModulesInitialised(utils::Logger &log, const data::EmergencyBrakes &brakes_data,
                              const data::Navigation &nav_data,
-                             const data::Batteries &batteries_data,
+                             const data::FullBatteryData &batteries_data,
                              const data::Telemetry &telemetry_data,
                              const data::Sensors &sensors_data, const data::Motors &motors_data)
 {
@@ -60,7 +60,8 @@ bool checkModulesInitialised(utils::Logger &log, const data::EmergencyBrakes &br
 }
 
 bool checkModulesReady(utils::Logger &log, const data::EmergencyBrakes &brakes_data,
-                       const data::Navigation &nav_data, const data::Batteries &batteries_data,
+                       const data::Navigation &nav_data,
+                       const data::FullBatteryData &batteries_data,
                        const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                        const data::Motors &motors_data)
 {

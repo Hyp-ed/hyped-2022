@@ -17,7 +17,7 @@ Bms::Bms(uint8_t id, utils::Logger &log)
       can_(utils::io::Can::getInstance()),
       running_(false)
 {
-  ASSERT(id < data::Batteries::kNumLPBatteries);
+  ASSERT(id < data::FullBatteryData::kNumLPBatteries);
   // verify this Bms unit has not been instantiated
   for (uint8_t i : existing_ids_) {
     if (id == i) {

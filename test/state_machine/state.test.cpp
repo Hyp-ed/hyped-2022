@@ -32,7 +32,7 @@ class StateTest : public hyped::testing::Test {
  protected:
   data::EmergencyBrakes brakes_data_;
   data::Navigation nav_data_;
-  data::Batteries batteries_data_;
+  data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;

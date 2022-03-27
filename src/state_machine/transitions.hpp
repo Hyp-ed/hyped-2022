@@ -9,8 +9,8 @@ namespace hyped {
 
 namespace state_machine {
 
-using hyped::data::Batteries;
 using hyped::data::EmergencyBrakes;
+using hyped::data::FullBatteryData;
 using hyped::data::Motors;
 using hyped::data::Navigation;
 using hyped::data::Sensors;
@@ -27,7 +27,7 @@ class State;  // Forward declaration
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
 bool checkEmergency(Logger &log, const data::EmergencyBrakes &brakes_data,
-                    const data::Navigation &nav_data, const data::Batteries &batteries_data,
+                    const data::Navigation &nav_data, const data::FullBatteryData &batteries_data,
                     const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                     const data::Motors &motors_data);
 
@@ -41,7 +41,7 @@ bool checkEmergency(Logger &log, const data::EmergencyBrakes &brakes_data,
  */
 bool checkModulesInitialised(Logger &log, const data::EmergencyBrakes &brakes_data,
                              const data::Navigation &nav_data,
-                             const data::Batteries &batteries_data,
+                             const data::FullBatteryData &batteries_data,
                              const data::Telemetry &telemetry_data,
                              const data::Sensors &sensors_data, const data::Motors &motors_data);
 
@@ -49,7 +49,8 @@ bool checkModulesInitialised(Logger &log, const data::EmergencyBrakes &brakes_da
  * @brief    Returns true iff all modules are ready.
  */
 bool checkModulesReady(Logger &log, const data::EmergencyBrakes &brakes_data,
-                       const data::Navigation &nav_data, const data::Batteries &batteries_data,
+                       const data::Navigation &nav_data,
+                       const data::FullBatteryData &batteries_data,
                        const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
                        const data::Motors &motors_data);
 

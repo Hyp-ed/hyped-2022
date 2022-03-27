@@ -17,11 +17,12 @@ class BmsManager : public utils::concurrent::Thread {
     uint64_t bms_startup_time_micros;
   };
   void run() override;
-  explicit BmsManager(utils::Logger log, const Config &config);
+  explicit BmsManager(const Config &config);
   static std::unique_ptr<BmsManager> fromFile(const std::string &path);
 
  private:
-  IBms *bms_[data::Batteries::kNumLPBatteries + data::Batteries::kNumHPBatteries];
+  std::array<std::unique_ptr<IBms>, data::FullBatteryData::kNumLPBatteries> low_power_batteries_;
+  std::array<std::unique_ptr<IBms>, data::FullBatteryData::kNumHPBatteries> high_power_batteries_;
   utils::System &sys_;
   data::Data &data_;
   const Config config_;
@@ -29,12 +30,12 @@ class BmsManager : public utils::concurrent::Thread {
   /**
    * @brief check IMD and set GPIOs accordingly
    */
-  bool checkIMD();
+  bool checkImd();
 
   /**
    * @brief holds LP BatteryData, HP BatteryData, and module_status
    */
-  data::Batteries batteries_;
+  data::FullBatteryData battery_data_;
 
   /**
    * @brief print log messages once
@@ -49,7 +50,7 @@ class BmsManager : public utils::concurrent::Thread {
   /**
    * @brief checks voltage, current, temperature, and charge
    */
-  bool batteriesInRange();
+  bool checkBatteriesInRange();
 
   static std::optional<Config> readConfig(utils::Logger &log, const std::string &path);
 };

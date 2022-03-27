@@ -75,7 +75,7 @@ struct Sensors : public Module {
 };
 
 struct BatteryData {
-  static constexpr int kNumCells = 36;
+  static constexpr size_t kNumCells = 36;
   uint16_t voltage;            // dV
   int16_t current;             // dA
   uint8_t charge;              // %
@@ -90,18 +90,18 @@ struct BatteryData {
   bool imd_fault;
 };
 
-struct Batteries : public Module {
-  static constexpr int kNumLPBatteries = 2;
-  static constexpr int kNumHPBatteries = 1;
+struct FullBatteryData : public Module {
+  static constexpr size_t kNumLPBatteries = 2;
+  static constexpr size_t kNumHPBatteries = 1;
 
   std::array<BatteryData, kNumLPBatteries> low_power_batteries;
   std::array<BatteryData, kNumHPBatteries> high_power_batteries;
 };
 
 struct EmergencyBrakes : public Module {
-  static constexpr int kBrakeCommandWaitTime = 1000;  // milliseconds
-  static constexpr int kNumBrakes            = 2;
-  bool brakes_retracted[kNumBrakes]          = {false};  // true if brakes retract
+  static constexpr uint64_t kBrakeCommandWaitTime = 1000;  // milliseconds
+  static constexpr size_t kNumBrakes              = 2;
+  bool brakes_retracted[kNumBrakes]               = {false};  // true if brakes retract
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ struct EmergencyBrakes : public Module {
 // -------------------------------------------------------------------------------------------------
 
 struct Motors : public Module {
-  static constexpr int kNumMotors              = 4;
+  static constexpr size_t kNumMotors           = 4;
   static constexpr uint8_t kMaximumTemperature = 150;
   static constexpr uint16_t kMaximumCurrent    = 1500;  // mA
   std::array<uint32_t, kNumMotors> rpms        = {{0, 0, 0, 0}};
@@ -236,12 +236,12 @@ class Data {
   /**
    * @brief      Retrieves data from the batteries.
    */
-  Batteries getBatteriesData();
+  FullBatteryData getBatteriesData();
 
   /**
    * @brief      Should be called to update battery data
    */
-  void setBatteriesData(const Batteries &batteries_data);
+  void setBatteriesData(const FullBatteryData &batteries_data);
 
   /**
    * @brief      Retrieves data from the emergency brakes.
@@ -278,7 +278,7 @@ class Data {
   Navigation navigation_;
   Sensors sensors_;
   Motors motors_;
-  Batteries batteries_;
+  FullBatteryData batteries_;
   Telemetry telemetry_;
   EmergencyBrakes emergency_brakes_;
   int temperature_;  // In degrees C

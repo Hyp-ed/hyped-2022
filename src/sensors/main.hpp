@@ -49,7 +49,7 @@ class Main : public utils::concurrent::Thread {
 
   // master data structures
   data::Sensors sensors_;
-  data::Batteries batteries_;
+  data::FullBatteryData batteries_;
   data::CounterData stripe_counter_;
 
   std::unique_ptr<ImuManager> imu_manager_;

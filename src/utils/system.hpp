@@ -37,7 +37,6 @@ class System {
     bool use_fake_temperature_fail;
     bool use_fake_brakes;
     bool use_fake_controller;
-    bool use_fake_high_power;
     std::uint8_t axis;
     std::uint64_t run_id;
   };

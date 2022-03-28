@@ -18,9 +18,9 @@ TEST_F(AmbientPressureTest, parsesConfig)
   const auto ambient_pressure_pins
     = sensors::Main::ambientPressurePinsFromFile(log_, sys.config_.pressure_config_path);
   ASSERT_TRUE(ambient_pressure_pins) << "Failed to initialise ambient pressure pins.";
-  ASSERT_EQ(ambient_pressure_pins->pressure_pin, 160)
+  ASSERT_EQ(ambient_pressure_pins->pressure_pin, 10)
     << "Pressure pin value doesn't match config file.";
-  ASSERT_EQ(ambient_pressure_pins->temperature_pin, 158)
+  ASSERT_EQ(ambient_pressure_pins->temperature_pin, 11)
     << "Temperature pin value doesn't match config file.";
 }
 }  // namespace hyped::testing

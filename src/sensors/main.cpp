@@ -292,7 +292,7 @@ std::optional<Main::AmbientPressurePins> Main::ambientPressurePinsFromFile(utils
       path.c_str());
     return std::nullopt;
   }
-  ambient_pressure_pins.pressure_pin = ambient_pressure_pins_object["temperature_pin"].GetUint();
+  ambient_pressure_pins.temperature_pin = ambient_pressure_pins_object["temperature_pin"].GetUint();
   return ambient_pressure_pins;
 }
 

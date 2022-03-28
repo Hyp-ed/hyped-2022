@@ -33,8 +33,11 @@
       47,
       86
     ],
-    "temperature_pin": 158,
-    "pressure_pin": 160
+    "temperature_pin": 13,
+    "ambient_pressure_pins": {
+      "pressure_pin": 10,
+      "temperature_pin": 11
+    }
   },
   "telemetry": {
     "server_ip": "192.168.5.3",

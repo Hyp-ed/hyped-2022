@@ -150,7 +150,7 @@ State *Accelerating::checkTransition(Logger &log)
   updateModuleData();
 
   const uint64_t time_now     = utils::Timer::getTimeMicros();
-  const uint64_t time_elapsed = time_now - instance_.acceleration_start_;
+  const int64_t  time_elapsed = time_now - instance_.acceleration_start_;
 
   bool acceleration_time_exceeded = false;
 

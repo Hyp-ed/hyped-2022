@@ -132,10 +132,7 @@ State *Ready::checkTransition(Logger &log)
   if (emergency) { return FailureStopped::getInstance(); }
 
   bool recieved_launch_command = checkLaunchCommand(telemetry_data_);
-  if (recieved_launch_command) {
-    stm_data_.acceleration_start = std::chrono::steady_clock::now();
-    return Accelerating::getInstance();
-  }
+  if (recieved_launch_command) { return Accelerating::getInstance(); }
 
   return nullptr;
 }
@@ -152,9 +149,12 @@ State *Accelerating::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  // reading from the CDS directly to get state-machine data
-  data::Data &data_           = data::Data::getInstance();
-  data::StateMachine stm_data = data_.getStateMachineData();
+  const uint64_t time_now     = utils::Timer::getTimeMicros();
+  const uint64_t time_elapsed = time_now - instance_.acceleration_start_;
+
+  bool acceleration_time_exceeded = false;
+
+  if (time_elapsed > stm_data_.kAccelerationTime) { acceleration_time_exceeded = true; }
 
   bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                   sensors_data_, motors_data_);
@@ -163,7 +163,6 @@ State *Accelerating::checkTransition(Logger &log)
   bool recieved_braking_command = checkBrakingCommand(telemetry_data_);
   if (recieved_braking_command) { return PreBraking::getInstance(); }
 
-  bool acceleration_time_exceeded = checkAccelerationTimeExceeded(stm_data_);
   if (acceleration_time_exceeded) { return Cruising::getInstance(); }
 
   return nullptr;

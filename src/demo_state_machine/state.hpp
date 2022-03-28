@@ -61,6 +61,35 @@ class State {
     static data::State enum_value_;                                                                \
   };
 
+// Accelerating handled separately for also storing a timestamp
+class Accelerating : public State {
+ public:
+  Accelerating() {}
+  static Accelerating *getInstance() { return &Accelerating::instance_; }
+
+  State *checkTransition(utils::Logger &log);
+
+  void enter(utils::Logger &log)
+  {
+    acceleration_start_ = utils::Timer::getTimeMicros();
+    log.info("entering %s state", Accelerating::string_representation_);
+    data::StateMachine sm_data = data_.getStateMachineData();
+    sm_data.current_state      = Accelerating::enum_value_;
+    data_.setStateMachineData(sm_data);
+  }
+  void exit(utils::Logger &log)
+  {
+    log.info("exiting %s state", Accelerating::string_representation_);
+  }
+
+ private:
+  /* # storing timestamp*/
+  uint64_t acceleration_start_;
+  static Accelerating instance_;
+  static char string_representation_[];
+  static data::State enum_value_;
+};
+
 /*
  * Generating structs for all the states
  */
@@ -70,7 +99,6 @@ MAKE_STATE(PreCalibrating)     // Sub-state between Idle and Calibrating
 MAKE_STATE(Calibrating)        // Calibrating starts after user input is given
 MAKE_STATE(PreReady)           // After calibration has finished
 MAKE_STATE(Ready)              // Entered after high power is on
-MAKE_STATE(Accelerating)       // First phase of the run
 MAKE_STATE(Cruising)           // Intermediate phase to not exceed maximum velocity
 MAKE_STATE(PreBraking)         // Sub-state between Accelerating/Cruising and Nominal Braking
 MAKE_STATE(NominalBraking)     // Second phase of the run

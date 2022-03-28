@@ -11,6 +11,7 @@ uint64_t Timer::getTimeMicros()
 {
   timeval tv;
   if (gettimeofday(&tv, (struct timezone *)0) < 0) { return 0; }
+  /* time returned in microseconds */
   return (static_cast<uint64_t>(tv.tv_sec) * 1000000) + tv.tv_usec - time_start_;
 }
 

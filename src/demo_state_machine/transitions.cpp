@@ -146,19 +146,4 @@ bool checkPodStopped(utils::Logger &log, const data::Navigation &nav_data)
   return true;
 }
 
-//--------------------------------------------------------------------------------------
-// StateMachine Data Events
-//--------------------------------------------------------------------------------------
-
-bool checkAccelerationTimeExceeded(const data::StateMachine &stm_data)
-{
-  auto current_time                         = std::chrono::steady_clock::now();
-  auto start_time                           = stm_data.acceleration_start;
-  std::chrono::duration<double> time_passed = current_time - start_time;
-
-  if (time_passed.count() >= stm_data.kAccelerationTime) return true;
-
-  return false;
-}
-
 }  // namespace hyped::demo_state_machine

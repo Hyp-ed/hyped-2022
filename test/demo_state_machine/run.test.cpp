@@ -518,24 +518,17 @@ class DemoRunTest : public Test {
     // Prevent Accelerating -> NominalBraking
     telemetry_data_.emergency_stop_command = false;
 
-    // Preventing Accelerating -> Cruising
-    stm_data_.acceleration_start = std::chrono::steady_clock::now();
-    data_.setStateMachineData(stm_data_);
-
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_launch_command = demo_state_machine::checkLaunchCommand(telemetry_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
-    const bool has_acceleration_time_exceeeded
-      = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_launch_command);
     ASSERT_EQ(false, has_received_braking_command);
-    ASSERT_EQ(false, has_acceleration_time_exceeeded);
     ASSERT_EQ(false, has_high_power_off);
 
     // Let STM do its thing
@@ -616,24 +609,15 @@ class DemoRunTest : public Test {
     // Prevent PreBraking -> NominalBraking
     sensors_data_.high_power_off = false;
 
-    // Prevent Accelerating -> Cruising by setting start time to now
-    stm_data_.acceleration_start = std::chrono::steady_clock::now();
-
-    // Prevent PreBraking -> Finished
-    // nav_data_.velocity = 100;
-
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
-    const bool has_acceleration_time_exceeded
-      = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
-    ASSERT_EQ(false, has_acceleration_time_exceeded);
     ASSERT_EQ(false, has_stopped);
     ASSERT_EQ(true, has_received_braking_command);
     ASSERT_EQ(false, has_high_power_off);
@@ -662,9 +646,6 @@ class DemoRunTest : public Test {
     // Randomise data_
     randomiseInternally();
 
-    // Timestamping entering accelerating
-    stm_data_.acceleration_start = std::chrono::steady_clock::now();
-
     // Prevent Accelerating -> FailureBraking
     brakes_data_.module_status             = data::ModuleStatus::kReady;
     nav_data_.module_status                = data::ModuleStatus::kReady;
@@ -685,13 +666,10 @@ class DemoRunTest : public Test {
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
-    const bool has_acceleration_time_exceeded
-      = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_received_braking_command);
-    ASSERT_EQ(true, has_acceleration_time_exceeded);
     ASSERT_EQ(false, has_high_power_off);
 
     // Let STM do its thing

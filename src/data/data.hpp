@@ -163,8 +163,7 @@ std::optional<State> stateFromString(const std::string &state_name);
 struct StateMachine {
   bool critical_failure;
   State current_state;
-  static constexpr double kAccelerationTime = 0.1;  // seconds
-  std::chrono::steady_clock::time_point acceleration_start;
+  static constexpr uint64_t kAccelerationTime = 0.12e+06;  // microseconds
 };
 
 // -------------------------------------------------------------------------------------------------

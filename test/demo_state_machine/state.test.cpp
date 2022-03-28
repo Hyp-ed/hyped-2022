@@ -500,17 +500,9 @@ TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
-      const bool has_acceleration_time_exceeded
-        = demo_state_machine::checkAccelerationTimeExceeded(stm_data_);
       const auto new_state = state->checkTransition(log_);
-
-      if (has_acceleration_time_exceeded) {
-        ASSERT_EQ(new_state, demo_state_machine::Cruising::getInstance())
-          << "failed to enter Cruising from Accelerating";
-      } else {
-        ASSERT_NE(new_state, demo_state_machine::Cruising::getInstance())
-          << "falsely entered Cruising from Accelerating";
-      }
+      ASSERT_EQ(new_state, demo_state_machine::Cruising::getInstance())
+        << "failed to enter Cruising from Accelerating";
     }
   }
 }

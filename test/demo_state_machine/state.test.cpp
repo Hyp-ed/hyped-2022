@@ -86,6 +86,7 @@ class DemoIdleTest : public StateTest {
 TEST_F(DemoIdleTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -99,6 +100,7 @@ TEST_F(DemoIdleTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Idle";
     }
+    state->exit(log_);
   }
 }
 
@@ -109,6 +111,7 @@ TEST_F(DemoIdleTest, demoHandlesEmergency)
 TEST_F(DemoIdleTest, demoHandlesAllInitialised)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -128,6 +131,7 @@ TEST_F(DemoIdleTest, demoHandlesAllInitialised)
           << "falsely entered PreCalibrating from Idle";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -147,6 +151,7 @@ class DemoPreCalibratingTest : public StateTest {
 TEST_F(DemoPreCalibratingTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -160,6 +165,7 @@ TEST_F(DemoPreCalibratingTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from PreCalibrating";
     }
+    state->exit(log_);
   }
 }
 
@@ -172,6 +178,7 @@ TEST_F(DemoPreCalibratingTest, demoHandlesEmergency)
 TEST_F(DemoPreCalibratingTest, demoHandlesCalibrateCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -189,6 +196,7 @@ TEST_F(DemoPreCalibratingTest, demoHandlesCalibrateCommand)
           << "falsely entered Calibrating from PreCalibrating";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -212,6 +220,7 @@ class DemoCalibratingTest : public StateTest {
 TEST_F(DemoCalibratingTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -225,6 +234,7 @@ TEST_F(DemoCalibratingTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Calibrating";
     }
+    state->exit(log_);
   }
 }
 
@@ -236,6 +246,7 @@ TEST_F(DemoCalibratingTest, demoHandlesEmergency)
 TEST_F(DemoCalibratingTest, demoHandlesAllReady)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     bool has_emergency = demo_state_machine::checkEmergency(
@@ -255,6 +266,7 @@ TEST_F(DemoCalibratingTest, demoHandlesAllReady)
           << "falsely entered PreReady from Calibrating";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -279,6 +291,7 @@ class DemoPreReadyTest : public StateTest {
 TEST_F(DemoPreReadyTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -292,6 +305,7 @@ TEST_F(DemoPreReadyTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from PreReady";
     }
+    state->exit(log_);
   }
 }
 
@@ -304,6 +318,7 @@ TEST_F(DemoPreReadyTest, demoHandlesEmergency)
 TEST_F(DemoPreReadyTest, demoHandlesHighPowerOn)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -321,6 +336,7 @@ TEST_F(DemoPreReadyTest, demoHandlesHighPowerOn)
           << "falsely entered Ready from PreReady";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -345,6 +361,7 @@ class DemoReadyTest : public StateTest {
 TEST_F(DemoReadyTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -358,6 +375,7 @@ TEST_F(DemoReadyTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from Ready";
     }
+    state->exit(log_);
   }
 }
 
@@ -371,6 +389,7 @@ TEST_F(DemoReadyTest, demoHandlesEmergency)
 TEST_F(DemoReadyTest, demoHandlesLaunchCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -388,6 +407,7 @@ TEST_F(DemoReadyTest, demoHandlesLaunchCommand)
           << "falsely entered Accelerating from Ready";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -412,9 +432,10 @@ class DemoAcceleratingTest : public StateTest {
 TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
-    // Preventing Accelerating -> PreBraking
+    // PreventingAccelerating -> PreBraking
     telemetry_data_.emergency_stop_command = false;
 
     // reading and writing to the CDS directly to update telemetry data
@@ -432,6 +453,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailurePreBraking::getInstance())
         << "falsely entered FailureBraking from Accelerating";
     }
+    state->exit(log_);
   }
 }
 
@@ -445,6 +467,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
 TEST_F(DemoAcceleratingTest, handlesBrakingCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     // Preventing Accelerating -> PreBraking
@@ -470,6 +493,7 @@ TEST_F(DemoAcceleratingTest, handlesBrakingCommand)
           << "falsely entered PreBraking from Accelerating";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -484,6 +508,7 @@ TEST_F(DemoAcceleratingTest, handlesBrakingCommand)
 TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     // Prevent Accelerating -> PreBraking
@@ -504,6 +529,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
       ASSERT_EQ(new_state, demo_state_machine::Cruising::getInstance())
         << "failed to enter Cruising from Accelerating";
     }
+    state->exit(log_);
   }
 }
 
@@ -528,6 +554,7 @@ class DemoCruisingTest : public StateTest {
 TEST_F(DemoCruisingTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     // Preventing Cruising -> PreBraking
@@ -548,6 +575,7 @@ TEST_F(DemoCruisingTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailurePreBraking::getInstance())
         << "falsely entered FailurePreBraking from Cruising";
     }
+    state->exit(log_);
   }
 }
 
@@ -561,6 +589,7 @@ TEST_F(DemoCruisingTest, demoHandlesEmergency)
 TEST_F(DemoCruisingTest, demoHandlesBrakingCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     // Enforcing Cruising -> PreBraking
@@ -586,6 +615,7 @@ TEST_F(DemoCruisingTest, demoHandlesBrakingCommand)
           << "falsely entered PreBraking from Cruising";
       }
     }
+    state->exit(log_);
   }
 }
 //---------------------------------------------------------------------------
@@ -609,6 +639,7 @@ class DemoPreBrakingTest : public StateTest {
 TEST_F(DemoPreBrakingTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -622,6 +653,7 @@ TEST_F(DemoPreBrakingTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailurePreBraking::getInstance())
         << "falsely entered FailurePreBraking from PreBraking";
     }
+    state->exit(log_);
   }
 }
 
@@ -634,6 +666,7 @@ TEST_F(DemoPreBrakingTest, demoHandlesEmergency)
 TEST_F(DemoPreBrakingTest, demoHandlesHighPowerOff)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -651,6 +684,7 @@ TEST_F(DemoPreBrakingTest, demoHandlesHighPowerOff)
           << "falsely entered NominalBraking from PreBraking";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -675,6 +709,7 @@ class DemoNominalBrakingTest : public StateTest {
 TEST_F(DemoNominalBrakingTest, demoHandlesEmergency)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -688,6 +723,7 @@ TEST_F(DemoNominalBrakingTest, demoHandlesEmergency)
       ASSERT_NE(new_state, demo_state_machine::FailureBraking::getInstance())
         << "falsely entered FailureBraking from NominalBraking";
     }
+    state->exit(log_);
   }
 }
 
@@ -700,6 +736,7 @@ TEST_F(DemoNominalBrakingTest, demoHandlesEmergency)
 TEST_F(DemoNominalBrakingTest, demoHandlesStopped)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
@@ -717,6 +754,7 @@ TEST_F(DemoNominalBrakingTest, demoHandlesStopped)
           << "falsely entered Finished from NominalBraking";
       }
     }
+    state->exit(log_);
   }
 }
 
@@ -741,6 +779,7 @@ class DemoFinishedTest : public StateTest {
 TEST_F(DemoFinishedTest, demoHandlesShutdownCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool received_shutdown_command
@@ -754,6 +793,7 @@ TEST_F(DemoFinishedTest, demoHandlesShutdownCommand)
       ASSERT_NE(new_state, demo_state_machine::Off::getInstance())
         << "falsely entered Off from Finished";
     }
+    state->exit(log_);
   }
 }
 
@@ -779,6 +819,7 @@ class DemoFailurePreBrakingTest : public StateTest {
 TEST_F(DemoFailurePreBrakingTest, demoHandlesHighPowerOff)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
@@ -791,6 +832,7 @@ TEST_F(DemoFailurePreBrakingTest, demoHandlesHighPowerOff)
       ASSERT_NE(new_state, demo_state_machine::FailureBraking::getInstance())
         << "falsely entered FailureBraking from FailurePreBraking";
     }
+    state->exit(log_);
   }
 }
 
@@ -815,6 +857,7 @@ class DemoFailureBrakingTest : public StateTest {
 TEST_F(DemoFailureBrakingTest, demoHandlesStopped)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool stopped   = demo_state_machine::checkPodStopped(log_, nav_data_);
@@ -827,6 +870,7 @@ TEST_F(DemoFailureBrakingTest, demoHandlesStopped)
       ASSERT_NE(new_state, demo_state_machine::FailureStopped::getInstance())
         << "falsely entered FailureStopped from FailureBraking";
     }
+    state->exit(log_);
   }
 }
 
@@ -851,6 +895,7 @@ class DemoFailureStoppedTest : public StateTest {
 TEST_F(DemoFailureStoppedTest, demoHandlesShutdownCommand)
 {
   for (int i = 0; i < kTestSize; i++) {
+    state->enter(log_);
     randomiseData();
 
     const bool received_shutdown_command
@@ -864,6 +909,7 @@ TEST_F(DemoFailureStoppedTest, demoHandlesShutdownCommand)
       ASSERT_NE(new_state, demo_state_machine::Off::getInstance())
         << "falsely entered Off from FailureStopped";
     }
+    state->exit(log_);
   }
 }
 

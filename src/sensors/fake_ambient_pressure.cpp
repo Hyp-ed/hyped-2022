@@ -52,7 +52,7 @@ void FakeAmbientPressure::checkFailure()
   }
 }
 
-uint16_t FakeAmbientPressure::getData()
+uint16_t FakeAmbientPressure::getData() const
 {
   return pressure_data_.ambient_pressure;
 }

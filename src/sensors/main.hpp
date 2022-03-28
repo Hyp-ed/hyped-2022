@@ -18,8 +18,9 @@ namespace hyped::sensors {
  */
 class Main : public utils::concurrent::Thread {
  public:
-  using KeyencePins            = std::array<uint32_t, data::Sensors::kNumKeyence>;
-  using ImuPins                = std::array<uint32_t, data::Sensors::kNumImus>;
+  using KeyencePins = std::array<uint32_t, data::Sensors::kNumKeyence>;
+  using ImuPins     = std::array<uint32_t, data::Sensors::kNumImus>;
+  // TODO: probably change the uint32_t here
   using AmbientTemperaturePins = std::array<uint32_t, data::Sensors::kNumAmbientTemp>;
   using BrakeTemperaturePins   = std::array<uint32_t, data::Sensors::kNumBrakeTemp>;
 

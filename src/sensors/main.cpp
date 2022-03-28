@@ -79,7 +79,6 @@ Main::Main()
   }
 
   // Temperature
-  // TODO: can I just configure them both in this bit here or split them up?...
   if (sys_.config_.use_fake_temperature_fail) {
     // temperature_ = std::make_unique<FakeTemperature>(true);
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
@@ -90,15 +89,15 @@ Main::Main()
       ambientTemperature_[i] = std::make_unique<FakeTemperature>(false);
     }
   } else {
-    auto temperature_pins
+    auto ambient_temperature_pins
       = ambientTemperaturePinsFromFile(log_, sys_.config_.temperature_config_path);
-    if (!temperature_pins) {
+    if (!ambient_temperature_pins) {
       log_.error("failed to initialise temperature sensor");
       sys_.stop();
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      ambientTemperature_[i] = std::make_unique<Temperature>(*temperature_pins);
+      ambientTemperature_[i] = std::make_unique<Temperature>(ambient_temperature_pins->at(i));
     }
   }
 
@@ -322,8 +321,8 @@ void Main::run()
   auto previous_keyence = current_keyence;
 
   // Intialise temperature and pressure
-  auto brake_temperature = data_.getSensorsData().brake_temperature_array;
-  pressure_data_         = data_.getSensorsData().pressure;
+  auto ambient_temperature = data_.getSensorsData().ambient_temperature_array;
+  pressure_data_           = data_.getSensorsData().pressure;
 
   std::size_t iteration_count = 0;
   while (sys_.isRunning()) {

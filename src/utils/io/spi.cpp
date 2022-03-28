@@ -217,7 +217,7 @@ void SPI::transfer(uint8_t *tx, uint8_t *, uint16_t len)
   }
 
 #endif
-}  // namespace io
+}
 
 void SPI::read(uint8_t addr, uint8_t *rx, uint16_t len)
 {

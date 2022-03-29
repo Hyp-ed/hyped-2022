@@ -45,8 +45,8 @@ void Regression::GetCoeffs(const std::vector<double> x_data, const std::vector<d
   double beta1 = s_xy / s_xx;
   double beta0 = y_mean - (beta1 - x_mean);
 
-  std::vector<double> coefficients{beta1, beta0};
-  Coefficients.beta0 = coefficients.at(1);
-  Coefficients.beta1 = coefficients.at(0);
+  std::vector<double> coeffs{beta1, beta0};
+  coefficients.beta0 = coeffs.at(1);
+  coefficients.beta1 = coeffs.at(0);
 }
 }  // namespace hyped::utils::math

@@ -9,7 +9,7 @@
 
 namespace hyped::utils::io {
 
-class GPIO {
+class Gpio {
  public:
   static constexpr uint8_t kBankNum = 4;
   enum class Direction { kIn = 0, kOut = 1 };
@@ -20,7 +20,7 @@ class GPIO {
    * @param pin address on BBB
    * @param direction to write into file system of gpio pin
    */
-  GPIO(uint32_t pin, Direction direction);
+  Gpio(uint32_t pin, Direction direction);
   /**
    * @brief overload constructor with logger initialized for debugging purposes
    *
@@ -28,7 +28,7 @@ class GPIO {
    * @param direction to write into file system of gpio pin
    * @param log
    */
-  GPIO(uint32_t pin, Direction direction, Logger &log);
+  Gpio(uint32_t pin, Direction direction, Logger &log);
 
   void set();      // set high
   void clear();    // set low
@@ -47,7 +47,7 @@ class GPIO {
   static constexpr uint32_t kData     = 0x138;
   static constexpr uint32_t kClear    = 0x190;
   static constexpr uint32_t kSet      = 0x194;
-  GPIO()                              = delete;
+  Gpio()                              = delete;
 
   // GPIO system configuration
   /**
@@ -116,7 +116,7 @@ class GPIO {
   uint32_t pin_mask_;         // mask for register access to this pin
   int fd_;                    // file pointer to /sys/class/gpio/gpioXX/value
 
-  NO_COPY_ASSIGN(GPIO)
+  NO_COPY_ASSIGN(Gpio)
 };
 
 }  // namespace hyped::utils::io

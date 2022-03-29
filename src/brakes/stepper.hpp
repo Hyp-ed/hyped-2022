@@ -60,8 +60,8 @@ class Stepper : public IStepper {
   utils::Logger &log_;
   data::Data &data_;
   data::Brakes brakes_data_;
-  utils::io::GPIO command_pin_;
-  utils::io::GPIO button_;
+  utils::io::Gpio command_pin_;
+  utils::io::Gpio button_;
   uint8_t brake_id_;
   uint8_t is_clamped_;
 };

@@ -31,15 +31,15 @@ static uint8_t readHelper(int fd)
   return std::atoi(buf);
 }
 
-bool GPIO::initialised_ = false;
-void *GPIO::base_mapping_[GPIO::kBankNum];
-std::vector<uint32_t> GPIO::exported_pins;
+bool Gpio::initialised_ = false;
+void *Gpio::base_mapping_[Gpio::kBankNum];
+std::vector<uint32_t> Gpio::exported_pins;
 
-GPIO::GPIO(uint32_t pin, GPIO::Direction direction) : GPIO(pin, direction, System::getLogger())
+Gpio::Gpio(uint32_t pin, Gpio::Direction direction) : Gpio(pin, direction, System::getLogger())
 { /* EMPTY, delegate to the other constructor */
 }
 
-GPIO::GPIO(uint32_t pin, GPIO::Direction direction, Logger &log)
+Gpio::Gpio(uint32_t pin, Gpio::Direction direction, Logger &log)
     : pin_(pin),
       direction_(direction),
       log_(log),
@@ -61,14 +61,14 @@ GPIO::GPIO(uint32_t pin, GPIO::Direction direction, Logger &log)
 
   exportGPIO();
   attachGPIO();
-  if (direction == GPIO::Direction::kOut) {  // sets pin value to 1 if direction is out
+  if (direction == Gpio::Direction::kOut) {  // sets pin value to 1 if direction is out
     set();
   }
 }
 
 static utils::Logger kLog("GPIO", utils::Logger::Level::kError);
 
-void GPIO::initialise()
+void Gpio::initialise()
 {
   int fd;  // file descriptor
   off_t offset;
@@ -80,15 +80,15 @@ void GPIO::initialise()
     return;
   }
 
-  for (size_t i = 0; i < GPIO::kBankNum; ++i) {
-    offset = GPIO::kBases[i];
+  for (size_t i = 0; i < Gpio::kBankNum; ++i) {
+    offset = Gpio::kBases[i];
     /**
      * @brief mmap() creates a new mapping in the virtual address space of the calling process
         The starting address is zero
         The length argument is kMmapSize
      * void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
      */
-    base = mmap(0, GPIO::kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
+    base = mmap(0, Gpio::kMmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
     if (base == MAP_FAILED) {
       kLog.error("could not map bank %d", offset);
       return;
@@ -100,7 +100,7 @@ void GPIO::initialise()
   initialised_ = true;
 }
 
-void GPIO::uninitialise()
+void Gpio::uninitialise()
 {
   kLog.error("uninitialising");
 
@@ -120,7 +120,7 @@ void GPIO::uninitialise()
   close(fd);
 }
 
-void GPIO::exportGPIO()
+void Gpio::exportGPIO()
 {
   if (!initialised_) {
     log_.error("servise has not been initialised");
@@ -154,10 +154,10 @@ void GPIO::exportGPIO()
     return;
   }
   switch (direction_) {
-    case GPIO::Direction::kIn:
+    case Gpio::Direction::kIn:
       len = write(fd, "in", 3);
       break;
-    case GPIO::Direction::kOut:
+    case Gpio::Direction::kOut:
       len = write(fd, "out", 4);
       break;
   }
@@ -171,7 +171,7 @@ void GPIO::exportGPIO()
   return;
 }
 
-void GPIO::attachGPIO()
+void Gpio::attachGPIO()
 {
   uint8_t bank;  // offset: GPIO_0,1,2,3
   uint8_t pin_id;
@@ -189,18 +189,18 @@ void GPIO::attachGPIO()
 #else
   uint32_t base = reinterpret_cast<uint32_t>(base_mapping_[bank]);
 #endif
-  if (direction_ == GPIO::Direction::kIn) {
-    data_ = reinterpret_cast<volatile uint32_t *>(base + GPIO::kData);
+  if (direction_ == Gpio::Direction::kIn) {
+    data_ = reinterpret_cast<volatile uint32_t *>(base + Gpio::kData);
     setupWait();
   } else {
     setupWait();
-    set_   = reinterpret_cast<volatile uint32_t *>(base + GPIO::kSet);
-    clear_ = reinterpret_cast<volatile uint32_t *>(base + GPIO::kClear);
+    set_   = reinterpret_cast<volatile uint32_t *>(base + Gpio::kSet);
+    clear_ = reinterpret_cast<volatile uint32_t *>(base + Gpio::kClear);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GPIO::setupWait()
+void Gpio::setupWait()
 {
   int fd;
   char buf[100];
@@ -227,7 +227,7 @@ void GPIO::setupWait()
   fd_ = fd;
 }
 
-int8_t GPIO::wait()
+int8_t Gpio::wait()
 {
   pollfd fdset = {};
   fdset.fd     = fd_;
@@ -249,7 +249,7 @@ int8_t GPIO::wait()
 
 //-----------------------------------------------------
 
-void GPIO::set()
+void Gpio::set()
 {
   if (!initialised_) {
     log_.error("service has not been initialised");
@@ -269,7 +269,7 @@ void GPIO::set()
 #endif
 }
 
-void GPIO::clear()
+void Gpio::clear()
 {
   if (!initialised_) {
     log_.error("service has not been initialised");
@@ -288,7 +288,7 @@ void GPIO::clear()
 #endif
 }
 
-uint8_t GPIO::read()
+uint8_t Gpio::read()
 {
   if (!initialised_) {
     log_.error("service has not been initialised");

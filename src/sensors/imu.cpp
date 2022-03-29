@@ -57,7 +57,7 @@ static constexpr uint8_t kUserCtrl      = 0x03;  // userbank 0
 
 namespace hyped::sensors {
 
-static constexpr utils::io::GPIO::Direction kDirection = utils::io::GPIO::Direction::kOut;
+static constexpr utils::io::Gpio::Direction kDirection = utils::io::Gpio::Direction::kOut;
 
 Imu::Imu(const uint32_t pin, const bool is_fifo)
     : spi_(utils::io::SPI::getInstance()),

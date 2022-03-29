@@ -111,7 +111,7 @@ class Imu : public IImu {
  private:
   utils::io::SPI &spi_;
   utils::Logger log_;
-  utils::io::GPIO gpio_;
+  utils::io::Gpio gpio_;
   uint32_t pin_;
   bool is_fifo_;
   double acc_divider_;

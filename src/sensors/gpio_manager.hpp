@@ -38,13 +38,13 @@ class GpioManager : public utils::concurrent::Thread {
   /**
    * @brief master switch to keep pod on, signal held high at startup
    */
-  std::unique_ptr<utils::io::GPIO> master_;
+  std::unique_ptr<utils::io::Gpio> master_;
 
   /**
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<std::unique_ptr<utils::io::GPIO>> high_power_ssr_;
+  std::vector<std::unique_ptr<utils::io::Gpio>> high_power_ssr_;
 
   /**
    * @brief stores the previous state when switch statement checks state machine

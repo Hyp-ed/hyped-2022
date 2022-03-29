@@ -6,13 +6,13 @@ Stepper::Stepper(uint8_t enable_pin, uint8_t button_pin, utils::Logger &log, uin
     : log_(log),
       data_(data::Data::getInstance()),
       brakes_data_(data_.getEmergencyBrakesData()),
-      command_pin_(enable_pin, utils::io::GPIO::Direction::kOut, log_),
-      button_(button_pin, utils::io::GPIO::Direction::kIn, log_),
+      command_pin_(enable_pin, utils::io::Gpio::Direction::kOut, log_),
+      button_(button_pin, utils::io::Gpio::Direction::kIn, log_),
       brake_id_(id),
       is_clamped_(true)
 {
-  utils::io::GPIO command_pin_(enable_pin, utils::io::GPIO::Direction::kOut, log_);
-  utils::io::GPIO button_(button_pin, utils::io::GPIO::Direction::kIn, log_);
+  utils::io::Gpio command_pin_(enable_pin, utils::io::Gpio::Direction::kOut, log_);
+  utils::io::Gpio button_(button_pin, utils::io::Gpio::Direction::kIn, log_);
 }
 
 void Stepper::checkHome()

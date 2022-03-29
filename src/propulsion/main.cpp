@@ -1,5 +1,7 @@
 #include "main.hpp"
 
+#include "utils/math/regression.hpp"
+
 namespace hyped::propulsion {
 
 Main::Main()
@@ -53,6 +55,7 @@ void Main::run()
         break;
       case data::State::kCalibrating:
         if (state_processor_.isInitialised()) {
+          hyped::utils::math::Regression::Regression();
           if (motor_data.module_status != data::ModuleStatus::kReady) {
             motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);

@@ -18,9 +18,12 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
 
 int32_t RpmRegulator::calculateOptimalRpm(const data::nav_t actual_velocity)
 {
+  struct hyped::utils::math::Regression regression;
+  const double beta1 = regression.Coefficients.beta1;
+  const double beta0 = regression.Coefficients.beta0;
+
   // polynomial values from simulation
-  return std::round(0.32047 * actual_velocity * actual_velocity + 297.72578 * actual_velocity
-                    + 1024.30824);
+  return std::round(beta1 * actual_velocity + beta0);
 }
 
 int32_t RpmRegulator::step(const int32_t optimal_rpm, const int32_t actual_rpm)

@@ -19,7 +19,7 @@ Main::Main()
     magnetic_brake_ = std::make_unique<FakeBrake>(1);
     friction_brake_ = std::make_unique<FakeBrake>(2);
   } else {
-    auto pins = pinsFromFile(log_, sys_.config_.brakes_config_path);
+    const auto pins = pinsFromFile(log_, sys_.config_.brakes_config_path);
     if (!pins) {
       log_.error("failed to initialise brakes");
       sys_.stop();

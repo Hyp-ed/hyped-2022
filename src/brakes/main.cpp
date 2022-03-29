@@ -42,10 +42,18 @@ void Main::checkEngaged()
   if (!magnetic_brake_->isEngaged()) {
     log_.error("expected magnetic brake to be engaged");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
+  } else {
+    brakes_data_.brakes_retracted[0] = true;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
   if (!friction_brake_->isEngaged()) {
     log_.error("expected friction brake to be engaged");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
+  } else {
+    brakes_data_.brakes_retracted[1] = true;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
 }
 
@@ -54,10 +62,18 @@ void Main::checkRetracted()
   if (magnetic_brake_->isEngaged()) {
     log_.error("expected magnetic brake to be retracted");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
+  } else {
+    brakes_data_.brakes_retracted[0] = true;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
   if (friction_brake_->isEngaged()) {
     log_.error("expected friction brake to be retracted");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setEmergencyBrakesData(brakes_data_);
+  } else {
+    brakes_data_.brakes_retracted[1] = true;
+    data_.setEmergencyBrakesData(brakes_data_);
   }
 }
 

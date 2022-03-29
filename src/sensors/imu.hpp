@@ -109,7 +109,7 @@ class Imu : public IImu {
   void readBytes(const uint8_t read_reg, uint8_t *read_buff, const uint8_t length);
 
  private:
-  utils::io::SPI &spi_;
+  utils::io::Spi &spi_;
   utils::Logger log_;
   utils::io::Gpio gpio_;
   uint32_t pin_;

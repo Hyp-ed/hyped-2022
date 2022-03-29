@@ -60,7 +60,7 @@ namespace hyped::sensors {
 static constexpr utils::io::Gpio::Direction kDirection = utils::io::Gpio::Direction::kOut;
 
 Imu::Imu(const uint32_t pin, const bool is_fifo)
-    : spi_(utils::io::SPI::getInstance()),
+    : spi_(utils::io::Spi::getInstance()),
       log_("IMU", utils::System::getSystem().config_.log_level_sensors),
       gpio_(pin, kDirection, log_),
       pin_(pin),

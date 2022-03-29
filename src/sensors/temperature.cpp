@@ -9,7 +9,7 @@ namespace hyped {
 using data::Data;
 using data::TemperatureData;
 using hyped::utils::Logger;
-using utils::io::ADC;
+using utils::io::Adc;
 
 namespace sensors {
 
@@ -19,7 +19,7 @@ Temperature::Temperature(utils::Logger &log, int pin) : pin_(pin), log_(log)
 
 void Temperature::run()
 {
-  ADC thepin(pin_);
+  Adc thepin(pin_);
   temp_.temp         = 0;
   uint16_t raw_value = thepin.read();
   log_.debug("Raw Data: %d", raw_value);

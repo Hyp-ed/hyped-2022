@@ -21,15 +21,15 @@ uint16_t readHelper(int fd)
 
 }  // namespace adc
 
-ADC::ADC(uint32_t pin) : ADC(pin, System::getLogger())
+Adc::Adc(uint32_t pin) : Adc(pin, System::getLogger())
 { /* EMPTY, delegate to the other constructor */
 }
 
-ADC::ADC(uint32_t pin, Logger &log) : pin_(pin), log_(log), fd_(0)
+Adc::Adc(uint32_t pin, Logger &log) : pin_(pin), log_(log), fd_(0)
 {
 }
 
-uint16_t ADC::read()
+uint16_t Adc::read()
 {
   char buf[100];
   snprintf(buf, sizeof(buf), "/sys/bus/iio/devices/iio:device0/in_voltage%i_raw", pin_);

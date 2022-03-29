@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+#include <brakes/main.hpp>
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/system.hpp>
@@ -35,7 +36,10 @@ class Repl {
 
   void printAvailableCommands();
   void readAndHandleCommand();
+  void addCommand(const Command &command);
   void addShutdownCommand();
+  void addBrakeCommands(const brakes::BrakePins &pins, const uint32_t id);
+  void addFakeBrakeCommands(const uint32_t id);
 };
 
 }  // namespace hyped::debugging

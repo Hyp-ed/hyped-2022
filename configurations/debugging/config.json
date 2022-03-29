@@ -7,6 +7,14 @@
     "use_imu_manager": true
   },
   "debugger": {},
+  "brakes": {
+    "pins": [
+      {
+        "command_pin": 1,
+        "button_pin": 2
+      }
+    ]
+  },
   "system": {
     "log_level": 2,
     "use_fake_trajectory": true,
@@ -14,7 +22,7 @@
     "use_fake_batteries_fail": false,
     "use_fake_temperature": false,
     "use_fake_temperature_fail": false,
-    "use_fake_brakes": false,
+    "use_fake_brakes": true,
     "use_fake_controller": false,
     "use_fake_high_power": false,
     "axis": 0

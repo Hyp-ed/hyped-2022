@@ -11,10 +11,10 @@
 
 namespace hyped::testing {
 
-class BrakesDemoTest : public Test {
+class BrakesConfigTest : public Test {
 };
 
-TEST_F(BrakesDemoTest, handlesSysNotRunning)
+TEST_F(BrakesConfigTest, prasesConfig)
 {
   utils::System &sys = utils::System::getSystem();
   sys.stop();

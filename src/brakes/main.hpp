@@ -1,8 +1,8 @@
 #pragma once
 
-#include "fake_stepper.hpp"
+#include "fake_brake.hpp"
 
-#include <brakes/stepper.hpp>
+#include <brakes/brake.hpp>
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/logger.hpp>
@@ -10,9 +10,9 @@
 
 namespace hyped::brakes {
 
-struct Pins {
-  std::array<std::uint8_t, data::Brakes::kNumBrakes> command_pins;
-  std::array<std::uint8_t, data::Brakes::kNumBrakes> button_pins;
+struct BrakePins {
+  uint8_t command_pin;
+  uint8_t button_pin;
 };
 
 /*
@@ -26,25 +26,24 @@ class Main : public utils::concurrent::Thread {
   Main();
 
   /*
-   * @brief Cleans up previous allocations
-   */
-  ~Main();
-
-  /*
    * @brief Checks for State kCalibrating to start retracting process
    */
   void run() override;
 
- private:
-  std::optional<Pins> pinsFromFile(const std::string &path);
+  void checkEngaged();
+  void checkRetracted();
+  void engage();
+  void retract();
 
+  static std::optional<std::vector<BrakePins>> pinsFromFile(utils::Logger &log,
+                                                            const std::string &path);
+
+ private:
   utils::System &sys_;
   data::Data &data_;
-  data::StateMachine sm_data_;
-  data::Brakes brakes_;
-  data::Telemetry tlm_data_;
-  IStepper *m_brake_;  // Stepper for electromagnetic brakes
-  IStepper *f_brake_;  // Stepper for friction brakes
+  data::Brakes brakes_data_;
+  std::unique_ptr<IBrake> magnetic_brake_;  // Brake for electromagnetic brakes
+  std::unique_ptr<IBrake> friction_brake_;  // Brake for friction brakes
 };
 
 }  // namespace hyped::brakes

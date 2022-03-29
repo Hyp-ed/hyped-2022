@@ -30,7 +30,7 @@ class StateTest : public hyped::testing::Test {
   data::Data &data_ = data::Data::getInstance();
 
  protected:
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   data::Navigation nav_data_;
   data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;

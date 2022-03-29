@@ -173,7 +173,7 @@ class Randomiser {
   //---------------------------------------------------------------------------
 
   // Randomises the entries in a hyped::data::EmergencyBrakes struct.
-  static void randomiseBrakes(data::EmergencyBrakes &brakes_data)
+  static void randomiseBrakes(data::Brakes &brakes_data)
   {
     randomiseModuleStatus(brakes_data.module_status);
 

@@ -51,7 +51,7 @@ void Main::run()
         if (tlm_data_.nominal_braking_command) {
           if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
           if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }
-          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
+          Thread::sleep(data::Brakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
 
@@ -61,7 +61,7 @@ void Main::run()
           if (m_brake_->checkClamped()) { m_brake_->sendRetract(); }
           if (f_brake_->checkClamped()) { f_brake_->sendRetract(); }
 
-          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
+          Thread::sleep(data::Brakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
 
@@ -78,7 +78,7 @@ void Main::run()
           data_.setEmergencyBrakesData(brakes_);
         }
 
-        Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
+        Thread::sleep(data::Brakes::kBrakeCommandWaitTime);
         m_brake_->checkHome();
         f_brake_->checkHome();
         m_brake_->checkAccFailure();
@@ -96,7 +96,7 @@ void Main::run()
       case data::State::kInvalid:
         if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
         if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }
-        Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
+        Thread::sleep(data::Brakes::kBrakeCommandWaitTime);
         m_brake_->checkHome();
         f_brake_->checkHome();
 
@@ -107,7 +107,7 @@ void Main::run()
         if (tlm_data_.nominal_braking_command) {
           if (!m_brake_->checkClamped()) { m_brake_->sendClamp(); }
           if (!f_brake_->checkClamped()) { f_brake_->sendClamp(); }
-          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
+          Thread::sleep(data::Brakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
           m_brake_->checkBrakingFailure();
@@ -115,7 +115,7 @@ void Main::run()
         } else {
           if (m_brake_->checkClamped()) { m_brake_->sendRetract(); }
           if (f_brake_->checkClamped()) { f_brake_->sendRetract(); }
-          Thread::sleep(data::EmergencyBrakes::kBrakeCommandWaitTime);
+          Thread::sleep(data::Brakes::kBrakeCommandWaitTime);
           m_brake_->checkHome();
           f_brake_->checkHome();
           m_brake_->checkAccFailure();
@@ -162,12 +162,12 @@ std::optional<Pins> Main::pinsFromFile(const std::string &path)
     return std::nullopt;
   }
   auto command_pin_array = config_object["command_pins"].GetArray();
-  if (command_pin_array.Size() != data::EmergencyBrakes::kNumBrakes) {
+  if (command_pin_array.Size() != data::Brakes::kNumBrakes) {
     log_.error("Found %d command pins but %d were expected in configuration file at %s",
-               command_pin_array.Size(), data::EmergencyBrakes::kNumBrakes, path.c_str());
+               command_pin_array.Size(), data::Brakes::kNumBrakes, path.c_str());
     return std::nullopt;
   }
-  for (std::size_t i = 0; i < data::EmergencyBrakes::kNumBrakes; ++i) {
+  for (std::size_t i = 0; i < data::Brakes::kNumBrakes; ++i) {
     pins.command_pins.at(i) = static_cast<std::uint8_t>(command_pin_array[i].GetUint());
   }
   if (!config_object.HasMember("button_pins")) {
@@ -176,12 +176,12 @@ std::optional<Pins> Main::pinsFromFile(const std::string &path)
     return std::nullopt;
   }
   auto button_pin_array = config_object["button_pins"].GetArray();
-  if (button_pin_array.Size() != data::EmergencyBrakes::kNumBrakes) {
+  if (button_pin_array.Size() != data::Brakes::kNumBrakes) {
     log_.error("Found %d button pins but %d were expected in configuration file at %s",
-               button_pin_array.Size(), data::EmergencyBrakes::kNumBrakes, path.c_str());
+               button_pin_array.Size(), data::Brakes::kNumBrakes, path.c_str());
     return std::nullopt;
   }
-  for (std::size_t i = 0; i < data::EmergencyBrakes::kNumBrakes; ++i) {
+  for (std::size_t i = 0; i < data::Brakes::kNumBrakes; ++i) {
     pins.button_pins.at(i) = static_cast<std::uint8_t>(button_pin_array[i].GetUint());
   }
   return pins;

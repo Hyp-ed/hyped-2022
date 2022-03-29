@@ -50,7 +50,7 @@ class FakeStepper : public IStepper {
  private:
   utils::Logger &log_;
   data::Data &data_;
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   uint8_t brake_id_;
   uint8_t is_clamped_;
   bool fake_button_;

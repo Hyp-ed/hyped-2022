@@ -143,13 +143,13 @@ void Data::setBatteriesData(const FullBatteryData &batteries_data)
   batteries_ = batteries_data;
 }
 
-EmergencyBrakes Data::getEmergencyBrakesData()
+Brakes Data::getEmergencyBrakesData()
 {
   ScopedLock L(&lock_emergency_brakes_);
   return emergency_brakes_;
 }
 
-void Data::setEmergencyBrakesData(const EmergencyBrakes &emergency_brakes_data)
+void Data::setEmergencyBrakesData(const Brakes &emergency_brakes_data)
 {
   ScopedLock L(&lock_emergency_brakes_);
   emergency_brakes_ = emergency_brakes_data;

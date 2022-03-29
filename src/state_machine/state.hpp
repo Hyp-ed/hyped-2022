@@ -24,7 +24,7 @@ class State {
   data::Data &data_;
 
  protected:
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   data::Navigation nav_data_;
   data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;

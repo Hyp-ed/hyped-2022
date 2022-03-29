@@ -59,7 +59,7 @@ class Stepper : public IStepper {
  private:
   utils::Logger &log_;
   data::Data &data_;
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   utils::io::GPIO command_pin_;
   utils::io::GPIO button_;
   uint8_t brake_id_;

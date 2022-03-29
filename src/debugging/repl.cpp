@@ -17,7 +17,7 @@ Repl::Repl()
       log_("REPL", utils::System::getSystem().config_.log_level),
       data_(data::Data::getInstance())
 {
-  commands_.push_back({"shutdown", "Turn the system off", std::bind(&Repl::handleShutdown, *this)});
+  addShutdownCommand();
   for (const auto &command : commands_) {
     handlers_by_identifier_.emplace(command.identifier, command.handler);
   }
@@ -59,9 +59,9 @@ void Repl::readAndHandleCommand()
   identifier_and_handler->second();
 }
 
-void Repl::handleShutdown()
+void Repl::addShutdownCommand()
 {
-  system_.stop();
+  commands_.push_back({"shutdown", "Turn the system off", [this]() { system_.stop(); }});
 }
 
 }  // namespace hyped::debugging

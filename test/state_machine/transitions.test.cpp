@@ -69,7 +69,7 @@ int TransitionFunctionality::randomInRange(int min, int max)
  */
 TEST_F(TransitionFunctionality, handlesNoEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -100,7 +100,7 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
  */
 TEST_F(TransitionFunctionality, handlesBrakeEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -131,7 +131,7 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
  */
 TEST_F(TransitionFunctionality, handlesNavEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -162,7 +162,7 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
  */
 TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -193,7 +193,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
  */
 TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -224,7 +224,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
  */
 TEST_F(TransitionFunctionality, handlesSensorsEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -255,7 +255,7 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
  */
 TEST_F(TransitionFunctionality, handlesMotorsEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -286,7 +286,7 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
  */
 TEST_F(TransitionFunctionality, handlesStopCommand)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -321,7 +321,7 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
  */
 TEST_F(TransitionFunctionality, handlesAllInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -350,7 +350,7 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
  */
 TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -383,7 +383,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -416,7 +416,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -450,7 +450,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -484,7 +484,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -518,7 +518,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -552,7 +552,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesAllReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -578,7 +578,7 @@ TEST_F(TransitionFunctionality, handlesAllReady)
  */
 TEST_F(TransitionFunctionality, handlesBrakesNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -608,7 +608,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
  */
 TEST_F(TransitionFunctionality, handlesNavigationNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -638,7 +638,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
  */
 TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -667,7 +667,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
  */
 TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -697,7 +697,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
  */
 TEST_F(TransitionFunctionality, handlesSensorsNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
@@ -727,7 +727,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
  */
 TEST_F(TransitionFunctionality, handlesMotorsNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
   data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;

@@ -98,7 +98,7 @@ struct FullBatteryData : public Module {
   std::array<BatteryData, kNumHPBatteries> high_power_batteries;
 };
 
-struct EmergencyBrakes : public Module {
+struct Brakes : public Module {
   static constexpr uint64_t kBrakeCommandWaitTime = 1000;  // milliseconds
   static constexpr size_t kNumBrakes              = 2;
   bool brakes_retracted[kNumBrakes]               = {false};  // true if brakes retract
@@ -246,12 +246,12 @@ class Data {
   /**
    * @brief      Retrieves data from the emergency brakes.
    */
-  EmergencyBrakes getEmergencyBrakesData();
+  Brakes getEmergencyBrakesData();
 
   /**
    * @brief      Should be called to update emergency brakes data
    */
-  void setEmergencyBrakesData(const EmergencyBrakes &emergency_brakes_data);
+  void setEmergencyBrakesData(const Brakes &emergency_brakes_data);
 
   /**
    * @brief      Retrieves data produced by each of the four motors.
@@ -280,7 +280,7 @@ class Data {
   Motors motors_;
   FullBatteryData batteries_;
   Telemetry telemetry_;
-  EmergencyBrakes emergency_brakes_;
+  Brakes emergency_brakes_;
   int temperature_;  // In degrees C
 
   // locks for data substructures

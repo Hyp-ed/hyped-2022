@@ -35,7 +35,7 @@ class Repl {
 
   void printAvailableCommands();
   void readAndHandleCommand();
-  void handleShutdown();
+  void addShutdownCommand();
 };
 
 }  // namespace hyped::debugging

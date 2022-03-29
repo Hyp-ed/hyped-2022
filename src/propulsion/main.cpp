@@ -55,7 +55,9 @@ void Main::run()
         break;
       case data::State::kCalibrating:
         if (state_processor_.isInitialised()) {
-          hyped::utils::math::Regression::Regression();
+          // TODO: aruments read in from somewhere and processed
+          utils::math::Regression regression;
+          regression.GetCoeffs(std::vector<double>{1, 1, 1}, std::vector<double>{2, 2, 2});
           if (motor_data.module_status != data::ModuleStatus::kReady) {
             motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);

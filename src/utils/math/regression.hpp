@@ -8,26 +8,19 @@ namespace hyped::utils::math {
 class Regression {
  public:
   Regression();
-  std::vector<double> GetCoeffs(std::vector<double> x_data, std::vector<double> y_data);
+  void GetCoeffs(std::vector<double> x_data, std::vector<double> y_data);
 
   struct Coefficients {
     const double beta0;
     const double beta1;
-  } coefficients;
+  };
+  Coefficients coefficients;
 
  private:
   std::vector<double> coefficients_;
 };
 
-Regression::Regression()
-{
-  coefficients_      = GetCoeffs(std::vector<double> x_data, std::vector<double> y_data);
-  coefficients.beta0 = Regression::coefficients_.at(1);
-  coefficients.beta1 = Regression::coefficients_.at(0);
-}
-
-std::vector<double> Regression::GetCoeffs(const std::vector<double> x_data,
-                                          const std::vector<double> y_data)
+void Regression::GetCoeffs(const std::vector<double> x_data, const std::vector<double> y_data)
 {
   double x_sum = 0;
   double y_sum = 0;
@@ -53,6 +46,7 @@ std::vector<double> Regression::GetCoeffs(const std::vector<double> x_data,
   double beta0 = y_mean - (beta1 - x_mean);
 
   std::vector<double> coefficients{beta1, beta0};
-  return coefficients;
+  Coefficients.beta0 = coefficients.at(1);
+  Coefficients.beta1 = coefficients.at(0);
 }
 }  // namespace hyped::utils::math

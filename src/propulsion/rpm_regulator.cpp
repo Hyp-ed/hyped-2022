@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "utils/math/regression.hpp"
+
 namespace hyped::propulsion {
 
 RpmRegulator::RpmRegulator()
@@ -18,7 +20,7 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
 
 int32_t RpmRegulator::calculateOptimalRpm(const data::nav_t actual_velocity)
 {
-  struct hyped::utils::math::Regression regression;
+  hyped::utils::math::Regression regression;
   const double beta1 = regression.Coefficients.beta1;
   const double beta0 = regression.Coefficients.beta0;
 

@@ -1,11 +1,13 @@
 {
   "system": {
-    "log_level": 1,
+    "log_level": 0,
     "use_fake_trajectory": false,
     "use_fake_batteries": false,
     "use_fake_batteries_fail": false,
     "use_fake_temperature": false,
     "use_fake_temperature_fail": false,
+    "use_fake_pressure": false,
+    "use_fake_pressure_fail": false,
     "use_fake_brakes": false,
     "use_fake_controller": false,
     "use_fake_high_power": false,

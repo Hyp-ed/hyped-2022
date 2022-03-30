@@ -6,6 +6,8 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <sensors/ambient_pressure.hpp>
+#include <sensors/fake_ambient_pressure.hpp>
 #include <sensors/fake_keyence.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
@@ -80,9 +82,9 @@ Main::Main()
 
   // Temperature
   if (sys_.config_.use_fake_temperature_fail) {
-    temperature_ = std::make_unique<FakeTemperature>(log_, true);
+    temperature_ = std::make_unique<FakeTemperature>(true);
   } else if (sys_.config_.use_fake_temperature) {
-    temperature_ = std::make_unique<FakeTemperature>(log_, false);
+    temperature_ = std::make_unique<FakeTemperature>(false);
   } else {
     auto temperature_pin = temperaturePinFromFile(log_, sys_.config_.temperature_config_path);
     if (!temperature_pin) {
@@ -90,7 +92,24 @@ Main::Main()
       sys_.stop();
       return;
     }
-    temperature_ = std::make_unique<Temperature>(log_, *temperature_pin);
+    temperature_ = std::make_unique<Temperature>(*temperature_pin);
+  }
+
+  // AmbientPressure
+  if (sys_.config_.use_fake_ambient_pressure_fail) {
+    ambient_pressure_ = std::make_unique<FakeAmbientPressure>(true);
+  } else if (sys_.config_.use_fake_ambient_pressure) {
+    ambient_pressure_ = std::make_unique<FakeAmbientPressure>(false);
+  } else {
+    const auto ambient_pressure_pins
+      = ambientPressurePinsFromFile(log_, sys_.config_.pressure_config_path);
+    if (!ambient_pressure_pins) {
+      log_.error("failed to initialise ambient pressure sensor");
+      sys_.stop();
+      return;
+    }
+    ambient_pressure_ = std::make_unique<AmbientPressure>(ambient_pressure_pins->pressure_pin,
+                                                          ambient_pressure_pins->temperature_pin);
   }
 
   // kReady for state machine transition
@@ -105,20 +124,24 @@ void Main::checkTemperature()
   temperature_->run();  // not a thread
 
   uint8_t converted_temperature = temperature_->getData();
-  if (converted_temperature > 85 && !log_error_) {
+  if (converted_temperature > 85) {
     log_.info("PCB temperature is getting a wee high...sorry Cheng");
-    log_error_ = true;
+    auto sensors_data          = data_.getSensorsData();
+    sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setSensorsData(sensors_data);
   }
 }
 
-void Main::checkPressure()
+void Main::checkAmbientPressure()
 {
-  pressure_->run();  // not a thread
+  ambient_pressure_->run();  // not a thread
 
-  uint8_t converted_pressure = pressure_->getData();
-  if (converted_pressure > 1200 && !log_error_) {
-    log_.info("PCB pressure is above what can be sensed");
-    log_error_ = true;
+  const auto ambient_pressure = ambient_pressure_->getData();  // mbar
+  if (ambient_pressure > 1200) {
+    log_.info("Ambient pressure (%u) exceeds maximum value (%d)", ambient_pressure, 1200);
+    auto sensors_data          = data_.getSensorsData();
+    sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setSensorsData(sensors_data);
   }
 }
 
@@ -141,13 +164,13 @@ std::optional<Main::KeyencePins> Main::keyencePinsFromFile(utils::Logger &log,
     log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_object = document["sensors"].GetObject();
+  const auto config_object = document["sensors"].GetObject();
   if (!config_object.HasMember("keyence_pins")) {
     log.error("Missing required field 'sensors.keyence_pins' in configuration file at %s",
               path.c_str());
     return std::nullopt;
   }
-  auto keyence_pin_array = config_object["keyence_pins"].GetArray();
+  const auto keyence_pin_array = config_object["keyence_pins"].GetArray();
   if (keyence_pin_array.Size() != data::Sensors::kNumKeyence) {
     log.error("Found %d keyence pins but %d were expected in configuration file at %s",
               keyence_pin_array.Size(), data::Sensors::kNumKeyence, path.c_str());
@@ -179,13 +202,13 @@ std::optional<Main::ImuPins> Main::imuPinsFromFile(utils::Logger &log, const std
     log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_object = document["sensors"].GetObject();
+  const auto config_object = document["sensors"].GetObject();
   if (!config_object.HasMember("imu_pins")) {
     log.error("Missing required field 'sensors.imu_pins' in configuration file at %s",
               path.c_str());
     return std::nullopt;
   }
-  auto imu_pin_array = config_object["imu_pins"].GetArray();
+  const auto imu_pin_array = config_object["imu_pins"].GetArray();
   if (imu_pin_array.Size() != data::Sensors::kNumImus) {
     log.error("Found %d keyence pins but %d were expected in configuration file at %s",
               imu_pin_array.Size(), data::Sensors::kNumImus, path.c_str());
@@ -218,13 +241,59 @@ std::optional<std::uint32_t> Main::temperaturePinFromFile(utils::Logger &log,
     log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_object = document["sensors"].GetObject();
+  const auto config_object = document["sensors"].GetObject();
   if (!config_object.HasMember("temperature_pin")) {
     log.error("Missing required field 'sensors.temperature_pin' in configuration file at %s",
               path.c_str());
     return std::nullopt;
   }
   return static_cast<std::uint32_t>(config_object["temperature_pin"].GetUint());
+}
+
+std::optional<Main::AmbientPressurePins> Main::ambientPressurePinsFromFile(utils::Logger &log,
+                                                                           const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  const auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("ambient_pressure_pins")) {
+    log.error("Missing required field 'sensors.ambient_pressure_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  const auto ambient_pressure_pins_object = config_object["ambient_pressure_pins"].GetObject();
+  AmbientPressurePins ambient_pressure_pins;
+  if (!ambient_pressure_pins_object.HasMember("pressure_pin")) {
+    log.error(
+      "Missing required field 'sensors.ambient_pressure_pins.pressure_pin' in configuration file "
+      "at %s",
+      path.c_str());
+    return std::nullopt;
+  }
+  ambient_pressure_pins.pressure_pin = ambient_pressure_pins_object["pressure_pin"].GetUint();
+  if (!ambient_pressure_pins_object.HasMember("temperature_pin")) {
+    log.error(
+      "Missing required field 'sensors.ambient_pressure_pins.temperature_pin' in configuration "
+      "file at %s",
+      path.c_str());
+    return std::nullopt;
+  }
+  ambient_pressure_pins.temperature_pin = ambient_pressure_pins_object["temperature_pin"].GetUint();
+  return ambient_pressure_pins;
 }
 
 void Main::run()
@@ -237,7 +306,7 @@ void Main::run()
 
   // Intialise temperature and pressure
   temperature_data_ = data_.getSensorsData().temperature;
-  pressure_data_    = data_.getSensorsData().pressure;
+  pressure_data_    = data_.getSensorsData().ambient_pressure;
 
   std::size_t iteration_count = 0;
   while (sys_.isRunning()) {
@@ -259,7 +328,7 @@ void Main::run()
     ++iteration_count;
     if (iteration_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
-      checkPressure();
+      checkAmbientPressure();
       // So that temp_count does not get huge
       iteration_count = 0;
     }

@@ -8,13 +8,14 @@
 #include <iostream>
 #include <sstream>
 
+#include <utils/system.hpp>
+
 namespace hyped::utils::io {
 
-SerialProtocol::SerialProtocol(const std::string serial, const BaudRate baud_rate,
-                               utils::Logger &log)
+SerialProtocol::SerialProtocol(const std::string serial, const BaudRate baud_rate)
     : serial_device_(serial),
       baud_rate_(baud_rate),
-      log_(log)
+      log_(utils::Logger("SERIAL", utils::System::getSystem().config_.log_level))
 {
   configureTermios();
 }
@@ -45,31 +46,31 @@ void SerialProtocol::configureTermios()
   options.c_oflag = 0;
   options.c_lflag = 0;
   switch (baud_rate_) {
-    case BaudRate::kB_300:
+    case BaudRate::kB300:
       cfsetispeed(&options, B300);
       cfsetospeed(&options, B300);
       break;
-    case BaudRate::kB_600:
+    case BaudRate::kB600:
       cfsetispeed(&options, B600);
       cfsetospeed(&options, B600);
       break;
-    case BaudRate::kB_1200:
+    case BaudRate::kB1200:
       cfsetispeed(&options, B1200);
       cfsetospeed(&options, B1200);
       break;
-    case BaudRate::kB_2400:
+    case BaudRate::kB2400:
       cfsetispeed(&options, B2400);
       cfsetospeed(&options, B2400);
       break;
-    case BaudRate::kB_4800:
+    case BaudRate::kB4800:
       cfsetispeed(&options, B4800);
       cfsetospeed(&options, B4800);
       break;
-    case BaudRate::kB_9600:
+    case BaudRate::kB9600:
       cfsetispeed(&options, B9600);
       cfsetospeed(&options, B9600);
       break;
-    case BaudRate::kB_19200:
+    case BaudRate::kB19200:
       cfsetispeed(&options, B19200);
       cfsetospeed(&options, B19200);
       break;
@@ -90,14 +91,14 @@ void SerialProtocol::readData(std::vector<uint8_t> &data)
     return;
   }
 
-  size_t n = read(serial_, &readBuffer_[0], readBufferSize_B_);
+  size_t bytesRead = read(serial_, &readBuffer_[0], readBufferSize_B_);
 
-  if (n < 0) {
+  if (bytesRead < 0) {
     log_.error("Error reading from serial device.");
     return;
   }
 
-  copy(readBuffer_.begin(), readBuffer_.begin() + n, back_inserter(data));
+  std::copy(readBuffer_.begin(), readBuffer_.begin() + bytesRead, back_inserter(data));
   return;
 }
 

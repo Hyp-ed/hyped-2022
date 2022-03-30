@@ -104,7 +104,7 @@ class Randomiser {
   static void randomiseTemperatureData(data::TemperatureData &temp_data)
   {
     // Generates a temperature value between 0 and 99 C.
-    temp_data.temp = static_cast<int>(rand() % 100);
+    temp_data.temperature = static_cast<uint8_t>(rand() % 100);
   }
 
   // Randomises the entries in a hyped::data::Sensors struct.

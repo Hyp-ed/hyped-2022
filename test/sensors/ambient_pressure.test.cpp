@@ -13,7 +13,7 @@ class AmbientPressureTest : public Test {
 
 TEST_F(AmbientPressureTest, parsesConfig)
 {
-  utils::System &sys = utils::System::getSystem();
+  auto &sys = utils::System::getSystem();
   const auto ambient_pressure_pins
     = sensors::Main::ambientPressurePinsFromFile(log_, sys.config_.pressure_config_path);
   ASSERT_TRUE(ambient_pressure_pins) << "Failed to initialise ambient pressure pins.";

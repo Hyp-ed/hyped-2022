@@ -13,7 +13,7 @@ class TemperatureTest : public Test {
 
 TEST_F(TemperatureTest, parsesConfig)
 {
-  utils::System &sys = utils::System::getSystem();
+  auto &sys = utils::System::getSystem();
   auto temperature_pin
     = sensors::Main::temperaturePinFromFile(log_, sys.config_.temperature_config_path);
   ASSERT_TRUE(temperature_pin) << "Failed to initialise temperature pin.";

@@ -91,7 +91,7 @@ void SerialProtocol::readData(std::vector<uint8_t> &data)
     return;
   }
 
-  size_t bytesRead = read(serial_, &readBuffer_[0], readBufferSize_B_);
+  const size_t bytesRead = read(serial_, &readBuffer_[0], readBufferSize_B_);
 
   if (bytesRead < 0) {
     log_.error("Error reading from serial device.");

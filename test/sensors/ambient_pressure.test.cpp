@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include <sensors/ambient_pressure.hpp>
 #include <sensors/main.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>

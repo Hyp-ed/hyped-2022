@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 
 #include <sensors/main.hpp>
-#include <sensors/temperature.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/system.hpp>
 

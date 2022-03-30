@@ -23,11 +23,11 @@ namespace math {
  * @param lower Lower bound for randomly generated values
  * @param upper Upper bound for randomly generated values
  */
-float RandomFloatRolling(float a, float b)
+float RandomFloatRolling(const float a, const float b)
 {
-  float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
-  float diff   = b - a;
-  float r      = random * diff;
+  const float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
+  const float diff   = b - a;
+  const float r      = random * diff;
   return a + r;
 }
 

@@ -146,7 +146,7 @@ TEST_F(IntegratorPropertyTest, IntervalTest)
   for (size_t i = 0; i < 50; ++i) {
     interval_1_integrator.update(datafunction[i]);
   }
-  for (int i = 49; i < 101; ++i) {
+  for (size_t i = 49; i < 101; ++i) {
     interval_2_integrator.update(datafunction[i]);
   }
   ASSERT_EQ(velocity.value, velocity_2.value + velocity_3.value) << message;

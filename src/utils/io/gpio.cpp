@@ -23,11 +23,11 @@ namespace io {
 #define GPIOFS 0  // used to swtich to file system method for set(), clear(), and read()
 
 // workaround to avoid conflict with GPIO::read()
-static uint8_t readHelper(int fd)
+static uint8_t readHelper(int file)
 {
   char buf[2];
-  lseek(fd, 0, SEEK_SET);      // reset file pointer
-  read(fd, buf, sizeof(buf));  // actually consume new data, changes value in buffer
+  lseek(file, 0, SEEK_SET);      // reset file pointer
+  read(file, buf, sizeof(buf));  // actually consume new data, changes value in buffer
   return std::atoi(buf);
 }
 
@@ -60,7 +60,7 @@ Gpio::Gpio(uint32_t pin, Gpio::Direction direction, Logger &log)
   exported_pins.push_back(pin_);
 
   exportGPIO();
-  attachGPIO();
+  attach();
   if (direction == Gpio::Direction::kOut) {  // sets pin value to 1 if direction is out
     set();
   }
@@ -171,23 +171,20 @@ void Gpio::exportGPIO()
   return;
 }
 
-void Gpio::attachGPIO()
+void Gpio::attach()
 {
-  uint8_t bank;  // offset: GPIO_0,1,2,3
-  uint8_t pin_id;
-
-  bank   = pin_ / 32;
-  pin_id = pin_ % 32;
+  const uint8_t bank   = pin_ / 32;  // offset: GPIO_0,1,2,3
+  const uint8_t pin_id = pin_ % 32;
   // corresponds to desired data of pin by indicating specific bit within byte of pin data
   pin_mask_ = 1 << pin_id;
-  log_.debug("gpio %d resolved as bank,pin %d, %d", pin_, bank, pin_id);
+  log_.debug("gpio %u resolved as bank,pin %u, %u", pin_, bank, pin_id);
 
   // hacking compilation compatibility for 64bit systems
 #ifdef ARCH_64
-  uint64_t base = reinterpret_cast<uint64_t>(base_mapping_[bank]);
+  const uint64_t base = reinterpret_cast<uint64_t>(base_mapping_[bank]);
 #pragma message("compiling for 64 bits")
 #else
-  uint32_t base = reinterpret_cast<uint32_t>(base_mapping_[bank]);
+  const uint32_t base = reinterpret_cast<uint32_t>(base_mapping_[bank]);
 #endif
   if (direction_ == Gpio::Direction::kIn) {
     data_ = reinterpret_cast<volatile uint32_t *>(base + Gpio::kData);
@@ -264,7 +261,7 @@ void Gpio::set()
 #if GPIOFS
   write(fd_, "1", 2);
 #else
-  *set_         = pin_mask_;
+  *set_               = pin_mask_;
   log_.debug("gpio %d set", pin_);
 #endif
 }

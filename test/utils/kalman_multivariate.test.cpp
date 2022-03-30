@@ -176,16 +176,16 @@ class KalmanMathematics : public ::testing::Test {
 
   KalmanMultivariate kalmanMathWithoutControl = KalmanMultivariate(n, m, 0);
   KalmanMultivariate kalmanMathWithControl    = KalmanMultivariate(n, m, k);
-  static constexpr int NUM_TESTDATA           = 50;
-  Eigen::VectorXf x1_Data[NUM_TESTDATA];
-  Eigen::VectorXf z_Data[NUM_TESTDATA];
-  Eigen::VectorXf u_Data[NUM_TESTDATA];
-  Eigen::MatrixXf A_Data[NUM_TESTDATA];
-  Eigen::MatrixXf B_Data[NUM_TESTDATA];
-  Eigen::MatrixXf Q_Data[NUM_TESTDATA];
-  Eigen::MatrixXf H_Data[NUM_TESTDATA];
-  Eigen::MatrixXf R_Data[NUM_TESTDATA];
-  Eigen::MatrixXf P_Data[NUM_TESTDATA];
+  static constexpr size_t kNumTestData        = 50;
+  Eigen::VectorXf x1_Data[kNumTestData];
+  Eigen::VectorXf z_Data[kNumTestData];
+  Eigen::VectorXf u_Data[kNumTestData];
+  Eigen::MatrixXf A_Data[kNumTestData];
+  Eigen::MatrixXf B_Data[kNumTestData];
+  Eigen::MatrixXf Q_Data[kNumTestData];
+  Eigen::MatrixXf H_Data[kNumTestData];
+  Eigen::MatrixXf R_Data[kNumTestData];
+  Eigen::MatrixXf P_Data[kNumTestData];
   Eigen::MatrixXf I                       = Eigen::MatrixXf::Identity(n, n);
   std::string expected_state_estimate_err = "State estimate isnt same as expected state estimate";
   std::string expected_covariance_err     = "Covariance isnt the same as expected state covariance";
@@ -258,7 +258,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
   kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
   Eigen::VectorXf x = kalmanMathWithoutControl.getStateEstimate();
   Eigen::MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
-  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
+  for (size_t i = 0; i < kNumTestData; ++i) {
     kalmanMathWithoutControl.filter(z);
     // Mimicks filter(Eigen::VectorXf& u, Eigen::VectorXf& z)
     x = A * x;
@@ -280,7 +280,7 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithoutControl)
 {
-  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
+  for (size_t i = 0; i < kNumTestData; ++i) {
     Eigen::MatrixXf A = A_Data[i];
     Eigen::MatrixXf H = H_Data[i];
     Eigen::MatrixXf R = R_Data[i];
@@ -314,7 +314,7 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithControl)
 {
-  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
+  for (size_t i = 0; i < kNumTestData; ++i) {
     Eigen::MatrixXf A = A_Data[i];
     Eigen::MatrixXf B = B_Data[i];
     Eigen::MatrixXf Q = Q_Data[i];
@@ -351,12 +351,12 @@ class KalmanIdentity : public ::testing::Test {
   unsigned int m = 3;
   unsigned int k = 1;
 
-  KalmanMultivariate kalman         = KalmanMultivariate(n, m, k);
-  static constexpr int NUM_TESTDATA = 50;
-  Eigen::VectorXf x0                = Eigen::VectorXf::Random(n);
-  Eigen::VectorXf x1                = Eigen::VectorXf::Random(n);
-  Eigen::VectorXf z                 = Eigen::VectorXf::Zero(m);
-  Eigen::VectorXf u                 = Eigen::VectorXf::Random(k);
+  KalmanMultivariate kalman            = KalmanMultivariate(n, m, k);
+  static constexpr size_t kNumTestData = 50;
+  Eigen::VectorXf x0                   = Eigen::VectorXf::Random(n);
+  Eigen::VectorXf x1                   = Eigen::VectorXf::Random(n);
+  Eigen::VectorXf z                    = Eigen::VectorXf::Zero(m);
+  Eigen::VectorXf u                    = Eigen::VectorXf::Random(k);
 
   Eigen::MatrixXf P0 = Eigen::MatrixXf::Random(n, n);
   Eigen::MatrixXf A  = Eigen::MatrixXf::Identity(n, n);
@@ -388,7 +388,7 @@ class KalmanIdentity : public ::testing::Test {
  */
 TEST_F(KalmanIdentity, handlesIdentity)
 {
-  for (size_t i = 0; i < NUM_TESTDATA; ++i) {
+  for (size_t i = 0; i < kNumTestData; ++i) {
     kalman.filter(u, z);
     ASSERT_EQ(kalman.getStateEstimate(), x0) << identity_err;
     ASSERT_EQ(kalman.getStateCovariance(), P) << identity_err;

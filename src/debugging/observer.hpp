@@ -17,7 +17,7 @@ namespace hyped::debugging {
 
 class Observer : public utils::concurrent::Thread {
  public:
-  static constexpr uint32_t kSleepTimeMillis = 10;
+  static constexpr uint64_t kSleepTimeMillis = 10;
   using JsonWriter                           = rapidjson::Writer<rapidjson::OStreamWrapper>;
   struct Task {
     std::string name;

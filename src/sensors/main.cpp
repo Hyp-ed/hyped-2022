@@ -157,7 +157,7 @@ void Main::run()
   size_t temp_count = 0;
   while (sys_.isRunning()) {
     Thread::sleep(10);
-    temp_count++;
+    ++temp_count;
     // only check every 20 cycles
     if (temp_count % 20 == 0) {
       checkTemperature();

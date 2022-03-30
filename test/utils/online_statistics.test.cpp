@@ -23,11 +23,11 @@ namespace math {
  * @param lower Lower bound for randomly generated values
  * @param upper Upper bound for randomly generated values
  */
-float RandomFloatOnline(float lower, float upper)
+float RandomFloatOnline(const float lower, const float upper)
 {
-  float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
-  float diff   = upper - lower;
-  float r      = random * diff;
+  const float random = (static_cast<float>(rand())) / static_cast<float>(RAND_MAX);
+  const float diff   = upper - lower;
+  const float r      = random * diff;
   return lower + r;
 }
 
@@ -38,7 +38,7 @@ float RandomFloatOnline(float lower, float upper)
  * @param size_a Size of said array
  */
 template<class T>
-T meanCalc(T a[], size_t size_a)
+T meanCalc(const T a[], const size_t size_a)
 {
   T sum  = 0;
   T mean = 0;

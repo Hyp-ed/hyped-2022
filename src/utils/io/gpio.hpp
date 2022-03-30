@@ -99,7 +99,7 @@ class Gpio {
   /**
    * @brief Configure device register pointers
    */
-  void attachGPIO();
+  void attach();
 
   /**
    * @brief Configure fd_ for wait functionality in case of input GPIO

@@ -22,15 +22,7 @@ class Adc {
    *
    * @param pin
    */
-  explicit Adc(uint32_t pin);
-
-  /**
-   * @brief Construct a new ADC object with logger for debugging purposes
-   *
-   * @param pin
-   * @param log
-   */
-  Adc(uint32_t pin, Logger &log);
+  explicit Adc(const uint32_t pin);
 
   /**
    * @brief reads AIN value from file system
@@ -40,9 +32,9 @@ class Adc {
   uint16_t read();
 
  private:
+  Logger log_;
   uint32_t pin_;
-  Logger &log_;
-  int fd_;
+  int file_;
 };
 }  // namespace io
 }  // namespace utils

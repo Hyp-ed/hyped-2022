@@ -155,7 +155,7 @@ class SpecialCases : public ::testing::Test {
 TEST_F(SpecialCases, differentiatorLinearCase)
 {
   diff_linear.update(linear_data[0]);
-  for (int i = 1; i < 100; ++i) {
+  for (size_t i = 1; i < 100; ++i) {
     float value = diff_linear.update(linear_data[i]).value;
     ASSERT_EQ(1, value) << "You Expect a perfect fit for linear case, please review implementation";
   }
@@ -168,7 +168,7 @@ TEST_F(SpecialCases, differentiatorLinearCase)
 TEST_F(SpecialCases, differentiatorConstantCase)
 {
   diff_constant.update(function_constant[0]);
-  for (int i = 1; i < 100; ++i) {
+  for (size_t i = 1; i < 100; ++i) {
     float value = diff_constant.update(function_constant[i]).value;
     ASSERT_EQ(0, value)
       << "You Expect a perfect fit for constant case, please review implementation";

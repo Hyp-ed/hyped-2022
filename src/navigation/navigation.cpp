@@ -396,7 +396,7 @@ void Navigation::updateData()
     log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f", log_counter_, velocity_uncertainty_,
                displacement_uncertainty_);
   }
-  log_counter_++;
+  ++log_counter_;
   // Update all prev measurements
   previous_timestamp_    = displacement_.timestamp;
   previous_acceleration_ = getAcceleration();

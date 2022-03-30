@@ -17,10 +17,10 @@ void Writer::packTime()
                         .count());
 }
 
-void Writer::packId(const uint16_t id)
+void Writer::packId(const int id)
 {
   json_writer_.Key("id");
-  add("package_num", id);
+  json_writer_.Int(id);
 }
 
 // Additional data points that are displayed in the GUI data section
@@ -154,6 +154,8 @@ const std::string Writer::convertStateMachineState(data::State state)
       return "INVALID";
     case data::State::kFailureBraking:
       return "EMERGENCY_BRAKING";
+    case data::State::kFailurePreBraking:
+      return "FAILURE_PRE_BRAKING";
     case data::State::kFailureStopped:
       return "FAILURE_STOPPED";
     case data::State::kIdle:
@@ -164,12 +166,16 @@ const std::string Writer::convertStateMachineState(data::State state)
       return "CALIBRATING";
     case data::State::kFinished:
       return "FINISHED";
+    case data::State::kPreReady:
+      return "PRE_READY";
     case data::State::kReady:
       return "READY";
     case data::State::kAccelerating:
       return "ACCELERATING";
     case data::State::kCruising:
       return "CRUISING";
+    case data::State::kPreBraking:
+      return "PRE_BRAKING";
     case data::State::kNominalBraking:
       return "NOMINAL_BRAKING";
     default:

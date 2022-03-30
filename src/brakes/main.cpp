@@ -42,18 +42,18 @@ void Main::checkEngaged()
   if (!magnetic_brake_->isEngaged()) {
     log_.error("expected magnetic brake to be engaged");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   } else {
     brakes_data_.brakes_retracted[0] = true;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   }
   if (!friction_brake_->isEngaged()) {
     log_.error("expected friction brake to be engaged");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   } else {
     brakes_data_.brakes_retracted[1] = true;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   }
 }
 
@@ -62,18 +62,18 @@ void Main::checkRetracted()
   if (magnetic_brake_->isEngaged()) {
     log_.error("expected magnetic brake to be retracted");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   } else {
     brakes_data_.brakes_retracted[0] = true;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   }
   if (friction_brake_->isEngaged()) {
     log_.error("expected friction brake to be retracted");
     brakes_data_.module_status = data::ModuleStatus::kCriticalFailure;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   } else {
     brakes_data_.brakes_retracted[1] = true;
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
   }
 }
 
@@ -96,15 +96,15 @@ void Main::retract()
 void Main::run()
 {
   // Setting module status for state machine transition
-  brakes_data_               = data_.getEmergencyBrakesData();
+  brakes_data_               = data_.getBrakesData();
   brakes_data_.module_status = data::ModuleStatus::kInit;
-  data_.setEmergencyBrakesData(brakes_data_);
+  data_.setBrakesData(brakes_data_);
 
   log_.info("Thread started");
 
   while (sys_.isRunning()) {
     // Get the current state of brakes, state machine and telemetry modules from data
-    brakes_data_             = data_.getEmergencyBrakesData();
+    brakes_data_             = data_.getBrakesData();
     const auto current_state = data_.getStateMachineData().current_state;
 
     switch (current_state) {
@@ -125,7 +125,7 @@ void Main::run()
       case data::State::kCalibrating:
         retract();
         brakes_data_.module_status = data::ModuleStatus::kReady;
-        data_.setEmergencyBrakesData(brakes_data_);
+        data_.setBrakesData(brakes_data_);
         break;
       case data::State::kAccelerating:
       case data::State::kCruising:

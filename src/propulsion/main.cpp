@@ -50,8 +50,6 @@ void Main::run()
     switch (current_state_) {
       case data::State::kIdle:
       case data::State::kPreCalibrating:
-      case data::State::kNominalBraking:
-      case data::State::kFailureBraking:
         break;
       case data::State::kCalibrating:
         if (state_processor_.isInitialised()) {
@@ -63,6 +61,8 @@ void Main::run()
           state_processor_.initialiseMotors();
           if (!state_processor_.isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
+        break;
+      case data::State::kPreReady:
         break;
       case data::State::kReady:
         if (encountered_transition) { state_processor_.sendOperationalCommand(); }
@@ -76,7 +76,9 @@ void Main::run()
         break;
       case data::State::kCruising:
       case data::State::kPreBraking:
+      case data::State::kNominalBraking:
       case data::State::kFailurePreBraking:
+      case data::State::kFailureBraking:
         state_processor_.quickStopAll();
         break;
       case data::State::kFailureStopped:

@@ -2,6 +2,7 @@
 
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
+#include "pressure.hpp"
 #include "sensor.hpp"
 #include "temperature.hpp"
 
@@ -44,6 +45,12 @@ class Main : public utils::concurrent::Thread {
    */
   void checkTemperature();
 
+  /**
+   * @brief used to check the pressure every twenty times in the main loop,
+   *        similar to temperature;
+   */
+  void checkPressure();
+
   utils::System &sys_;
   data::Data &data_;
 
@@ -55,7 +62,11 @@ class Main : public utils::concurrent::Thread {
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
   std::unique_ptr<ITemperature> temperature_;
+  std::unique_ptr<IPressure> pressure_;
   bool log_error_ = false;
+
+  data::TemperatureData temperature_data_;
+  data::PressureData pressure_data_;
 };
 
 }  // namespace hyped::sensors

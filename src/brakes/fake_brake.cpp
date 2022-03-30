@@ -5,7 +5,7 @@ namespace hyped::brakes {
 FakeBrake::FakeBrake(const uint8_t id)
     : log_("FAKE-BRAKE", utils::System::getSystem().config_.log_level_brakes),
       data_(data::Data::getInstance()),
-      brakes_data_(data_.getEmergencyBrakesData()),
+      brakes_data_(data_.getBrakesData()),
       id_(id),
       fake_button_(false)
 {

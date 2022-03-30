@@ -56,7 +56,7 @@ class RunTest : public Test {
    */
   void writeData()
   {
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
@@ -69,7 +69,7 @@ class RunTest : public Test {
    */
   void readData()
   {
-    brakes_data_    = data_.getEmergencyBrakesData();
+    brakes_data_    = data_.getBrakesData();
     stm_data_       = data_.getStateMachineData();
     nav_data_       = data_.getNavigationData();
     telemetry_data_ = data_.getTelemetryData();
@@ -311,10 +311,10 @@ class RunTest : public Test {
   }
 
   /**
-   * Modifies data such that the Calibrating -> Ready transition conditions are met and verifies
+   * Modifies data such that the Calibrating -> PreReady transition conditions are met and verifies
    * the behaviour.
    */
-  void testCalibratingToReady()
+  void testCalibratingToPreReady()
   {
     // Check initial state
     readData();
@@ -326,7 +326,7 @@ class RunTest : public Test {
     // Prevent Calibrating -> FailureStopped
     telemetry_data_.emergency_stop_command = false;
 
-    // Enforce Calibrating -> Ready
+    // Enforce Calibrating -> PreReady
     brakes_data_.module_status    = data::ModuleStatus::kReady;
     nav_data_.module_status       = data::ModuleStatus::kReady;
     telemetry_data_.module_status = data::ModuleStatus::kReady;
@@ -334,19 +334,19 @@ class RunTest : public Test {
     sensors_data_.module_status   = data::ModuleStatus::kReady;
     batteries_data_.module_status = data::ModuleStatus::kReady;
 
-    // Prevent Ready -> Accelerating
-    telemetry_data_.launch_command = false;
+    // Preventing PreReady -> Ready
+    sensors_data_.high_power_off = true;
 
     // Verify transition conditions are as intended
     const bool has_emergency = state_machine::checkEmergency(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
     const bool has_modules_ready = state_machine::checkModulesReady(
       log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
-    const bool has_launch_command = state_machine::checkLaunchCommand(telemetry_data_);
+    const bool has_high_power_on = !state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_modules_ready);
-    ASSERT_EQ(false, has_launch_command);
+    ASSERT_EQ(false, has_high_power_on);
 
     // Let STM do its thing
     writeData();
@@ -355,8 +355,8 @@ class RunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Calibrating";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kReady)
-      << "failed to transition from Calibrating to Ready";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreReady)
+      << "failed to transition from Calibrating to PreReady";
   }
 
   /**
@@ -395,6 +395,98 @@ class RunTest : public Test {
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in Calibrating";
     ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
       << "failed to transition from Calibrating to FailureStopped";
+  }
+
+  /**
+   * Modifies data such that the PreReady -> Ready transition conditions are met and verifies
+   * the behaviour.
+   */
+  void testPreReadyToReady()
+  {
+    // Check initial state
+    readData();
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreReady);
+
+    // Randomise data
+    randomiseInternally();
+
+    // Prevent PreReady -> FailureStopped
+    telemetry_data_.emergency_stop_command = false;
+
+    // Enforce PreReady-> Ready
+    brakes_data_.module_status    = data::ModuleStatus::kReady;
+    nav_data_.module_status       = data::ModuleStatus::kReady;
+    telemetry_data_.module_status = data::ModuleStatus::kReady;
+    motors_data_.module_status    = data::ModuleStatus::kReady;
+    sensors_data_.module_status   = data::ModuleStatus::kReady;
+    batteries_data_.module_status = data::ModuleStatus::kReady;
+
+    // Prevent Ready -> Accelerating
+    telemetry_data_.launch_command = false;
+
+    // Asserting PreReady -> Ready
+    sensors_data_.high_power_off = false;
+
+    // Verify transition conditions are as intended
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_modules_ready = state_machine::checkModulesReady(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_launch_command = state_machine::checkLaunchCommand(telemetry_data_);
+    const bool has_high_power_on  = !state_machine::checkHighPowerOff(sensors_data_);
+
+    ASSERT_EQ(false, has_emergency);
+    ASSERT_EQ(true, has_modules_ready);
+    ASSERT_EQ(true, has_high_power_on);
+    ASSERT_EQ(false, has_launch_command);
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in PreReady";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kReady)
+      << "failed to transition from PreReady to Ready";
+  }
+
+  /**
+   * Modifies data such that the PreReady -> FailureStopped transition conditions are met and
+   * verifies the behaviour.
+   */
+  void testPreReadyEmergency()
+  {
+    // Check initial state
+    readData();
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kPreReady);
+
+    // Randomise data
+    randomiseInternally();
+
+    // Enforce PreReady -> FailureStopped
+    forceEmergency();
+
+    // Prevent FailureStopped -> Off
+    telemetry_data_.shutdown_command = false;
+
+    // Verify transition conditions are as intended
+    const bool has_emergency = state_machine::checkEmergency(
+      log_, brakes_data_, nav_data_, batteries_data_, telemetry_data_, sensors_data_, motors_data_);
+    const bool has_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
+
+    ASSERT_EQ(true, has_emergency);
+    ASSERT_EQ(false, has_shutdown_command);
+
+    // Let STM do its thing
+    writeData();
+    waitForUpdate();
+    readData();
+
+    // Check result
+    ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in PreReady";
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureStopped)
+      << "failed to transition from PreReady to FailureStopped";
   }
 
   /**
@@ -1063,7 +1155,8 @@ TEST_F(RunTest, nominalRunWithoutCruising)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyToAccelerating();
     testAcceleratingToPreBraking();
     testPreBrakingToNominalBraking();
@@ -1092,7 +1185,8 @@ TEST_F(RunTest, nominalRunWithCruising)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyToAccelerating();
     testAcceleratingToCruising();
     testCruisingToPreBraking();
@@ -1129,6 +1223,30 @@ TEST_F(RunTest, idleEmergency)
 }
 
 /**
+ * Verifies the state machine behaviour upon encountering an emergency in PreCalibrating.
+ */
+TEST_F(RunTest, preCalibratingEmergency)
+{
+  for (std::size_t i = 0; i < kTestSize; ++i) {
+    utils::System::parseArgs(2, kDefaultArgs);
+
+    initialiseData();
+
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToPreCalibrating();
+    testPreCalibratingEmergency();
+    testFailureStoppedToOff();
+    state_machine->join();
+
+    delete state_machine;
+  }
+}
+
+/**
  * Verifies the state machine behaviour upon encountering an emergency in Calibrating.
  */
 TEST_F(RunTest, calibratingEmergency)
@@ -1154,6 +1272,32 @@ TEST_F(RunTest, calibratingEmergency)
 }
 
 /**
+ * Verifies the state machine behaviour upon encountering an emergency in PreReady.
+ */
+TEST_F(RunTest, preReadyEmergency)
+{
+  for (std::size_t i = 0; i < kTestSize; ++i) {
+    utils::System::parseArgs(2, kDefaultArgs);
+
+    initialiseData();
+
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToPreCalibrating();
+    testPreCalibratingToCalibrating();
+    testCalibratingToPreReady();
+    testPreReadyEmergency();
+    testFailureStoppedToOff();
+
+    state_machine->join();
+    delete state_machine;
+  }
+}
+
+/**
  * Verifies the state machine behaviour upon encountering an emergency in Ready.
  */
 TEST_F(RunTest, readyEmergency)
@@ -1170,7 +1314,8 @@ TEST_F(RunTest, readyEmergency)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyEmergency();
     testFailureStoppedToOff();
 
@@ -1196,7 +1341,8 @@ TEST_F(RunTest, acceleratingEmergency)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyToAccelerating();
     testAcceleratingEmergency();
     testFailurePreBrakingToFailureBraking();
@@ -1225,10 +1371,76 @@ TEST_F(RunTest, cruisingEmergency)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyToAccelerating();
     testAcceleratingToCruising();
     testCruisingEmergency();
+    testFailurePreBrakingToFailureBraking();
+    testFailureBrakingToStopped();
+    testFailureStoppedToOff();
+
+    state_machine->join();
+    delete state_machine;
+  }
+}
+
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in PreBraking without
+ * the Cruising state
+ */
+TEST_F(RunTest, preBrakingWithoutCruisingEmergency)
+{
+  for (std::size_t i = 0; i < kTestSize; ++i) {
+    utils::System::parseArgs(2, kDefaultArgs);
+
+    initialiseData();
+
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToPreCalibrating();
+    testPreCalibratingToCalibrating();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
+    testReadyToAccelerating();
+    testAcceleratingToPreBraking();
+    testPreBrakingEmergency();
+    testFailurePreBrakingToFailureBraking();
+    testFailureBrakingToStopped();
+    testFailureStoppedToOff();
+
+    state_machine->join();
+    delete state_machine;
+  }
+}
+
+/**
+ * Verifies the state machine behaviour upon encountering an emergency in PreBraking with
+ * the Cruising state
+ */
+TEST_F(RunTest, preBrakingWithCruisingEmergency)
+{
+  for (std::size_t i = 0; i < kTestSize; ++i) {
+    utils::System::parseArgs(2, kDefaultArgs);
+
+    initialiseData();
+
+    utils::concurrent::Thread *state_machine = new state_machine::Main();
+    state_machine->start();
+
+    waitForUpdate();
+
+    testIdleToPreCalibrating();
+    testPreCalibratingToCalibrating();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
+    testReadyToAccelerating();
+    testAcceleratingToCruising();
+    testCruisingToPreBraking();
+    testPreBrakingEmergency();
     testFailurePreBrakingToFailureBraking();
     testFailureBrakingToStopped();
     testFailureStoppedToOff();
@@ -1256,7 +1468,8 @@ TEST_F(RunTest, brakingEmergencyWithoutCruising)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyToAccelerating();
     testAcceleratingToPreBraking();
     testPreBrakingToNominalBraking();
@@ -1287,7 +1500,8 @@ TEST_F(RunTest, brakingEmergencyWithCruising)
 
     testIdleToPreCalibrating();
     testPreCalibratingToCalibrating();
-    testCalibratingToReady();
+    testCalibratingToPreReady();
+    testPreReadyToReady();
     testReadyToAccelerating();
     testAcceleratingToCruising();
     testCruisingToPreBraking();

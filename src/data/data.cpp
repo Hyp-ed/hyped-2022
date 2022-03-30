@@ -11,6 +11,7 @@ static const std::unordered_map<State, std::string> state_names = {
   {State::kIdle, "Idle"},
   {State::kPreCalibrating, "PreCalibrating"},
   {State::kCalibrating, "Calibrating"},
+  {State::kPreReady, "PreReady"},
   {State::kReady, "Ready"},
   {State::kAccelerating, "Accelerating"},
   {State::kCruising, "Cruising"},
@@ -27,6 +28,7 @@ static const std::unordered_map<std::string, State> states_by_name = {
   {"Idle", State::kIdle},
   {"PreCalibrating", State::kPreCalibrating},
   {"Calibrating", State::kCalibrating},
+  {"PreReady", State::kPreReady},
   {"Ready", State::kReady},
   {"Accelerating", State::kAccelerating},
   {"Cruising", State::kCruising},
@@ -101,18 +103,6 @@ std::array<CounterData, Sensors::kNumEncoders> Data::getSensorsWheelEncoderData(
   return sensors_.wheel_encoders;
 }
 
-int Data::getTemperature()
-{
-  ScopedLock L(&lock_temp_);
-  return temperature_;
-}
-
-void Data::setTemperature(const int &temp)
-{
-  ScopedLock L(&lock_temp_);
-  temperature_ = temp;
-}
-
 void Data::setSensorsData(const Sensors &sensors_data)
 {
   ScopedLock L(&lock_sensors_);
@@ -143,16 +133,16 @@ void Data::setBatteriesData(const FullBatteryData &batteries_data)
   batteries_ = batteries_data;
 }
 
-Brakes Data::getEmergencyBrakesData()
+Brakes Data::getBrakesData()
 {
-  ScopedLock L(&lock_emergency_brakes_);
-  return emergency_brakes_;
+  ScopedLock L(&lock_brakes_);
+  return brakes_;
 }
 
-void Data::setEmergencyBrakesData(const Brakes &emergency_brakes_data)
+void Data::setBrakesData(const Brakes &brakes_data)
 {
-  ScopedLock L(&lock_emergency_brakes_);
-  emergency_brakes_ = emergency_brakes_data;
+  ScopedLock L(&lock_brakes_);
+  brakes_ = brakes_data;
 }
 
 Motors Data::getMotorData()

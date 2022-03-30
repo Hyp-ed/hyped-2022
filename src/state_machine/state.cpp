@@ -14,7 +14,7 @@ State::State() : data_(data::Data::getInstance())
 
 void State::updateModuleData()
 {
-  brakes_data_    = data_.getEmergencyBrakesData();
+  brakes_data_    = data_.getBrakesData();
   nav_data_       = data_.getNavigationData();
   batteries_data_ = data_.getBatteriesData();
   telemetry_data_ = data_.getTelemetryData();
@@ -85,7 +85,29 @@ State *Calibrating::checkTransition(utils::Logger &log)
 
   bool all_ready = checkModulesReady(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
                                      sensors_data_, motors_data_);
-  if (all_ready) { return Ready::getInstance(); }
+  if (all_ready) { return PreReady::getInstance(); }
+
+  return nullptr;
+}
+
+//--------------------------------------------------------------------------------------
+//  PreReady
+//--------------------------------------------------------------------------------------
+
+PreReady PreReady::instance_;
+data::State PreReady::enum_value_       = data::State::kPreReady;
+char PreReady::string_representation_[] = "PreReady";
+
+State *PreReady::checkTransition(Logger &log)
+{
+  updateModuleData();
+
+  bool emergency = checkEmergency(log, brakes_data_, nav_data_, batteries_data_, telemetry_data_,
+                                  sensors_data_, motors_data_);
+  if (emergency) { return FailureStopped::getInstance(); }
+
+  bool has_high_power_on = !checkHighPowerOff(sensors_data_);
+  if (has_high_power_on) { return Ready::getInstance(); }
 
   return nullptr;
 }

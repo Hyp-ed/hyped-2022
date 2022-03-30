@@ -34,6 +34,13 @@ class Randomiser {
     return distribution(generator);
   }
 
+  static data::nav_t randomInRange(const data::nav_t lower, const data::nav_t upper)
+  {
+    static std::default_random_engine random_engine;
+    std::uniform_real_distribution<> distribution(lower, upper);
+    return distribution(random_engine);
+  }
+
   // Randomises a module status to any of the possible values.
   static void randomiseModuleStatus(data::ModuleStatus &module_status)
   {
@@ -172,7 +179,7 @@ class Randomiser {
   // Emergency Brakes data
   //---------------------------------------------------------------------------
 
-  // Randomises the entries in a hyped::data::EmergencyBrakes struct.
+  // Randomises the entries in a hyped::data::Brakes struct.
   static void randomiseBrakes(data::Brakes &brakes_data)
   {
     randomiseModuleStatus(brakes_data.module_status);

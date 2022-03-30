@@ -65,6 +65,7 @@ void GpioManager::run()
           log_.error("Braking! HP SSR cleared");
           break;
         case data::State::kNominalBraking:
+        case data::State::kReady:
           break;
         case data::State::kFailurePreBraking:
           clearHighPower();
@@ -79,9 +80,9 @@ void GpioManager::run()
           clearHighPower();
           log_.info("kFinished reached...HP off");
           break;
-        case data::State::kReady:
+        case data::State::kPreReady:
           setHighPower();
-          log_.info("kReady...HP SSR set and HP on");
+          log_.info("kPreReady...HP SSR set and HP on");
           break;
         case data::State::kInvalid:
           clearHighPower();  // shutting down HP asap

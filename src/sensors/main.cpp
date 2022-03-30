@@ -81,9 +81,21 @@ Main::Main()
 void Main::checkTemperature()
 {
   temperature_->run();  // not a thread
-  data_.setTemperature(temperature_->getData());
-  if (data_.getTemperature() > 85 && !log_error_) {
+
+  uint8_t converted_temperature = temperature_->getData();
+  if (converted_temperature > 85 && !log_error_) {
     log_.info("PCB temperature is getting a wee high...sorry Cheng");
+    log_error_ = true;
+  }
+}
+
+void Main::checkPressure()
+{
+  pressure_->run();  // not a thread
+
+  const uint16_t converted_pressure = pressure_->getData();
+  if (converted_pressure > 1200 && !log_error_) {
+    log_.info("PCB pressure is above what can be sensed");
     log_error_ = true;
   }
 }
@@ -154,16 +166,14 @@ void Main::run()
   battery_manager_->start();
   imu_manager_->start();
 
-  size_t temp_count = 0;
+  // Intialise temperature and pressure
+  temperature_data_ = data_.getSensorsData().temperature;
+  pressure_data_    = data_.getSensorsData().pressure;
+
   while (sys_.isRunning()) {
-    Thread::sleep(10);
-    ++temp_count;
-    // only check every 20 cycles
-    if (temp_count % 20 == 0) {
-      checkTemperature();
-      // avoid overflow
-      temp_count = 0;
-    }
+    checkTemperature();
+    checkPressure();
+    Thread::sleep(200);
   }
   imu_manager_->join();
   battery_manager_->join();

@@ -62,12 +62,19 @@ struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
-  int temp;  // C
+  uint16_t temp;  // C
+};
+
+struct PressureData : public SensorData {
+  uint16_t pressure;  // mbar
 };
 
 struct Sensors : public Module {
   static constexpr size_t kNumImus     = 4;
   static constexpr size_t kNumEncoders = 4;
+
+  TemperatureData temperature;
+  PressureData pressure;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
@@ -135,6 +142,7 @@ enum class State {
   kIdle,
   kPreCalibrating,
   kCalibrating,
+  kPreReady,
   kReady,
   kAccelerating,
   kCruising,
@@ -190,20 +198,6 @@ class Data {
   void setNavigationData(const Navigation &nav_data);
 
   /**
-   * @brief Get the Temperature from averaged thermistor values
-   *
-   * @return int temperature in degrees C
-   */
-  int getTemperature();
-
-  /**
-   * @brief Set the Temperature from averaged thermistor values
-   *
-   * @param temp - temp in degrees C
-   */
-  void setTemperature(const int &temp);
-
-  /**
    * @brief      Retrieves data from all sensors
    */
   Sensors getSensorsData();
@@ -246,12 +240,12 @@ class Data {
   /**
    * @brief      Retrieves data from the emergency brakes.
    */
-  Brakes getEmergencyBrakesData();
+  Brakes getBrakesData();
 
   /**
    * @brief      Should be called to update emergency brakes data
    */
-  void setEmergencyBrakesData(const Brakes &emergency_brakes_data);
+  void setBrakesData(const Brakes &brakes_data);
 
   /**
    * @brief      Retrieves data produced by each of the four motors.
@@ -280,19 +274,17 @@ class Data {
   Motors motors_;
   FullBatteryData batteries_;
   Telemetry telemetry_;
-  Brakes emergency_brakes_;
-  int temperature_;  // In degrees C
+  Brakes brakes_;
 
   // locks for data substructures
   utils::concurrent::Lock lock_state_machine_;
   utils::concurrent::Lock lock_navigation_;
   utils::concurrent::Lock lock_sensors_;
   utils::concurrent::Lock lock_motors_;
-  utils::concurrent::Lock lock_temp_;
 
   utils::concurrent::Lock lock_telemetry_;
   utils::concurrent::Lock lock_batteries_;
-  utils::concurrent::Lock lock_emergency_brakes_;
+  utils::concurrent::Lock lock_brakes_;
 
   Data() {}
 

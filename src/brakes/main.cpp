@@ -110,6 +110,7 @@ void Main::run()
     switch (current_state) {
       case data::State::kIdle:
       case data::State::kReady:
+      case data::State::kPreReady:
       case data::State::kFailureStopped:
         break;
       case data::State::kPreCalibrating:

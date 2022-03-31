@@ -102,6 +102,11 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
     if (fake_trajectory) {
       observer->addFakeImuManagerTask(fake_trajectory);
     } else {
+      if (imu_pin_vector->size() != data::Sensors::kNumImus) {
+        log.error("found %u imu pins but %u were expected", imu_pin_vector->size(),
+                  data::Sensors::kNumImus);
+        return std::nullopt;
+      }
       sensors::ImuPins imu_pins;
       std::copy(imu_pin_vector->begin(), imu_pin_vector->end(), imu_pins.begin());
       observer->addImuManagerTask(imu_pins);

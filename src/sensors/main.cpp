@@ -328,8 +328,7 @@ void Main::run()
     ++iteration_count;
     if (iteration_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
-      // NB: Don't merge without checking this - temp fix to make GUI work
-      // checkPressure();
+      checkAmbientPressure();
       // So that temp_count does not get huge
       iteration_count = 0;
     }

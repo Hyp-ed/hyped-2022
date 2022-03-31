@@ -37,7 +37,8 @@ class Repl {
   void printAvailableCommands();
   void readAndHandleCommand();
   void addCommand(const Command &command);
-  void addShutdownCommand();
+  void addQuitCommand();
+  void addHelpCommand();
   void addBrakeCommands(const brakes::BrakePins &pins, const uint32_t id);
   void addFakeBrakeCommands(const uint32_t id);
 };

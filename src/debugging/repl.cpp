@@ -18,7 +18,8 @@ Repl::Repl()
       log_("REPL", utils::System::getSystem().config_.log_level),
       data_(data::Data::getInstance())
 {
-  addShutdownCommand();
+  addQuitCommand();
+  addHelpCommand();
 }
 
 void Repl::run()
@@ -75,9 +76,14 @@ void Repl::addCommand(const Command &command)
   handlers_by_identifier_.emplace(command.identifier, command.handler);
 }
 
-void Repl::addShutdownCommand()
+void Repl::addQuitCommand()
 {
-  addCommand({"shutdown", "Turn the system off", [this]() { system_.stop(); }});
+  addCommand({"quit", "Turn the system off", [this]() { system_.stop(); }});
+}
+
+void Repl::addHelpCommand()
+{
+  addCommand({"help", "Print all options", [this]() { printAvailableCommands(); }});
 }
 
 void Repl::addBrakeCommands(const brakes::BrakePins &pins, const uint32_t id)

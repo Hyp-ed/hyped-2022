@@ -6,11 +6,12 @@
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/stringbuffer.h>
 
+#include <sensors/ambient_pressure.hpp>
+#include <sensors/fake_ambient_pressure.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/temperature.hpp>
 
 namespace hyped::sensors {
-
 Main::Main()
     : utils::concurrent::Thread(
       utils::Logger("SENSORS", utils::System::getSystem().config_.log_level_sensors)),
@@ -58,13 +59,12 @@ Main::Main()
 
   // Temperature
   if (sys_.config_.use_fake_temperature_fail) {
-    // temperature_ = std::make_unique<FakeTemperature>(true);
-    for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      ambientTemperature_[i] = std::make_unique<FakeTemperature>(true);
+    for (auto &ambient_temperature : ambient_temperatures_) {
+      ambient_temperature = std::make_unique<FakeTemperature>(true);
     }
   } else if (sys_.config_.use_fake_temperature) {
-    for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      ambientTemperature_[i] = std::make_unique<FakeTemperature>(false);
+    for (auto &ambient_temperature : ambient_temperatures_) {
+      ambient_temperature = std::make_unique<FakeTemperature>(false);
     }
   } else {
     auto ambient_temperature_pins
@@ -82,8 +82,25 @@ Main::Main()
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      ambientTemperature_[i] = std::make_unique<Temperature>(ambient_temperature_pins->at(i));
+      ambient_temperatures_.at(i) = std::make_unique<Temperature>(ambient_temperature_pins->at(i));
     }
+  }
+
+  // AmbientPressure
+  if (sys_.config_.use_fake_ambient_pressure_fail) {
+    ambient_pressure_ = std::make_unique<FakeAmbientPressure>(true);
+  } else if (sys_.config_.use_fake_ambient_pressure) {
+    ambient_pressure_ = std::make_unique<FakeAmbientPressure>(false);
+  } else {
+    const auto ambient_pressure_pins
+      = ambientPressurePinsFromFile(log_, sys_.config_.pressure_config_path);
+    if (!ambient_pressure_pins) {
+      log_.error("failed to initialise ambient pressure sensor");
+      sys_.stop();
+      return;
+    }
+    ambient_pressure_ = std::make_unique<AmbientPressure>(ambient_pressure_pins->pressure_pin,
+                                                          ambient_pressure_pins->temperature_pin);
   }
 
   // kReady for state machine transition
@@ -96,45 +113,45 @@ Main::Main()
 void Main::checkAmbientTemperature()
 // TODO: edit this so that it checks EACH of the AMBIENT sensors are within the critical limit.
 {
-  auto ambient_temperature = data_.getSensorsData().ambient_temperature_array;
+  auto ambient_temperature_data = data_.getSensorsData().ambient_temperature_array;
   for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-    ambientTemperature_[i]->run();  // not a thread
-    //.temp is maybe not the nicest method...
-    ambient_temperature.at(i).temp = ambientTemperature_[i]->getData();
-    if ((ambient_temperature.at(i).temp > 75UL || ambient_temperature.at(i).temp < 1UL)
-        && !log_error_) {  // 85 is the critical temperature so we alert at 75
+    ambient_temperatures_.at(i)->run();  // not a thread
+    ambient_temperature_data.at(i).temperature = ambient_temperatures_[i]->getData();
+    if ((ambient_temperature_data.at(i).temperature > 75
+         || ambient_temperature_data.at(i).temperature < 1)) {
       log_.info("PCB temperature is getting a wee high...sorry Cheng");
-      log_error_ = true;
+      auto sensors_data          = data_.getSensorsData();
+      sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setSensorsData(sensors_data);
     }
   }
 }
 
 void Main::checkBrakeTemperature()
-// TODO: edit this so that it checks EACH of the AMBIENT sensors are within the critical limit.
 {
-  auto brake_temperature = data_.getSensorsData().brake_temperature_array;
-  for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-    brakeTemperature_[i]->run();  // not a thread
-    brake_temperature.at(i).temp = brakeTemperature_[i]->getData();
-    // how do we differentiate here between the different runs - i.e. call the different temperature
-    // sensors?
-    // uint8_t converted_temperature = temperature_->getData();
-    if ((brake_temperature.at(i).temp > 75UL || brake_temperature.at(i).temp < 1UL)
-        && !log_error_) {  // 85 is the critical temperature so we alert at 75
+  auto brakes_temperature_data = data_.getSensorsData().brake_temperature_array;
+  for (size_t i = 0; i < data::Sensors::kNumBrakeTemp; ++i) {
+    brake_temperatures_[i]->run();  // not a thread
+    brakes_temperature_data.at(i).temperature = brake_temperatures_[i]->getData();
+    if ((brakes_temperature_data.at(i).temperature > 75
+         || brakes_temperature_data.at(i).temperature < 0)) {
       log_.info("PCB temperature is getting a wee high...sorry Cheng");
-      log_error_ = true;
+      auto sensors_data          = data_.getSensorsData();
+      sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setSensorsData(sensors_data);
     }
   }
 }
 
-void Main::checkPressure()
+void Main::checkAmbientPressure()
 {
-  pressure_->run();  // not a thread
-
-  const uint16_t converted_pressure = pressure_->getData();
-  if (converted_pressure > 1200 && !log_error_) {
-    log_.info("PCB pressure is above what can be sensed");
-    log_error_ = true;
+  ambient_pressure_->run();                                    // not a thread
+  const auto ambient_pressure = ambient_pressure_->getData();  // mbar
+  if (ambient_pressure > 1200) {
+    log_.info("Ambient pressure (%u) exceeds maximum value (%d)", ambient_pressure, 1200);
+    auto sensors_data          = data_.getSensorsData();
+    sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setSensorsData(sensors_data);
   }
 }
 
@@ -157,7 +174,7 @@ std::optional<std::vector<uint8_t>> Main::imuPinsFromFile(utils::Logger &log,
     log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  auto config_object = document["sensors"].GetObject();
+  const auto config_object = document["sensors"].GetObject();
   if (!config_object.HasMember("imu_pins")) {
     log.error("Missing required field 'sensors.imu_pins' in configuration file at %s",
               path.c_str());
@@ -255,18 +272,60 @@ std::optional<std::vector<uint8_t>> Main::brakeTemperaturePinsFromFile(utils::Lo
   return brake_temperature_pins;
 }
 
+std::optional<AmbientPressurePins> Main::ambientPressurePinsFromFile(utils::Logger &log,
+                                                                     const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  const auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("ambient_pressure_pins")) {
+    log.error("Missing required field 'sensors.ambient_pressure_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  const auto ambient_pressure_pins_object = config_object["ambient_pressure_pins"].GetObject();
+  AmbientPressurePins ambient_pressure_pins;
+  if (!ambient_pressure_pins_object.HasMember("pressure_pin")) {
+    log.error(
+      "Missing required field 'sensors.ambient_pressure_pins.pressure_pin' in configuration file "
+      "at %s",
+      path.c_str());
+    return std::nullopt;
+  }
+  ambient_pressure_pins.pressure_pin = ambient_pressure_pins_object["pressure_pin"].GetUint();
+  if (!ambient_pressure_pins_object.HasMember("temperature_pin")) {
+    log.error(
+      "Missing required field 'sensors.ambient_pressure_pins.temperature_pin' in configuration "
+      "file at %s",
+      path.c_str());
+    return std::nullopt;
+  }
+  ambient_pressure_pins.temperature_pin = ambient_pressure_pins_object["temperature_pin"].GetUint();
+  return ambient_pressure_pins;
+}
+
 void Main::run()
 {
   battery_manager_->start();
   imu_manager_->start();
 
-  // Intialise temperature and pressure
-  auto ambient_temperature = data_.getSensorsData().ambient_temperature_array;
-  pressure_data_           = data_.getSensorsData().pressure;
-
   while (sys_.isRunning()) {
     checkAmbientTemperature();
-    checkPressure();
+    checkAmbientPressure();
     Thread::sleep(200);
   }
   imu_manager_->join();

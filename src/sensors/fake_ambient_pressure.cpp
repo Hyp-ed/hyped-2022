@@ -1,4 +1,4 @@
-#include "fake_temperature.hpp"
+#include "fake_ambient_pressure.hpp"
 
 #include <stdlib.h>
 
@@ -7,28 +7,26 @@
 
 namespace hyped::sensors {
 
-FakeTemperature::FakeTemperature(const bool is_fail)
+FakeAmbientPressure::FakeAmbientPressure(const bool is_fail)
     : data_(data::Data::getInstance()),
-      log_("FAKE-TEMPERATURE", utils::System::getSystem().config_.log_level_sensors),
-      failure_(300),
-      success_(30),
+      log_("FAKE-AMBIENT-PRESSURE", utils::System::getSystem().config_.log_level_sensors),
+      failure_(10000),  // 10 bar
+      success_(1000),   // 1 bar
       is_fail_(is_fail),
       acc_start_time_(0),
       acc_started_(false),
       failure_time_(0),
       failure_happened_(false)
 {
-  temperature_data_.temperature = success_;
-  auto &system                  = utils::System::getSystem();
-  utils::Logger log("FAKE-TEMPERATURE", system.config_.log_level);
+  pressure_data_.ambient_pressure = success_;
   if (is_fail_) {
-    log.info("fail initialised");
+    log_.info("fail initialised");
   } else {
-    log.info("initialised");
+    log_.info("initialised");
   }
 }
 
-void FakeTemperature::run()
+void FakeAmbientPressure::run()
 {
   // We want to fail after we start accelerating
   // We can make it random from 0 to 20 seconds
@@ -44,19 +42,19 @@ void FakeTemperature::run()
   checkFailure();
 }
 
-void FakeTemperature::checkFailure()
+void FakeAmbientPressure::checkFailure()
 {
   if (is_fail_ && failure_time_ != 0 && !failure_happened_) {
     if (utils::Timer::getTimeMicros() - acc_start_time_ >= failure_time_) {
-      temperature_data_.temperature = failure_;
-      failure_happened_             = true;
+      pressure_data_.ambient_pressure = failure_;
+      failure_happened_               = true;
     }
   }
 }
 
-uint8_t FakeTemperature::getData() const
+uint16_t FakeAmbientPressure::getData() const
 {
-  return temperature_data_.temperature;
+  return pressure_data_.ambient_pressure;
 }
 
 }  // namespace hyped::sensors

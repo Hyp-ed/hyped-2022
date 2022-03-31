@@ -18,6 +18,7 @@ class System {
     std::string client_config_path;
     std::string imu_config_path;
     std::string temperature_config_path;
+    std::string pressure_config_path;
     std::string fake_trajectory_config_path;
     std::string bms_config_path;
     std::string brakes_config_path;
@@ -35,6 +36,8 @@ class System {
     bool use_fake_batteries_fail;
     bool use_fake_temperature;
     bool use_fake_temperature_fail;
+    bool use_fake_ambient_pressure;
+    bool use_fake_ambient_pressure_fail;
     bool use_fake_brakes;
     bool use_fake_controller;
     std::uint8_t axis;

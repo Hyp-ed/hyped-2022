@@ -5,7 +5,6 @@
 #include <data/data.hpp>
 #include <utils/io/adc.hpp>
 #include <utils/logger.hpp>
-
 namespace hyped::sensors {
 
 using AmbientTemperaturePins = std::array<uint8_t, data::Sensors::kNumAmbientTemp>;
@@ -27,7 +26,7 @@ class ITemperature {
    * @brief returns int representation of temperature
    * @return int temperature degrees C
    */
-  virtual uint8_t getData() = 0;
+  virtual uint8_t getData() const = 0;
 };
 
 class Temperature : public ITemperature {
@@ -45,7 +44,7 @@ class Temperature : public ITemperature {
    *
    * @return int to set to data struct in sensors main
    */
-  uint8_t getData() override;
+  uint8_t getData() const override;
 
   /**
    * @brief one interation of checking sensors
@@ -59,7 +58,7 @@ class Temperature : public ITemperature {
    * @param raw_value input voltage
    * @return int representation of temperature
    */
-  uint8_t scaleData(uint8_t raw_value);
+  static int8_t scaleData(uint8_t raw_value);
 
   utils::Logger log_;
   utils::io::Adc pin_;
@@ -67,7 +66,7 @@ class Temperature : public ITemperature {
   /**
    * @brief int from data structs
    */
-  data::TemperatureData temp_;
+  data::TemperatureData temperature_data_;
 };
 
 }  // namespace hyped::sensors

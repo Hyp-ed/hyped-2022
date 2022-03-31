@@ -62,11 +62,11 @@ struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
-  uint8_t temp;  // C
+  int16_t temperature;  // C
 };
 
-struct PressureData : public SensorData {
-  uint8_t pressure;  // mbar
+struct AmbientPressureData : public SensorData {
+  uint16_t ambient_pressure;  // mbar
 };
 
 struct Sensors : public Module {
@@ -75,8 +75,8 @@ struct Sensors : public Module {
   static constexpr size_t kNumBrakeTemp   = 2;
   static constexpr size_t kNumAmbientTemp = 4;
 
-  // TemperatureData temperature;
-  PressureData pressure;
+  TemperatureData temperature;
+  AmbientPressureData ambient_pressure;
 
   std::array<TemperatureData, kNumBrakeTemp> brake_temperature_array;
   std::array<TemperatureData, kNumAmbientTemp> ambient_temperature_array;

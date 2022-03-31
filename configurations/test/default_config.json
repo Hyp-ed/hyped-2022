@@ -22,7 +22,11 @@
   "sensors": {
     "bms_startup_time_micros": 5000000,
     "imu_pins": [22, 27, 47, 86],
-    "temperature_pin": 158
+    "temperature_pins": [13],
+    "ambient_pressure_pins": {
+      "pressure_pin": 10,
+      "temperature_pin": 11
+    }
   },
   "telemetry": {
     "server_ip": "192.168.5.3",

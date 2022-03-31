@@ -1,8 +1,8 @@
 #pragma once
 
+#include "ambient_pressure.hpp"
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
-#include "pressure.hpp"
 #include "sensor.hpp"
 #include "temperature.hpp"
 
@@ -29,6 +29,8 @@ class Main : public utils::concurrent::Thread {
     utils::Logger &log, const std::string &path);
   static std::optional<std::vector<uint8_t>> brakeTemperaturePinsFromFile(utils::Logger &log,
                                                                           const std::string &path);
+  static std::optional<AmbientPressurePins> ambientPressurePinsFromFile(utils::Logger &log,
+                                                                        const std::string &path);
 
  private:
   /**
@@ -55,7 +57,7 @@ class Main : public utils::concurrent::Thread {
    * @brief used to check the pressure every twenty times in the main loop,
    *        similar to temperature;
    */
-  void checkPressure();
+  void checkAmbientPressure();
 
   utils::System &sys_;
   data::Data &data_;
@@ -67,14 +69,13 @@ class Main : public utils::concurrent::Thread {
 
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
-  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> ambientTemperature_;
-  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brakeTemperature_;
-  std::unique_ptr<IPressure> pressure_;
-  bool log_error_ = false;
 
-  // std::array<data::TemperatureData, 2UL> brake_temperature_data_;
-  // std::array<data::TemperatureData, 2UL> ambient_temperature_data_;
-  data::PressureData pressure_data_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> ambient_temperatures_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brake_temperatures_;
+  std::unique_ptr<IAmbientPressure> ambient_pressure_;
+
+  data::TemperatureData temperature_data_;
+  data::AmbientPressureData pressure_data_;
 };
 
 }  // namespace hyped::sensors

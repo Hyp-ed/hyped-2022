@@ -4,13 +4,13 @@
 
 namespace hyped::utils::io {
 
-class I2C {
+class I2c {
  public:
-  I2C();
-  ~I2C();
+  I2c(const uint8_t busAddr);
+  ~I2c();
 
-  void readData(uint32_t addr, uint8_t *data, uint8_t len);
-  void writeData(uint32_t addr, uint8_t *data, uint8_t len);
+  void readData(const uint32_t addr, uint8_t *data, const size_t len);
+  void writeData(const uint32_t addr, uint8_t *data, const size_t len);
 
  private:
   void setSensorAddress(uint32_t addr);

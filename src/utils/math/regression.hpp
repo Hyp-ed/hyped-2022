@@ -11,8 +11,8 @@ class Regression {
   void GetCoeffs(std::vector<double> x_data, std::vector<double> y_data);
 
   struct Coefficients {
-    const double beta0;
-    const double beta1;
+    double beta0;
+    double beta1;
   };
   Coefficients coefficients;
 

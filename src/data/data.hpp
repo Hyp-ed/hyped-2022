@@ -85,10 +85,10 @@ struct Sensors : public Module {
 
 struct BatteryData {
   static constexpr int kNumCells = 36;
-  uint16_t voltage;             // dV
-  int16_t current;              // dA
-  uint8_t charge;               // %
-  uint8_t average_temperature;  // C
+  uint16_t voltage;            // dV
+  int16_t current;             // dA
+  uint8_t charge;              // %
+  int8_t average_temperature;  // C
 
   // below only for HighPowerBms! Value for BMSLP = 0
   uint16_t cell_voltage[kNumCells];  // mV
@@ -163,7 +163,7 @@ std::optional<State> stateFromString(const std::string &state_name);
 struct StateMachine {
   bool critical_failure;
   State current_state;
-  static constexpr uint64_t kAccelerationTime = 0.12e+06;  // microseconds
+  static constexpr int64_t kAccelerationTime = 0.12e+06;  // microseconds
 };
 
 // -------------------------------------------------------------------------------------------------

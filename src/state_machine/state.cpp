@@ -249,7 +249,7 @@ FailurePreBraking FailurePreBraking::instance_;
 data::State FailurePreBraking::enum_value_       = data::State::kFailurePreBraking;
 char FailurePreBraking::string_representation_[] = "FailurePreBraking";
 
-State *FailurePreBraking::checkTransition(Logger &log)
+State *FailurePreBraking::checkTransition(Logger &)
 {
   updateModuleData();
 

@@ -115,7 +115,7 @@ void Main::checkPressure()
 {
   pressure_->run();  // not a thread
 
-  uint8_t converted_pressure = pressure_->getData();
+  const uint16_t converted_pressure = pressure_->getData();
   if (converted_pressure > 1200 && !log_error_) {
     log_.info("PCB pressure is above what can be sensed");
     log_error_ = true;

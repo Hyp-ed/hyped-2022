@@ -149,8 +149,8 @@ State *Accelerating::checkTransition(Logger &log)
 {
   updateModuleData();
 
-  const uint64_t time_now     = utils::Timer::getTimeMicros();
-  const int64_t  time_elapsed = time_now - instance_.acceleration_start_;
+  const uint64_t time_now    = utils::Timer::getTimeMicros();
+  const int64_t time_elapsed = time_now - instance_.acceleration_start_;
 
   bool acceleration_time_exceeded = false;
 
@@ -258,7 +258,7 @@ FailurePreBraking FailurePreBraking::instance_;
 data::State FailurePreBraking::enum_value_       = data::State::kFailurePreBraking;
 char FailurePreBraking::string_representation_[] = "FailurePreBraking";
 
-State *FailurePreBraking::checkTransition(Logger &log)
+State *FailurePreBraking::checkTransition(Logger &)
 {
   updateModuleData();
 

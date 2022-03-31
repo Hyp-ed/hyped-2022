@@ -27,7 +27,7 @@ class Navigation {
   using NavigationArray          = std::array<data::nav_t, data::Sensors::kNumImus>;
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
-  using QuartileBounds          = std::array<data::nav_t, 3>;
+  using QuartileBounds           = std::array<data::nav_t, 3>;
 
   /**
    * @brief Construct a new Navigation object

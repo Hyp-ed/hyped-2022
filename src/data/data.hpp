@@ -69,10 +69,15 @@ struct AmbientPressureData : public SensorData {
   uint16_t ambient_pressure;  // mbar
 };
 
+struct BrakePressureData : public SensorData {
+  uint16_t brake_pressure;  // bar
+};
+
 struct Sensors : public Module {
-  static constexpr size_t kNumImus     = 4;
-  static constexpr size_t kNumEncoders = 4;
-  static constexpr size_t kNumKeyence  = 2;
+  static constexpr size_t kNumImus          = 4;
+  static constexpr size_t kNumEncoders      = 4;
+  static constexpr size_t kNumKeyence       = 2;
+  static constexpr size_t kNumBrakePressure = 2;
 
   TemperatureData temperature;
   AmbientPressureData ambient_pressure;

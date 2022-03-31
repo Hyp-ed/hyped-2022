@@ -296,6 +296,45 @@ std::optional<Main::AmbientPressurePins> Main::ambientPressurePinsFromFile(utils
   return ambient_pressure_pins;
 }
 
+std::optional<Main::BrakePressurePins> Main::brakePressurePinsFromFile(utils::Logger &log,
+                                                                       const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  const auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("brake_pressure_pins")) {
+    log.error("Missing required field 'sensors.brake_pressure_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  const auto brake_pressure_pin_array = config_object["brake_pressure_pins"].GetArray();
+  if (brake_pressure_pin_array.Size() != data::Sensors::kNumBrakePressure) {
+    log.error("Found %d keyence pins but %d were expected in configuration file at %s",
+              brake_pressure_pin_array.Size(), data::Sensors::kNumBrakePressure, path.c_str());
+  }
+  BrakePressurePins brake_pressure_pins;
+  std::size_t i = 0;
+  for (auto &brake_pressure_pin : brake_pressure_pin_array) {
+    brake_pressure_pins.at(i) = static_cast<uint32_t>(brake_pressure_pin.GetUint());
+    ++i;
+  }
+  return brake_pressure_pins;
+}
+
 void Main::run()
 {
   battery_manager_->start();

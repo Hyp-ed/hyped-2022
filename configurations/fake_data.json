@@ -1,0 +1,43 @@
+{
+  "fake_trajectory": {
+    "maximum_acceleration": 1000.0,
+    "braking_deceleration": 2000.0,
+    "cruising_deceleration": 0.01
+  },
+  "fake_wheel_encoder": [
+    {
+      "noise": 0.1
+    },
+    {
+      "noise": 0.2
+    },
+    {
+      "noise": 0.1
+    },
+    {
+      "noise": 0.01
+    }
+  ],
+  "fake_keyence": [
+    {
+      "noise": 0.1
+    },
+    {
+      "noise": 0.2
+    }
+  ],
+  "fake_imu": [
+    {
+      "noise": 0.01
+    },
+    {
+      "noise": 0.02
+    },
+    {
+      "noise": 0.005
+    },
+    {
+      "noise": 0.001
+    }
+  ]
+}

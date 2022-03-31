@@ -16,7 +16,7 @@ class FakeTemperature : public ITemperature {
    * @param log
    * @param is_fail
    */
-  FakeTemperature(utils::Logger &log, bool is_fail);
+  FakeTemperature(const bool is_fail);
 
   /**
    * @brief returns int representation
@@ -32,7 +32,7 @@ class FakeTemperature : public ITemperature {
 
  private:
   data::Data &data_;
-  utils::Logger &log_;
+  utils::Logger log_;
 
   /**
    * @brief dependent on is_fail_, set to fail value
@@ -44,7 +44,7 @@ class FakeTemperature : public ITemperature {
   int success_;
   data::TemperatureData temp_;
 
-  bool is_fail_;
+  const bool is_fail_;
 
   uint64_t acc_start_time_;
   bool acc_started_;

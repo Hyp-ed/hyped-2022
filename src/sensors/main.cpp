@@ -58,9 +58,9 @@ Main::Main()
 
   // Temperature
   if (sys_.config_.use_fake_temperature_fail) {
-    temperature_ = std::make_unique<FakeTemperature>(log_, true);
+    temperature_ = std::make_unique<FakeTemperature>(true);
   } else if (sys_.config_.use_fake_temperature) {
-    temperature_ = std::make_unique<FakeTemperature>(log_, false);
+    temperature_ = std::make_unique<FakeTemperature>(false);
   } else {
     auto temperature_pin = temperaturePinFromFile(log_, sys_.config_.temperature_config_path);
     if (!temperature_pin) {
@@ -68,7 +68,7 @@ Main::Main()
       sys_.stop();
       return;
     }
-    temperature_ = std::make_unique<Temperature>(log_, *temperature_pin);
+    temperature_ = std::make_unique<Temperature>(*temperature_pin);
   }
 
   // kReady for state machine transition

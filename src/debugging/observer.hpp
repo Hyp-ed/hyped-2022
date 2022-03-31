@@ -37,6 +37,9 @@ class Observer : public utils::concurrent::Thread {
   void addFakeImuTasks(std::vector<std::unique_ptr<sensors::FakeImu>> fake_imus);
   void addImuManagerTask(const sensors::ImuPins &imu_pins);
   void addFakeImuManagerTask(std::shared_ptr<sensors::FakeTrajectory> fake_trajectory);
+
+  void addTemperatureTask(const uint8_t pin);
+  void addFakeTemperatureTask(const bool is_fail);
 };
 
 }  // namespace hyped::debugging

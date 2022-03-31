@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include <data/data.hpp>
+#include <utils/io/adc.hpp>
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {
@@ -34,8 +35,8 @@ class Temperature : public ITemperature {
    * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
-  Temperature(utils::Logger &log, int pin);
-  ~Temperature() {}
+  Temperature(const uint8_t pin);
+  ~Temperature();
 
   /**
    * @brief
@@ -58,11 +59,8 @@ class Temperature : public ITemperature {
    */
   uint8_t scaleData(uint8_t raw_value);
 
-  /**
-   * @brief ADC pin
-   */
-  int pin_;
-  utils::Logger &log_;
+  utils::Logger log_;
+  utils::io::Adc pin_;
 
   /**
    * @brief int from data structs

@@ -3,25 +3,26 @@
 #include <stdio.h>
 
 #include <utils/io/adc.hpp>
+#include <utils/system.hpp>
 
-namespace hyped {
+namespace hyped::sensors {
 
-using data::Data;
-using data::TemperatureData;
-using hyped::utils::Logger;
-using utils::io::Adc;
-
-namespace sensors {
-
-Temperature::Temperature(utils::Logger &log, int pin) : pin_(pin), log_(log)
+Temperature::Temperature(const uint8_t pin)
+    : log_("TEMPERATURE", utils::System::getSystem().config_.log_level_sensors),
+      pin_(pin)
 {
+  log_.info("started temperature for pin %u", pin);
+}
+
+Temperature::~Temperature()
+{
+  log_.info("stopped temperature for pin");
 }
 
 void Temperature::run()
 {
-  Adc thepin(pin_);
   temp_.temp         = 0;
-  uint16_t raw_value = thepin.read();
+  uint16_t raw_value = pin_.read();
   log_.debug("Raw Data: %d", raw_value);
   temp_.temp = scaleData(raw_value);
   log_.debug("Scaled Data: %d", temp_.temp);
@@ -40,5 +41,4 @@ uint8_t Temperature::getData()
 {
   return temp_.temp;
 }
-}  // namespace sensors
-}  // namespace hyped
+}  // namespace hyped::sensors

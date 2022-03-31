@@ -1,7 +1,10 @@
 #include "observer.hpp"
 
+#include <sstream>
+
 #include <rapidjson/istreamwrapper.h>
 
+#include <sensors/fake_temperature.hpp>
 #include <sensors/imu.hpp>
 #include <sensors/main.hpp>
 #include <utils/logger.hpp>
@@ -113,6 +116,20 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
       auto fake_imus = sensors::FakeImu::fromFile(path, fake_trajectory);
       if (fake_imus) { observer->addFakeImuTasks(std::move(*fake_imus)); }
     }
+  }
+  // TEMPERATURE
+  if (system.config_.use_fake_temperature) {
+    observer->addFakeTemperatureTask(false);
+  } else if (system.config_.use_fake_temperature_fail) {
+    observer->addFakeTemperatureTask(true);
+  } else {
+    const auto pin
+      = sensors::Main::temperaturePinFromFile(log, system.config_.temperature_config_path);
+    if (!pin) {
+      log.error("failed to read temperature pin from file");
+      return std::nullopt;
+    }
+    observer->addTemperatureTask(*pin);
   }
   return observer;
 }
@@ -228,6 +245,35 @@ void Observer::addFakeImuManagerTask(std::shared_ptr<sensors::FakeTrajectory> fa
     json_writer.EndArray();
   };
   tasks_.push_back(imu_manager_task);
+}
+
+void Observer::addTemperatureTask(const uint8_t pin)
+{
+  auto temperature = std::make_shared<sensors::Temperature>(pin);
+  std::stringstream name;
+  name << "temperature-" << static_cast<uint32_t>(pin);
+  Task temperature_task;
+  temperature_task.name    = name.str();
+  temperature_task.handler = [temperature](JsonWriter &json_writer) {
+    temperature->run();
+    json_writer.Key("value");
+    json_writer.Uint(temperature->getData());
+  };
+}
+
+void Observer::addFakeTemperatureTask(const bool is_fail)
+{
+  static uint32_t fake_temperature_id = 0;
+  auto temperature                    = std::make_shared<sensors::FakeTemperature>(is_fail);
+  std::stringstream name;
+  name << "fake_temperature-" << fake_temperature_id++;
+  Task temperature_task;
+  temperature_task.name    = name.str();
+  temperature_task.handler = [temperature](JsonWriter &json_writer) {
+    temperature->run();
+    json_writer.Key("value");
+    json_writer.Uint(temperature->getData());
+  };
 }
 
 }  // namespace hyped::debugging

@@ -42,6 +42,7 @@ binmain.o
 .ccls-cache
 TelemetryData.txt
 config.server.json
+*.jar
 default.profraw
 
 # mac crosscompiler

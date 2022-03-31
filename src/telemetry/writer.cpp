@@ -8,7 +8,11 @@
 
 namespace hyped::telemetry {
 
-// The current time in milliseconds that will be used later
+Writer::Writer() : json_writer_(string_buffer_), data_(data::Data::getInstance())
+{
+}
+
+// The current time in milliseconds
 void Writer::packTime()
 {
   json_writer_.Key("time");
@@ -17,133 +21,160 @@ void Writer::packTime()
                         .count());
 }
 
-void Writer::packId(const int id)
+// Will overflow if 4,294,967,295 packages are sent or after about 13
+// years if we send a package every 100ms
+void Writer::packId(const uint32_t id)
 {
   json_writer_.Key("id");
   json_writer_.Int(id);
 }
 
-// Additional data points that are displayed in the GUI data section
-// FEEL FREE TO EDIT. More info: https://github.com/Hyp-ed/hyped-2020/wiki/Adding-new-data-points
-void Writer::packAdditionalData()
+void Writer::packTelemetryData()
 {
-  json_writer_.Key("additional_data");
+  const auto telemetry_data = data_.getTelemetryData();
+
+  json_writer_.Key("telemetry");
+  json_writer_.StartObject();
+  // Commands
+  json_writer_.Key("calibrate");
+  json_writer_.Bool(telemetry_data.calibrate_command);
+  json_writer_.Key("emergency_stop");
+  json_writer_.Bool(telemetry_data.emergency_stop_command);
+  json_writer_.Key("launch");
+  json_writer_.Bool(telemetry_data.launch_command);
+  json_writer_.Key("nominal_breaking");
+  json_writer_.Bool(telemetry_data.nominal_braking_command);
+  json_writer_.Key("service_propulsion_go");
+  json_writer_.Bool(telemetry_data.service_propulsion_go);
+  json_writer_.Key("shutdown");
+  json_writer_.Bool(telemetry_data.shutdown_command);
+
+  // Module status
+  json_writer_.Key("telemetry_status");
+  json_writer_.String(convertModuleStatus(telemetry_data.module_status).c_str());
+  json_writer_.EndObject();
+}
+
+void Writer::packNavigationData()
+{
+  const auto nav_data = data_.getNavigationData();
+
+  json_writer_.Key("navigation");
+  json_writer_.StartObject();
+  json_writer_.Key("braking_distance");
+  json_writer_.Int(nav_data.braking_distance);
+  json_writer_.Key("displacement");
+  json_writer_.Int(nav_data.displacement);  // Crucial
+  json_writer_.Key("emergency_braking_distance");
+  json_writer_.Int(nav_data.emergency_braking_distance);
+  json_writer_.Key("velocity");
+  json_writer_.Int(nav_data.velocity);  // Crucial
+  json_writer_.Key("acceleration");
+  json_writer_.Int(nav_data.acceleration);  // Crucial
+
+  // Module status
+  json_writer_.Key("navigation_status");
+  json_writer_.String(convertModuleStatus(nav_data.module_status).c_str());
+  json_writer_.EndObject();
+}
+
+void Writer::packSensorsData()
+{
+  const auto sensors_data   = data_.getSensorsData();
+  const auto batteries_data = data_.getBatteriesData();
+  const auto brakes_data    = data_.getEmergencyBrakesData();
+
+  json_writer_.Key("sensors");
+  json_writer_.StartObject();
+  // LP Batteries
+  json_writer_.Key("lp_batteries");
   json_writer_.StartArray();
-
-  // Edit below
-
-  // Edit above
-
+  for (std::size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
+    packBattery(batteries_data.low_power_batteries[i]);
+  }
   json_writer_.EndArray();
-}
 
-// Crucial data points that are displayed in various fixed GUI points
-// NOT EDITABLE
-void Writer::packCrucialData()
-{
-  json_writer_.Key("crucial_data");
+  // HP Batteries
+  json_writer_.Key("hp_batteries");
   json_writer_.StartArray();
-
-  data::Navigation nav_data  = data_.getNavigationData();
-  data::StateMachine sm_data = data_.getStateMachineData();
-  add("distance", 0.0, 1250.0, "m", nav_data.displacement);
-  add("velocity", 0.0, 250.0, "m/s", nav_data.velocity);
-  add("acceleration", -50.0, 50.0, "m/s^2", nav_data.acceleration);
-  add("status", sm_data.current_state);
-
+  for (std::size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
+    packBattery(batteries_data.high_power_batteries[i]);
+  }
   json_writer_.EndArray();
+
+  // Other sensor data
+  json_writer_.Key("brakes_retracted");
+  json_writer_.Bool(brakes_data.brakes_retracted);
+  json_writer_.Key("temperature");
+  json_writer_.Int(sensors_data.temperature.temperature);
+  json_writer_.Key("pressure");
+  json_writer_.Int(sensors_data.ambient_pressure.ambient_pressure);
+  // ImuData, EncoderData, StripeCounter data types not currently supported by json writer
+
+  // Module statuses
+  json_writer_.Key("brakes_status");
+  json_writer_.String(convertModuleStatus(brakes_data.module_status).c_str());
+  json_writer_.Key("sensors_status");
+  json_writer_.String(convertModuleStatus(sensors_data.module_status).c_str());
+  json_writer_.Key("batteries_status");
+  json_writer_.String(convertModuleStatus(batteries_data.module_status).c_str());
+  json_writer_.EndObject();
 }
 
-// Status data points that are displayed in the GUI status tab
-// NOT EDITABLE
-void Writer::packStatusData()
+void Writer::packMotorData()
 {
-  json_writer_.Key("status_data");
+  const auto motor_data = data_.getMotorData();
+
+  json_writer_.Key("motors");
+  json_writer_.StartObject();
+  // RPMS
+  json_writer_.Key("motor_rpms");
   json_writer_.StartArray();
-
-  // TODO(everyone): add all required data points
-
+  for (std::size_t i = 0; i < motor_data.kNumMotors; ++i) {
+    json_writer_.Int(motor_data.rpms[i]);
+  }
   json_writer_.EndArray();
-}
 
-Writer::Writer(data::Data &data) : json_writer_(string_buffer_), data_{data}
-{
-}
-
-void Writer::startList(const std::string name)
-{
-  json_writer_.StartObject();
-  json_writer_.Key("name");
-  json_writer_.String(name.c_str());
-  json_writer_.Key("value");
-  json_writer_.StartArray();
-}
-
-void Writer::endList()
-{
-  json_writer_.EndArray();
+  // Module status
+  json_writer_.Key("motors_status");
+  json_writer_.String(convertModuleStatus(motor_data.module_status).c_str());
   json_writer_.EndObject();
 }
 
-void Writer::add(const std::string name, int min, int max, const std::string unit, int value)
+void Writer::packStateMachineData()
 {
+  const auto sm_data = data_.getStateMachineData();
+
+  json_writer_.Key("state_machine");
   json_writer_.StartObject();
-  json_writer_.Key("name");
-  json_writer_.String(name.c_str());
-  json_writer_.Key("min");
-  json_writer_.Int(min);
-  json_writer_.Key("max");
-  json_writer_.Int(max);
-  json_writer_.Key("unit");
-  json_writer_.String(unit.c_str());
-  json_writer_.Key("value");
-  json_writer_.Int(value);
+  json_writer_.Key("critical_failure");
+  json_writer_.Bool(sm_data.critical_failure);
+  json_writer_.Key("current_state");
+  json_writer_.String(convertStateMachineState(sm_data.current_state).c_str());  // Crucial
   json_writer_.EndObject();
 }
 
-void Writer::add(const std::string name, float min, float max, const std::string unit, float value)
+void Writer::packBattery(const data::BatteryData &battery)
 {
   json_writer_.StartObject();
-  json_writer_.Key("name");
-  json_writer_.String(name.c_str());
-  json_writer_.Key("min");
-  json_writer_.Double(min);
-  json_writer_.Key("max");
-  json_writer_.Double(max);
-  json_writer_.Key("unit");
-  json_writer_.String(unit.c_str());
-  json_writer_.Key("value");
-  json_writer_.Double(value);
-  json_writer_.EndObject();
-}
-
-void Writer::add(const std::string name, bool value)
-{
-  json_writer_.StartObject();
-  json_writer_.Key("name");
-  json_writer_.String(name.c_str());
-  json_writer_.Key("value");
-  json_writer_.Bool(value);
-  json_writer_.EndObject();
-}
-
-void Writer::add(const std::string name, data::State value)
-{
-  json_writer_.StartObject();
-  json_writer_.Key("name");
-  json_writer_.String(name.c_str());
-  json_writer_.Key("value");
-  json_writer_.String(convertStateMachineState(value).c_str());
-  json_writer_.EndObject();
-}
-
-void Writer::add(const std::string name, data::ModuleStatus value)
-{
-  json_writer_.StartObject();
-  json_writer_.Key("name");
-  json_writer_.String(name.c_str());
-  json_writer_.Key("value");
-  json_writer_.String(convertModuleStatus(value).c_str());
+  json_writer_.Key("average_temp");
+  json_writer_.Int(battery.average_temperature);
+  json_writer_.Key("voltage");
+  json_writer_.Int(battery.voltage);
+  json_writer_.Key("current");
+  json_writer_.Int(battery.current);
+  json_writer_.Key("charge");
+  json_writer_.Int(battery.charge);
+  json_writer_.Key("low_temp");
+  json_writer_.Int(battery.low_temperature);
+  json_writer_.Key("high_temp");
+  json_writer_.Int(battery.high_temperature);
+  json_writer_.Key("low_voltage_cell");
+  json_writer_.Int(battery.low_voltage_cell);
+  json_writer_.Key("high_voltage_cell");
+  json_writer_.Int(battery.high_voltage_cell);
+  json_writer_.Key("imd_fault");
+  json_writer_.Bool(battery.imd_fault);
   json_writer_.EndObject();
 }
 

@@ -6,6 +6,7 @@
 
 #include <rapidjson/writer.h>
 
+#include "utils/system.hpp"
 #include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 
@@ -17,6 +18,7 @@ class Sender : public utils::concurrent::Thread {
   void run() override;
 
  private:
+  utils::System &sys_;
   data::Data &data_;
   Client &client_;
   std::string convertStateMachineState(data::State state);

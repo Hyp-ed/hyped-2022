@@ -27,6 +27,7 @@ class Navigation {
   using NavigationArray          = std::array<data::nav_t, data::Sensors::kNumImus>;
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
+  using QuartileBounds          = std::array<data::nav_t, 3>;
 
   /**
    * @brief Construct a new Navigation object
@@ -83,12 +84,20 @@ class Navigation {
    */
   void calibrateGravity();
   /**
-   * @brief Apply Tukey's fences to an array of readings
+   * @brief Calculate quartiles for an array of readings. Updates quartile_bounds array
+   *
+   * @param pointer to array of original acceleration readings
+   *
+   * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
+   */
+  QuartileBounds calculateImuQuartiles(NavigationArray &data_array);
+  /**
+   * @brief Apply scaled interquartile range bounds on an array of readings
    *
    * @param pointer to array of original acceleration readings
    * @param threshold value
    */
-  void tukeyFences(NavigationArray &data_array, const data::nav_t threshold);
+  void imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold);
   /**
    * @brief Update central data structure
    */
@@ -136,8 +145,8 @@ class Navigation {
 
   static constexpr int kPrintFreq                     = 1;
   static constexpr data::nav_t kEmergencyDeceleration = 24;
-  static constexpr data::nav_t kTukeyThreshold        = 1;  // 0.75
-  static constexpr data::nav_t kTukeyIQRBound         = 3;
+  static constexpr data::nav_t kInterQuartileScaler   = 1;
+  static constexpr data::nav_t kMaxInterQuartileRange = 3;
 
   static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²

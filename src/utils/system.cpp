@@ -59,6 +59,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
   config.imu_config_path             = std::string(argv[1]);
   config.keyence_config_path         = std::string(argv[1]);
   config.temperature_config_path     = std::string(argv[1]);
+  config.pressure_config_path        = std::string(argv[1]);
   config.fake_trajectory_config_path = std::string(argv[1]);
   config.bms_config_path             = std::string(argv[1]);
   config.brakes_config_path          = std::string(argv[1]);
@@ -229,6 +230,31 @@ void System::parseArgs(const int argc, const char *const *const argv)
       argv[0]);
     config.use_fake_temperature_fail = false;
   }
+
+  // Use fake ambient_pressure?
+  if (config_object.HasMember("use_fake_ambient_pressure")) {
+    config.use_fake_ambient_pressure = config_object["use_fake_ambient_pressure"].GetBool();
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.use_fake_ambient_pressure' in config filet at %s; using "
+      "default "
+      "value",
+      argv[0]);
+    config.use_fake_ambient_pressure = false;
+  }
+  // Use fake ambient_pressure with fail?
+  if (config_object.HasMember("use_fake_ambient_pressure_fail")) {
+    config.use_fake_ambient_pressure_fail
+      = config_object["use_fake_ambient_pressure_fail"].GetBool();
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.use_fake_ambient_pressure_fail' in config filet at %s; using "
+      "default "
+      "value",
+      argv[0]);
+    config.use_fake_ambient_pressure_fail = false;
+  }
+
   // Use fake brakes?
   if (config_object.HasMember("use_fake_brakes")) {
     config.use_fake_brakes = config_object["use_fake_brakes"].GetBool();

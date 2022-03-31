@@ -34,7 +34,6 @@ binmain.o
 
 # Other rubbish
 .cpplint-cache
-.vscode
 .idea
 .ipynb_checkpoints
 *.ipch
@@ -44,6 +43,7 @@ binmain.o
 TelemetryData.txt
 config.server.json
 *.jar
+default.profraw
 
 # mac crosscompiler
 mac-crosscompiler

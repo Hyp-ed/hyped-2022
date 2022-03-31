@@ -106,9 +106,9 @@ void Writer::packSensorsData()
   json_writer_.Key("brakes_retracted");
   json_writer_.Bool(brakes_data.brakes_retracted);
   json_writer_.Key("temperature");
-  json_writer_.Int(sensors_data.temperature.temp);
+  json_writer_.Int(sensors_data.temperature.temperature);
   json_writer_.Key("pressure");
-  json_writer_.Int(sensors_data.pressure.pressure);
+  json_writer_.Int(sensors_data.ambient_pressure.ambient_pressure);
   // ImuData, EncoderData, StripeCounter data types not currently supported by json writer
 
   // Module statuses

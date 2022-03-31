@@ -88,8 +88,8 @@ TEST_F(WriterPackData, packsSensorsData)
   brakes_data.module_status    = data::ModuleStatus::kReady;
   batteries_data.module_status = data::ModuleStatus::kStart;
 
-  sensors_data.temperature.temp  = 20;
-  sensors_data.pressure.pressure = 400;
+  sensors_data.temperature.temperature           = 20;
+  sensors_data.ambient_pressure.ambient_pressure = 400;
 
   for (int16_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
     batteries_data.high_power_batteries[i].average_temperature = 8;

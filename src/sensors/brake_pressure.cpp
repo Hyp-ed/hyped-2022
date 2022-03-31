@@ -14,7 +14,7 @@ BrakePressure::BrakePressure(const uint8_t pin)
 
 void BrakePressure::run()
 {
-  uint16_t raw_value = pin_.read();
+  const uint16_t raw_value = pin_.read();
   log_.debug("raw value: %d", raw_value);
   pressure_data_.brake_pressure = scaleData(raw_value);
   log_.debug("scaled value: %d", pressure_data_.brake_pressure);
@@ -25,7 +25,7 @@ int8_t BrakePressure::scaleData(const uint8_t raw_value)
 {
   // TODO: Talk to Electronics to confirm the wiring diagram as scale changes based on that
   // DO NOT MERGE UNTIL THIS IS FIXED
-  double pressure = static_cast<double>(raw_value) / 4095;
+  const float pressure = static_cast<float>(raw_value) / 4095;
   return static_cast<int8_t>(pressure);
 }
 

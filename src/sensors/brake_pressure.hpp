@@ -19,11 +19,6 @@ class BrakePressure : public IBrakePressure {
   BrakePressure(const uint8_t pin);
   ~BrakePressure() {}
 
-  /**
-   * @brief
-   *
-   * @return int to set to data struct in sensors main
-   */
   uint8_t getData() const override;
 
   /**
@@ -40,15 +35,9 @@ class BrakePressure : public IBrakePressure {
    */
   static int8_t scaleData(uint8_t raw_value);
 
-  /**
-   * @brief ADC pin
-   */
   utils::io::ADC pin_;
   utils::Logger log_;
 
-  /**
-   * @brief int from data structs
-   */
   data::BrakePressureData pressure_data_;
 };
 

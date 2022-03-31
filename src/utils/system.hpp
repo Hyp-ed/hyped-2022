@@ -37,6 +37,8 @@ class System {
     bool use_fake_temperature_fail;
     bool use_fake_ambient_pressure;
     bool use_fake_ambient_pressure_fail;
+    bool use_fake_brake_pressure;
+    bool use_fake_brake_pressure_fail;
     bool use_fake_brakes;
     bool use_fake_controller;
     bool use_fake_high_power;

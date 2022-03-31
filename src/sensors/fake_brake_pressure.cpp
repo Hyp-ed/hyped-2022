@@ -10,8 +10,8 @@ namespace hyped::sensors {
 FakeBrakePressure::FakeBrakePressure(const bool is_fail)
     : data_(data::Data::getInstance()),
       log_("FAKE-BRAKE-PRESSURE", utils::System::getSystem().config_.log_level_sensors),
-      failure_(15),  // TODO: UPDATE ONCE FAIL VALUES ARE CONFIRMED
-      success_(10),  // TODO: UPDATE ONCE FAIL VALUES ARE CONFIRMED
+      failure_(9500),
+      success_(7000),
       is_fail_(is_fail),
       acc_start_time_(0),
       acc_started_(false),

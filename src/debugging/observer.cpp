@@ -261,6 +261,7 @@ void Observer::addTemperatureTask(const uint8_t pin)
     json_writer.Key("value");
     json_writer.Uint(temperature->getData());
   };
+  tasks_.push_back(temperature_task);
 }
 
 void Observer::addFakeTemperatureTask(const bool is_fail)
@@ -276,6 +277,7 @@ void Observer::addFakeTemperatureTask(const bool is_fail)
     json_writer.Key("value");
     json_writer.Uint(temperature->getData());
   };
+  tasks_.push_back(temperature_task);
 }
 
 }  // namespace hyped::debugging

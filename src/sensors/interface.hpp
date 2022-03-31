@@ -105,7 +105,7 @@ class IBrakePressure {
   virtual void run() = 0;
 
   /**
-   * @return pressure in bars
+   * @return pressure in mBars
    */
   virtual uint8_t getData() const = 0;
 };

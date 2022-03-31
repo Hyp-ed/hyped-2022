@@ -21,7 +21,7 @@ class FakeBrakePressure : public IBrakePressure {
   /**
    * @brief returns int representation
    *
-   * @return int pressure bars
+   * @return int pressure mBars
    */
   uint8_t getData() const override;
 

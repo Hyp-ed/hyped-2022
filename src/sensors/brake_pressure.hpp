@@ -33,7 +33,7 @@ class BrakePressure : public IBrakePressure {
 
  private:
   /**
-   * @brief scale raw digital data to output in bars
+   * @brief scale raw digital data to output in mBars
    *
    * @param raw_value input voltage
    * @return int representation of pressure

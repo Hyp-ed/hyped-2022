@@ -8,6 +8,9 @@
 
 namespace hyped::sensors {
 
+using AmbientTemperaturePins = std::array<uint8_t, data::Sensors::kNumAmbientTemp>;
+using BrakeTemperaturePins   = std::array<uint8_t, data::Sensors::kNumBrakeTemp>;
+
 class ITemperature {
  public:
   /**
@@ -32,7 +35,6 @@ class Temperature : public ITemperature {
   /**
    * @brief Construct a new Temperature object
    *
-   * @param log from main thread, for debugging purposes
    * @param pin for specific ADC pin
    */
   Temperature(const uint8_t pin);

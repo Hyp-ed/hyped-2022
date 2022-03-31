@@ -123,13 +123,15 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
   } else if (system.config_.use_fake_temperature_fail) {
     observer->addFakeTemperatureTask(true);
   } else {
-    const auto pin
-      = sensors::Main::temperaturePinFromFile(log, system.config_.temperature_config_path);
-    if (!pin) {
+    const auto pins
+      = sensors::Main::ambientTemperaturePinsFromFile(log, system.config_.temperature_config_path);
+    if (!pins) {
       log.error("failed to read temperature pin from file");
       return std::nullopt;
     }
-    observer->addTemperatureTask(*pin);
+    for (const auto pin : *pins) {
+      observer->addTemperatureTask(pin);
+    }
   }
   return observer;
 }

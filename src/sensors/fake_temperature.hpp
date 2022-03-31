@@ -12,8 +12,6 @@ class FakeTemperature : public ITemperature {
  public:
   /**
    * @brief Construct a new Fake Temperature object
-   *
-   * @param log
    * @param is_fail
    */
   FakeTemperature(const bool is_fail);

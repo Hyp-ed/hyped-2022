@@ -18,11 +18,13 @@ FakeTemperature::FakeTemperature(bool is_fail)
       failure_time_(0),
       failure_happened_(false)
 {
-  temp_.temp = success_;
+  temp_.temp   = success_;
+  auto &system = utils::System::getSystem();
+  utils::Logger log("FAKE-TEMPERATURE", system.config_.log_level);
   if (is_fail_) {
-    log_.info("fail initialised");
+    log.info("fail initialised");
   } else {
-    log_.info("initialised");
+    log.info("initialised");
   }
 }
 

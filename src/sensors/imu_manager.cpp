@@ -9,7 +9,7 @@
 
 namespace hyped::sensors {
 
-ImuManager::ImuManager(const std::array<uint32_t, data::Sensors::kNumImus> &imu_pins)
+ImuManager::ImuManager(const ImuPins &imu_pins)
     : Thread(utils::Logger("IMU-MANAGER", utils::System::getSystem().config_.log_level_sensors))
 {
   utils::io::Spi::getInstance().setClock(utils::io::Spi::Clock::k4MHz);

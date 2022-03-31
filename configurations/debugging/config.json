@@ -1,6 +1,7 @@
 {
   "sensors": {
-    "imu_pins": []
+    "imu_pins": [],
+    "temperature_pins": []
   },
   "observer": {
     "output_path": "readings.json",

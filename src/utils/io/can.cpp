@@ -160,9 +160,9 @@ int Can::receive(can::Frame *frame)
 
 void Can::processNewData(can::Frame *message)
 {
-  CanProccesor *owner = 0;
+  CanProcessor *owner = 0;
 
-  for (CanProccesor *processor : processors_) {
+  for (CanProcessor *processor : processors_) {
     if (processor->hasId(message->id, message->extended)) {
       owner = processor;
       break;
@@ -176,7 +176,7 @@ void Can::processNewData(can::Frame *message)
   }
 }
 
-void Can::registerProcessor(CanProccesor *processor)
+void Can::registerProcessor(CanProcessor *processor)
 {
   processors_.push_back(processor);
 }

@@ -6,6 +6,7 @@
 #include <utils/concurrent/lock.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/utils.hpp>
+#include <memory>
 
 namespace hyped {
 namespace utils {
@@ -23,7 +24,7 @@ struct Frame {
 
 }  // namespace can
 
-class CanProcessor {
+class ICanProcessor {
  public:
   /**
    * @brief To be called by CAN receive side. Object processes received CAN
@@ -69,7 +70,7 @@ class Can : public concurrent::Thread {
   /**
    * @brief Called by any Can-enabled device implementing CanProcessor interface
    */
-  void registerProcessor(CanProcessor *processor);
+  void registerProcessor(ICanProcessor *processor);
 
   /**
    * @brief To be called for starting the receive thread
@@ -102,7 +103,7 @@ class Can : public concurrent::Thread {
  private:
   int socket_;
   bool running_;
-  std::vector<CanProcessor *> processors_;
+  std::vector<ICanProcessor *> processors_;
   concurrent::Lock socket_lock_;
 };
 

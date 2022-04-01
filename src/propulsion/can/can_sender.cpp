@@ -35,7 +35,7 @@ void CanSender::registerController()
   can_.registerProcessor(this);
 }
 
-void CanSender::processNewData(utils::io::can::Frame &message)
+void CanSender::processNewData(const utils::io::can::Frame &message)
 {
   is_sending_ = false;
   uint32_t id = message.id;

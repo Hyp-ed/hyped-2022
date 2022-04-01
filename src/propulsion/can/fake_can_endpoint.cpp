@@ -3,7 +3,7 @@
 #include <utils/system.hpp>
 
 namespace hyped::propulsion {
-FakeCanEndpoint::FakeCanEndpoint(utils::io::CanProcessor &sender)
+FakeCanEndpoint::FakeCanEndpoint(utils::io::ICanProcessor &sender)
     : utils::concurrent::Thread(
       utils::Logger("FAKE-CAN-ENDPOINT", utils::System::getSystem().config_.log_level_sensors)),
       sender_(sender)

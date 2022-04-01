@@ -123,12 +123,14 @@ int Can::send(const can::Frame &frame)
 
 void Can::run()
 {
-  /* these settings are static and can be held out of the hot path */
-  can::Frame data;
-
   log_.info("starting continuous reading");
   while (running_ && socket_ >= 0) {
-    receive(&data);
+    can::Frame data;
+    const auto success = receive(&data);
+    if (!success) {
+      log_.error("failed to receive data; trying again");
+      continue;
+    }
     processNewData(&data);
   }
   log_.info("stopped continuous reading");
@@ -160,25 +162,19 @@ int Can::receive(can::Frame *frame)
 
 void Can::processNewData(can::Frame *message)
 {
-  CanProcessor *owner = 0;
-
-  for (CanProcessor *processor : processors_) {
-    if (processor->hasId(message->id, message->extended)) {
-      owner = processor;
-      break;
-    }
-  }
-
-  if (owner) {
-    owner->processNewData(*message);
-  } else {
-    log_.error("did not find owner of received CAN message with id %d", message->id);
+  for (auto &processor : processors_) {
+    if (processor->hasId(message->id, message->extended)) { processor->processNewData(*message); }
   }
 }
 
-void Can::registerProcessor(CanProcessor *processor)
+void Can::registerProcessor(ICanProcessor *processor)
 {
-  processors_.push_back(processor);
+  if (!processor) {
+    log_.error("tried to register a nullptr as a processor");
+    utils::System::getSystem().stop();
+    return;
+  }
+  processors_.push_back(std::move(processor));
 }
 
 }  // namespace io

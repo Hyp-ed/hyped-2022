@@ -65,7 +65,7 @@ struct Data {
 
 }  // namespace bms
 
-class Bms : public utils::concurrent::Thread, public utils::io::CanProcessor, public IBms {
+class Bms : public utils::concurrent::Thread, public utils::io::ICanProcessor, public IBms {
   friend utils::io::Can;
 
  public:
@@ -121,7 +121,7 @@ class Bms : public utils::concurrent::Thread, public utils::io::CanProcessor, pu
   NO_COPY_ASSIGN(Bms)
 };
 
-class HighPowerBms : public utils::io::CanProcessor, public IBms {
+class HighPowerBms : public utils::io::ICanProcessor, public IBms {
   friend utils::io::Can;
 
  public:

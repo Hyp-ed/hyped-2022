@@ -89,7 +89,10 @@ void Can::start()
 
 int Can::send(const can::Frame &frame)
 {
-  if (socket_ < 0) return 0;  // early exit if no can device present
+  if (socket_ < 0) {
+    log_.error("tried to send message but no CAN device was found");
+    return 0;
+  }
 
   can_frame can;
   log_.debug("trying to send something");

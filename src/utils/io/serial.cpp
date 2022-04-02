@@ -12,7 +12,7 @@
 
 namespace hyped::utils::io {
 
-SerialProtocol::SerialProtocol(const std::string serial, const BaudRate baud_rate)
+SerialProtocol::SerialProtocol(const std::string &serial, const BaudRate baud_rate)
     : serial_device_(serial),
       baud_rate_(baud_rate),
       log_(utils::Logger("SERIAL", utils::System::getSystem().config_.log_level))
@@ -91,7 +91,7 @@ void SerialProtocol::readData(std::vector<uint8_t> &data)
     return;
   }
 
-  const size_t bytesRead = read(serial_, &readBuffer_[0], readBufferSize_B_);
+  const ssize_t bytesRead = read(serial_, &readBuffer_[0], readBufferSize_B_);
 
   if (bytesRead < 0) {
     log_.error("Error reading from serial device.");

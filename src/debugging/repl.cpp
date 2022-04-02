@@ -1,3 +1,4 @@
+#include "can_listener.hpp"
 #include "observer.hpp"
 #include "repl.hpp"
 
@@ -211,41 +212,65 @@ void Repl::addDirectCanCommands()
 {
   auto &can = utils::io::Can::getInstance();
   can.start();
-  Command can_send_command;
-  can_send_command.identifier  = "direct can send";
-  can_send_command.description = "Send an aribtrary message, to be specified after, to the CAN bus";
-  can_send_command.handler     = [this, &can]() {
-    utils::io::can::Frame frame;
-    frame.extended = false;
-    std::cout << "CAN id (e.g. `3e'):" << std::endl;
-    std::cin >> std::hex >> frame.id;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Number of bytes to send (e.g. `7'):" << std::endl;
-    uint32_t len;
-    std::cin >> std::dec >> len;
-    if (len > 8) {
-      log_.error("found can message length %u which exceeds the maximum of 8 bytes", len);
-      return;
-    }
-    frame.len = static_cast<uint32_t>(len);
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Bytes to send (e.g. `ff";
-    for (uint8_t i = 1; i < frame.len; ++i) {
-      std::cout << " ff";
-    }
-    std::cout << "':" << std::endl;
-    for (uint8_t i = 0; i < frame.len; ++i) {
-      uint32_t value;
-      std::cin >> std::hex >> value;
-      if (value > UINT8_MAX) {
-        log_.error("found value %u which exceeds the maximum of 255 for a single byte", value);
+  {
+    Command can_send_command;
+    can_send_command.identifier = "can send";
+    can_send_command.description
+      = "Send an aribtrary message, to be specified after, to the CAN bus";
+    can_send_command.handler = [this, &can]() {
+      utils::io::can::Frame frame;
+      frame.extended = false;
+      std::cout << "CAN id (e.g. `3fx'):" << std::endl;
+      std::cin >> std::hex >> frame.id;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "Number of bytes to send (e.g. `7'):" << std::endl;
+      uint32_t len;
+      std::cin >> std::dec >> len;
+      if (len > 8) {
+        log_.error("found can message length %u which exceeds the maximum of 8 bytes", len);
+        return;
       }
-      frame.data[i] = static_cast<uint8_t>(value);
-    }
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    can.send(frame);
-  };
-  addCommand(can_send_command);
+      frame.len = static_cast<uint32_t>(len);
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "Bytes to send (e.g. `ff";
+      for (uint8_t i = 1; i < frame.len; ++i) {
+        std::cout << " ff";
+      }
+      std::cout << "':" << std::endl;
+      for (uint8_t i = 0; i < frame.len; ++i) {
+        uint32_t value;
+        std::cin >> std::hex >> value;
+        if (value > UINT8_MAX) {
+          log_.error("found value %u which exceeds the maximum of 255 for a single byte", value);
+        }
+        frame.data[i] = static_cast<uint8_t>(value);
+      }
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      can.send(frame);
+    };
+    addCommand(can_send_command);
+  }
+  {
+    Command can_subscribe_command;
+    can_subscribe_command.identifier  = "can subscribe";
+    can_subscribe_command.description = "Subscribe to a node_id on the base CAN bus";
+    const auto can_listener           = std::make_shared<CanListener>();
+    can.registerProcessor(can_listener.get());
+    can_subscribe_command.handler = [this, can_listener]() {
+      std::cout << "CAN id (e.g. `3fx'):" << std::endl;
+      uint32_t node_id;
+      std::cin >> std::hex >> node_id;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      constexpr uint32_t kMaximumNodeId = (1 << 11) - 1;
+      if (node_id > kMaximumNodeId) {
+        log_.error("found node id 0x%x which exceeds the maximum 0x%x", node_id, kMaximumNodeId);
+        return;
+      }
+      log_.info("subscribed to CAN node_id 0x%x", node_id);
+      can_listener->subscribe(node_id);
+    };
+    addCommand(can_subscribe_command);
+  }
 }
 
 }  // namespace hyped::debugging

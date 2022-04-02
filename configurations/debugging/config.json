@@ -6,7 +6,8 @@
   "debugger": {
     "output_path": "readings.json",
     "use_imu_manager": false,
-    "use_direct_can": true
+    "use_direct_can": false,
+    "can_ids": []
   },
   "brakes": {
     "pins": [

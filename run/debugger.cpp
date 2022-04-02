@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <debugging/observer.hpp>
 #include <debugging/repl.hpp>
 #include <utils/system.hpp>

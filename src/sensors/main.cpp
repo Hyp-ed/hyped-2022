@@ -145,6 +145,25 @@ void Main::checkAmbientPressure()
   }
 }
 
+void Main::checkBrakePressure()
+{
+  for (size_t i = 0; i < brake_pressures_.size(); ++i) {
+    brake_pressures_[i]->run();
+    const auto brake_pressure = brake_pressures_[i]->getData();
+    if (brake_pressure > 9000) {
+      log_.info("Brake pressure (%u) exceeds maximum value (%d)", brake_pressure, 9000);
+      auto sensors_data          = data_.getSensorsData();
+      sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setSensorsData(sensors_data);
+    } else if (brake_pressure < 5600) {
+      log_.info("Brake pressure (%u) exceeds minimum value (%d)", brake_pressure, 5600);
+      auto sensors_data          = data_.getSensorsData();
+      sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setSensorsData(sensors_data);
+    }
+  }
+}
+
 std::optional<Main::KeyencePins> Main::keyencePinsFromFile(utils::Logger &log,
                                                            const std::string &path)
 {
@@ -344,8 +363,9 @@ void Main::run()
   auto previous_keyence = current_keyence;
 
   // Intialise temperature and pressure
-  temperature_data_ = data_.getSensorsData().temperature;
-  pressure_data_    = data_.getSensorsData().ambient_pressure;
+  temperature_data_    = data_.getSensorsData().temperature;
+  pressure_data_       = data_.getSensorsData().ambient_pressure;
+  brake_pressure_data_ = data_.getSensorsData().brake_pressures;
 
   std::size_t iteration_count = 0;
   while (sys_.isRunning()) {
@@ -368,6 +388,7 @@ void Main::run()
     if (iteration_count % 20 == 0) {  // check every 20 cycles of main
       checkTemperature();
       checkAmbientPressure();
+      checkBrakePressure();
       // So that temp_count does not get huge
       iteration_count = 0;
     }

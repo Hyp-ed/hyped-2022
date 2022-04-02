@@ -85,6 +85,7 @@ struct Sensors : public Module {
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
   std::array<CounterData, kNumKeyence> keyence_stripe_counters;
+  std::array<BrakePressureData, kNumBrakePressure> brake_pressures;
   bool high_power_off = false;  // true if all SSRs are not in HP
 };
 

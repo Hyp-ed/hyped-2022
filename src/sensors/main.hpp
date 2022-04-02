@@ -60,6 +60,12 @@ class Main : public utils::concurrent::Thread {
    */
   void checkAmbientPressure();
 
+  /**
+   * @brief used to check the brake pressure every twenty times in the main loop,
+   *        similar to temperature;
+   */
+  void checkBrakePressure();
+
   utils::System &sys_;
   data::Data &data_;
 
@@ -73,7 +79,9 @@ class Main : public utils::concurrent::Thread {
   std::unique_ptr<BmsManager> battery_manager_;
   std::unique_ptr<ITemperature> temperature_;
   std::unique_ptr<IAmbientPressure> ambient_pressure_;
+  std::array<std::unique_ptr<IBrakePressure>, data::Sensors::kNumBrakePressure> brake_pressures_;
 
+  std::array<data::BrakePressureData, data::Sensors::kNumBrakePressure> brake_pressure_data_;
   data::TemperatureData temperature_data_;
   data::AmbientPressureData pressure_data_;
 };

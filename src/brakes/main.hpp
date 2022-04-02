@@ -32,8 +32,8 @@ class Main : public utils::concurrent::Thread {
 
   void checkEngaged();
   void checkRetracted();
-  void engage();
-  void retract();
+  void engageAndCheck();
+  void retractAndCheck();
 
   static std::optional<std::vector<BrakePins>> pinsFromFile(utils::Logger &log,
                                                             const std::string &path);

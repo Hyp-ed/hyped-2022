@@ -189,7 +189,7 @@ class IntegratorTestLinear : public ::testing::Test {
   int max_time = 100;
   DataPoint<float> datatry[101];
   DataPoint<float> datatry2[101];
-  DataPoint<float> datatimeAndAcc;
+  DataPoint<float> data_time_and_acceleration;
   DataPoint<float> datatimeAndAcc2;
   int kConstant       = rand() % 100;
   std::string message = "Expected Perfect fit in linear case -> Urgent: modify Implementation";
@@ -197,12 +197,12 @@ class IntegratorTestLinear : public ::testing::Test {
   void SetUp()
   {
     for (size_t i = 0; i < 101; ++i) {
-      datatimeAndAcc = DataPoint<float>(i * pow(10, 6), i);
-      datatry[i]     = datatimeAndAcc;
+      data_time_and_acceleration = DataPoint<float>(i * pow(10, 6), i);
+      datatry[i]                 = data_time_and_acceleration;
     }
-    for (int j = 0; j < 101; j++) {
-      datatimeAndAcc = DataPoint<float>(j * pow(10, 6), kConstant * j);
-      datatry2[j]    = datatimeAndAcc;
+    for (int j = 0; j < 101; ++j) {
+      data_time_and_acceleration = DataPoint<float>(j * pow(10, 6), kConstant * j);
+      datatry2[j]                = data_time_and_acceleration;
     }
   }
   void TearDown() {}
@@ -221,7 +221,7 @@ TEST_F(IntegratorTestLinear, linearAreaTest)
   for (size_t i = 0; i < 101; ++i) {
     reference = integratetry.update(datatry[i]);
   }
-  float expected_value = max_time * max_time / 2;
+  const float expected_value = max_time * max_time / 2;
   ASSERT_EQ(expected_value, reference.value) << message;
 }
 /**
@@ -233,12 +233,12 @@ TEST_F(IntegratorTestLinear, linearAreaTest)
 TEST_F(IntegratorTestLinear, linearAreaTest2)
 {
   DataPoint<float> reference;
-  DataPoint<float> velocity      = DataPoint<float>(0, 0);
-  Integrator<float> integratetry = Integrator<float>(&velocity);
+  DataPoint<float> velocity(0, 0);
+  Integrator<float> integratetry(&velocity);
   for (size_t i = 0; i < 101; ++i) {
     reference = integratetry.update(datatry2[i]);
   }
-  float expected_value = kConstant * max_time * max_time / 2;
+  const float expected_value = kConstant * max_time * max_time / 2;
   ASSERT_EQ(expected_value, reference.value) << message;
 }
 
@@ -254,28 +254,20 @@ TEST_F(IntegratorTestLinear, linearAreaTest2)
 TEST(IntegratorTestQuadratic, QuadraticTest)
 {
   static constexpr size_t kNumPoints = 10001;
-  int max_time                       = 100;
-  DataPoint<float> data_to_integrate[10001];
-  std::vector<float> data_time;
-  DataPoint<float> datatimeAndAcc;
-  std::vector<float>::const_iterator t;
-  int count = 0;
-  data_time = linspace<float>(0, max_time, kNumPoints);
-  float timer;
-  for (t = data_time.begin(); t != data_time.end(); t++) {
-    timer                    = *t;
-    datatimeAndAcc           = DataPoint<float>(timer * pow(10, 6), timer * timer);
-    data_to_integrate[count] = datatimeAndAcc;
-    count++;
+  static constexpr float kMaxTime    = 100;
+  std::vector<DataPoint<float>> data_to_integrate;
+  const auto data_time = utils::math::linspace<float>(0, kMaxTime, kNumPoints);
+  for (const auto timer : data_time) {
+    data_to_integrate.emplace_back(timer * std::pow(10, 6), timer * timer);
   }
-  std::string message = "Bad approximation, please modify implementation";
+  DataPoint<float> velocity(0, 0);
+  Integrator<float> integratetry(&velocity);
   DataPoint<float> reference;
-  DataPoint<float> velocity      = DataPoint<float>(0, 0);
-  Integrator<float> integratetry = Integrator<float>(&velocity);
-  for (size_t i = 0; i < 10001; ++i) {
-    reference = integratetry.update(data_to_integrate[i]);
+  for (const auto point : data_to_integrate) {
+    reference = integratetry.update(point);
   }
-  ASSERT_EQ(reference.value <= 333333 + 50 && reference.value >= 333333 - 50, true) << message;
+  ASSERT_EQ(reference.value <= 333333 + 50 && reference.value >= 333333 - 50, true)
+    << "Bad approximation, please modify implementation";
 }
 }  // namespace math
 }  // namespace utils

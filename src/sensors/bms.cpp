@@ -252,12 +252,13 @@ void HighPowerBms::processNewData(utils::io::can::Frame &message)
     battery_data_.low_voltage_cell = ((message.data[5] << 8) | message.data[6]);  // mV
   } else if (message.id == static_cast<uint16_t>(can_id_ + 1)) {
     battery_data_.high_voltage_cell = ((message.data[0] << 8) | message.data[1]);  // mV
-    uint16_t imd_reading            = ((message.data[2] << 8) | message.data[3]);  // mV
-    log_.debug("Isolation ADC: %u", imd_reading);
-    if (imd_reading > 4000) {  // 4 volts for safe isolation
-      battery_data_.imd_fault = true;
+    uint16_t insulation_monitoring_device_reading
+      = ((message.data[2] << 8) | message.data[3]);  // mV
+    log_.debug("Isolation ADC: %u", insulation_monitoring_device_reading);
+    if (insulation_monitoring_device_reading > 4000) {  // 4 volts for safe isolation
+      battery_data_.insulation_monitoring_device_fault = true;
     } else {
-      battery_data_.imd_fault = false;
+      battery_data_.insulation_monitoring_device_fault = false;
     }
   }
   last_update_time_ = utils::Timer::getTimeMicros();

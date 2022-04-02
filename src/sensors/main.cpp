@@ -67,7 +67,7 @@ Main::Main()
       ambient_temperature = std::make_unique<FakeTemperature>(false);
     }
   } else {
-    auto ambient_temperature_pins
+    const auto ambient_temperature_pins
       = ambientTemperaturePinsFromFile(log_, sys_.config_.temperature_config_path);
     if (!ambient_temperature_pins) {
       log_.error("failed to initialise temperature sensor");

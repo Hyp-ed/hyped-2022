@@ -4,10 +4,7 @@ namespace hyped {
 namespace utils {
 namespace math {
 
-KalmanMultivariate::KalmanMultivariate(unsigned int n, unsigned int m, unsigned int k)
-    : n_(n),
-      m_(m),
-      k_(k)
+KalmanMultivariate::KalmanMultivariate(uint32_t n, uint32_t m, uint32_t k) : n_(n), m_(m), k_(k)
 {
 }
 

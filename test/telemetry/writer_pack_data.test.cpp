@@ -94,26 +94,26 @@ TEST_F(WriterPackData, packsSensorsData)
   brakes_data.brakes_retracted[1]                = true;
 
   for (size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
-    batteries_data.high_power_batteries[i].average_temperature = 8;
-    batteries_data.high_power_batteries[i].charge              = 3;
-    batteries_data.high_power_batteries[i].current             = 10;
-    batteries_data.high_power_batteries[i].high_temperature    = 16;
-    batteries_data.high_power_batteries[i].high_voltage_cell   = 24;
-    batteries_data.high_power_batteries[i].imd_fault           = false;
-    batteries_data.high_power_batteries[i].low_temperature     = 13;
-    batteries_data.high_power_batteries[i].low_voltage_cell    = 5;
-    batteries_data.high_power_batteries[i].voltage             = 12;
+    batteries_data.high_power_batteries[i].average_temperature                = 8;
+    batteries_data.high_power_batteries[i].charge                             = 3;
+    batteries_data.high_power_batteries[i].current                            = 10;
+    batteries_data.high_power_batteries[i].high_temperature                   = 16;
+    batteries_data.high_power_batteries[i].high_voltage_cell                  = 24;
+    batteries_data.high_power_batteries[i].insulation_monitoring_device_fault = false;
+    batteries_data.high_power_batteries[i].low_temperature                    = 13;
+    batteries_data.high_power_batteries[i].low_voltage_cell                   = 5;
+    batteries_data.high_power_batteries[i].voltage                            = 12;
   }
   for (size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
-    batteries_data.low_power_batteries[i].average_temperature = 8;
-    batteries_data.low_power_batteries[i].charge              = 3;
-    batteries_data.low_power_batteries[i].current             = 10;
-    batteries_data.low_power_batteries[i].high_temperature    = 16;
-    batteries_data.low_power_batteries[i].high_voltage_cell   = 24;
-    batteries_data.low_power_batteries[i].imd_fault           = false;
-    batteries_data.low_power_batteries[i].low_temperature     = 13;
-    batteries_data.low_power_batteries[i].low_voltage_cell    = 5;
-    batteries_data.low_power_batteries[i].voltage             = 12;
+    batteries_data.low_power_batteries[i].average_temperature                = 8;
+    batteries_data.low_power_batteries[i].charge                             = 3;
+    batteries_data.low_power_batteries[i].current                            = 10;
+    batteries_data.low_power_batteries[i].high_temperature                   = 16;
+    batteries_data.low_power_batteries[i].high_voltage_cell                  = 24;
+    batteries_data.low_power_batteries[i].insulation_monitoring_device_fault = false;
+    batteries_data.low_power_batteries[i].low_temperature                    = 13;
+    batteries_data.low_power_batteries[i].low_voltage_cell                   = 5;
+    batteries_data.low_power_batteries[i].voltage                            = 12;
   }
 
   data_.setSensorsData(sensors_data);
@@ -128,13 +128,13 @@ TEST_F(WriterPackData, packsSensorsData)
   const std::string expected_json
     = "{\"sensors\":{\"lp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
       "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
-      "24,\"imd_fault\":false},{\"average_temp\":43,\"voltage\":436,\"current\":238,\"charge\":21,"
-      "\"low_temp\":32,\"high_temp\":13,\"low_voltage_cell\":6900,\"high_voltage_cell\":8600,\"imd_"
-      "fault\":false}],\"hp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
-      "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
-      "24,\"imd_fault\":false}],\"brakes_retracted\":[true,true],\"temperature\":20,\"pressure\":"
-      "400,\"brakes_status\":\"READY\",\"sensors_status\":\"INIT\",\"batteries_status\":\"START\"}"
-      "}";
+      "24,\"insulation_monitoring_device_fault\":false},{\"average_temp\":43,\"voltage\":436,"
+      "\"current\":238,\"charge\":21,\"low_temp\":32,\"high_temp\":13,\"low_voltage_cell\":6900,"
+      "\"high_voltage_cell\":8600,\"insulation_monitoring_device_fault\":false}],\"hp_batteries\":["
+      "{\"average_temp\":8,\"voltage\":12,\"current\":10,\"charge\":3,\"low_temp\":13,\"high_"
+      "temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":24,\"insulation_monitoring_device_"
+      "fault\":false}],\"brakes_retracted\":[true,true],\"temperature\":20,\"pressure\":400,"
+      "\"brakes_status\":\"READY\",\"sensors_status\":\"INIT\",\"batteries_status\":\"START\"}}";
   ASSERT_EQ(actual_json, expected_json) << "Sensors json does not match expected output.";
   ASSERT_TRUE(writer.isValidJson()) << "Sensors json invalid.";
 }

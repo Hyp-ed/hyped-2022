@@ -2,9 +2,7 @@
 
 #include <Eigen/Dense>
 
-namespace hyped {
-namespace utils {
-namespace math {
+namespace hyped::utils::math {
 
 /**
  * @brief    This class is for filtering the data from sensors to smoothen it.
@@ -18,7 +16,7 @@ class KalmanMultivariate {
    * @param[in] m                       measurement dimensionality
    * @param[in] k                       control dimensionality (default 0)
    */
-  KalmanMultivariate(unsigned int n, unsigned int m, unsigned int k = 0);
+  KalmanMultivariate(uint32_t n, uint32_t m, uint32_t k = 0);
 
   /**
    * @brief    Set dynamics model matrices (without control)
@@ -157,6 +155,4 @@ class KalmanMultivariate {
    */
   void correct(Eigen::VectorXf &z);
 };
-}  // namespace math
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils::math

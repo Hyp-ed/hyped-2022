@@ -96,11 +96,11 @@ std::optional<BmsManager::Config> BmsManager::readConfig(utils::Logger &log,
   return config;
 }
 
-bool BmsManager::checkImd()
+bool BmsManager::checkInuslationMonitoringDevice()
 {
   for (size_t i = 0; i < data::FullBatteryData::kNumHPBatteries; ++i) {
-    if (battery_data_.high_power_batteries[i].imd_fault) {
-      log_.error("IMD Fault %d: clearing imd_out_, throwing kCriticalFailure", i);
+    if (battery_data_.high_power_batteries[i].insulation_monitoring_device_fault) {
+      log_.error("%d: IMD fault detected", i);
       return false;
     }
   }
@@ -136,10 +136,11 @@ void BmsManager::run()
         battery_data_.module_status = data::ModuleStatus::kReady;
       }
       if (battery_data_.module_status != data::ModuleStatus::kCriticalFailure) {
-        if (!checkBatteriesInRange() || !checkImd()) {
+        if (!checkBatteriesInRange() || !checkInuslationMonitoringDevice()) {
           if (battery_data_.module_status != previous_status_)
             log_.error("battery failure detected");
           battery_data_.module_status = data::ModuleStatus::kCriticalFailure;
+          data_.setBatteriesData(battery_data_);
         }
         previous_status_ = battery_data_.module_status;
       }

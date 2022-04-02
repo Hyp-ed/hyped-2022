@@ -99,7 +99,7 @@ struct BatteryData {
   int8_t high_temperature;           // C
   uint16_t low_voltage_cell;         // mV
   uint16_t high_voltage_cell;        // mV
-  bool imd_fault;
+  bool insulation_monitoring_device_fault;
 };
 
 struct FullBatteryData : public Module {

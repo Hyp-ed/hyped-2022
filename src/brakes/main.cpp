@@ -77,7 +77,7 @@ void Main::checkRetracted()
   }
 }
 
-void Main::engage()
+void Main::engageAndCheck()
 {
   magnetic_brake_->engage();
   friction_brake_->engage();
@@ -85,7 +85,7 @@ void Main::engage()
   checkEngaged();
 }
 
-void Main::retract()
+void Main::retractAndCheck()
 {
   magnetic_brake_->retract();
   friction_brake_->retract();
@@ -117,14 +117,14 @@ void Main::run()
       case data::State::kFinished: {
         const auto braking_command = data_.getTelemetryData().nominal_braking_command;
         if (braking_command) {
-          engage();
+          engageAndCheck();
         } else {
-          retract();
+          retractAndCheck();
         }
         break;
       }
       case data::State::kCalibrating:
-        retract();
+        retractAndCheck();
         brakes_data_.module_status = data::ModuleStatus::kReady;
         data_.setBrakesData(brakes_data_);
         break;
@@ -137,7 +137,7 @@ void Main::run()
       case data::State::kNominalBraking:
       case data::State::kFailureBraking:
       case data::State::kInvalid:
-        engage();
+        engageAndCheck();
         break;
     }
   }

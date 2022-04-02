@@ -159,7 +159,7 @@ class Randomiser {
     battery_data.high_voltage_cell = static_cast<uint16_t>((rand() % 500) * 100);
 
     // Generates a random bool value for IMD fault.
-    battery_data.imd_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
+    battery_data.insulation_monitoring_device_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
 
   // Randomises the entries in a hyped::data::Batteries struct.

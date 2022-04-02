@@ -30,7 +30,7 @@ class BmsManager : public utils::concurrent::Thread {
   /**
    * @brief check IMD and set GPIOs accordingly
    */
-  bool checkImd();
+  bool checkInuslationMonitoringDevice();
 
   /**
    * @brief holds LP BatteryData, HP BatteryData, and module_status

@@ -177,8 +177,8 @@ void Writer::packBattery(const data::BatteryData &battery)
   json_writer_.Int(battery.low_voltage_cell);
   json_writer_.Key("high_voltage_cell");
   json_writer_.Int(battery.high_voltage_cell);
-  json_writer_.Key("imd_fault");
-  json_writer_.Bool(battery.imd_fault);
+  json_writer_.Key("insulation_monitoring_device_fault");
+  json_writer_.Bool(battery.insulation_monitoring_device_fault);
   json_writer_.EndObject();
 }
 

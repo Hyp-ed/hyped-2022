@@ -22,9 +22,9 @@ using hyped::utils::math::KalmanMultivariate;
  */
 class KalmanFunctionality : public ::testing::Test {
  protected:
-  unsigned int n = 2;
-  unsigned int m = 3;
-  unsigned int k = 1;
+  uint32_t n = 2;
+  uint32_t m = 3;
+  uint32_t k = 1;
 
   KalmanMultivariate kalman           = KalmanMultivariate(n, m, 0);
   Eigen::VectorXf x0                  = Eigen::VectorXf::Zero(n);
@@ -170,9 +170,9 @@ TEST_F(KalmanFunctionality, handlesUpdateInR)
  */
 class KalmanMathematics : public ::testing::Test {
  protected:
-  unsigned int n = 3;
-  unsigned int m = 2;
-  unsigned int k = 1;
+  uint32_t n = 3;
+  uint32_t m = 2;
+  uint32_t k = 1;
 
   KalmanMultivariate kalmanMathWithoutControl = KalmanMultivariate(n, m, 0);
   KalmanMultivariate kalmanMathWithControl    = KalmanMultivariate(n, m, k);
@@ -347,9 +347,9 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
  */
 class KalmanIdentity : public ::testing::Test {
  protected:
-  unsigned int n = 2;
-  unsigned int m = 3;
-  unsigned int k = 1;
+  uint32_t n = 2;
+  uint32_t m = 3;
+  uint32_t k = 1;
 
   KalmanMultivariate kalman            = KalmanMultivariate(n, m, k);
   static constexpr size_t kNumTestData = 50;
@@ -400,10 +400,10 @@ TEST_F(KalmanIdentity, handlesIdentity)
  */
 class KalmanExceptions : public ::testing::Test {
  public:
-  unsigned int n = 2;
-  unsigned int m = 3;
-  unsigned int k = 1;
-  unsigned int c = 10;
+  uint32_t n = 2;
+  uint32_t m = 3;
+  uint32_t k = 1;
+  uint32_t c = 10;
 
   KalmanMultivariate kalman = KalmanMultivariate(n, m, 0);
   Eigen::VectorXf x0        = Eigen::VectorXf::Zero(c);

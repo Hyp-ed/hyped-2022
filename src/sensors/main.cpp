@@ -7,7 +7,9 @@
 #include <rapidjson/stringbuffer.h>
 
 #include <sensors/ambient_pressure.hpp>
+#include <sensors/brake_pressure.hpp>
 #include <sensors/fake_ambient_pressure.hpp>
+#include <sensors/fake_brake_pressure.hpp>
 #include <sensors/fake_keyence.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/gpio_counter.hpp>
@@ -112,6 +114,30 @@ Main::Main()
                                                           ambient_pressure_pins->temperature_pin);
   }
 
+  // BrakePressure
+  if (sys_.config_.use_fake_brake_pressure_fail) {
+    for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
+      auto brake_pressure = std::make_unique<FakeBrakePressure>(true);
+      brake_pressures_[i] = std::move(brake_pressure);
+    }
+  } else if (sys_.config_.use_fake_brake_pressure) {
+    for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
+      auto brake_pressure = std::make_unique<FakeBrakePressure>(false);
+      brake_pressures_[i] = std::move(brake_pressure);
+    }
+  } else {
+    const auto brake_pressure_pins
+      = brakePressurePinsFromFile(log_, sys_.config_.pressure_config_path);
+    if (!brake_pressure_pins) {
+      log_.error("failed to initialise brake pressure sensor");
+      sys_.stop();
+      return;
+    }
+    for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
+      auto brake_pressure = std::make_unique<BrakePressure>(brake_pressure_pins->at(i));
+      brake_pressures_[i] = std::move(brake_pressure);
+    }
+  }
   // kReady for state machine transition
   sensors_               = data_.getSensorsData();
   sensors_.module_status = data::ModuleStatus::kReady;

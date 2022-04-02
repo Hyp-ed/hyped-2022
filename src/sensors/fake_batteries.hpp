@@ -1,16 +1,14 @@
 #pragma once
 
-#include "interface.hpp"
+#include "bms.hpp"
 
 #include <string>
 #include <vector>
 
+#include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 
 namespace hyped {
-
-using data::Data;
-using utils::Logger;
 
 namespace sensors {
 

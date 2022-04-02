@@ -1,13 +1,33 @@
 #pragma once
 
-#include "interface.hpp"
-
 #include <cstdint>
 
 #include <data/data.hpp>
 #include <utils/io/adc.hpp>
 #include <utils/logger.hpp>
 namespace hyped::sensors {
+
+using AmbientTemperaturePins = std::array<uint8_t, data::Sensors::kNumAmbientTemp>;
+using BrakeTemperaturePins   = std::array<uint8_t, data::Sensors::kNumBrakeTemp>;
+
+class ITemperature {
+ public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~ITemperature() {}
+
+  /**
+   * @brief not a thread, checks temperature
+   */
+  virtual void run() = 0;
+
+  /**
+   * @brief returns int representation of temperature
+   * @return int temperature degrees C
+   */
+  virtual uint8_t getData() const = 0;
+};
 
 class Temperature : public ITemperature {
  public:
@@ -17,7 +37,7 @@ class Temperature : public ITemperature {
    * @param pin for specific ADC pin
    */
   Temperature(const uint8_t pin);
-  ~Temperature() {}
+  ~Temperature();
 
   /**
    * @brief
@@ -40,11 +60,8 @@ class Temperature : public ITemperature {
    */
   static int8_t scaleData(uint8_t raw_value);
 
-  /**
-   * @brief ADC pin
-   */
-  utils::io::ADC pin_;
   utils::Logger log_;
+  utils::io::Adc pin_;
 
   /**
    * @brief int from data structs

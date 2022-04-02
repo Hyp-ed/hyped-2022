@@ -17,7 +17,7 @@ namespace math {
 std::array<int, 3> createRandomArrayForBasic()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 3; ++i) {
     output[i] = rand() % 1000;
   }
   return output;
@@ -31,12 +31,12 @@ std::array<int, 3> createRandomArrayForBasic()
  */
 class OperationsByConstant : public ::testing::Test {
  protected:
-  const int dimension = 3;
-  Vector<int, 3> vector_one;
-  Vector<int, 3> vector_two;
-  Vector<int, 3> vector_three;
-  Vector<int, 3> vector_result_one;
-  Vector<int, 3> vector_result_two;
+  static constexpr size_t kDimension = 3;
+  Vector<int, kDimension> vector_one;
+  Vector<int, kDimension> vector_two;
+  Vector<int, kDimension> vector_three;
+  Vector<int, kDimension> vector_result_one;
+  Vector<int, kDimension> vector_result_two;
   int kValue = rand() % 1000;
   void SetUp()
   {
@@ -59,7 +59,7 @@ TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
 {
   vector_result_one = vector_one + kValue;
   vector_result_two = kValue + vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
     ASSERT_EQ(vector_result_two[i], vector_one[i] + kValue);
   }
@@ -74,11 +74,11 @@ TEST_F(OperationsByConstant, handlesAutoAdditionWithConstant)
 TEST_F(OperationsByConstant, handlesAdditionWithConstant)
 {
   vector_result_one += kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], kValue);
   }
   vector_result_one += vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_one[i] + kValue);
   }
 }
@@ -93,7 +93,7 @@ TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
 {
   vector_result_one = vector_one - kValue;
   vector_result_two = kValue - vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
     ASSERT_EQ(vector_result_two[i], -vector_one[i] + kValue);
   }
@@ -109,11 +109,11 @@ TEST_F(OperationsByConstant, handlesAutoSubstractionWithConstant)
 TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
 {
   vector_result_one -= kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], -kValue);
   }
   vector_result_one += vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_one[i] - kValue);
   }
 }
@@ -127,12 +127,12 @@ TEST_F(OperationsByConstant, handlesSubstractionWithConstant)
 TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
 {
   vector_result_one = vector_result_one * kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], 0);
   }
   vector_result_one = vector_one * kValue;
   vector_result_two = kValue * vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
     ASSERT_EQ(vector_result_two[i], vector_one[i] * kValue);
   }
@@ -148,13 +148,13 @@ TEST_F(OperationsByConstant, handlesAutoMultiplicationWithConstant)
 TEST_F(OperationsByConstant, handlesMultiplicationWithConstant)
 {
   vector_result_one *= kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], 0);
   }
   vector_result_one = Vector<int, 3>(1);
   vector_result_one *= kValue;
   vector_result_one *= vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_one[i] * kValue);
   }
 }
@@ -173,11 +173,11 @@ TEST_F(OperationsByConstant, handlesAutoDivisionWithConstant)
     kValue = rand() % 1000;
   }
   vector_result_one = vector_result_one / kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], 0);
   }
   vector_result_one = vector_one / kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i] / kValue));
   }
 }
@@ -197,12 +197,12 @@ TEST_F(OperationsByConstant, handlesDivisionWithConstant)
     kValue = rand() % 1000;
   }
   vector_result_one /= kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], 0);
   }
   vector_result_one = vector_one;
   vector_result_one /= kValue;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], static_cast<int>(vector_one[i] / kValue));
   }
 }

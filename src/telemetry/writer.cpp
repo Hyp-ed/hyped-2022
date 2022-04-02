@@ -82,7 +82,7 @@ void Writer::packSensorsData()
 {
   const auto sensors_data   = data_.getSensorsData();
   const auto batteries_data = data_.getBatteriesData();
-  const auto brakes_data    = data_.getEmergencyBrakesData();
+  const auto brakes_data    = data_.getBrakesData();
 
   json_writer_.Key("sensors");
   json_writer_.StartObject();
@@ -104,7 +104,11 @@ void Writer::packSensorsData()
 
   // Other sensor data
   json_writer_.Key("brakes_retracted");
-  json_writer_.Bool(brakes_data.brakes_retracted);
+  json_writer_.StartArray();
+  for (size_t i = 0; i < data::Brakes::kNumBrakes; ++i) {
+    json_writer_.Bool(brakes_data.brakes_retracted[i]);
+  }
+  json_writer_.EndArray();
   json_writer_.Key("temperature");
   json_writer_.Int(sensors_data.temperature.temperature);
   json_writer_.Key("pressure");
@@ -173,8 +177,8 @@ void Writer::packBattery(const data::BatteryData &battery)
   json_writer_.Int(battery.low_voltage_cell);
   json_writer_.Key("high_voltage_cell");
   json_writer_.Int(battery.high_voltage_cell);
-  json_writer_.Key("imd_fault");
-  json_writer_.Bool(battery.imd_fault);
+  json_writer_.Key("insulation_monitoring_device_fault");
+  json_writer_.Bool(battery.insulation_monitoring_device_fault);
   json_writer_.EndObject();
 }
 
@@ -183,7 +187,7 @@ const std::string Writer::convertStateMachineState(data::State state)
   switch (state) {
     case data::State::kInvalid:
       return "INVALID";
-    case data::State::kEmergencyBraking:
+    case data::State::kFailureBraking:
       return "EMERGENCY_BRAKING";
     case data::State::kFailurePreBraking:
       return "FAILURE_PRE_BRAKING";

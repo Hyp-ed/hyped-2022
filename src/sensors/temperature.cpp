@@ -7,9 +7,15 @@
 namespace hyped::sensors {
 
 Temperature::Temperature(const uint8_t pin)
-    : pin_(pin),
-      log_("TEMPERATURE", utils::System::getSystem().config_.log_level_sensors)
+    : log_("TEMPERATURE", utils::System::getSystem().config_.log_level_sensors),
+      pin_(pin)
 {
+  log_.info("started temperature for pin %u", pin);
+}
+
+Temperature::~Temperature()
+{
+  log_.info("stopped temperature for pin");
 }
 
 void Temperature::run()

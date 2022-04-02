@@ -1,5 +1,6 @@
 #include "bms.hpp"
 
+#include <data/data.hpp>
 #include <utils/logger.hpp>
 #include <utils/timer.hpp>
 
@@ -16,7 +17,7 @@ Bms::Bms(uint8_t id, utils::Logger &log)
       can_(utils::io::Can::getInstance()),
       running_(false)
 {
-  ASSERT(id < data::Batteries::kNumLPBatteries);
+  ASSERT(id < data::FullBatteryData::kNumLPBatteries);
   // verify this Bms unit has not been instantiated
   for (uint8_t i : existing_ids_) {
     if (id == i) {
@@ -99,12 +100,12 @@ void Bms::processNewData(utils::io::can::Frame &message)
   uint8_t offset = message.id - (bms::kIdBase + (bms::kIdIncrement * id_));
   switch (offset) {
     case 0x1:  // cells 1-4
-      for (int i = 0; i < 4; i++) {
+      for (size_t i = 0; i < 4; ++i) {
         data_.voltage[i] = (message.data[2 * i] << 8) | message.data[2 * i + 1];
       }
       break;
     case 0x2:  // cells 5-7
-      for (int i = 0; i < 3; i++) {
+      for (size_t i = 0; i < 3; ++i) {
         data_.voltage[4 + i] = (message.data[2 * i] << 8) | message.data[2 * i + 1];
       }
       break;
@@ -251,12 +252,13 @@ void HighPowerBms::processNewData(utils::io::can::Frame &message)
     battery_data_.low_voltage_cell = ((message.data[5] << 8) | message.data[6]);  // mV
   } else if (message.id == static_cast<uint16_t>(can_id_ + 1)) {
     battery_data_.high_voltage_cell = ((message.data[0] << 8) | message.data[1]);  // mV
-    uint16_t imd_reading            = ((message.data[2] << 8) | message.data[3]);  // mV
-    log_.debug("Isolation ADC: %u", imd_reading);
-    if (imd_reading > 4000) {  // 4 volts for safe isolation
-      battery_data_.imd_fault = true;
+    uint16_t insulation_monitoring_device_reading
+      = ((message.data[2] << 8) | message.data[3]);  // mV
+    log_.debug("Isolation ADC: %u", insulation_monitoring_device_reading);
+    if (insulation_monitoring_device_reading > 4000) {  // 4 volts for safe isolation
+      battery_data_.insulation_monitoring_device_fault = true;
     } else {
-      battery_data_.imd_fault = false;
+      battery_data_.insulation_monitoring_device_fault = false;
     }
   }
   last_update_time_ = utils::Timer::getTimeMicros();

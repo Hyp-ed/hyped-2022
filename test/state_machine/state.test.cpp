@@ -30,9 +30,9 @@ class StateTest : public hyped::testing::Test {
   data::Data &data_ = data::Data::getInstance();
 
  protected:
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   data::Navigation nav_data_;
-  data::Batteries batteries_data_;
+  data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;
@@ -55,7 +55,7 @@ class StateTest : public hyped::testing::Test {
     Randomiser::randomiseSensorsData(sensors_data_);
     Randomiser::randomiseBatteriesData(batteries_data_);
 
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
@@ -82,7 +82,7 @@ class IdleTest : public StateTest {
  */
 TEST_F(IdleTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -105,7 +105,7 @@ TEST_F(IdleTest, handlesEmergency)
  */
 TEST_F(IdleTest, handlesAllInitialised)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -143,7 +143,7 @@ class PreCalibratingTest : public StateTest {
  */
 TEST_F(PreCalibratingTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -168,7 +168,7 @@ TEST_F(PreCalibratingTest, handlesEmergency)
 
 TEST_F(PreCalibratingTest, handlesCalibrateCommand)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -208,7 +208,7 @@ class CalibratingTest : public StateTest {
  */
 TEST_F(CalibratingTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -232,7 +232,7 @@ TEST_F(CalibratingTest, handlesEmergency)
  */
 TEST_F(CalibratingTest, handlesAllReady)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     bool has_emergency = state_machine::checkEmergency(
@@ -341,7 +341,7 @@ class ReadyTest : public StateTest {
  */
 TEST_F(ReadyTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -367,7 +367,7 @@ TEST_F(ReadyTest, handlesEmergency)
  */
 TEST_F(ReadyTest, handlesLaunchCommand)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -408,7 +408,7 @@ class AcceleratingTest : public StateTest {
  */
 TEST_F(AcceleratingTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -434,7 +434,7 @@ TEST_F(AcceleratingTest, handlesEmergency)
  */
 TEST_F(AcceleratingTest, handlesInBrakingZone)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -465,7 +465,7 @@ TEST_F(AcceleratingTest, handlesInBrakingZone)
 
 TEST_F(AcceleratingTest, handlesReachedMaxVelocity)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     // Assert not in braking zone
@@ -517,7 +517,7 @@ class CruisingTest : public StateTest {
  */
 TEST_F(CruisingTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -543,7 +543,7 @@ TEST_F(CruisingTest, handlesEmergency)
  */
 TEST_F(CruisingTest, handlesInBrakingZone)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -583,7 +583,7 @@ class PreBrakingTest : public StateTest {
  */
 TEST_F(PreBrakingTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -608,7 +608,7 @@ TEST_F(PreBrakingTest, handlesEmergency)
  */
 TEST_F(PreBrakingTest, handlesHighPowerOff)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -649,7 +649,7 @@ class NominalBrakingTest : public StateTest {
  */
 TEST_F(NominalBrakingTest, handlesEmergency)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -674,7 +674,7 @@ TEST_F(NominalBrakingTest, handlesEmergency)
  */
 TEST_F(NominalBrakingTest, handlesStopped)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_emergency = state_machine::checkEmergency(
@@ -715,7 +715,7 @@ class FinishedTest : public StateTest {
  */
 TEST_F(FinishedTest, handlesShutdownCommand)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool received_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);
@@ -751,7 +751,7 @@ class FailurePreBrakingTest : public StateTest {
  */
 TEST_F(FailurePreBrakingTest, handlesHighPowerOff)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool has_high_power_off = state_machine::checkHighPowerOff(sensors_data_);
@@ -787,7 +787,7 @@ class FailureBrakingTest : public StateTest {
  */
 TEST_F(FailureBrakingTest, handlesStopped)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool stopped   = state_machine::checkPodStopped(log_, nav_data_);
@@ -823,7 +823,7 @@ class FailureStoppedTest : public StateTest {
  */
 TEST_F(FailureStoppedTest, handlesShutdownCommand)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     randomiseData();
 
     const bool received_shutdown_command = state_machine::checkShutdownCommand(telemetry_data_);

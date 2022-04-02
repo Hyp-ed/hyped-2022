@@ -13,10 +13,17 @@ namespace hyped::sensors {
 
 FakeImu::FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory)
     : config_(config),
+      log_("FAKE-IMU", utils::System::getSystem().config_.log_level_sensors),
       data_(data::Data::getInstance()),
       fake_trajectory_(fake_trajectory),
       is_operational_(true)
 {
+  log_.info("started");
+}
+
+FakeImu::~FakeImu()
+{
+  log_.info("stopped");
 }
 
 data::NavigationVector FakeImu::getAccurateAcceleration()
@@ -54,26 +61,24 @@ const FakeImu::Config &FakeImu::getConfig() const
   return config_;
 }
 
-std::optional<std::array<FakeImu, data::Sensors::kNumImus>> FakeImu::fromFile(
+std::optional<std::vector<std::unique_ptr<FakeImu>>> FakeImu::fromFile(
   const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
-  auto &system = utils::System::getSystem();
   utils::Logger log("FAKE-IMU");
   const auto configs = readConfigs(log, path);
   if (!configs) {
     log.error("Failed to read config at %s. Could not construct objects.", path.c_str());
     return std::nullopt;
   }
-  return std::array<FakeImu, data::Sensors::kNumImus>({
-    FakeImu(configs->at(0), fake_trajectory),
-    FakeImu(configs->at(1), fake_trajectory),
-    FakeImu(configs->at(2), fake_trajectory),
-    FakeImu(configs->at(3), fake_trajectory),
-  });
+  std::vector<std::unique_ptr<FakeImu>> fake_imus;
+  for (const auto &config : *configs) {
+    fake_imus.push_back(std::make_unique<FakeImu>(config, fake_trajectory));
+  }
+  return fake_imus;
 }
 
-std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::readConfigs(
-  utils::Logger &log, const std::string &path)
+std::optional<std::vector<FakeImu::Config>> FakeImu::readConfigs(utils::Logger &log,
+                                                                 const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -92,12 +97,7 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
     return std::nullopt;
   }
   auto config_object_array = document["fake_imu"].GetArray();
-  if (data::Sensors::kNumImus != config_object_array.Size()) {
-    log.error("Found %d config objects but %d were expected in configuration file at %s",
-              config_object_array.Size(), data::Sensors::kNumImus, path.c_str());
-    return std::nullopt;
-  }
-  std::array<FakeImu::Config, data::Sensors::kNumImus> configs;
+  std::vector<Config> configs;
   size_t i = 0;
   for (const auto &config_value : config_object_array) {
     const auto config_object = config_value.GetObject();
@@ -120,7 +120,7 @@ std::optional<std::array<FakeImu::Config, data::Sensors::kNumImus>> FakeImu::rea
       }
       config.failure_in_state = state_optional;
     }
-    configs.at(i) = config;
+    configs.push_back(config);
     ++i;
   }
   return configs;

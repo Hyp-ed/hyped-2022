@@ -2,12 +2,13 @@
 
 #include <stdlib.h>
 
+#include <data/data.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
 
-FakeBatteries::FakeBatteries(Logger &log, bool is_lp, bool is_fail)
-    : data_(Data::getInstance()),
+FakeBatteries::FakeBatteries(utils::Logger &log, bool is_lp, bool is_fail)
+    : data_(data::Data::getInstance()),
       log_(log),
       lp_failure_{{100, 1000, 0, 0, 100, 0, 0, 0}},
       lp_success_{{35, 35, 35, 35, 35, 35, 35}},
@@ -72,15 +73,15 @@ void FakeBatteries::checkFailure()
 
 void FakeBatteries::updateBatteryData()
 {
-  local_data_.voltage             = cases_[case_index_][0];
-  local_data_.current             = cases_[case_index_][1];
-  local_data_.charge              = cases_[case_index_][2];
-  local_data_.low_temperature     = cases_[case_index_][3];
-  local_data_.average_temperature = cases_[case_index_][4];
-  local_data_.high_temperature    = cases_[case_index_][5];
-  local_data_.low_voltage_cell    = cases_[case_index_][6];
-  local_data_.high_voltage_cell   = cases_[case_index_][7];
-  local_data_.imd_fault           = false;
+  local_data_.voltage                            = cases_[case_index_][0];
+  local_data_.current                            = cases_[case_index_][1];
+  local_data_.charge                             = cases_[case_index_][2];
+  local_data_.low_temperature                    = cases_[case_index_][3];
+  local_data_.average_temperature                = cases_[case_index_][4];
+  local_data_.high_temperature                   = cases_[case_index_][5];
+  local_data_.low_voltage_cell                   = cases_[case_index_][6];
+  local_data_.high_voltage_cell                  = cases_[case_index_][7];
+  local_data_.insulation_monitoring_device_fault = false;
 }
 
 bool FakeBatteries::isOnline()

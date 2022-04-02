@@ -13,10 +13,11 @@ class TemperatureTest : public Test {
 
 TEST_F(TemperatureTest, parsesConfig)
 {
-  auto &sys = utils::System::getSystem();
-  auto temperature_pin
-    = sensors::Main::temperaturePinFromFile(log_, sys.config_.temperature_config_path);
-  ASSERT_TRUE(temperature_pin) << "Failed to initialise temperature pin.";
-  ASSERT_EQ(temperature_pin, 13) << "Temperature pin value doesn't match config file.";
+  const auto &sys = utils::System::getSystem();
+  const auto temperature_pins
+    = sensors::Main::ambientTemperaturePinsFromFile(log_, sys.config_.temperature_config_path);
+  ASSERT_TRUE(temperature_pins) << "Failed to initialise temperature pin.";
+  std::vector<uint8_t> expected_pins = {13};
+  ASSERT_EQ(*temperature_pins, expected_pins) << "Temperature pin value doesn't match config file.";
 }
 }  // namespace hyped::testing

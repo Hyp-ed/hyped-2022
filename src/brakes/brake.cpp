@@ -15,14 +15,14 @@ Brake::Brake(const uint8_t enable_pin, const uint8_t button_pin, const uint8_t i
 void Brake::retract()
 {
   if (!isEngaged()) { return; }
-  log_.info("Sending a retract message to brake %u", id_);
+  log_.info("Sending retract message to brake %u", id_);
   command_pin_.clear();
 }
 
 void Brake::engage()
 {
   if (isEngaged()) { return; }
-  log_.info("Sending a engage message to brake %u", id_);
+  log_.info("Sending engage message to brake %u", id_);
   command_pin_.set();
 }
 

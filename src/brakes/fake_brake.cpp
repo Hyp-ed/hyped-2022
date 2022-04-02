@@ -14,14 +14,14 @@ FakeBrake::FakeBrake(const uint8_t id)
 void FakeBrake::retract()
 {
   if (!isEngaged()) { return; }
-  log_.info("Sending a retract message to brake %u", id_);
+  log_.info("Sending retract message to brake %u", id_);
   fake_button_ = true;
 }
 
 void FakeBrake::engage()
 {
   if (isEngaged()) { return; }
-  log_.info("Sending a engage message to brake %u", id_);
+  log_.info("Sending engage message to brake %u", id_);
   fake_button_ = false;
 }
 

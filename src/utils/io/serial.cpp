@@ -12,7 +12,7 @@
 
 namespace hyped::utils::io {
 
-SerialProtocol::SerialProtocol(const std::string &serial, const BaudRate baud_rate)
+SerialProtocol::SerialProtocol(std::string &serial, const BaudRate baud_rate)
     : serial_device_(serial),
       baud_rate_(baud_rate),
       log_(utils::Logger("SERIAL", utils::System::getSystem().config_.log_level))

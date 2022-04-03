@@ -35,7 +35,7 @@ void FakeBrakePressure::run()
     if (state == data::State::kAccelerating) {
       acc_start_time_ = utils::Timer::getTimeMicros();
       // Generate a random time for a failure
-      if (is_fail_) failure_time_ = (rand() % 20 + 1) * 1000000;
+      if (is_fail_) { failure_time_ = (rand() % 20 + 1) * 1000000; };
       acc_started_ = true;
     }
   }
@@ -44,11 +44,11 @@ void FakeBrakePressure::run()
 
 void FakeBrakePressure::checkFailure()
 {
-  if (is_fail_ && failure_time_ != 0 && !failure_happened_) {
-    if (utils::Timer::getTimeMicros() - acc_start_time_ >= failure_time_) {
-      pressure_data_.brake_pressure = failure_;
-      failure_happened_             = true;
-    }
+  if (!is_fail_ || failure_happened_) { return; }
+  const auto time_elapsed = utils::Timer::getTimeMicros() - acc_start_time_;
+  if (time_elapsed >= failure_time_) {
+    pressure_data_.brake_pressure = failure_;
+    failure_happened_             = true;
   }
 }
 

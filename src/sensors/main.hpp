@@ -77,13 +77,15 @@ class Main : public utils::concurrent::Thread {
   std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
-  std::unique_ptr<ITemperature> temperature_;
-  std::unique_ptr<IAmbientPressure> ambient_pressure_;
-  std::array<std::unique_ptr<IBrakePressure>, data::Sensors::kNumBrakePressure> brake_pressures_;
 
-  std::array<data::BrakePressureData, data::Sensors::kNumBrakePressure> brake_pressure_data_;
   data::TemperatureData temperature_data_;
+  std::unique_ptr<ITemperature> temperature_;
+
+  std::unique_ptr<IAmbientPressure> ambient_pressure_;
   data::AmbientPressureData pressure_data_;
+
+  std::array<std::unique_ptr<IBrakePressure>, data::Sensors::kNumBrakePressure> brake_pressures_;
+  std::array<data::BrakePressureData, data::Sensors::kNumBrakePressure> brake_pressure_data_;
 };
 
 }  // namespace hyped::sensors

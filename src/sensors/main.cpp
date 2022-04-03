@@ -117,13 +117,11 @@ Main::Main()
   // BrakePressure
   if (sys_.config_.use_fake_brake_pressure_fail) {
     for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
-      auto brake_pressure = std::make_unique<FakeBrakePressure>(true);
-      brake_pressures_[i] = std::move(brake_pressure);
+      brake_pressures_.at(i) = std::make_unique<FakeBrakePressure>(true);
     }
   } else if (sys_.config_.use_fake_brake_pressure) {
     for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
-      auto brake_pressure = std::make_unique<FakeBrakePressure>(false);
-      brake_pressures_[i] = std::move(brake_pressure);
+      brake_pressures_.at(i) = std::make_unique<FakeBrakePressure>(false);
     }
   } else {
     const auto brake_pressure_pins
@@ -134,8 +132,7 @@ Main::Main()
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
-      auto brake_pressure = std::make_unique<BrakePressure>(brake_pressure_pins->at(i));
-      brake_pressures_[i] = std::move(brake_pressure);
+      brake_pressures_.at(i) = std::make_unique<BrakePressure>(brake_pressure_pins->at(i));
     }
   }
   // kReady for state machine transition

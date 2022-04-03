@@ -18,7 +18,7 @@ static const std::unordered_map<State, std::string> state_names = {
   {State::kPreBraking, "PreBraking"},
   {State::kNominalBraking, "NominalBraking"},
   {State::kFailurePreBraking, "FailurePreBraking"},
-  {State::kEmergencyBraking, "EmergencyBraking"},
+  {State::kFailureBraking, "EmergencyBraking"},
   {State::kFailureStopped, "FailureStopped"},
   {State::kFinished, "Finished"},
   {State::kInvalid, "Invalid"},
@@ -35,7 +35,7 @@ static const std::unordered_map<std::string, State> states_by_name = {
   {"PreBraking", State::kPreBraking},
   {"NominalBraking", State::kNominalBraking},
   {"FailurePreBraking", State::kFailurePreBraking},
-  {"EmergencyBraking", State::kEmergencyBraking},
+  {"EmergencyBraking", State::kFailureBraking},
   {"FailureStopped", State::kFailureStopped},
   {"Finished", State::kFinished},
   {"Invalid", State::kInvalid},
@@ -103,12 +103,6 @@ std::array<CounterData, Sensors::kNumEncoders> Data::getSensorsWheelEncoderData(
   return sensors_.wheel_encoders;
 }
 
-std::array<CounterData, Sensors::kNumKeyence> Data::getSensorsKeyenceData()
-{
-  ScopedLock L(&lock_sensors_);
-  return sensors_.keyence_stripe_counters;
-}
-
 void Data::setSensorsData(const Sensors &sensors_data)
 {
   ScopedLock L(&lock_sensors_);
@@ -127,35 +121,28 @@ void Data::setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNu
   sensors_.wheel_encoders = encoder;
 }
 
-void Data::setSensorsKeyenceData(
-  const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter)
-{
-  ScopedLock L(&lock_sensors_);
-  sensors_.keyence_stripe_counters = keyence_stripe_counter;
-}
-
-Batteries Data::getBatteriesData()
+FullBatteryData Data::getBatteriesData()
 {
   ScopedLock L(&lock_batteries_);
   return batteries_;
 }
 
-void Data::setBatteriesData(const Batteries &batteries_data)
+void Data::setBatteriesData(const FullBatteryData &batteries_data)
 {
   ScopedLock L(&lock_batteries_);
   batteries_ = batteries_data;
 }
 
-EmergencyBrakes Data::getEmergencyBrakesData()
+Brakes Data::getBrakesData()
 {
-  ScopedLock L(&lock_emergency_brakes_);
-  return emergency_brakes_;
+  ScopedLock L(&lock_brakes_);
+  return brakes_;
 }
 
-void Data::setEmergencyBrakesData(const EmergencyBrakes &emergency_brakes_data)
+void Data::setBrakesData(const Brakes &brakes_data)
 {
-  ScopedLock L(&lock_emergency_brakes_);
-  emergency_brakes_ = emergency_brakes_data;
+  ScopedLock L(&lock_brakes_);
+  brakes_ = brakes_data;
 }
 
 Motors Data::getMotorData()

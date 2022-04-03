@@ -22,21 +22,21 @@ using hyped::utils::math::KalmanMultivariate;
  */
 class KalmanFunctionality : public ::testing::Test {
  protected:
-  unsigned int n = 2;
-  unsigned int m = 3;
-  unsigned int k = 1;
+  uint32_t n = 2;
+  uint32_t m = 3;
+  uint32_t k = 1;
 
   KalmanMultivariate kalman           = KalmanMultivariate(n, m, 0);
-  VectorXf x0                         = VectorXf::Zero(n);
-  VectorXf x1                         = VectorXf::Random(n);
-  VectorXf z                          = VectorXf::Random(n);
-  MatrixXf P0                         = MatrixXf::Zero(n, n);
-  MatrixXf A                          = MatrixXf::Random(n, n);
-  MatrixXf B                          = MatrixXf::Random(n, k);
-  MatrixXf Q                          = MatrixXf::Random(n, n);
-  MatrixXf H                          = MatrixXf::Random(m, n);
-  MatrixXf R                          = MatrixXf::Random(m, m);
-  MatrixXf P                          = MatrixXf::Random(n, n);
+  Eigen::VectorXf x0                  = Eigen::VectorXf::Zero(n);
+  Eigen::VectorXf x1                  = Eigen::VectorXf::Random(n);
+  Eigen::VectorXf z                   = Eigen::VectorXf::Random(n);
+  Eigen::MatrixXf P0                  = Eigen::MatrixXf::Zero(n, n);
+  Eigen::MatrixXf A                   = Eigen::MatrixXf::Random(n, n);
+  Eigen::MatrixXf B                   = Eigen::MatrixXf::Random(n, k);
+  Eigen::MatrixXf Q                   = Eigen::MatrixXf::Random(n, n);
+  Eigen::MatrixXf H                   = Eigen::MatrixXf::Random(m, n);
+  Eigen::MatrixXf R                   = Eigen::MatrixXf::Random(m, m);
+  Eigen::MatrixXf P                   = Eigen::MatrixXf::Random(n, n);
   std::string zero_state_estimate_err = "Should handle zero vector as state estimate";
   std::string arb_state_estimate_err  = "Should handle any arbitrary vector as state estimate";
   std::string zero_covariance_err     = "Should handle zero state covariance";
@@ -97,30 +97,30 @@ TEST_F(KalmanFunctionality, handlesArbitraryStateCovariance)
 TEST_F(KalmanFunctionality, handlesUpdateInA)
 {
   KalmanMultivariate kalman_two = KalmanMultivariate(n, m, 0);
-  VectorXf x1                   = VectorXf::Random(n);
-  while (x1 == VectorXf::Zero(n)) {
-    x1 = VectorXf::Random(n, n);
+  Eigen::VectorXf x1            = Eigen::VectorXf::Random(n);
+  while (x1 == Eigen::VectorXf::Zero(n)) {
+    x1 = Eigen::VectorXf::Random(n, n);
   }
-  A = MatrixXf::Random(n, n);
-  while (A == MatrixXf::Zero(n, n) || A == MatrixXf::Identity(n, n)) {
-    A = MatrixXf::Random(n, n);
+  A = Eigen::MatrixXf::Random(n, n);
+  while (A == Eigen::MatrixXf::Zero(n, n) || A == Eigen::MatrixXf::Identity(n, n)) {
+    A = Eigen::MatrixXf::Random(n, n);
   }
-  B = MatrixXf::Zero(n, k);
-  Q = MatrixXf::Zero(n, n);
-  H = MatrixXf::Zero(m, n);
-  R = MatrixXf::Identity(m, m);
+  B = Eigen::MatrixXf::Zero(n, k);
+  Q = Eigen::MatrixXf::Zero(n, n);
+  H = Eigen::MatrixXf::Zero(m, n);
+  R = Eigen::MatrixXf::Identity(m, m);
   kalman.setModels(A, Q, H, R);
   kalman_two.setModels(A, Q, H, R);
-  A = MatrixXf::Zero(n, n);
+  A = Eigen::MatrixXf::Zero(n, n);
   kalman_two.updateA(A);
   kalman.setInitial(x1, P);
   kalman_two.setInitial(x1, P);
-  z = VectorXf::Zero(m);
+  z = Eigen::VectorXf::Zero(m);
   kalman_two.filter(z);
   kalman.filter(z);
-  ASSERT_EQ(kalman_two.getStateEstimate(), VectorXf::Zero(n)) << update_err;
+  ASSERT_EQ(kalman_two.getStateEstimate(), Eigen::VectorXf::Zero(n)) << update_err;
   ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate()) << update_err;
-  A = MatrixXf::Identity(n, n);
+  A = Eigen::MatrixXf::Identity(n, n);
   kalman_two.updateA(A);
   kalman_two.setInitial(x1, P);
   kalman_two.filter(z);
@@ -135,25 +135,26 @@ TEST_F(KalmanFunctionality, handlesUpdateInA)
 TEST_F(KalmanFunctionality, handlesUpdateInR)
 {
   KalmanMultivariate kalman_two = KalmanMultivariate(n, m, 0);
-  VectorXf x1                   = VectorXf::Random(n);
-  while (x1 == VectorXf::Zero(n)) {
-    x1 = VectorXf::Random(n, n);
+  Eigen::VectorXf x1            = Eigen::VectorXf::Random(n);
+  while (x1 == Eigen::VectorXf::Zero(n)) {
+    x1 = Eigen::VectorXf::Random(n, n);
   }
-  A = MatrixXf::Identity(n, n);
-  B = MatrixXf::Zero(n, k);
-  Q = MatrixXf::Zero(n, n);
-  H = MatrixXf::Random(m, n);
-  R = MatrixXf::Identity(m, m);
+  A = Eigen::MatrixXf::Identity(n, n);
+  B = Eigen::MatrixXf::Zero(n, k);
+  Q = Eigen::MatrixXf::Zero(n, n);
+  H = Eigen::MatrixXf::Random(m, n);
+  R = Eigen::MatrixXf::Identity(m, m);
   kalman.setModels(A, Q, H, R);
   kalman_two.setModels(A, Q, H, R);
-  R = MatrixXf::Random(m, m);
-  while (R == MatrixXf::Zero(m, m) || R == MatrixXf::Identity(m, m) || R.determinant() == 0) {
-    R = MatrixXf::Random(m, m);
+  R = Eigen::MatrixXf::Random(m, m);
+  while (R == Eigen::MatrixXf::Zero(m, m) || R == Eigen::MatrixXf::Identity(m, m)
+         || R.determinant() == 0) {
+    R = Eigen::MatrixXf::Random(m, m);
   }
   kalman_two.updateR(R);
   kalman.setInitial(x1, P);
   kalman_two.setInitial(x1, P);
-  z = VectorXf::Random(m);
+  z = Eigen::VectorXf::Random(m);
   kalman_two.filter(z);
   kalman.filter(z);
   ASSERT_NE(kalman_two.getStateEstimate(), kalman.getStateEstimate()) << update_err;
@@ -169,38 +170,38 @@ TEST_F(KalmanFunctionality, handlesUpdateInR)
  */
 class KalmanMathematics : public ::testing::Test {
  protected:
-  unsigned int n = 3;
-  unsigned int m = 2;
-  unsigned int k = 1;
+  uint32_t n = 3;
+  uint32_t m = 2;
+  uint32_t k = 1;
 
   KalmanMultivariate kalmanMathWithoutControl = KalmanMultivariate(n, m, 0);
   KalmanMultivariate kalmanMathWithControl    = KalmanMultivariate(n, m, k);
-  static constexpr int NUM_TESTDATA           = 50;
-  VectorXf x1_Data[NUM_TESTDATA];
-  VectorXf z_Data[NUM_TESTDATA];
-  VectorXf u_Data[NUM_TESTDATA];
-  MatrixXf A_Data[NUM_TESTDATA];
-  MatrixXf B_Data[NUM_TESTDATA];
-  MatrixXf Q_Data[NUM_TESTDATA];
-  MatrixXf H_Data[NUM_TESTDATA];
-  MatrixXf R_Data[NUM_TESTDATA];
-  MatrixXf P_Data[NUM_TESTDATA];
-  MatrixXf I                              = MatrixXf::Identity(n, n);
+  static constexpr size_t kNumTestData        = 50;
+  Eigen::VectorXf x1_Data[kNumTestData];
+  Eigen::VectorXf z_Data[kNumTestData];
+  Eigen::VectorXf u_Data[kNumTestData];
+  Eigen::MatrixXf A_Data[kNumTestData];
+  Eigen::MatrixXf B_Data[kNumTestData];
+  Eigen::MatrixXf Q_Data[kNumTestData];
+  Eigen::MatrixXf H_Data[kNumTestData];
+  Eigen::MatrixXf R_Data[kNumTestData];
+  Eigen::MatrixXf P_Data[kNumTestData];
+  Eigen::MatrixXf I                       = Eigen::MatrixXf::Identity(n, n);
   std::string expected_state_estimate_err = "State estimate isnt same as expected state estimate";
   std::string expected_covariance_err     = "Covariance isnt the same as expected state covariance";
   void SetUp()
   {
     // Populates the arrays defined above with 50 random values
-    for (int i = 0; i < 50; i++) {
-      x1_Data[i] = VectorXf::Random(n);
-      z_Data[i]  = VectorXf::Random(m);
-      u_Data[i]  = VectorXf::Random(k);
-      A_Data[i]  = MatrixXf::Random(n, n);
-      B_Data[i]  = MatrixXf::Random(n, k);
-      Q_Data[i]  = MatrixXf::Random(n, n);
-      H_Data[i]  = MatrixXf::Random(m, n);
-      R_Data[i]  = MatrixXf::Random(m, m);
-      P_Data[i]  = MatrixXf::Random(n, n);
+    for (size_t i = 0; i < 50; ++i) {
+      x1_Data[i] = Eigen::VectorXf::Random(n);
+      z_Data[i]  = Eigen::VectorXf::Random(m);
+      u_Data[i]  = Eigen::VectorXf::Random(k);
+      A_Data[i]  = Eigen::MatrixXf::Random(n, n);
+      B_Data[i]  = Eigen::MatrixXf::Random(n, k);
+      Q_Data[i]  = Eigen::MatrixXf::Random(n, n);
+      H_Data[i]  = Eigen::MatrixXf::Random(m, n);
+      R_Data[i]  = Eigen::MatrixXf::Random(m, m);
+      P_Data[i]  = Eigen::MatrixXf::Random(n, n);
     }
   }
 
@@ -214,26 +215,26 @@ class KalmanMathematics : public ::testing::Test {
  */
 TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
 {
-  MatrixXf A = A_Data[0];
-  MatrixXf B = B_Data[0];
-  MatrixXf Q = Q_Data[0];
-  MatrixXf H = H_Data[0];
-  MatrixXf R = R_Data[0];
-  VectorXf z = z_Data[0];
-  VectorXf u = u_Data[0];
+  Eigen::MatrixXf A = A_Data[0];
+  Eigen::MatrixXf B = B_Data[0];
+  Eigen::MatrixXf Q = Q_Data[0];
+  Eigen::MatrixXf H = H_Data[0];
+  Eigen::MatrixXf R = R_Data[0];
+  Eigen::VectorXf z = z_Data[0];
+  Eigen::VectorXf u = u_Data[0];
   kalmanMathWithControl.setModels(A, B, Q, H, R);
   kalmanMathWithControl.setInitial(x1_Data[0], P_Data[0]);
-  VectorXf x = kalmanMathWithControl.getStateEstimate();
-  MatrixXf p = kalmanMathWithControl.getStateCovariance();
-  for (int i = 0; i < 50; i++) {
+  Eigen::VectorXf x = kalmanMathWithControl.getStateEstimate();
+  Eigen::MatrixXf p = kalmanMathWithControl.getStateCovariance();
+  for (size_t i = 0; i < 50; ++i) {
     kalmanMathWithControl.filter(u, z);
-    // Mimicks filter(VectorXf& u, VectorXf& z)
+    // Mimicks filter(Eigen::VectorXf& u, Eigen::VectorXf& z)
     x = A * x + B * u;
     p = (A * p * A.transpose()) + Q;
     // Mimicks correct()
-    MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
-    x          = x + K * (z - H * x);
-    p          = (I - K * H) * p;
+    Eigen::MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
+    x                 = x + K * (z - H * x);
+    p                 = (I - K * H) * p;
     ASSERT_EQ(kalmanMathWithControl.getStateEstimate(), x) << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p) << expected_covariance_err;
   }
@@ -246,26 +247,26 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithControl)
  */
 TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
 {
-  MatrixXf A = A_Data[0];
-  MatrixXf B = B_Data[0];
-  MatrixXf Q = Q_Data[0];
-  MatrixXf H = H_Data[0];
-  MatrixXf R = R_Data[0];
-  VectorXf z = z_Data[0];
-  VectorXf u = u_Data[0];
+  Eigen::MatrixXf A = A_Data[0];
+  Eigen::MatrixXf B = B_Data[0];
+  Eigen::MatrixXf Q = Q_Data[0];
+  Eigen::MatrixXf H = H_Data[0];
+  Eigen::MatrixXf R = R_Data[0];
+  Eigen::VectorXf z = z_Data[0];
+  Eigen::VectorXf u = u_Data[0];
   kalmanMathWithoutControl.setModels(A, Q, H, R);
   kalmanMathWithoutControl.setInitial(x1_Data[0], P_Data[0]);
-  VectorXf x = kalmanMathWithoutControl.getStateEstimate();
-  MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
-  for (int i = 0; i < NUM_TESTDATA; i++) {
+  Eigen::VectorXf x = kalmanMathWithoutControl.getStateEstimate();
+  Eigen::MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
+  for (size_t i = 0; i < kNumTestData; ++i) {
     kalmanMathWithoutControl.filter(z);
-    // Mimicks filter(VectorXf& u, VectorXf& z)
+    // Mimicks filter(Eigen::VectorXf& u, Eigen::VectorXf& z)
     x = A * x;
     p = (A * p * A.transpose()) + Q;
     // Mimicks correct()
-    MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
-    x          = x + K * (z - H * x);
-    p          = (I - K * H) * p;
+    Eigen::MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
+    x                 = x + K * (z - H * x);
+    p                 = (I - K * H) * p;
     ASSERT_EQ(kalmanMathWithoutControl.getStateEstimate(), x) << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithoutControl.getStateCovariance(), p) << expected_covariance_err;
   }
@@ -279,26 +280,26 @@ TEST_F(KalmanMathematics, handlesSeveralFiltersWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithoutControl)
 {
-  for (int i = 0; i < NUM_TESTDATA; i++) {
-    MatrixXf A = A_Data[i];
-    MatrixXf H = H_Data[i];
-    MatrixXf R = R_Data[i];
-    MatrixXf Q = Q_Data[i];
-    VectorXf z = z_Data[i];
+  for (size_t i = 0; i < kNumTestData; ++i) {
+    Eigen::MatrixXf A = A_Data[i];
+    Eigen::MatrixXf H = H_Data[i];
+    Eigen::MatrixXf R = R_Data[i];
+    Eigen::MatrixXf Q = Q_Data[i];
+    Eigen::VectorXf z = z_Data[i];
     kalmanMathWithoutControl.setModels(A, Q, H, R);
     kalmanMathWithoutControl.setInitial(x1_Data[i], P_Data[i]);
-    VectorXf x = kalmanMathWithoutControl.getStateEstimate();
-    MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
+    Eigen::VectorXf x = kalmanMathWithoutControl.getStateEstimate();
+    Eigen::MatrixXf p = kalmanMathWithoutControl.getStateCovariance();
     kalmanMathWithoutControl.filter(z);
 
-    // Mimicks predict(VectorXf&)
+    // Mimicks predict(Eigen::VectorXf&)
     x = A * x;
     p = A * p * A.transpose() + Q;
 
     // Mimicks correct()
-    MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
-    x          = x + K * (z - H * x);
-    p          = (I - K * H) * p;
+    Eigen::MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
+    x                 = x + K * (z - H * x);
+    p                 = (I - K * H) * p;
 
     ASSERT_EQ(kalmanMathWithoutControl.getStateEstimate(), x) << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithoutControl.getStateCovariance(), p) << expected_covariance_err;
@@ -313,28 +314,28 @@ TEST_F(KalmanMathematics, handlesFilterWithoutControl)
  */
 TEST_F(KalmanMathematics, handlesFilterWithControl)
 {
-  for (int i = 0; i < NUM_TESTDATA; i++) {
-    MatrixXf A = A_Data[i];
-    MatrixXf B = B_Data[i];
-    MatrixXf Q = Q_Data[i];
-    MatrixXf H = H_Data[i];
-    MatrixXf R = R_Data[i];
-    VectorXf z = z_Data[i];
-    VectorXf u = u_Data[i];
+  for (size_t i = 0; i < kNumTestData; ++i) {
+    Eigen::MatrixXf A = A_Data[i];
+    Eigen::MatrixXf B = B_Data[i];
+    Eigen::MatrixXf Q = Q_Data[i];
+    Eigen::MatrixXf H = H_Data[i];
+    Eigen::MatrixXf R = R_Data[i];
+    Eigen::VectorXf z = z_Data[i];
+    Eigen::VectorXf u = u_Data[i];
     kalmanMathWithControl.setModels(A, B, Q, H, R);
     kalmanMathWithControl.setInitial(x1_Data[i], P_Data[i]);
-    VectorXf x = kalmanMathWithControl.getStateEstimate();
-    MatrixXf p = kalmanMathWithControl.getStateCovariance();
+    Eigen::VectorXf x = kalmanMathWithControl.getStateEstimate();
+    Eigen::MatrixXf p = kalmanMathWithControl.getStateCovariance();
     kalmanMathWithControl.filter(u, z);
 
-    // Mimicks filter(VectorXf& u, VectorXf& z)
+    // Mimicks filter(Eigen::VectorXf& u, Eigen::VectorXf& z)
     x = A * x + B * u;
     p = (A * p * A.transpose()) + Q;
 
     // Mimicks correct()
-    MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
-    x          = x + K * (z - H * x);
-    p          = (I - K * H) * p;
+    Eigen::MatrixXf K = (p * H.transpose()) * (H * p * H.transpose() + R).inverse();
+    x                 = x + K * (z - H * x);
+    p                 = (I - K * H) * p;
 
     ASSERT_EQ(kalmanMathWithControl.getStateEstimate(), x) << expected_state_estimate_err;
     ASSERT_EQ(kalmanMathWithControl.getStateCovariance(), p) << expected_covariance_err;
@@ -346,31 +347,31 @@ TEST_F(KalmanMathematics, handlesFilterWithControl)
  */
 class KalmanIdentity : public ::testing::Test {
  protected:
-  unsigned int n = 2;
-  unsigned int m = 3;
-  unsigned int k = 1;
+  uint32_t n = 2;
+  uint32_t m = 3;
+  uint32_t k = 1;
 
-  KalmanMultivariate kalman         = KalmanMultivariate(n, m, k);
-  static constexpr int NUM_TESTDATA = 50;
-  VectorXf x0                       = VectorXf::Random(n);
-  VectorXf x1                       = VectorXf::Random(n);
-  VectorXf z                        = VectorXf::Zero(m);
-  VectorXf u                        = VectorXf::Random(k);
+  KalmanMultivariate kalman            = KalmanMultivariate(n, m, k);
+  static constexpr size_t kNumTestData = 50;
+  Eigen::VectorXf x0                   = Eigen::VectorXf::Random(n);
+  Eigen::VectorXf x1                   = Eigen::VectorXf::Random(n);
+  Eigen::VectorXf z                    = Eigen::VectorXf::Zero(m);
+  Eigen::VectorXf u                    = Eigen::VectorXf::Random(k);
 
-  MatrixXf P0 = MatrixXf::Random(n, n);
-  MatrixXf A  = MatrixXf::Identity(n, n);
-  MatrixXf B  = MatrixXf::Zero(n, k);
-  MatrixXf Q  = MatrixXf::Zero(n, n);
-  MatrixXf H  = MatrixXf::Zero(m, n);
-  MatrixXf R  = MatrixXf::Identity(m, m);
-  MatrixXf P  = MatrixXf::Random(n, n);
+  Eigen::MatrixXf P0 = Eigen::MatrixXf::Random(n, n);
+  Eigen::MatrixXf A  = Eigen::MatrixXf::Identity(n, n);
+  Eigen::MatrixXf B  = Eigen::MatrixXf::Zero(n, k);
+  Eigen::MatrixXf Q  = Eigen::MatrixXf::Zero(n, n);
+  Eigen::MatrixXf H  = Eigen::MatrixXf::Zero(m, n);
+  Eigen::MatrixXf R  = Eigen::MatrixXf::Identity(m, m);
+  Eigen::MatrixXf P  = Eigen::MatrixXf::Random(n, n);
   std::string identity_err
     = "The filter() should not have any effect on the covariance and state given these conditions";
 
   void SetUp()
   {
     // Assigns the matrices and vectors to the properties within the kalman object.
-    if (P.determinant() == 0) { P = MatrixXf::Random(n, n); }
+    if (P.determinant() == 0) { P = Eigen::MatrixXf::Random(n, n); }
     kalman.setModels(A, B, Q, H, R);
     kalman.setInitial(x0, P);
   }
@@ -387,7 +388,7 @@ class KalmanIdentity : public ::testing::Test {
  */
 TEST_F(KalmanIdentity, handlesIdentity)
 {
-  for (int i = 0; i < NUM_TESTDATA; i++) {
+  for (size_t i = 0; i < kNumTestData; ++i) {
     kalman.filter(u, z);
     ASSERT_EQ(kalman.getStateEstimate(), x0) << identity_err;
     ASSERT_EQ(kalman.getStateCovariance(), P) << identity_err;
@@ -399,22 +400,22 @@ TEST_F(KalmanIdentity, handlesIdentity)
  */
 class KalmanExceptions : public ::testing::Test {
  public:
-  unsigned int n = 2;
-  unsigned int m = 3;
-  unsigned int k = 1;
-  unsigned int c = 10;
+  uint32_t n = 2;
+  uint32_t m = 3;
+  uint32_t k = 1;
+  uint32_t c = 10;
 
   KalmanMultivariate kalman = KalmanMultivariate(n, m, 0);
-  VectorXf x0               = VectorXf::Zero(c);
-  VectorXf x1               = VectorXf::Random(n);
-  VectorXf z                = VectorXf::Random(n);
-  MatrixXf P0               = MatrixXf::Zero(n, n);
-  MatrixXf A                = MatrixXf::Random(n, n);
-  MatrixXf B                = MatrixXf::Random(n, k);
-  MatrixXf Q                = MatrixXf::Random(n, n);
-  MatrixXf H                = MatrixXf::Random(m, n);
-  MatrixXf R                = MatrixXf::Random(m, m);
-  MatrixXf P                = MatrixXf::Random(n, n);
+  Eigen::VectorXf x0        = Eigen::VectorXf::Zero(c);
+  Eigen::VectorXf x1        = Eigen::VectorXf::Random(n);
+  Eigen::VectorXf z         = Eigen::VectorXf::Random(n);
+  Eigen::MatrixXf P0        = Eigen::MatrixXf::Zero(n, n);
+  Eigen::MatrixXf A         = Eigen::MatrixXf::Random(n, n);
+  Eigen::MatrixXf B         = Eigen::MatrixXf::Random(n, k);
+  Eigen::MatrixXf Q         = Eigen::MatrixXf::Random(n, n);
+  Eigen::MatrixXf H         = Eigen::MatrixXf::Random(m, n);
+  Eigen::MatrixXf R         = Eigen::MatrixXf::Random(m, m);
+  Eigen::MatrixXf P         = Eigen::MatrixXf::Random(n, n);
   std::string exception_err
     = "The matrices used have the wrong dimensions, an invalid_argument excpetion is expected";
 
@@ -430,34 +431,34 @@ class KalmanExceptions : public ::testing::Test {
 TEST_F(KalmanExceptions, handlesDimensionalityIssues)
 {
   EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument) << exception_err;
-  P0          = MatrixXf::Zero(k, m);
-  VectorXf x0 = VectorXf::Zero(n);
+  P0                 = Eigen::MatrixXf::Zero(k, m);
+  Eigen::VectorXf x0 = Eigen::VectorXf::Zero(n);
   EXPECT_THROW(kalman.setInitial(x0, P0), std::invalid_argument) << exception_err;
-  MatrixXf A = MatrixXf::Random(k, m);
+  Eigen::MatrixXf A = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.updateA(A), std::invalid_argument) << exception_err;
   EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument) << exception_err;
-  A = MatrixXf::Random(n, n);
-  Q = MatrixXf::Random(k, m);
+  A = Eigen::MatrixXf::Random(n, n);
+  Q = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument) << exception_err;
-  Q = MatrixXf::Random(n, n);
-  H = MatrixXf::Random(k, m);
+  Q = Eigen::MatrixXf::Random(n, n);
+  H = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument) << exception_err;
-  H = MatrixXf::Random(n, n);
-  R = MatrixXf::Random(k, m);
+  H = Eigen::MatrixXf::Random(n, n);
+  R = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, Q, H, R), std::invalid_argument) << exception_err;
-  A = MatrixXf::Random(k, m);
+  A = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument) << exception_err;
-  A = MatrixXf::Random(n, n);
-  Q = MatrixXf::Random(k, m);
+  A = Eigen::MatrixXf::Random(n, n);
+  Q = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument) << exception_err;
-  Q = MatrixXf::Random(n, n);
-  H = MatrixXf::Random(k, m);
+  Q = Eigen::MatrixXf::Random(n, n);
+  H = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument) << exception_err;
-  H = MatrixXf::Random(n, n);
-  R = MatrixXf::Random(k, m);
+  H = Eigen::MatrixXf::Random(n, n);
+  R = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.updateR(R), std::invalid_argument);
   EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument) << exception_err;
-  R = MatrixXf::Random(m, m);
-  B = MatrixXf::Random(k, m);
+  R = Eigen::MatrixXf::Random(m, m);
+  B = Eigen::MatrixXf::Random(k, m);
   EXPECT_THROW(kalman.setModels(A, B, Q, H, R), std::invalid_argument) << exception_err;
 }

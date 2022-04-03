@@ -23,9 +23,9 @@ class RunTest : public Test {
 
   data::Data &data_ = data::Data::getInstance();
 
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   data::Navigation nav_data_;
-  data::Batteries batteries_data_;
+  data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;
@@ -56,7 +56,7 @@ class RunTest : public Test {
    */
   void writeData()
   {
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
@@ -69,7 +69,7 @@ class RunTest : public Test {
    */
   void readData()
   {
-    brakes_data_    = data_.getEmergencyBrakesData();
+    brakes_data_    = data_.getBrakesData();
     stm_data_       = data_.getStateMachineData();
     nav_data_       = data_.getNavigationData();
     telemetry_data_ = data_.getTelemetryData();
@@ -998,7 +998,7 @@ class RunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in NominalBraking";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking)
       << "failed to transition from NominalBraking to EmergencyBraking";
   }
 
@@ -1066,7 +1066,7 @@ class RunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in FailurePreBraking";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking)
       << "failed to transition from FailurePreBraking to FailureBraking";
   }
 
@@ -1078,7 +1078,7 @@ class RunTest : public Test {
   {
     // Check initial state
     readData();
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking);
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking);
 
     // Randomise data
     randomiseInternally();
@@ -1456,7 +1456,7 @@ TEST_F(RunTest, preBrakingWithCruisingEmergency)
  */
 TEST_F(RunTest, brakingEmergencyWithoutCruising)
 {
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     utils::System &sys = utils::System::getSystem();
     sys.parseArgs(2, kDefaultArgs);
     initialiseData();

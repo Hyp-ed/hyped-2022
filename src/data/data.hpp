@@ -62,29 +62,32 @@ struct CounterData : public DataPoint<uint32_t>, public SensorData {
 };
 
 struct TemperatureData : public SensorData {
-  uint16_t temp;  // C
+  int16_t temperature;  // C
 };
 
-struct PressureData : public SensorData {
-  uint16_t pressure;  // mbar
+struct AmbientPressureData : public SensorData {
+  uint16_t ambient_pressure;  // mbar
 };
 
 struct Sensors : public Module {
-  static constexpr size_t kNumImus     = 4;
-  static constexpr size_t kNumEncoders = 4;
-  static constexpr size_t kNumKeyence  = 2;
+  static constexpr size_t kNumImus        = 4;
+  static constexpr size_t kNumEncoders    = 4;
+  static constexpr size_t kNumBrakeTemp   = 2;
+  static constexpr size_t kNumAmbientTemp = 4;
 
   TemperatureData temperature;
-  PressureData pressure;
+  AmbientPressureData ambient_pressure;
+
+  std::array<TemperatureData, kNumBrakeTemp> brake_temperature_array;
+  std::array<TemperatureData, kNumAmbientTemp> ambient_temperature_array;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
-  std::array<CounterData, kNumKeyence> keyence_stripe_counters;
   bool high_power_off = false;  // true if all SSRs are not in HP
 };
 
 struct BatteryData {
-  static constexpr int kNumCells = 36;
+  static constexpr size_t kNumCells = 36;
   uint16_t voltage;            // dV
   int16_t current;             // dA
   uint8_t charge;              // %
@@ -96,21 +99,21 @@ struct BatteryData {
   int8_t high_temperature;           // C
   uint16_t low_voltage_cell;         // mV
   uint16_t high_voltage_cell;        // mV
-  bool imd_fault;
+  bool insulation_monitoring_device_fault;
 };
 
-struct Batteries : public Module {
-  static constexpr int kNumLPBatteries = 2;
-  static constexpr int kNumHPBatteries = 1;
+struct FullBatteryData : public Module {
+  static constexpr size_t kNumLPBatteries = 2;
+  static constexpr size_t kNumHPBatteries = 1;
 
   std::array<BatteryData, kNumLPBatteries> low_power_batteries;
   std::array<BatteryData, kNumHPBatteries> high_power_batteries;
 };
 
-struct EmergencyBrakes : public Module {
-  static constexpr int kBrakeCommandWaitTime = 1000;  // milliseconds
-  static constexpr int kNumBrakes            = 2;
-  bool brakes_retracted[kNumBrakes]          = {false};  // true if brakes retract
+struct Brakes : public Module {
+  static constexpr uint64_t kBrakeCommandWaitTime = 1000;  // milliseconds
+  static constexpr size_t kNumBrakes              = 2;
+  bool brakes_retracted[kNumBrakes]               = {false};  // true if brakes retract
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -118,7 +121,7 @@ struct EmergencyBrakes : public Module {
 // -------------------------------------------------------------------------------------------------
 
 struct Motors : public Module {
-  static constexpr int kNumMotors              = 4;
+  static constexpr size_t kNumMotors           = 4;
   static constexpr uint8_t kMaximumTemperature = 150;
   static constexpr uint16_t kMaximumCurrent    = 1500;  // mA
   std::array<uint32_t, kNumMotors> rpms        = {{0, 0, 0, 0}};
@@ -151,7 +154,7 @@ enum class State {
   kPreBraking,
   kNominalBraking,
   kFailurePreBraking,
-  kEmergencyBraking,
+  kFailureBraking,
   kFailureStopped,
   kFinished,
   kInvalid
@@ -216,11 +219,6 @@ class Data {
   std::array<CounterData, Sensors::kNumEncoders> getSensorsWheelEncoderData();
 
   /**
-   * @brief retrieves gpio_counter data from Sensors
-   */
-  std::array<CounterData, Sensors::kNumKeyence> getSensorsKeyenceData();
-
-  /**
    * @brief      Should be called to update sensor data.
    */
   void setSensorsData(const Sensors &sensors_data);
@@ -236,30 +234,24 @@ class Data {
   void setSensorsWheelEncoderData(const std::array<CounterData, Sensors::kNumEncoders> &imu);
 
   /**
-   * @brief      Should be called to update sensor keyence data.
-   */
-  void setSensorsKeyenceData(
-    const std::array<CounterData, Sensors::kNumKeyence> &keyence_stripe_counter);
-
-  /**
    * @brief      Retrieves data from the batteries.
    */
-  Batteries getBatteriesData();
+  FullBatteryData getBatteriesData();
 
   /**
    * @brief      Should be called to update battery data
    */
-  void setBatteriesData(const Batteries &batteries_data);
+  void setBatteriesData(const FullBatteryData &batteries_data);
 
   /**
    * @brief      Retrieves data from the emergency brakes.
    */
-  EmergencyBrakes getEmergencyBrakesData();
+  Brakes getBrakesData();
 
   /**
    * @brief      Should be called to update emergency brakes data
    */
-  void setEmergencyBrakesData(const EmergencyBrakes &emergency_brakes_data);
+  void setBrakesData(const Brakes &brakes_data);
 
   /**
    * @brief      Retrieves data produced by each of the four motors.
@@ -286,9 +278,9 @@ class Data {
   Navigation navigation_;
   Sensors sensors_;
   Motors motors_;
-  Batteries batteries_;
+  FullBatteryData batteries_;
   Telemetry telemetry_;
-  EmergencyBrakes emergency_brakes_;
+  Brakes brakes_;
 
   // locks for data substructures
   utils::concurrent::Lock lock_state_machine_;
@@ -298,7 +290,7 @@ class Data {
 
   utils::concurrent::Lock lock_telemetry_;
   utils::concurrent::Lock lock_batteries_;
-  utils::concurrent::Lock lock_emergency_brakes_;
+  utils::concurrent::Lock lock_brakes_;
 
   Data() {}
 

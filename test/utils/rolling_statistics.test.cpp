@@ -23,11 +23,11 @@ namespace math {
  * @brief calculates the mean of the elements of a given array
  */
 template<class T>
-T meanCalc(T a[], int size_a)
+T meanCalc(const T a[], const size_t size_a)
 {
   T sum  = 0;
   T mean = 0;
-  for (int i = 0; i < size_a; i++) {
+  for (size_t i = 0; i < size_a; ++i) {
     sum = sum + a[i];
   }
   mean = sum / size_a;
@@ -47,7 +47,7 @@ class RollingStatisticsTestInt : public ::testing::Test {
   RollingStatistics<int> test_stats_int = RollingStatistics<int>(window);
 
   // Declaring variables to be used
-  int values_counter = 1000;
+  static constexpr size_t kNumValues = 1000;
   int values[1000];
   int sum  = 0;
   int mean = 0;
@@ -60,7 +60,7 @@ class RollingStatisticsTestInt : public ::testing::Test {
 
   void SetUp()
   {
-    for (int i = 0; i < values_counter; i++) {
+    for (size_t i = 0; i < kNumValues; ++i) {
       values[i] = rand() % 1000 + 1;
     }
   }
@@ -87,11 +87,11 @@ TEST_F(RollingStatisticsTestInt, testDefaultIntRolling)
  */
 TEST_F(RollingStatisticsTestInt, testMeanSumIntRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
   }
-  mean = meanCalc<int>(values, values_counter);
-  sum  = std::accumulate(values, values + values_counter, sum);
+  mean = meanCalc<int>(values, kNumValues);
+  sum  = std::accumulate(values, values + kNumValues, sum);
   ASSERT_EQ(mean, test_stats_int.getMean());
   ASSERT_EQ(sum, test_stats_int.getSum());
 }
@@ -102,7 +102,7 @@ TEST_F(RollingStatisticsTestInt, testMeanSumIntRolling)
  */
 TEST_F(RollingStatisticsTestInt, testVarStdIntRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
     int var_test = static_cast<int>((sqrt(test_stats_int.getVariance())));
     ASSERT_EQ(var_test, test_stats_int.getStdDev()) << messageVarStdDev;
@@ -116,7 +116,7 @@ TEST_F(RollingStatisticsTestInt, testVarStdIntRolling)
  */
 TEST_F(RollingStatisticsTestInt, testOutlierrsIntRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
   }
   int var_prev     = test_stats_int.getVariance();
@@ -124,7 +124,7 @@ TEST_F(RollingStatisticsTestInt, testOutlierrsIntRolling)
   int std_dev_prev = test_stats_int.getStdDev();
   int threshold    = mean_prev + 3 * std_dev_prev;
 
-  for (int i = 0; i < (static_cast<int>(values_counter / 10)); i++) {
+  for (size_t i = 0; i < (static_cast<int>(kNumValues / 10)); ++i) {
     test_stats_int.update(threshold + rand() % 200 + 100);
   }
   EXPECT_LT(mean_prev, test_stats_int.getMean()) << messageOutlierMean;
@@ -139,12 +139,12 @@ TEST_F(RollingStatisticsTestInt, testOutlierrsIntRolling)
 
 TEST_F(RollingStatisticsTestInt, testWindowIntRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(values[i]);
   }
 
   // Filling up the rest of the window - 2000 items
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_int.update(rand() % 1000 + 1);
   }
 
@@ -153,7 +153,7 @@ TEST_F(RollingStatisticsTestInt, testWindowIntRolling)
   int var_prev     = test_stats_int.getVariance();
   int std_dev_prev = test_stats_int.getStdDev();
 
-  for (int i = 0; i <= (static_cast<int>(values_counter / 10)); i++) {
+  for (size_t i = 0; i <= kNumValues / 10; ++i) {
     // We will purposely assign a larger value for easy comparison
     int new_variable = rand() % 3000 + 2000;
     test_stats_int.update(new_variable);
@@ -178,8 +178,8 @@ class RollingStatisticsTestFloat : public ::testing::Test {
   RollingStatistics<float> test_stats_float = RollingStatistics<float>(window);
 
   // Declaring variables to be used
-  int values_counter = 1000;
-  float values_f[1000];
+  static constexpr size_t kNumValues = 1000;
+  float values_f[kNumValues];
   float sum_f  = 0.0;
   float mean_f = 0.0;
   float var_f;
@@ -191,7 +191,7 @@ class RollingStatisticsTestFloat : public ::testing::Test {
 
   void SetUp()
   {
-    for (int i = 0; i < values_counter; i++) {
+    for (size_t i = 0; i < kNumValues; ++i) {
       values_f[i] = testing::Randomiser::randomInRange(1, 1000);
     }
   }
@@ -217,11 +217,11 @@ TEST_F(RollingStatisticsTestFloat, testDefaultFloatRolling)
  */
 TEST_F(RollingStatisticsTestFloat, testMeanSumFloatRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
   }
-  mean_f = meanCalc<float>(values_f, values_counter);
-  sum_f  = std::accumulate(values_f, values_f + values_counter, sum_f);
+  mean_f = meanCalc<float>(values_f, kNumValues);
+  sum_f  = std::accumulate(values_f, values_f + kNumValues, sum_f);
   ASSERT_EQ(mean_f, test_stats_float.getMean());
   ASSERT_EQ(sum_f, test_stats_float.getSum());
 }
@@ -232,7 +232,7 @@ TEST_F(RollingStatisticsTestFloat, testMeanSumFloatRolling)
  */
 TEST_F(RollingStatisticsTestFloat, testVarStdFloatRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
     float var_test_f = sqrt(test_stats_float.getVariance());
     ASSERT_EQ(var_test_f, test_stats_float.getStdDev()) << messageVarStdDev;
@@ -246,7 +246,7 @@ TEST_F(RollingStatisticsTestFloat, testVarStdFloatRolling)
  */
 TEST_F(RollingStatisticsTestFloat, testOutliersFloatRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
   }
   float var_prev     = test_stats_float.getVariance();
@@ -254,7 +254,7 @@ TEST_F(RollingStatisticsTestFloat, testOutliersFloatRolling)
   float std_dev_prev = test_stats_float.getStdDev();
   float threshold    = mean_prev + 3 * std_dev_prev;
 
-  for (int i = 0; i < (static_cast<int>(values_counter / 10)); i++) {
+  for (size_t i = 0; i < (static_cast<size_t>(kNumValues / 10)); ++i) {
     test_stats_float.update(threshold + testing::Randomiser::randomInRange(100, 200));
   }
 
@@ -270,11 +270,11 @@ TEST_F(RollingStatisticsTestFloat, testOutliersFloatRolling)
  */
 TEST_F(RollingStatisticsTestFloat, testWindowsFloatRolling)
 {
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(values_f[i]);
   }
   // Filling up the rest of the window - 2000 items
-  for (int i = 0; i < values_counter; i++) {
+  for (size_t i = 0; i < kNumValues; ++i) {
     test_stats_float.update(testing::Randomiser::randomInRange(0, 1000));
   }
 
@@ -283,7 +283,7 @@ TEST_F(RollingStatisticsTestFloat, testWindowsFloatRolling)
   float var_prev     = test_stats_float.getVariance();
   float std_dev_prev = test_stats_float.getStdDev();
 
-  for (int i = 0; i <= (static_cast<int>(values_counter / 10)); i++) {
+  for (size_t i = 0; i <= kNumValues / 10; ++i) {
     // We will purposely assign a larger value for easy comparison
     float new_variable = testing::Randomiser::randomInRange(2000, 3000);
     test_stats_float.update(new_variable);

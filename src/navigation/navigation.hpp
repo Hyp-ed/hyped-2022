@@ -1,7 +1,6 @@
 #pragma once
 
 #include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 
 #include <math.h>
 
@@ -27,6 +26,7 @@ class Navigation {
   using NavigationArray          = std::array<data::nav_t, data::Sensors::kNumImus>;
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
+  using QuartileBounds           = std::array<data::nav_t, 3>;
 
   /**
    * @brief Construct a new Navigation object
@@ -83,12 +83,20 @@ class Navigation {
    */
   void calibrateGravity();
   /**
-   * @brief Apply Tukey's fences to an array of readings
+   * @brief Calculate quartiles for an array of readings. Updates quartile_bounds array
+   *
+   * @param pointer to array of original acceleration readings
+   *
+   * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
+   */
+  QuartileBounds calculateImuQuartiles(NavigationArray &data_array);
+  /**
+   * @brief Apply scaled interquartile range bounds on an array of readings
    *
    * @param pointer to array of original acceleration readings
    * @param threshold value
    */
-  void tukeyFences(NavigationArray &data_array, const data::nav_t threshold);
+  void imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold);
   /**
    * @brief Update central data structure
    */
@@ -112,14 +120,7 @@ class Navigation {
    * @brief Set initialisation of timestamps to true
    */
   void setHasInit();
-  /**
-   * @brief Disable keyence readings to have any impact on the run.
-   */
-  void disableKeyenceUsage();
-  /**
-   * @brief Set the keyence used to fake, so the system knows to use central timestamps.
-   */
-  void setKeyenceFake();
+
   /**
    * @brief Enable writing to file nav_data.csv
    */
@@ -136,8 +137,8 @@ class Navigation {
 
   static constexpr int kPrintFreq                     = 1;
   static constexpr data::nav_t kEmergencyDeceleration = 24;
-  static constexpr data::nav_t kTukeyThreshold        = 1;  // 0.75
-  static constexpr data::nav_t kTukeyIQRBound         = 3;
+  static constexpr data::nav_t kInterQuartileScaler   = 1;
+  static constexpr data::nav_t kMaxInterQuartileRange = 3;
 
   static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
@@ -202,11 +203,6 @@ class Navigation {
   // Have initial timestamps been set?
   bool has_initial_time_;
 
-  // Stripe counter object
-  StripeHandler stripe_counter_;
-  // Flags if keyences are used and if real
-  bool is_keyence_used_;
-
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
   utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
@@ -215,11 +211,6 @@ class Navigation {
    * @brief Query sensors to determine acceleration, velocity and distance
    */
   void queryImus();
-  /**
-   * @brief Query Keyence sensors to determine whether a stripe is found, update stripe_counter_
-   * accordingly
-   */
-  void queryKeyence();
   /**
    * @brief Update uncertainty in distance obtained through IMU measurements.
    */

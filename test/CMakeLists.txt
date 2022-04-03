@@ -24,6 +24,7 @@ include_directories(
 )
 target_link_libraries(${test_target}
     data
+    debugging
     brakes
     navigation
     propulsion
@@ -47,7 +48,7 @@ add_dependencies(${test_target} "${test_target}-format")
 add_custom_target(test
     COMMAND cp -r ${HYPED_CONFIG_DIR} ${CMAKE_BINARY_DIR}/test/
     COMMAND ${TEST_BINARY}
-    DEPENDS testrunner
+    DEPENDS testrunner hyped debugger
 )
 
 # -------------------------------------------------- #

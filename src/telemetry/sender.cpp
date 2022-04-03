@@ -4,13 +4,13 @@
 #include <string>
 
 #include <data/data.hpp>
-#include <utils/system.hpp>
 
 namespace hyped::telemetry {
 
 Sender::Sender(data::Data &data, Client &client)
     : utils::concurrent::Thread(
       utils::Logger("SENDER", utils::System::getSystem().config_.log_level_telemetry)),
+      sys_(utils::System::getSystem()),
       data_(data),
       client_(client)
 {
@@ -21,22 +21,25 @@ void Sender::run()
 {
   log_.debug("Telemetry Sender thread started");
 
-  uint16_t num_packages_sent = 0;
+  int num_packages_sent = 0;
 
-  while (true) {
-    Writer writer(data_);
+  while (sys_.isRunning()) {
+    Writer writer;
+
     writer.start();
     writer.packTime();
     writer.packId(num_packages_sent);
-    writer.packCrucialData();
-    writer.packStatusData();
-    writer.packAdditionalData();
+    writer.packTelemetryData();
+    writer.packSensorsData();
+    writer.packMotorData();
+    writer.packStateMachineData();
+    writer.packNavigationData();
     writer.end();
+
     data::Telemetry telemetry_data = data_.getTelemetryData();
     if (!client_.sendData(writer.getString())) {
       telemetry_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setTelemetryData(telemetry_data);
-
       break;
     }
     ++num_packages_sent;

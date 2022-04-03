@@ -104,7 +104,7 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
       trajectory_.acceleration = -config_.cruising_deceleration;
       break;
     case data::State::kNominalBraking:
-    case data::State::kEmergencyBraking:
+    case data::State::kFailureBraking:
       trajectory_.acceleration = -config_.braking_deceleration;
       break;
   }

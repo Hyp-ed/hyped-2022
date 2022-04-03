@@ -78,7 +78,7 @@ void Main::run()
       case data::State::kPreBraking:
       case data::State::kNominalBraking:
       case data::State::kFailurePreBraking:
-      case data::State::kEmergencyBraking:
+      case data::State::kFailureBraking:
         state_processor_.quickStopAll();
         break;
       case data::State::kFailureStopped:

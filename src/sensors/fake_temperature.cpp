@@ -2,13 +2,14 @@
 
 #include <stdlib.h>
 
+#include <utils/system.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::sensors {
 
-FakeTemperature::FakeTemperature(utils::Logger &log, bool is_fail)
+FakeTemperature::FakeTemperature(const bool is_fail)
     : data_(data::Data::getInstance()),
-      log_(log),
+      log_("FAKE-TEMPERATURE", utils::System::getSystem().config_.log_level_sensors),
       failure_(300),
       success_(30),
       is_fail_(is_fail),
@@ -17,11 +18,13 @@ FakeTemperature::FakeTemperature(utils::Logger &log, bool is_fail)
       failure_time_(0),
       failure_happened_(false)
 {
-  temp_.temp = success_;
+  temperature_data_.temperature = success_;
+  auto &system                  = utils::System::getSystem();
+  utils::Logger log("FAKE-TEMPERATURE", system.config_.log_level);
   if (is_fail_) {
-    log_.info("fail initialised");
+    log.info("fail initialised");
   } else {
-    log_.info("initialised");
+    log.info("initialised");
   }
 }
 
@@ -45,15 +48,15 @@ void FakeTemperature::checkFailure()
 {
   if (is_fail_ && failure_time_ != 0 && !failure_happened_) {
     if (utils::Timer::getTimeMicros() - acc_start_time_ >= failure_time_) {
-      temp_.temp        = failure_;
-      failure_happened_ = true;
+      temperature_data_.temperature = failure_;
+      failure_happened_             = true;
     }
   }
 }
 
-uint8_t FakeTemperature::getData()
+uint8_t FakeTemperature::getData() const
 {
-  return temp_.temp;
+  return temperature_data_.temperature;
 }
 
 }  // namespace hyped::sensors

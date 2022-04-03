@@ -45,7 +45,7 @@ class ImuDataLogger {
    * @param acceleration a vector of type nav_t (float) holding acceleration
    * @param timestamp time that data was received
    */
-  void dataToFileSimulation(const data::NavigationVector &acceleration, const uint32_t timestamp);
+  void dataToFileSimulation(const data::NavigationVector &acceleration, const uint64_t timestamp);
 
   /**
    * @brief write raw and calibrated accelerations to outfile
@@ -56,7 +56,7 @@ class ImuDataLogger {
    * @param timestamp time that data was received
    */
   void dataToFile(const data::NavigationVector &raw_acceleration,
-                  const data::NavigationVector &calibrated_acceleration, const uint32_t timestamp);
+                  const data::NavigationVector &calibrated_acceleration, const uint64_t timestamp);
 
   /**
    * @brief write raw, calibrated and x accelerations to outfile
@@ -69,7 +69,7 @@ class ImuDataLogger {
    */
   void dataToFileKalman(const data::NavigationVector &raw_acceleration,
                         const data::NavigationVector &calibrated_acceleration,
-                        const data::NavigationVector &x, const uint32_t timestamp);
+                        const data::NavigationVector &x, const uint64_t timestamp);
 
  private:
   std::string file_path_;

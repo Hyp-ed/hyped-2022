@@ -29,6 +29,11 @@ void Thread::join()
   thread_->join();
 }
 
+void Thread::stop()
+{
+  is_running_ = false;
+}
+
 void Thread::run()
 {
   log_.info("Empty thread started; terminating immediately");
@@ -42,22 +47,6 @@ void Thread::yield()
 void Thread::sleep(uint32_t ms)
 {
   std::this_thread::sleep_for(std::chrono::microseconds(ms * 1000));
-}
-
-void BusyThread::run()
-{
-  uint64_t i = 0;
-  while (running_) {
-    i++;
-    if (i % 10000 == 0) {
-      // log_.INFO("BUSY", "output\n");
-    }
-  }
-}
-
-BusyThread::~BusyThread()
-{
-  running_ = false;
 }
 
 }  // namespace hyped::utils::concurrent

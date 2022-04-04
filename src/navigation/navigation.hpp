@@ -189,9 +189,9 @@ class Navigation {
   // To store estimated values
   ImuDataPointArray sensor_readings_;
   data::DataPoint<data::nav_t> encoder_displacement_;
-  data::DataPoint<data::nav_t> imu_acceleration_;
-  data::DataPoint<data::nav_t> imu_velocity_;
-  data::DataPoint<data::nav_t> imu_displacement_;
+  data::DataPoint<data::nav_t> acceleration_;
+  data::DataPoint<data::nav_t> velocity_;
+  data::DataPoint<data::nav_t> displacement_;
   NavigationVectorArray gravity_calibration_;
 
   // Initial timestamp (for comparisons)

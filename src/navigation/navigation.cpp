@@ -17,17 +17,17 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
       current_measurements_(0),
       is_imu_reliable_{{true, true, true, true}},
       num_outlier_imus_(0),
-      imu_acceleration_(0, 0.),
-      imu_velocity_(0, 0.),
-      imu_displacement_(0, 0.),
+      acceleration_(0, 0.),
+      velocity_(0, 0.),
+      displacement_(0, 0.),
       displacement_uncertainty_(0.),
       velocity_uncertainty_(0.),
       has_initial_time_(false),
       stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
                       data::Navigation::kStripeDistance),
       is_keyence_used_(false),
-      acceleration_integrator_(&imu_velocity_),
-      velocity_integrator_(&imu_displacement_)
+      acceleration_integrator_(&velocity_),
+      velocity_integrator_(&displacement_)
 {
   log_.info("Navigation module started");
   for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
@@ -51,17 +51,17 @@ data::ModuleStatus Navigation::getModuleStatus() const
 
 data::nav_t Navigation::getImuAcceleration() const
 {
-  return imu_acceleration_.value;
+  return acceleration_.value;
 }
 
 data::nav_t Navigation::getImuVelocity() const
 {
-  return imu_velocity_.value;
+  return velocity_.value;
 }
 
 data::nav_t Navigation::getImuDisplacement() const
 {
-  return imu_displacement_.value;
+  return displacement_.value;
 }
 
 data::nav_t Navigation::getEmergencyBrakingDistance() const
@@ -247,11 +247,11 @@ void Navigation::queryImus()
   }
   if (previous_filled_) checkVibration();
 
-  imu_acceleration_.value     = acceleration_average_filter.getMean();
-  imu_acceleration_.timestamp = current_trajectory_micros;
+  acceleration_.value     = acceleration_average_filter.getMean();
+  acceleration_.timestamp = current_trajectory_micros;
 
-  acceleration_integrator_.update(imu_acceleration_);
-  velocity_integrator_.update(imu_velocity_);
+  acceleration_integrator_.update(acceleration_);
+  velocity_integrator_.update(velocity_);
 }
 
 void Navigation::compareEncoderImu()
@@ -300,11 +300,11 @@ void Navigation::checkVibration()
 void Navigation::updateUncertainty()
 {
   // time difference in milliseconds
-  const auto time_delta_micros
-    = static_cast<data::nav_t>(imu_displacement_.timestamp - previous_timestamp_) / 1e6;
+  const auto time_delta_secs
+    = static_cast<data::nav_t>(displacement_.timestamp - previous_timestamp_) / 1e6;
   const auto absolute_acceleration_delta = std::abs(getImuAcceleration() - previous_acceleration_);
   // Random walk uncertainty
-  velocity_uncertainty_ += absolute_acceleration_delta * time_delta_micros / 2.;
+  velocity_uncertainty_ += absolute_acceleration_delta * time_delta_secs / 2.;
   // Processing uncertainty
   data::nav_t acceleration_variance_ = 0.0;
   for (auto &filter : filters_) {
@@ -313,11 +313,11 @@ void Navigation::updateUncertainty()
   acceleration_variance_                     = acceleration_variance_ / data::Sensors::kNumImus;
   const auto acceleration_standard_deviation = std::sqrt(acceleration_variance_);
   // uncertainty in velocity is the std deviation of acceleration integrated
-  velocity_uncertainty_ += acceleration_standard_deviation * time_delta_micros;
-  displacement_uncertainty_ += velocity_uncertainty_ * time_delta_micros;
+  velocity_uncertainty_ += acceleration_standard_deviation * time_delta_secs;
+  displacement_uncertainty_ += velocity_uncertainty_ * time_delta_secs;
   // Random walk uncertainty
   displacement_uncertainty_
-    += std::abs(getImuVelocity() - previous_velocity_) * time_delta_micros / 2.;
+    += std::abs(getImuVelocity() - previous_velocity_) * time_delta_secs / 2.;
 }
 
 void Navigation::disableKeyenceUsage()
@@ -440,7 +440,7 @@ void Navigation::updateData()
   }
   ++log_counter_;
   // Update all prev measurements
-  previous_timestamp_    = imu_displacement_.timestamp;
+  previous_timestamp_    = displacement_.timestamp;
   previous_acceleration_ = getImuAcceleration();
   previous_velocity_     = getImuVelocity();
 }
@@ -449,8 +449,8 @@ void Navigation::navigate()
 {
   queryImus();
   if (is_keyence_used_) {
-    stripe_counter_.queryKeyence(imu_displacement_.value, imu_velocity_.value);
-    if (stripe_counter_.checkFailure(imu_displacement_.value))
+    stripe_counter_.queryKeyence(displacement_.value, velocity_.value);
+    if (stripe_counter_.checkFailure(displacement_.value))
       status_ = data::ModuleStatus::kCriticalFailure;
   }
   queryWheelEncoders();
@@ -463,9 +463,9 @@ void Navigation::initialiseTimestamps()
 {
   // First iteration --> set timestamps
   data::nav_t initial_timestamp   = utils::Timer::getTimeMicros();
-  imu_acceleration_.timestamp     = initial_timestamp;
-  imu_velocity_.timestamp         = initial_timestamp;
-  imu_displacement_.timestamp     = initial_timestamp;
+  acceleration_.timestamp         = initial_timestamp;
+  velocity_.timestamp             = initial_timestamp;
+  displacement_.timestamp         = initial_timestamp;
   encoder_displacement_.timestamp = initial_timestamp;
   previous_acceleration_          = getImuAcceleration();
   previous_velocity_              = getImuVelocity();

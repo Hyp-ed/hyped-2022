@@ -1,7 +1,5 @@
 #pragma once
 
-#include "interface.hpp"
-
 #include <cstdint>
 
 #include <data/data.hpp>
@@ -9,6 +7,12 @@
 #include <utils/logger.hpp>
 namespace hyped::sensors {
 
+class IBrakePressure {
+ public:
+  virtual uint16_t getData() const = 0;
+  virtual void run()               = 0;
+  virtual ~IBrakePressure() {}
+};
 class BrakePressure : public IBrakePressure {
  public:
   /**
@@ -35,7 +39,7 @@ class BrakePressure : public IBrakePressure {
    */
   static int8_t scaleData(uint8_t raw_value);
 
-  utils::io::ADC pin_;
+  utils::io::Adc pin_;
   utils::Logger log_;
 
   data::BrakePressureData pressure_data_;

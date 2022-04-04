@@ -2,6 +2,7 @@
 
 #include "ambient_pressure.hpp"
 #include "bms_manager.hpp"
+#include "brake_pressure.hpp"
 #include "imu_manager.hpp"
 #include "sensor.hpp"
 #include "temperature.hpp"

@@ -10,7 +10,6 @@
 #include <sensors/brake_pressure.hpp>
 #include <sensors/fake_ambient_pressure.hpp>
 #include <sensors/fake_brake_pressure.hpp>
-#include <sensors/fake_keyence.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/temperature.hpp>
 

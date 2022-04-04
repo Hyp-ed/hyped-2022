@@ -23,9 +23,6 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
       displacement_uncertainty_(0.),
       velocity_uncertainty_(0.),
       has_initial_time_(false),
-      stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
-                      data::Navigation::kStripeDistance),
-      is_keyence_used_(false),
       acceleration_integrator_(&velocity_),
       velocity_integrator_(&displacement_)
 {
@@ -320,11 +317,6 @@ void Navigation::updateUncertainty()
     += std::abs(getImuVelocity() - previous_velocity_) * time_delta_secs / 2.;
 }
 
-void Navigation::disableKeyenceUsage()
-{
-  is_keyence_used_ = false;
-}
-
 bool Navigation::getHasInit()
 {
   return has_initial_time_;
@@ -432,11 +424,10 @@ void Navigation::updateData()
   data_.setNavigationData(nav_data);
 
   if (log_counter_ % 100 == 0) {
-    log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", log_counter_,
-               nav_data.acceleration, nav_data.velocity, nav_data.displacement,
-               stripe_counter_.getStripeCount() * data::Navigation::kStripeDistance);
-    log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,
-               velocity_uncertainty_, displacement_uncertainty_, stripe_counter_.getFailureCount());
+    log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f", log_counter_, nav_data.acceleration,
+               nav_data.velocity, nav_data.displacement);
+    log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f", log_counter_, velocity_uncertainty_,
+               displacement_uncertainty_);
   }
   ++log_counter_;
   // Update all prev measurements
@@ -448,11 +439,6 @@ void Navigation::updateData()
 void Navigation::navigate()
 {
   queryImus();
-  if (is_keyence_used_) {
-    stripe_counter_.queryKeyence(displacement_.value, velocity_.value);
-    if (stripe_counter_.checkFailure(displacement_.value))
-      status_ = data::ModuleStatus::kCriticalFailure;
-  }
   queryWheelEncoders();
   compareEncoderImu();
   if (log_counter_ > 1000) updateUncertainty();
@@ -462,16 +448,14 @@ void Navigation::navigate()
 void Navigation::initialiseTimestamps()
 {
   // First iteration --> set timestamps
-  data::nav_t initial_timestamp   = utils::Timer::getTimeMicros();
-  acceleration_.timestamp         = initial_timestamp;
-  velocity_.timestamp             = initial_timestamp;
-  displacement_.timestamp         = initial_timestamp;
-  encoder_displacement_.timestamp = initial_timestamp;
-  previous_acceleration_          = getImuAcceleration();
-  previous_velocity_              = getImuVelocity();
-  initial_timestamp_              = initial_timestamp;
+  data::nav_t initial_timestamp = utils::Timer::getTimeMicros();
+  acceleration_.timestamp       = initial_timestamp;
+  velocity_.timestamp           = initial_timestamp;
+  displacement_.timestamp       = initial_timestamp;
+  previous_acceleration_        = getImuAcceleration();
+  previous_velocity_            = getImuVelocity();
+  initial_timestamp_            = initial_timestamp;
   log_.debug("Initial timestamp:%d", initial_timestamp_);
   previous_timestamp_ = initial_timestamp;
-  stripe_counter_.setInit(initial_timestamp_);
 }
 }  // namespace hyped::navigation

@@ -131,7 +131,7 @@ TEST_F(FakeWheelEncoderTest, defaultNonDecreasingData)
   }
   {
     auto state_machine_data          = data.getStateMachineData();
-    state_machine_data.current_state = data::State::kEmergencyBraking;
+    state_machine_data.current_state = data::State::kFailureBraking;
     data.setStateMachineData(state_machine_data);
   }
   for (size_t i = 0; i < kNumIterations; ++i) {
@@ -268,7 +268,7 @@ TEST_F(FakeWheelEncoderTest, oneFaultyNonDecreasingData)
   }
   {
     auto state_machine_data          = data.getStateMachineData();
-    state_machine_data.current_state = data::State::kEmergencyBraking;
+    state_machine_data.current_state = data::State::kFailureBraking;
     data.setStateMachineData(state_machine_data);
   }
   for (size_t i = 0; i < kNumIterations; ++i) {
@@ -311,8 +311,7 @@ TEST_F(FakeWheelEncoderTest, fourFaultyParsesConfig)
   ASSERT_TRUE(fake_wheel_encoders.at(1).getConfig().failure_in_state);
   ASSERT_TRUE(fake_wheel_encoders.at(2).getConfig().failure_in_state);
   ASSERT_TRUE(fake_wheel_encoders.at(3).getConfig().failure_in_state);
-  ASSERT_EQ(data::State::kEmergencyBraking,
-            *fake_wheel_encoders.at(0).getConfig().failure_in_state);
+  ASSERT_EQ(data::State::kFailureBraking, *fake_wheel_encoders.at(0).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kAccelerating, *fake_wheel_encoders.at(1).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kCruising, *fake_wheel_encoders.at(2).getConfig().failure_in_state);
   ASSERT_EQ(data::State::kNominalBraking, *fake_wheel_encoders.at(3).getConfig().failure_in_state);
@@ -403,7 +402,7 @@ TEST_F(FakeWheelEncoderTest, fourFaultyNonDecreasingData)
   }
   {
     auto state_machine_data          = data.getStateMachineData();
-    state_machine_data.current_state = data::State::kEmergencyBraking;
+    state_machine_data.current_state = data::State::kFailureBraking;
     data.setStateMachineData(state_machine_data);
   }
   for (size_t i = 0; i < kNumIterations; ++i) {

@@ -4,8 +4,10 @@
 #include <array>
 #include <vector>
 
+#include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/math/statistics.hpp>
+#include <utils/system.hpp>
 
 // user bank addresse
 static constexpr uint8_t kRegBankSel = 0x7F;
@@ -55,18 +57,17 @@ static constexpr uint8_t kUserCtrl      = 0x03;  // userbank 0
 
 namespace hyped::sensors {
 
-static constexpr utils::io::GPIO::Direction kDirection = utils::io::GPIO::Direction::kOut;
+static constexpr utils::io::Gpio::Direction kDirection = utils::io::Gpio::Direction::kOut;
 
-Imu::Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo)
-    : spi_(utils::io::SPI::getInstance()),
-      log_(log),
-      gpio_(pin, kDirection, log),
+Imu::Imu(const uint32_t pin, const bool is_fifo)
+    : spi_(utils::io::Spi::getInstance()),
+      log_("IMU", utils::System::getSystem().config_.log_level_sensors),
+      gpio_(pin, kDirection, log_),
       pin_(pin),
       is_fifo_(is_fifo),
       is_online_(false)
 {
-  log_.debug("pin is %d", pin);
-  log_.info("creating sensor");
+  log_.info("started for pin %u", pin);
   init();
 }
 
@@ -105,10 +106,10 @@ void Imu::init()
   enableFifo();
 
   if (check_init) {
-    log_.info("Imu sensor %d created. Initialisation complete.", pin_);
+    log_.info("sensor %d created. Initialisation complete.", pin_);
     selectBank(0);
   } else {
-    log_.error("ERROR: Imu sensor %d not initialised.", pin_);
+    log_.error("sensor %d not initialised.", pin_);
   }
 }
 
@@ -132,11 +133,10 @@ void Imu::enableFifo()
   readByte(kUserCtrl, &check_enable);  // in user control
 
   if (check_enable == (data | 0x40)) {
-    log_.info("FIFO Enabled");
+    log_.info("enabled FIFO for pin %u", pin_);
   } else {
-    log_.error("ERROR: FIFO not enabled");
+    log_.error("failed to enable FIFO for pin %u", pin_);
   }
-  kFrameSize_ = 6;
 }
 
 bool Imu::whoAmI()
@@ -163,7 +163,7 @@ bool Imu::whoAmI()
 
 Imu::~Imu()
 {
-  log_.info("Deconstructing sensor %d object", pin_);
+  log_.info("stopped for pin %u", pin_);
 }
 
 void Imu::selectBank(uint8_t switch_bank)
@@ -230,7 +230,7 @@ int Imu::readFifo(data::ImuData &data)
   if (is_online_) {
     data.fifo.clear();
     // get fifo size
-    uint8_t buffer[kFrameSize_];
+    uint8_t buffer[kFrameSize];
     uint8_t size_buffer[2];
     readBytes(kFifoCountH, reinterpret_cast<uint8_t *>(size_buffer), 2);  // from count H/L
     // convert big->little endian of count (2 bytes)
@@ -243,9 +243,9 @@ int Imu::readFifo(data::ImuData &data)
     log_.debug("Buffer size = %d", fifo_size);
     int16_t axcounts, aycounts, azcounts;  // include negative int
     float value_x, value_y, value_z;
-    log_.debug("iterating = %d", (fifo_size / kFrameSize_));
-    for (size_t i = 0; i < (fifo_size / kFrameSize_); i++) {  // make sure is less than array size
-      readBytes(kFifoRW, buffer, kFrameSize_);
+    log_.debug("iterating = %lu", fifo_size / kFrameSize);
+    for (size_t i = 0; i < fifo_size / kFrameSize; ++i) {  // make sure is less than array size
+      readBytes(kFifoRW, buffer, kFrameSize);
       axcounts = (((int16_t)buffer[0]) << 8) | buffer[1];  // 2 byte acc data for xyz
       aycounts = (((int16_t)buffer[2]) << 8) | buffer[3];
       azcounts = (((int16_t)buffer[4]) << 8) | buffer[5];
@@ -292,7 +292,7 @@ data::ImuData Imu::getData()
       std::array<float, 3> acceleration_data;
 
       readBytes(kAccelXoutH, response, 8);
-      for (size_t i = 0; i < 3; i++) {
+      for (size_t i = 0; i < 3; ++i) {
         bit_data                = ((int16_t)response[i * 2] << 8) | response[i * 2 + 1];
         value                   = static_cast<float>(bit_data);
         acceleration_data.at(i) = value / acc_divider_ * 9.80665;

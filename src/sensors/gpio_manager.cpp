@@ -11,15 +11,15 @@ GpioManager::GpioManager(utils::Logger log, const Config &config)
       config_(config)
 {
   // clear HPSSRs if default is high
-  for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
-    high_power_ssr_.push_back(std::make_unique<utils::io::GPIO>(config_.high_power_ssr_pins.at(i),
-                                                                utils::io::GPIO::Direction::kOut));
+  for (size_t i = 0; i < data::FullBatteryData::kNumHPBatteries; ++i) {
+    high_power_ssr_.push_back(std::make_unique<utils::io::Gpio>(config_.high_power_ssr_pins.at(i),
+                                                                utils::io::Gpio::Direction::kOut));
     high_power_ssr_.at(i)->clear();
     log_.info("HP SSR %d has been initialised CLEAR", i);
   }
   // master switch to keep pod on
-  master_ = std::make_unique<utils::io::GPIO>(config_.master_switch_pin,
-                                              utils::io::GPIO::Direction::kOut);
+  master_ = std::make_unique<utils::io::Gpio>(config_.master_switch_pin,
+                                              utils::io::Gpio::Direction::kOut);
   master_->set();
   log_.info("Master switch SET");
   // add additional GPIO in format above
@@ -30,7 +30,7 @@ void GpioManager::clearHighPower()
 {
   data::Sensors sensors_data_struct = data_.getSensorsData();
   master_->clear();  // important to clear this first
-  for (size_t i = 0; i < data::Batteries::kNumHPBatteries; ++i) {
+  for (size_t i = 0; i < data::FullBatteryData::kNumHPBatteries; ++i) {
     high_power_ssr_[i]->clear();  // HP off until kReady State
   }
   sensors_data_struct.high_power_off = true;  // all SSRs in HP off
@@ -65,12 +65,13 @@ void GpioManager::run()
           log_.error("Braking! HP SSR cleared");
           break;
         case data::State::kNominalBraking:
+        case data::State::kReady:
           break;
         case data::State::kFailurePreBraking:
           clearHighPower();
           log_.error("Failure Braking! HP SSR cleared");
           break;
-        case data::State::kEmergencyBraking:
+        case data::State::kFailureBraking:
         case data::State::kFailureStopped:
           clearHighPower();
           log_.error("Emergency State! HP SSR cleared");
@@ -79,9 +80,9 @@ void GpioManager::run()
           clearHighPower();
           log_.info("kFinished reached...HP off");
           break;
-        case data::State::kReady:
+        case data::State::kPreReady:
           setHighPower();
-          log_.info("kReady...HP SSR set and HP on");
+          log_.info("kPreReady...HP SSR set and HP on");
           break;
         case data::State::kInvalid:
           clearHighPower();  // shutting down HP asap

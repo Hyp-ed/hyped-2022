@@ -7,8 +7,9 @@
 #include <string>
 #include <vector>
 
-#include <data/data.hpp>
 #include <gtest/gtest.h>
+
+#include <data/data.hpp>
 #include <state_machine/state.hpp>
 #include <state_machine/transitions.hpp>
 #include <utils/logger.hpp>
@@ -31,6 +32,13 @@ class Randomiser {
     static std::default_random_engine generator;
     static std::uniform_real_distribution<data::nav_t> distribution(0.0, 1.0);
     return distribution(generator);
+  }
+
+  static data::nav_t randomInRange(const data::nav_t lower, const data::nav_t upper)
+  {
+    static std::default_random_engine random_engine;
+    std::uniform_real_distribution<> distribution(lower, upper);
+    return distribution(random_engine);
   }
 
   // Randomises a module status to any of the possible values.
@@ -75,11 +83,12 @@ class Randomiser {
   // Randomises the entries in a hyped::data::ImuData struct.
   static void randomiseImuData(data::ImuData &imu_data)
   {
-    for (int i = 0; i < 3; i++) {
+    for (size_t i = 0; i < 3; ++i) {
       imu_data.acc[i] = static_cast<data::nav_t>((rand() % 100 + 75) + randomDecimal());
     }
-    for (int i = 0; i < 3; i++) {
-      imu_data.fifo.push_back(static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
+    for (size_t i = 0; i < 3; ++i) {
+      imu_data.fifo.push_back(
+        static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
   }
 
@@ -95,7 +104,7 @@ class Randomiser {
   static void randomiseTemperatureData(data::TemperatureData &temp_data)
   {
     // Generates a temperature value between 0 and 99 C.
-    temp_data.temp = static_cast<int>(rand() % 100);
+    temp_data.temperature = static_cast<uint8_t>(rand() % 100);
   }
 
   // Randomises the entries in a hyped::data::Sensors struct.
@@ -108,9 +117,6 @@ class Randomiser {
       randomiseImuData(sensors_data);
     }
     for (auto &sensors_data : sensors_data.wheel_encoders) {
-      randomiseCounter(sensors_data);
-    }
-    for (auto &sensors_data : sensors_data.keyence_stripe_counters) {
       randomiseCounter(sensors_data);
     }
   }
@@ -136,7 +142,7 @@ class Randomiser {
 
     // Below only for HighPowerBms! Value for BMSLP = 0
     // Generates a cell voltage data between 0 and 50000 mV.
-    for (int i = 0; i < 36; i++) {
+    for (size_t i = 0; i < 36; ++i) {
       battery_data.cell_voltage[i] = static_cast<uint16_t>((rand() % 500) * 100);
     }
 
@@ -153,11 +159,11 @@ class Randomiser {
     battery_data.high_voltage_cell = static_cast<uint16_t>((rand() % 500) * 100);
 
     // Generates a random bool value for IMD fault.
-    battery_data.imd_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
+    battery_data.insulation_monitoring_device_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
 
   // Randomises the entries in a hyped::data::Batteries struct.
-  static void randomiseBatteriesData(data::Batteries &batteries_data)
+  static void randomiseBatteriesData(data::FullBatteryData &batteries_data)
   {
     randomiseModuleStatus(batteries_data.module_status);
 
@@ -173,12 +179,12 @@ class Randomiser {
   // Emergency Brakes data
   //---------------------------------------------------------------------------
 
-  // Randomises the entries in a hyped::data::EmergencyBrakes struct.
-  static void randomiseBrakes(data::EmergencyBrakes &brakes_data)
+  // Randomises the entries in a hyped::data::Brakes struct.
+  static void randomiseBrakes(data::Brakes &brakes_data)
   {
     randomiseModuleStatus(brakes_data.module_status);
 
-    for (int i = 0; i < brakes_data.kNumBrakes; i++) {
+    for (size_t i = 0; i < brakes_data.kNumBrakes; ++i) {
       brakes_data.brakes_retracted[i] = static_cast<bool>(rand() > (RAND_MAX / 2));
     }
   }
@@ -193,7 +199,7 @@ class Randomiser {
     randomiseModuleStatus(motors_data.module_status);
 
     // Generates a RPM data between 0 and 199 for all 4 motors.
-    for (int i = 0; i < motors_data.kNumMotors; i++) {
+    for (size_t i = 0; i < motors_data.kNumMotors; ++i) {
       motors_data.rpms[i] = static_cast<uint32_t>(rand() % 200);
     }
   }

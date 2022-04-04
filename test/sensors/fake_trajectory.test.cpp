@@ -13,7 +13,7 @@ class FakeTrajectoryTest : public Test {
     = {data::State::kIdle, data::State::kPreCalibrating, data::State::kCalibrating,
        data::State::kReady};
   inline static const std::vector<data::State> braking_states_
-    = {data::State::kCruising, data::State::kNominalBraking, data::State::kEmergencyBraking};
+    = {data::State::kCruising, data::State::kNominalBraking, data::State::kFailureBraking};
   inline static const std::vector<data::State> post_run_states_
     = {data::State::kFailureStopped, data::State::kFinished};
 };

@@ -2,12 +2,7 @@
 
 #include <Eigen/Dense>
 
-using Eigen::MatrixXf;
-using Eigen::VectorXf;
-
-namespace hyped {
-namespace utils {
-namespace math {
+namespace hyped::utils::math {
 
 /**
  * @brief    This class is for filtering the data from sensors to smoothen it.
@@ -21,7 +16,7 @@ class KalmanMultivariate {
    * @param[in] m                       measurement dimensionality
    * @param[in] k                       control dimensionality (default 0)
    */
-  KalmanMultivariate(unsigned int n, unsigned int m, unsigned int k = 0);
+  KalmanMultivariate(uint32_t n, uint32_t m, uint32_t k = 0);
 
   /**
    * @brief    Set dynamics model matrices (without control)
@@ -29,7 +24,7 @@ class KalmanMultivariate {
    * @param[in] A                       state transition matrix
    * @param[in] Q                       process noise covariance
    */
-  void setDynamicsModel(MatrixXf &A, MatrixXf &Q);
+  void setDynamicsModel(Eigen::MatrixXf &A, Eigen::MatrixXf &Q);
 
   /**
    * @brief    Set dynamics model matrices (with control)
@@ -38,7 +33,7 @@ class KalmanMultivariate {
    * @param[in] B                       control matrix
    * @param[in] Q                       process noise covariance
    */
-  void setDynamicsModel(MatrixXf &A, MatrixXf &B, MatrixXf &Q);
+  void setDynamicsModel(Eigen::MatrixXf &A, Eigen::MatrixXf &B, Eigen::MatrixXf &Q);
 
   /**
    * @brief    Set measurement model matrices
@@ -46,7 +41,7 @@ class KalmanMultivariate {
    * @param[in] H                       measurement matrix
    * @param[in] R                       measurement noise covariance
    */
-  void setMeasurementModel(MatrixXf &H, MatrixXf &R);
+  void setMeasurementModel(Eigen::MatrixXf &H, Eigen::MatrixXf &R);
 
   /**
    * @brief    Set model matrices (without control)
@@ -56,7 +51,7 @@ class KalmanMultivariate {
    * @param[in] H                       measurement matrix
    * @param[in] R                       measurement noise covariance
    */
-  void setModels(MatrixXf &A, MatrixXf &Q, MatrixXf &H, MatrixXf &R);
+  void setModels(Eigen::MatrixXf &A, Eigen::MatrixXf &Q, Eigen::MatrixXf &H, Eigen::MatrixXf &R);
 
   /**
    * @brief    Set model matrices (with control)
@@ -67,21 +62,22 @@ class KalmanMultivariate {
    * @param[in] H                       measurement matrix
    * @param[in] R                       measurement noise covariance
    */
-  void setModels(MatrixXf &A, MatrixXf &B, MatrixXf &Q, MatrixXf &H, MatrixXf &R);
+  void setModels(Eigen::MatrixXf &A, Eigen::MatrixXf &B, Eigen::MatrixXf &Q, Eigen::MatrixXf &H,
+                 Eigen::MatrixXf &R);
 
   /**
    * @brief    Update state transition matrix
    *
    * @param[in] A                       state transition matrix
    */
-  void updateA(MatrixXf &A);
+  void updateA(Eigen::MatrixXf &A);
 
   /**
    * @brief    Update measurement covariance matrix
    *
    * @param[in] R                       measurement covariance matrix
    */
-  void updateR(MatrixXf &R);
+  void updateR(Eigen::MatrixXf &R);
 
   /**
    * @brief    Set initial beliefs
@@ -89,14 +85,14 @@ class KalmanMultivariate {
    * @param[in] x0                      initial state belief
    * @param[in] P0                      initial state covariance (uncertainty)
    */
-  void setInitial(VectorXf &x0, MatrixXf &P0);
+  void setInitial(Eigen::VectorXf &x0, Eigen::MatrixXf &P0);
 
   /**
    * @brief    Filter measurement and update state belief with covariance (without control)
    *
    * @param[in] z                       measurement vector
    */
-  void filter(VectorXf &z);
+  void filter(Eigen::VectorXf &z);
 
   /**
    * @brief    Filter measurement and update state belief with covariance (with control)
@@ -104,41 +100,41 @@ class KalmanMultivariate {
    * @param[in] u                       control vector
    * @param[in] z                       measurement vector
    */
-  void filter(VectorXf &u, VectorXf &z);
+  void filter(Eigen::VectorXf &u, Eigen::VectorXf &z);
 
   /**
    * @brief     Get the state estimate
    *
    * @return    Returns the current state estimate
    */
-  VectorXf &getStateEstimate();
+  Eigen::VectorXf &getStateEstimate();
 
   /**
    * @brief     Get the state uncertainty
    *
    * @return    Returns the current state covariance
    */
-  MatrixXf &getStateCovariance();
+  Eigen::MatrixXf &getStateCovariance();
 
  private:
   /* problem dimensions */
-  unsigned int n_;  // state dimension
-  unsigned int m_;  // measurement dimension
-  unsigned int k_;  // control dimension (0 if not set)
+  Eigen::Index n_;  // state dimension
+  Eigen::Index m_;  // measurement dimension
+  Eigen::Index k_;  // control dimension (0 if not set)
 
   /* dynamics model matrices */
-  MatrixXf A_;  // state transition matrix: n x n
-  MatrixXf B_;  // control matrix: n x k
-  MatrixXf Q_;  // process noise covariance: n x n
+  Eigen::MatrixXf A_;  // state transition matrix: n x n
+  Eigen::MatrixXf B_;  // control matrix: n x k
+  Eigen::MatrixXf Q_;  // process noise covariance: n x n
 
   /* measurement model matrices */
-  MatrixXf H_;  // measurement matrix: m x n
-  MatrixXf R_;  // measurement noise covariance: m x m
+  Eigen::MatrixXf H_;  // measurement matrix: m x n
+  Eigen::MatrixXf R_;  // measurement noise covariance: m x m
 
   /* state estimates */
-  VectorXf x_;  // state vector: n x 1
-  MatrixXf P_;  // state covariance: n x n
-  MatrixXf I_;  // identity matrix: n x n
+  Eigen::VectorXf x_;  // state vector: n x 1
+  Eigen::MatrixXf P_;  // state covariance: n x n
+  Eigen::MatrixXf I_;  // identity matrix: n x n
 
   /**
    * @brief    Predict state belief with covariance based on dynamics (without control)
@@ -150,15 +146,13 @@ class KalmanMultivariate {
    *
    * @param[in] u                       control vector
    */
-  void predict(VectorXf &u);
+  void predict(Eigen::VectorXf &u);
 
   /**
    * @brief    Correct state belief with covariance based on measurement
    *
    * @param[in] z                       measurement vector
    */
-  void correct(VectorXf &z);
+  void correct(Eigen::VectorXf &z);
 };
-}  // namespace math
-}  // namespace utils
-}  // namespace hyped
+}  // namespace hyped::utils::math

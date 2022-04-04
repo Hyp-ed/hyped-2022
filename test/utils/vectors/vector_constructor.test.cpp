@@ -16,55 +16,55 @@ namespace math {
  */
 TEST(ConstructorTest, handlesZeroArgumentConstructor)
 {
-  const int dimension            = 3;
-  Vector<int, dimension> example = Vector<int, dimension>();
+  static constexpr size_t kDimension = 3;
+  Vector<int, kDimension> example    = Vector<int, kDimension>();
   ASSERT_EQ(0, example.norm());
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(0, example[i]);
   }
 }
 
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
- * constructor of the form Vector<T,dimension>(T const), this should initialized all the values of
+ * constructor of the form Vector<T,kDimension>(T const), this should initialized all the values of
  * the vector to be equal to const.
  */
 TEST(ConstructorTest, handlesConstantConstructor)
 {
-  const int element              = 2;
-  const int dimension            = 3;
-  Vector<int, dimension> example = Vector<int, dimension>(element);
-  ASSERT_EQ(element * std::pow(dimension, 0.5), example.norm());
+  const int element                  = 2;
+  static constexpr size_t kDimension = 3;
+  Vector<int, kDimension> example    = Vector<int, kDimension>(element);
+  ASSERT_EQ(element * std::pow(kDimension, 0.5), example.norm());
 }
 
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
- * constructor of the form Vector<T,dimension>(std::array<T,dimension> array),
+ * constructor of the form Vector<T,kDimension>(std::array<T,kDimension> array),
  * this should assing each element of the vector with its correspondent element in the array
  */
 TEST(ConstructorTest, handlesArrayContructor)
 {
-  const int dimension              = 3;
-  std::array<int, dimension> array = std::array<int, dimension>();
+  static constexpr size_t kDimension = 3;
+  std::array<int, kDimension> array  = std::array<int, kDimension>();
   array.fill(10);
-  Vector<int, dimension> vector = Vector<int, dimension>(array);
-  for (int i = 0; i < dimension; i++) {
+  Vector<int, kDimension> vector = Vector<int, kDimension>(array);
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(array[i], vector[i]);
   }
 }
 
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
- * constructor of the form Vector<T,dimension>(std::array<T,dimension> array). In this case the
+ * constructor of the form Vector<T,dimension>(std::array<T,kDimension> array). In this case the
  * elements of the array are not initialize so they should be zero, therefore the elements of the
  * vector should also be zero.
  */
 TEST(ConstructorTest, handlesArrayContructorEmptyListTest)
 {
-  const int dimension              = 3;
-  std::array<int, dimension> array = std::array<int, dimension>();
-  Vector<int, dimension> vector    = Vector<int, dimension>(array);
-  for (int i = 0; i < dimension; i++) {
+  static constexpr size_t kDimension = 3;
+  std::array<int, kDimension> array  = std::array<int, kDimension>();
+  Vector<int, kDimension> vector     = Vector<int, kDimension>(array);
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(array[i], vector[i]);
     ASSERT_EQ(0, vector[i]);
   }
@@ -72,36 +72,36 @@ TEST(ConstructorTest, handlesArrayContructorEmptyListTest)
 
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
- * constructor of the form Vector<T,dimension>(std::array<T> list),
+ * constructor of the form Vector<T,kDimension>(std::array<T> list),
  * this should assing each element of the vector with its correspondent element in the list
  */
 TEST(ConstructorTest, handlesListConstructor)
 {
-  const int dimension           = 3;
-  Vector<int, dimension> vector = Vector<int, dimension>({-4, 29, 62});
-  for (int i = 0; i < dimension; i++) {
-    ASSERT_EQ(i * 33 - 4, vector[i]);
+  static constexpr size_t kDimension = 3;
+  Vector<int, kDimension> vector     = Vector<int, kDimension>({-4, 29, 62});
+  for (size_t i = 0; i < kDimension; ++i) {
+    ASSERT_EQ(static_cast<ssize_t>(i) * 33 - 4, vector[i]);
   }
 }
 
 /**
  * @brief Test used to determine if the current implementation of the class vector handles the
- * constructor of the form Vector<T,dimension>(Vector<I,dimension> vector),
+ * constructor of the form Vector<T,kDimension>(Vector<I,kDimension> vector),
  * this should assing each element of the vector with its correspondent element in the other vector,
  * as they might not be of the same type fist the constructor should perform a cast.
  */
 TEST(ConstructorTest, handlesDifferentTypeVector)
 {
-  const int dimension = 3;
+  static constexpr size_t kDimension = 3;
 
-  std::array<float, dimension> array_one = std::array<float, dimension>();
+  std::array<float, kDimension> array_one = std::array<float, kDimension>();
   array_one.fill(10.1);
-  Vector<float, dimension> vector_one  = Vector<float, dimension>(array_one);
-  std::array<int, dimension> array_two = std::array<int, dimension>();
+  Vector<float, kDimension> vector_one  = Vector<float, kDimension>(array_one);
+  std::array<int, kDimension> array_two = std::array<int, kDimension>();
   array_two.fill(static_cast<int>(10.1));
-  Vector<int, dimension> vector_two = Vector<int, dimension>(vector_one);
+  Vector<int, kDimension> vector_two = Vector<int, kDimension>(vector_one);
 
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(array_two[i], vector_two[i]);
   }
 }

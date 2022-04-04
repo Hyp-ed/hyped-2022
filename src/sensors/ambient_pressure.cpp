@@ -67,7 +67,7 @@ std::optional<uint16_t> AmbientPressure::scaleData(const uint32_t digital_pressu
 
   // OFF = C2 * 2^17 + (C4 * dT) / 2^6
   const int64_t offset_at_actual_temperature
-    = (kPressureOffset << 17)
+    = (static_cast<int64_t>(kPressureOffset) << 17)
       + ((kTemperatureCoefficientOfPressureOffset * temperature_difference) >> 6);
   if (offset_at_actual_temperature < -17179344900 || offset_at_actual_temperature > 25769410560) {
     log_.error("Offset at actual temperature (%d) exceeds bounds. (%d to %d)",

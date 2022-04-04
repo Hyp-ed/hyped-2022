@@ -51,7 +51,7 @@ endif()
 option(PEDANTIC "Enable pedantic warnings" ON)
 if(PEDANTIC)
   message("pedantic:  ON")
-  set(WARN_FLAGS "-Wall -Wextra -Wpedantic")
+  set(WARN_FLAGS "-Werror -Wextra -Wpedantic")
 else()
   message("pedantic:  OFF")
   set(WARN_FLAGS "")
@@ -115,14 +115,7 @@ include_directories(
 )
 
 # building all the libraries and tests
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/data)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/brakes)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/navigation)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/propulsion)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 if (CROSS)
 else()
@@ -136,6 +129,24 @@ set(target "hyped")
 add_executable(${target} ${CMAKE_SOURCE_DIR}/run/main.cpp)
 target_link_libraries(${target}
     data
+    brakes
+    navigation
+    propulsion
+    propulsion_can
+    sensors
+    state_machine
+    telemetry
+    utils
+    utils_concurrent
+    utils_io
+    utils_math
+)
+
+set(target "debugger")
+add_executable(${target} ${CMAKE_SOURCE_DIR}/run/debugger.cpp)
+target_link_libraries(${target}
+    data
+    debugging
     brakes
     navigation
     propulsion

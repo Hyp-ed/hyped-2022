@@ -14,28 +14,25 @@
     "axis": 0
   },
   "brakes": {
-    "command_pins": [
-      87,
-      10
-    ],
-    "button_pins": [
-      66,
-      69
+    "pins": [
+      {
+        "command_pin": 87,
+        "button_pin": 66
+      },
+      {
+        "command_pin": 10,
+        "button_pin": 69
+      }
     ]
   },
   "sensors": {
     "bms_startup_time_micros": 5000000,
-    "keyence_pins": [
-      67,
-      68
-    ],
-    "imu_pins": [
-      22,
-      27,
-      47,
-      86
-    ],
-    "temperature_pin": 3
+    "imu_pins": [22, 27, 47, 86],
+    "temperature_pins": [3, 4, 5, 6],
+    "ambient_pressure_pins": {
+      "pressure_pin": 10,
+      "temperature_pin": 11
+    }
   },
   "telemetry": {
     "server_ip": "127.0.01",

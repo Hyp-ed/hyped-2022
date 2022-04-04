@@ -1,8 +1,10 @@
 #pragma once
 
+#include "ambient_pressure.hpp"
 #include "bms_manager.hpp"
 #include "imu_manager.hpp"
-#include "interface.hpp"
+#include "sensor.hpp"
+#include "temperature.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -25,15 +27,15 @@ class Main : public utils::concurrent::Thread {
     uint8_t pressure_pin;
     uint8_t temperature_pin;
   };
-
   Main();
   void run() override;  // from thread
 
-  static std::optional<KeyencePins> keyencePinsFromFile(utils::Logger &log,
-                                                        const std::string &path);
-  static std::optional<ImuPins> imuPinsFromFile(utils::Logger &log, const std::string &path);
-  static std::optional<uint32_t> temperaturePinFromFile(utils::Logger &log,
-                                                        const std::string &path);
+  static std::optional<std::vector<uint8_t>> imuPinsFromFile(utils::Logger &log,
+                                                             const std::string &path);
+  static std::optional<std::vector<uint8_t>> ambientTemperaturePinsFromFile(
+    utils::Logger &log, const std::string &path);
+  static std::optional<std::vector<uint8_t>> brakeTemperaturePinsFromFile(utils::Logger &log,
+                                                                          const std::string &path);
   static std::optional<AmbientPressurePins> ambientPressurePinsFromFile(utils::Logger &log,
                                                                         const std::string &path);
   static std::optional<BrakePressurePins> brakePressurePinsFromFile(utils::Logger &log,
@@ -49,10 +51,16 @@ class Main : public utils::concurrent::Thread {
   bool temperatureInRange();
 
   /**
-   * @brief used to check the temperature infrequently in main loop,
-   *        unnecessary to constantly check temperature;
+   * @brief used to check the temperature of the ambient temperature sensors
+   *        infrequently in main loop, unnecessary to constantly check temperature;
    */
-  void checkTemperature();
+  void checkAmbientTemperature();
+
+  /**
+   * @brief used to check the temperature of the brake temperature sensors
+   *        infrequently in main loop, unnecessary to constantly check temperature;
+   */
+  void checkBrakeTemperature();
 
   /**
    * @brief used to check the pressure every twenty times in the main loop,
@@ -71,12 +79,14 @@ class Main : public utils::concurrent::Thread {
 
   // master data structures
   data::Sensors sensors_;
-  data::Batteries batteries_;
+  data::FullBatteryData batteries_;
   data::CounterData stripe_counter_;
 
-  std::array<std::unique_ptr<ICounter>, data::Sensors::kNumKeyence> keyences_;  // 0 L and 1 R
   std::unique_ptr<ImuManager> imu_manager_;
   std::unique_ptr<BmsManager> battery_manager_;
+
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> ambient_temperatures_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brake_temperatures_;
 
   data::TemperatureData temperature_data_;
   std::unique_ptr<ITemperature> temperature_;

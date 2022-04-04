@@ -83,10 +83,10 @@ class Randomiser {
   // Randomises the entries in a hyped::data::ImuData struct.
   static void randomiseImuData(data::ImuData &imu_data)
   {
-    for (int i = 0; i < 3; i++) {
+    for (size_t i = 0; i < 3; ++i) {
       imu_data.acc[i] = static_cast<data::nav_t>((rand() % 100 + 75) + randomDecimal());
     }
-    for (int i = 0; i < 3; i++) {
+    for (size_t i = 0; i < 3; ++i) {
       imu_data.fifo.push_back(
         static_cast<data::NavigationVector>((rand() % 100 + 75) + randomDecimal()));
     }
@@ -119,9 +119,6 @@ class Randomiser {
     for (auto &sensors_data : sensors_data.wheel_encoders) {
       randomiseCounter(sensors_data);
     }
-    for (auto &sensors_data : sensors_data.keyence_stripe_counters) {
-      randomiseCounter(sensors_data);
-    }
   }
 
   //---------------------------------------------------------------------------
@@ -145,7 +142,7 @@ class Randomiser {
 
     // Below only for HighPowerBms! Value for BMSLP = 0
     // Generates a cell voltage data between 0 and 50000 mV.
-    for (int i = 0; i < 36; i++) {
+    for (size_t i = 0; i < 36; ++i) {
       battery_data.cell_voltage[i] = static_cast<uint16_t>((rand() % 500) * 100);
     }
 
@@ -162,11 +159,11 @@ class Randomiser {
     battery_data.high_voltage_cell = static_cast<uint16_t>((rand() % 500) * 100);
 
     // Generates a random bool value for IMD fault.
-    battery_data.imd_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
+    battery_data.insulation_monitoring_device_fault = static_cast<bool>(rand() > (RAND_MAX / 2));
   }
 
   // Randomises the entries in a hyped::data::Batteries struct.
-  static void randomiseBatteriesData(data::Batteries &batteries_data)
+  static void randomiseBatteriesData(data::FullBatteryData &batteries_data)
   {
     randomiseModuleStatus(batteries_data.module_status);
 
@@ -182,12 +179,12 @@ class Randomiser {
   // Emergency Brakes data
   //---------------------------------------------------------------------------
 
-  // Randomises the entries in a hyped::data::EmergencyBrakes struct.
-  static void randomiseBrakes(data::EmergencyBrakes &brakes_data)
+  // Randomises the entries in a hyped::data::Brakes struct.
+  static void randomiseBrakes(data::Brakes &brakes_data)
   {
     randomiseModuleStatus(brakes_data.module_status);
 
-    for (int i = 0; i < brakes_data.kNumBrakes; i++) {
+    for (size_t i = 0; i < brakes_data.kNumBrakes; ++i) {
       brakes_data.brakes_retracted[i] = static_cast<bool>(rand() > (RAND_MAX / 2));
     }
   }
@@ -202,7 +199,7 @@ class Randomiser {
     randomiseModuleStatus(motors_data.module_status);
 
     // Generates a RPM data between 0 and 199 for all 4 motors.
-    for (int i = 0; i < motors_data.kNumMotors; i++) {
+    for (size_t i = 0; i < motors_data.kNumMotors; ++i) {
       motors_data.rpms[i] = static_cast<uint32_t>(rand() % 200);
     }
   }

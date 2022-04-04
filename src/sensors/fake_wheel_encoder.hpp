@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fake_trajectory.hpp"
-#include "interface.hpp"
+#include "sensor.hpp"
 
 #include <array>
 #include <memory>

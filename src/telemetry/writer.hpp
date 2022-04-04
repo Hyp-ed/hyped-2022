@@ -27,14 +27,18 @@ namespace hyped::telemetry {
 */
 class Writer {
  public:
-  explicit Writer(data::Data &data);
+  explicit Writer();
 
-  // separate functions that allow to better manage data points based on their purpose
+  // functions to pack timestamp and number of packages
   void packTime();
-  void packId(int id);
-  void packCrucialData();
-  void packStatusData();
-  void packAdditionalData();
+  void packId(const uint32_t id);
+
+  // specific functions that allow packing of structs in central data structure
+  void packTelemetryData();
+  void packSensorsData();
+  void packMotorData();
+  void packStateMachineData();
+  void packNavigationData();
 
   // before starting adding data points, this function must be called to start the main JSON object
   void start() { json_writer_.StartObject(); }
@@ -42,6 +46,9 @@ class Writer {
   // before calling getString(), this function must be called to close the main JSON object
   // after calling this function, no additional data points can be added
   void end() { json_writer_.EndObject(); }
+
+  // checks whether json is complete. json is complete if it has complete root object or array.
+  bool isValidJson() { return json_writer_.IsComplete(); }
 
   // returns the main JSON object as a string, that is ready to be sent to GUI
   std::string getString() { return string_buffer_.GetString(); }
@@ -51,17 +58,8 @@ class Writer {
   static const std::string convertModuleStatus(data::ModuleStatus module_status);
 
  private:
-  // calls RapidJSON functions to add a value of specific type to JSON
-  void add(const std::string name, int min, int max, const std::string unit, int value);
-  void add(const std::string name, float min, float max, const std::string unit, float value);
-  void add(const std::string name, bool value);
-  void add(const std::string name, const std::string value);
-  void add(const std::string name, data::State value);
-  void add(const std::string name, data::ModuleStatus value);
-
-  // starts and ends lists, which allow to structure the data
-  void startList(const std::string name);
-  void endList();
+  // functions to pack internal CDS structs/types
+  void packBattery(const data::BatteryData &battery);
 
   rapidjson::StringBuffer string_buffer_;
   rapidjson::Writer<rapidjson::StringBuffer> json_writer_;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interface.hpp"
+#include "temperature.hpp"
 
 #include <string>
 
@@ -12,8 +12,6 @@ class FakeTemperature : public ITemperature {
  public:
   /**
    * @brief Construct a new Fake Temperature object
-   *
-   * @param log
    * @param is_fail
    */
   FakeTemperature(const bool is_fail);
@@ -44,7 +42,7 @@ class FakeTemperature : public ITemperature {
   int success_;
   data::TemperatureData temperature_data_;
 
-  bool is_fail_;
+  const bool is_fail_;
 
   uint64_t acc_start_time_;
   bool acc_started_;

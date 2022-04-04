@@ -86,6 +86,7 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
     case data::State::kIdle:
     case data::State::kPreCalibrating:
     case data::State::kCalibrating:
+    case data::State::kPreReady:
     case data::State::kReady:
     case data::State::kFailureStopped:
     case data::State::kFinished:
@@ -103,7 +104,7 @@ FakeTrajectory::Trajectory FakeTrajectory::getTrajectory()
       trajectory_.acceleration = -config_.cruising_deceleration;
       break;
     case data::State::kNominalBraking:
-    case data::State::kEmergencyBraking:
+    case data::State::kFailureBraking:
       trajectory_.acceleration = -config_.braking_deceleration;
       break;
   }

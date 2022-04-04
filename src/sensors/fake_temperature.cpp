@@ -19,10 +19,12 @@ FakeTemperature::FakeTemperature(const bool is_fail)
       failure_happened_(false)
 {
   temperature_data_.temperature = success_;
+  auto &system                  = utils::System::getSystem();
+  utils::Logger log("FAKE-TEMPERATURE", system.config_.log_level);
   if (is_fail_) {
-    log_.info("fail initialised");
+    log.info("fail initialised");
   } else {
-    log_.info("initialised");
+    log.info("initialised");
   }
 }
 

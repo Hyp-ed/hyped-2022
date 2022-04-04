@@ -1,13 +1,23 @@
 #pragma once
 
-#include "interface.hpp"
-
 #include <cstdint>
 
 #include <data/data.hpp>
 #include <utils/io/adc.hpp>
 
 namespace hyped::sensors {
+
+struct AmbientPressurePins {
+  uint8_t pressure_pin;
+  uint8_t temperature_pin;
+};
+
+class IAmbientPressure {
+ public:
+  virtual uint16_t getData() const = 0;
+  virtual void run()               = 0;
+  virtual ~IAmbientPressure() {}
+};
 
 class AmbientPressure : public IAmbientPressure {
  public:
@@ -36,8 +46,8 @@ class AmbientPressure : public IAmbientPressure {
                                     const uint32_t digital_temperature_value);
 
   // WARNING, TODO: This sensor doesn't actually use an analog signal!!!!
-  utils::io::ADC pressure_pin_;
-  utils::io::ADC temperature_pin_;
+  utils::io::Adc pressure_pin_;
+  utils::io::Adc temperature_pin_;
 
   utils::Logger log_;
 

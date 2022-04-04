@@ -9,8 +9,8 @@ namespace hyped::sensors {
 
 class IBrakePressure {
  public:
-  virtual uint16_t getData() const = 0;
-  virtual void run()               = 0;
+  virtual uint8_t getData() const = 0;
+  virtual void run()              = 0;
   virtual ~IBrakePressure() {}
 };
 class BrakePressure : public IBrakePressure {

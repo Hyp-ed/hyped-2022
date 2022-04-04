@@ -314,7 +314,7 @@ void Navigation::updateUncertainty()
   velocity_uncertainty_ += acceleration_standard_deviation * time_delta_secs;
   displacement_uncertainty_ += velocity_uncertainty_ * time_delta_secs;
   // Random walk uncertainty
-  displacement_uncertainty_ += std::abs(getVelocity() - previous_velocity_) * time_delta / 2.;
+  displacement_uncertainty_ += std::abs(getImuVelocity() - previous_velocity_) * time_delta_secs / 2.;
 }
 
 bool Navigation::getHasInit()

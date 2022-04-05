@@ -209,8 +209,8 @@ void Navigation::queryImus()
 {
   NavigationArray raw_acceleration_moving;  // Raw values in moving axis
 
-  const auto imu_data                = data_.getSensorsImuData();
-  uint32_t current_trajectory_micros = imu_data.timestamp;
+  const auto imu_data                      = data_.getSensorsImuData();
+  const uint64_t current_trajectory_micros = imu_data.timestamp;
   // process raw values
   ImuAxisData raw_acceleration;  // All raw data, four values per axis
   for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
@@ -256,8 +256,9 @@ void Navigation::compareEncoderImu()
 {
   const data::nav_t encoder_displacement = getEncoderDisplacement();
   const data::nav_t imu_displacement     = getImuDisplacement();
+  const data::nav_t imu_encoder_error    = std::abs(encoder_displacement - imu_displacement);
 
-  if (std::abs(encoder_displacement - imu_displacement) > data::Navigation::kImuEncoderMaxError) {
+  if (imu_encoder_error > data::Navigation::kImuEncoderMaxError) {
     auto navigation_data          = data_.getNavigationData();
     navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setNavigationData(navigation_data);
@@ -314,7 +315,8 @@ void Navigation::updateUncertainty()
   velocity_uncertainty_ += acceleration_standard_deviation * time_delta_secs;
   displacement_uncertainty_ += velocity_uncertainty_ * time_delta_secs;
   // Random walk uncertainty
-  displacement_uncertainty_ += std::abs(getImuVelocity() - previous_velocity_) * time_delta_secs / 2.;
+  displacement_uncertainty_
+    += std::abs(getImuVelocity() - previous_velocity_) * time_delta_secs / 2.;
 }
 
 bool Navigation::getHasInit()
@@ -427,15 +429,14 @@ void Navigation::navigate()
 void Navigation::initialiseTimestamps()
 {
   // First iteration --> set timestamps
-  data::nav_t initial_timestamp = utils::Timer::getTimeMicros();
-  acceleration_.timestamp       = initial_timestamp;
-  velocity_.timestamp           = initial_timestamp;
-  displacement_.timestamp       = initial_timestamp;
-  previous_acceleration_        = getImuAcceleration();
-  previous_velocity_            = getImuVelocity();
-  initial_timestamp_            = initial_timestamp;
+  const auto initial_timestamp = utils::Timer::getTimeMicros();
+  acceleration_.timestamp      = initial_timestamp;
+  velocity_.timestamp          = initial_timestamp;
+  displacement_.timestamp      = initial_timestamp;
+  previous_acceleration_       = getImuAcceleration();
+  previous_velocity_           = getImuVelocity();
+  initial_timestamp_           = initial_timestamp;
   log_.debug("Initial timestamp:%d", initial_timestamp_);
   previous_timestamp_ = initial_timestamp;
-
 }
 }  // namespace hyped::navigation

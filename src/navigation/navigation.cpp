@@ -1,6 +1,7 @@
 #include "navigation.hpp"
 
 #include <algorithm>
+#include <vector>
 
 #include <utils/concurrent/thread.hpp>
 #include <utils/timer.hpp>
@@ -23,14 +24,11 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
       displacement_uncertainty_(0.),
       velocity_uncertainty_(0.),
       has_initial_time_(false),
-      stripe_counter_(log_, data_, displacement_uncertainty_, velocity_uncertainty_,
-                      data::Navigation::kStripeDistance),
-      is_keyence_used_(false),
       acceleration_integrator_(&velocity_),
       velocity_integrator_(&displacement_)
 {
   log_.info("Navigation module started");
-  for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     filters_[i] = KalmanFilter(1, 1);
     filters_[i].setup();
   }
@@ -202,14 +200,14 @@ void Navigation::queryImus()
     for (std::size_t axis = 0; axis < 3; ++axis) {
       raw_acceleration.at(axis)[i] = acceleration[axis];
     }
-    // the moving axis should be set to 0 for tukeyFences
+    // the moving axis should be set to 0 for outlier detection
     if (!is_imu_reliable_.at(i)) { raw_acceleration_moving.at(i) = 0; }
     raw_acceleration_moving.at(i) = acceleration[movement_axis_];
   }
   log_.debug("Raw acceleration values: %.3f, %.3f, %.3f, %.3f", raw_acceleration_moving[0],
              raw_acceleration_moving[1], raw_acceleration_moving[2], raw_acceleration_moving[3]);
   // Run outlier detection on moving axis
-  tukeyFences(raw_acceleration_moving, kTukeyThreshold);
+  imuOutlierDetection(raw_acceleration_moving, kInterQuartileScaler);
   // TODO(Justus) how to run outlier detection on non-moving axes without affecting "reliable"
   // Current idea: outlier function takes reliability write flag, on hold until z-score impl.
 
@@ -287,11 +285,6 @@ void Navigation::updateUncertainty()
   displacement_uncertainty_ += std::abs(getVelocity() - previous_velocity_) * time_delta / 2.;
 }
 
-void Navigation::disableKeyenceUsage()
-{
-  is_keyence_used_ = false;
-}
-
 bool Navigation::getHasInit()
 {
   return has_initial_time_;
@@ -307,69 +300,48 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-void Navigation::tukeyFences(NavigationArray &data_array, const data::nav_t threshold)
+Navigation::QuartileBounds Navigation::calculateImuQuartiles(NavigationArray &data_array)
 {
-  // Define the quartiles first:
-  data::nav_t q1 = 0;
-  data::nav_t q2 = 0;
-  data::nav_t q3 = 0;
-  // The most likely case is that all four IMUs are still reliable:
-  if (num_outlier_imus_ == 0) {
-    // copy the original array for sorting
-    NavigationArray data_array_sorted = data_array;
-    std::sort(data_array_sorted.begin(), data_array_sorted.end());
-    // find the quartiles
-    q1 = (data_array_sorted[0] + data_array_sorted[1]) / 2.;
-    q2 = (data_array_sorted[1] + data_array_sorted[2]) / 2.;
-    q3 = (data_array_sorted[2] + data_array_sorted[3]) / 2.;
-    // The second case is that one IMU is faulty
-  } else if (num_outlier_imus_ == 1) {
-    // select non-outlier values
-    NavigationArrayOneFaulty data_array_faulty;
-    if (!is_imu_reliable_.at(0)) {
-      data_array_faulty = {{data_array.at(1), data_array.at(2), data_array.at(3)}};
-    } else if (!is_imu_reliable_.at(1)) {
-      data_array_faulty = {{data_array.at(0), data_array.at(2), data_array.at(3)}};
-    } else if (!is_imu_reliable_.at(2)) {
-      data_array_faulty = {{data_array.at(0), data_array.at(1), data_array.at(3)}};
-    } else if (!is_imu_reliable_.at(3)) {
-      data_array_faulty = {{data_array.at(0), data_array.at(1), data_array.at(2)}};
-    }
-    std::sort(data_array_faulty.begin(), data_array_faulty.end());
-    q1 = (data_array_faulty[0] + data_array_faulty[1]) / 2.;
-    q2 = data_array_faulty[1];
-    q3 = (data_array_faulty[1] + data_array_faulty[2]) / 2.;
-  } else if (num_outlier_imus_ < 4) {
-    // set all 0.0 IMUs to non-zero avg
-    data::nav_t sum_non_outliers = 0.0;
-    uint32_t num_non_outliers    = 0;
-    for (const data::nav_t imu_data : data_array) {
-      if (imu_data != 0.0) {
-        // no outlier
-        num_non_outliers += 1;
-        sum_non_outliers += imu_data;
-      }
-    }
-    // TODO(Sury): Handle possible division by zero if all data points are 0.0 or explain why this
-    // can't happen.
-    for (data::nav_t &imu_data : data_array) {
-      imu_data = sum_non_outliers / num_non_outliers;
-    }
-    // do not check for further outliers because no reliable detection could be made!
-    return;
+  std::vector<data::nav_t> data_vector;
+
+  for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
+    if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
   }
+  std::sort(data_vector.begin(), data_vector.end());
+  std::array<data::nav_t, 3> quartile_bounds;
+
+  quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
+  quartile_bounds.at(2)
+    = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
+  if (num_outlier_imus_ == 0) {
+    quartile_bounds.at(1) = (data_vector.at(1) + data_vector.at(2)) / 2.;
+  } else if (num_outlier_imus_ == 1) {
+    quartile_bounds.at(1) = data_vector.at(1);
+  } else {
+    auto navigation_data          = data_.getNavigationData();
+    navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setNavigationData(navigation_data);
+    log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
+  }
+  return quartile_bounds;
+}
+
+void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold)
+{
+  std::array<data::nav_t, 3> quartile_bounds = calculateImuQuartiles(data_array);
+
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
-  const auto iqr         = std::min(q3 - q1, kTukeyIQRBound);
-  const auto upper_limit = q3 + threshold * iqr;
-  const auto lower_limit = q1 - threshold * iqr;
+  const auto iqr = std::min(quartile_bounds.at(2) - quartile_bounds.at(0), kMaxInterQuartileRange);
+  const auto upper_limit = quartile_bounds.at(2) + threshold * iqr;
+  const auto lower_limit = quartile_bounds.at(0) - threshold * iqr;
   // replace any outliers with the median
   for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_imu_reliable_.at(i)) {
       log_.debug("Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
-                 i + 1, data_array.at(i), lower_limit, upper_limit, q2);
-      data_array.at(i) = q2;
+                 i + 1, data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
+      data_array.at(i) = quartile_bounds.at(1);
       imu_outlier_counter_.at(i)++;
       // If this counter exceeds some threshold then that IMU is deemed unreliable
       if (imu_outlier_counter_.at(i) > 1000 && is_imu_reliable_.at(i)) {
@@ -399,13 +371,12 @@ void Navigation::updateData()
   data_.setNavigationData(nav_data);
 
   if (log_counter_ % 100 == 0) {
-    log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f, d(keyence)=%.3f", log_counter_,
-               nav_data.acceleration, nav_data.velocity, nav_data.displacement,
-               stripe_counter_.getStripeCount() * data::Navigation::kStripeDistance);
-    log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f, keyence failures: %d", log_counter_,
-               velocity_uncertainty_, displacement_uncertainty_, stripe_counter_.getFailureCount());
+    log_.debug("%d: Data Update: a=%.3f, v=%.3f, d=%.3f", log_counter_, nav_data.acceleration,
+               nav_data.velocity, nav_data.displacement);
+    log_.debug("%d: Data Update: v(unc)=%.3f, d(unc)=%.3f", log_counter_, velocity_uncertainty_,
+               displacement_uncertainty_);
   }
-  log_counter_++;
+  ++log_counter_;
   // Update all prev measurements
   previous_timestamp_    = displacement_.timestamp;
   previous_acceleration_ = getAcceleration();
@@ -415,11 +386,6 @@ void Navigation::updateData()
 void Navigation::navigate()
 {
   queryImus();
-  if (is_keyence_used_) {
-    stripe_counter_.queryKeyence(displacement_.value, velocity_.value);
-    if (stripe_counter_.checkFailure(displacement_.value))
-      status_ = data::ModuleStatus::kCriticalFailure;
-  }
   if (log_counter_ > 1000) updateUncertainty();
   updateData();
 }
@@ -435,6 +401,5 @@ void Navigation::initialiseTimestamps()
   initial_timestamp_      = utils::Timer::getTimeMicros();
   log_.debug("Initial timestamp:%d", initial_timestamp_);
   previous_timestamp_ = utils::Timer::getTimeMicros();
-  stripe_counter_.setInit(initial_timestamp_);
 }
 }  // namespace hyped::navigation

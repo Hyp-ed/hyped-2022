@@ -107,7 +107,6 @@ class StateProcessor {
   data::Data &data_;
   bool is_initialised_;
   std::array<std::unique_ptr<IController>, data::Motors::kNumMotors> controllers_;
-  RpmRegulator rpm_regulator_;
   uint64_t previous_acceleration_time_;
   std::unique_ptr<NucleoManager> nucleo_manager_;
 };

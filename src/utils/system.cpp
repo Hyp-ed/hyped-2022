@@ -57,11 +57,12 @@ void System::parseArgs(const int argc, const char *const *const argv)
   Config config;
   config.client_config_path          = std::string(argv[1]);
   config.imu_config_path             = std::string(argv[1]);
-  config.keyence_config_path         = std::string(argv[1]);
   config.temperature_config_path     = std::string(argv[1]);
+  config.pressure_config_path        = std::string(argv[1]);
   config.fake_trajectory_config_path = std::string(argv[1]);
   config.bms_config_path             = std::string(argv[1]);
   config.brakes_config_path          = std::string(argv[1]);
+  config.debugger_config_path        = std::string(argv[1]);
   config.run_id                      = newRunId();
   // System log level
   if (config_object.HasMember("log_level")) {
@@ -178,6 +179,21 @@ void System::parseArgs(const int argc, const char *const *const argv)
       argv[1]);
     config.log_level_telemetry = config.log_level;
   }
+  // Debugger log level
+  if (config_object.HasMember("log_level_debugger")) {
+    const auto log_level_raw = config_object["log_level_debugger"].GetInt();
+    const auto log_level     = Logger::levelFromInt(log_level_raw);
+    if (!log_level) {
+      kInitialisationErrorLogger.error(
+        "unknown value for system.log_level (%d) in config file at %s", log_level_raw, argv[1]);
+      exit(1);
+    }
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.log_level_debugger' in config file at %s; using default value",
+      argv[1]);
+    config.log_level_debugger = config.log_level;
+  }
   // Use fake trajectory?
   if (config_object.HasMember("use_fake_trajectory")) {
     config.use_fake_trajectory = config_object["use_fake_trajectory"].GetBool();
@@ -229,6 +245,31 @@ void System::parseArgs(const int argc, const char *const *const argv)
       argv[0]);
     config.use_fake_temperature_fail = false;
   }
+
+  // Use fake ambient_pressure?
+  if (config_object.HasMember("use_fake_ambient_pressure")) {
+    config.use_fake_ambient_pressure = config_object["use_fake_ambient_pressure"].GetBool();
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.use_fake_ambient_pressure' in config filet at %s; using "
+      "default "
+      "value",
+      argv[0]);
+    config.use_fake_ambient_pressure = false;
+  }
+  // Use fake ambient_pressure with fail?
+  if (config_object.HasMember("use_fake_ambient_pressure_fail")) {
+    config.use_fake_ambient_pressure_fail
+      = config_object["use_fake_ambient_pressure_fail"].GetBool();
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.use_fake_ambient_pressure_fail' in config filet at %s; using "
+      "default "
+      "value",
+      argv[0]);
+    config.use_fake_ambient_pressure_fail = false;
+  }
+
   // Use fake brakes?
   if (config_object.HasMember("use_fake_brakes")) {
     config.use_fake_brakes = config_object["use_fake_brakes"].GetBool();
@@ -248,16 +289,6 @@ void System::parseArgs(const int argc, const char *const *const argv)
       "value",
       argv[0]);
     config.use_fake_controller = false;
-  }
-  // Use fake high _power?
-  if (config_object.HasMember("use_fake_high_power")) {
-    config.use_fake_high_power = config_object["use_fake_high_power"].GetBool();
-  } else {
-    kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_high_power' in config filet at %s; using default "
-      "value",
-      argv[0]);
-    config.use_fake_high_power = false;
   }
   // Axis
   if (config_object.HasMember("axis")) {

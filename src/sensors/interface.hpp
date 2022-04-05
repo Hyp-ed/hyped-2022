@@ -71,6 +71,24 @@ class ITemperature {
    * @brief returns int representation of temperature
    * @return int temperature degrees C
    */
-  virtual int getData() = 0;
+  virtual uint8_t getData() const = 0;
+};
+
+class IAmbientPressure {
+ public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IAmbientPressure() {}
+
+  /**
+   * @brief checks pressure
+   */
+  virtual void run() = 0;
+
+  /**
+   * @return pressure in mbars
+   */
+  virtual uint16_t getData() const = 0;
 };
 }  // namespace hyped::sensors

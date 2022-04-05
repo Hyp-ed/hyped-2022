@@ -70,7 +70,7 @@ float RandomFloatTestingVector(float lower, float upper)
 double CalculateVectorMagnitude(std::array<float, 100> vector_T)
 {
   double sum_of_squares = 0;
-  for (int i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 100; ++i) {
     sum_of_squares = sum_of_squares + vector_T[i] * vector_T[i];
   }
   return std::sqrt(sum_of_squares);
@@ -99,7 +99,7 @@ class VectorFloatTests : public ::testing::Test {
   Vector<double, 100> unit_vector1;
   Vector<double, 100> unit_vector2;
 
-  int dimension = 100;
+  static constexpr size_t kDimension = 100;
   std::array<float, 100> elements1;
   std::array<float, 100> elements2;
 
@@ -107,12 +107,12 @@ class VectorFloatTests : public ::testing::Test {
   {
     std::srand(time(0));
     // Construct two vectors with random elements and their corresponding unit vectors
-    for (int i = 0; i < dimension; i++) {
+    for (size_t i = 0; i < kDimension; ++i) {
       elements1[i] = RandomFloatTestingVector(0, 1000);
     }
     test_vector1_float = Vector<float, 100>(elements1);
 
-    for (int i = 0; i < dimension; i++) {
+    for (size_t i = 0; i < kDimension; ++i) {
       elements2[i] = RandomFloatTestingVector(0, 1000);
     }
     test_vector2_float = Vector<float, 100>(elements2);
@@ -173,7 +173,7 @@ TEST_F(VectorFloatTests, handlesConstantConstructor)
 TEST_F(VectorFloatTests, handlesConstructorArray)
 {  // Checking if elmements in array at given position match vector elements
   // at given position
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i], test_vector1_float.operator[](i));
     ASSERT_EQ(elements2[i], test_vector2_float.operator[](i));
   }
@@ -190,7 +190,7 @@ TEST_F(VectorFloatTests, handlesElemWiseDifference)
 {
   test_vector_diff = test_vector2_float.operator-=(test_vector1_float);
 
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements2[i] - elements1[i], test_vector_diff.operator[](i));
   }
 }
@@ -201,7 +201,7 @@ TEST_F(VectorFloatTests, handlesElemWiseDifference)
 TEST_F(VectorFloatTests, handlesElemWiseDifferenceAuto)
 {
   test_vector_diff = operator-(test_vector1_float, test_vector2_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] - elements2[i], test_vector_diff.operator[](i));
   }
 }
@@ -212,7 +212,7 @@ TEST_F(VectorFloatTests, handlesElemWiseDifferenceAuto)
 TEST_F(VectorFloatTests, handlesElementWiseAddition)
 {
   test_vector_sum = test_vector2_float.operator+=(test_vector1_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] + elements2[i], test_vector_sum.operator[](i));
   }
 }
@@ -223,7 +223,7 @@ TEST_F(VectorFloatTests, handlesElementWiseAddition)
 TEST_F(VectorFloatTests, handlesElementWiseAdditionAuto)
 {
   test_vector_sum = operator+(test_vector1_float, test_vector2_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] + elements2[i], test_vector_sum.operator[](i));
   }
 }
@@ -234,7 +234,7 @@ TEST_F(VectorFloatTests, handlesElementWiseAdditionAuto)
 TEST_F(VectorFloatTests, handlesElemWiseMultiplication)
 {
   test_vector_mult = test_vector2_float.operator*=(test_vector1_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] * elements2[i], test_vector_mult.operator[](i));
   }
 }
@@ -245,7 +245,7 @@ TEST_F(VectorFloatTests, handlesElemWiseMultiplication)
 TEST_F(VectorFloatTests, handlesElemWiseMultiplicationAuto)
 {
   test_vector_mult = operator*(test_vector1_float, test_vector2_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] * elements2[i], test_vector_mult.operator[](i));
   }
 }
@@ -256,7 +256,7 @@ TEST_F(VectorFloatTests, handlesElemWiseMultiplicationAuto)
 TEST_F(VectorFloatTests, handlesElemWiseDivision)
 {
   test_vector_div = test_vector2_float.operator/=(test_vector1_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements2[i] / elements1[i], test_vector_div.operator[](i));
   }
 }
@@ -267,7 +267,7 @@ TEST_F(VectorFloatTests, handlesElemWiseDivision)
 TEST_F(VectorFloatTests, handlesElemWiseDivisionAuto)
 {
   test_vector_div = operator/(test_vector2_float, test_vector1_float);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements2[i] / elements1[i], test_vector_div.operator[](i));
   }
 }
@@ -284,7 +284,7 @@ TEST_F(VectorFloatTests, handlesConstantAddition)
   float float_constant = RandomFloatTestingVector(0, 1000);
   test_vector_sum      = test_vector1_float.operator+=(float_constant);
   test_vector1_float.operator-=(float_constant);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(test_vector1_float.operator[](i) + float_constant, test_vector_sum.operator[](i));
   }
 }
@@ -298,7 +298,7 @@ TEST_F(VectorFloatTests, handlesConstantDifference)
   test_vector_diff     = test_vector1_float.operator-=(float_constant);
   test_vector1_float.operator+=(float_constant);
   float elem;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     elem = test_vector_diff.operator[](i);
     ASSERT_EQ(test_vector1_float.operator[](i) - float_constant, elem);
   }
@@ -313,7 +313,7 @@ TEST_F(VectorFloatTests, handlesScalarMultiplication)
   test_vector_mult     = test_vector1_float.operator*=(float_constant);
   test_vector1_float.operator/=(float_constant);
   float elem;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     elem = test_vector_mult.operator[](i);
     ASSERT_EQ(test_vector1_float.operator[](i) * float_constant, elem);
   }
@@ -327,7 +327,7 @@ TEST_F(VectorFloatTests, handlesScalarDivision)
   float float_constant = RandomFloatTestingVector(0, 1000);
   test_vector_div      = test_vector1_float.operator/=(float_constant);
   test_vector1_float.operator*=(float_constant);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(test_vector1_float.operator[](i) / float_constant, test_vector_div.operator[](i));
   }
 }
@@ -344,7 +344,7 @@ TEST_F(VectorFloatTests, handlesElementSqrt)
 {
   test_vector_sqrt = test_vector2_float.sqrt();
   float elem;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     elem = test_vector_sqrt.operator[](i);
     ASSERT_EQ(static_cast<float>(std::sqrt(test_vector2_float[i])), elem);
   }
@@ -356,7 +356,7 @@ TEST_F(VectorFloatTests, handlesElementSqrt)
 TEST_F(VectorFloatTests, allowsDistanceBetweenVectors)
 {
   std::array<float, 100> vector_diff;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     vector_diff[i] = elements2[i] - elements1[i];
   }
   double distance = CalculateVectorMagnitude(vector_diff);
@@ -372,7 +372,7 @@ TEST_F(VectorFloatTests, allowsUnitVectors)
   unit_vector1 = test_vector1_float.toUnitVector();
   unit_vector2 = test_vector2_float.toUnitVector();
 
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] / CalculateVectorMagnitude(elements1), unit_vector1.operator[](i));
     ASSERT_EQ(elements2[i] / CalculateVectorMagnitude(elements2), unit_vector2.operator[](i));
   }
@@ -385,11 +385,11 @@ TEST_F(VectorFloatTests, allowsUnitVectors)
 TEST_F(VectorFloatTests, allowsVectorNegation)
 {
   test_vector_diff = test_vector1_float.operator-();
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements1[i] * (-1), test_vector_diff.operator[](i));
   }
   test_vector_diff = test_vector2_float.operator-();
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(elements2[i] * (-1), test_vector_diff.operator[](i));
   }
 }

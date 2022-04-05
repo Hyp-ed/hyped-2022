@@ -17,7 +17,7 @@ MainLog::MainLog()
   log_.info("Logging initialising");
   calibrateGravity();
 
-  for (std::size_t i = 0; i < data::Sensors::kNumImus; i++) {
+  for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
     imu_loggers_.at(i).setup(i, sys_.config_.run_id);
   }
   data::Navigation nav_data = data_.getNavigationData();

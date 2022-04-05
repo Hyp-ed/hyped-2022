@@ -102,7 +102,7 @@ int Can::send(const can::Frame &frame)
   can.can_id = frame.id;
   can.can_id |= frame.extended ? can::Frame::kExtendedMask : 0;  // add extended id flag
   can.can_dlc = frame.len;
-  for (int i = 0; i < frame.len; i++) {
+  for (size_t i = 0; i < frame.len; ++i) {
     can.data[i] = frame.data[i];
   }
 
@@ -148,7 +148,7 @@ int Can::receive(can::Frame *frame)
   frame->id       = raw_data.can_id & ~can::Frame::kExtendedMask;
   frame->extended = raw_data.can_id & can::Frame::kExtendedMask;
   frame->len      = raw_data.can_dlc;
-  for (int i = 0; i < frame->len; i++) {
+  for (size_t i = 0; i < frame->len; ++i) {
     frame->data[i] = raw_data.data[i];
   }
   log_.debug("received %u %u, extended %d", raw_data.can_id, frame->id, frame->extended);

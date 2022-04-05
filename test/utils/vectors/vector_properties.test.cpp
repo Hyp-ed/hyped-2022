@@ -17,7 +17,7 @@ namespace math {
 std::array<int, 3> createRandomArrayForProperties()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 3; ++i) {
     output[i] = rand() % 1000;
   }
   return output;
@@ -31,7 +31,7 @@ std::array<int, 3> createRandomArrayForProperties()
 std::array<int, 3> RandomNonZeroArrayForProperties()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 3; ++i) {
     output[i] = rand() % 1000;
     while (output[i] == 0) {
       output[i] = rand() % 1000;
@@ -48,7 +48,7 @@ std::array<int, 3> RandomNonZeroArrayForProperties()
  */
 class VectorAssociativity : public ::testing::Test {
  protected:
-  const int dimension = 3;
+  static constexpr size_t kDimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
   Vector<int, 3> vector_three;
@@ -78,7 +78,7 @@ TEST_F(VectorAssociativity, isAdditionAssociative)
   vector_result_two += vector_two;
   vector_result_two += vector_three;
   vector_result_two += vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -91,7 +91,7 @@ TEST_F(VectorAssociativity, isAutoAdditionAssociative)
 {
   vector_result_one = (vector_one + vector_two) + vector_three;
   vector_result_two = vector_one + (vector_two + vector_three);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -108,7 +108,7 @@ TEST_F(VectorAssociativity, isMultiplicationAssociative)
   vector_result_two *= vector_two;
   vector_result_two *= vector_three;
   vector_result_two *= vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -121,7 +121,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
 {
   vector_result_one = (vector_one * vector_two) * vector_three;
   vector_result_two = vector_one * (vector_two * vector_three);
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -135,7 +135,7 @@ TEST_F(VectorAssociativity, isAutoMultiplicationAssociative)
  */
 class VectorCommutativity : public ::testing::Test {
  protected:
-  const int dimension = 3;
+  static constexpr size_t kDimension = 3;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
   Vector<int, 3> vector_result_one;
@@ -160,7 +160,7 @@ TEST_F(VectorCommutativity, isAdditionCommutative)
   vector_result_one += vector_two;
   vector_result_two += vector_two;
   vector_result_two += vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_two[i], vector_result_one[i]);
   }
 }
@@ -173,7 +173,7 @@ TEST_F(VectorCommutativity, isAutoAdditionCommutative)
 {
   vector_result_one = vector_two + vector_one;
   vector_result_two = vector_one + vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
@@ -188,7 +188,7 @@ TEST_F(VectorCommutativity, isMultiplicationCommutative)
   vector_result_one *= vector_one;
   vector_result_two *= vector_one;
   vector_result_two *= vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
@@ -201,7 +201,7 @@ TEST_F(VectorCommutativity, isAutoMultiplicationCommutative)
 {
   vector_result_one = vector_two * vector_one;
   vector_result_two = vector_one * vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], vector_result_two[i]);
   }
 }
@@ -216,7 +216,7 @@ TEST_F(VectorCommutativity, isSubstractionNotCommutative)
   vector_result_one -= vector_two;
   vector_result_two += vector_two;
   vector_result_two -= vector_one;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_two[i], -vector_result_one[i]);
   }
 }
@@ -229,7 +229,7 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
 {
   vector_result_one = vector_two - vector_one;
   vector_result_two = vector_one - vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_result_one[i], -vector_result_two[i]);
   }
 }
@@ -242,7 +242,7 @@ TEST_F(VectorCommutativity, isAutoSubstractionNotCommutative)
 class VectorIdentityOperations : public ::testing::Test {
  protected:
   std::array<int, 3> values;
-  const int dimension = 3;
+  static constexpr size_t kDimension = 3;
   Vector<int, 3> identity_vector;
   Vector<int, 3> vector;
   void SetUp()
@@ -261,7 +261,7 @@ class VectorIdentityOperations : public ::testing::Test {
 TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
 {
   vector += identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], values[i]);
   }
 }
@@ -273,7 +273,7 @@ TEST_F(VectorIdentityOperations, handlesAdditionIdentity)
 TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
 {
   Vector<int, 3> output = vector + identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], output[i]);
   }
 }
@@ -287,11 +287,11 @@ TEST_F(VectorIdentityOperations, handlesAutoAdditionIdentity)
 TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
 {
   vector -= identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], values[i]);
   }
   vector -= vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }
@@ -304,11 +304,11 @@ TEST_F(VectorIdentityOperations, handlesSubstractionIdentities)
 TEST_F(VectorIdentityOperations, handlesAutoSubstractionIdentities)
 {
   Vector<int, 3> output = vector - identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(output[i], values[i]);
   }
   output = vector - vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(output[i], identity_vector[i]);
   }
 }
@@ -323,12 +323,12 @@ TEST_F(VectorIdentityOperations, handlesMultiplicationIdentities)
 {
   identity_vector = Vector<int, 3>(1);
   vector *= identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], values[i]);
   }
   identity_vector = Vector<int, 3>();
   vector *= identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], 0);
   }
 }
@@ -343,12 +343,12 @@ TEST_F(VectorIdentityOperations, handlesAutoMultiplicationIdentities)
 {
   identity_vector       = Vector<int, 3>(1);
   Vector<int, 3> output = vector * identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(output[i], vector[i]);
   }
   identity_vector = Vector<int, 3>();
   output          = vector * identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(output[i], 0);
   }
 }
@@ -362,11 +362,11 @@ TEST_F(VectorIdentityOperations, handlesAutoMultiplicationIdentities)
 TEST_F(VectorIdentityOperations, handlesChangeOfSignIdentity)
 {
   identity_vector = -identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(identity_vector[i], 0);
   }
   Vector<int, 3> vector_two = -vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(identity_vector[i], vector_two[i] + vector[i]);
   }
 }
@@ -383,16 +383,16 @@ TEST_F(VectorIdentityOperations, handlesAutoDivisionIdentities)
 {
   vector                = Vector<int, 3>(RandomNonZeroArrayForProperties());
   Vector<int, 3> output = identity_vector / vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(output[i], identity_vector[i]);
   }
   identity_vector = Vector<int, 3>(1);
   output          = vector / vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(output[i], identity_vector[i]);
   }
   output = vector / identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], output[i]);
   }
 }
@@ -409,18 +409,18 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
 {
   vector = Vector<int, 3>(RandomNonZeroArrayForProperties());
   identity_vector /= vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(0, identity_vector[i]);
   }
   identity_vector = Vector<int, 3>(1);
   vector /= vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
   std::array<int, 3> values = RandomNonZeroArrayForProperties();
   vector                    = Vector<int, 3>(values);
   vector /= identity_vector;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], values[i]);
   }
 }
@@ -432,12 +432,12 @@ TEST_F(VectorIdentityOperations, handlesDivisionIdentities)
 TEST_F(VectorIdentityOperations, handlesSqrtIdentities)
 {
   vector = identity_vector.sqrt();
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
   identity_vector = Vector<int, 3>(1);
   vector          = identity_vector.sqrt();
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector[i], identity_vector[i]);
   }
 }

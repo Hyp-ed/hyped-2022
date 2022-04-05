@@ -1,0 +1,29 @@
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Mr. Head of Software
+* @MiltFra
+
+# Brakes
+/src/brakes/ @TomLonergan03
+
+# Data
+/src/data/ @MiltFra
+
+# Navigation
+/src/navigation/ @maxguy2001
+
+# Propulsion
+/src/propulsion/ @TomLonergan03
+
+# Sensors
+/src/sensors/ @kshxtij
+
+# State machine
+/src/state_machine/ @SnickeyX
+
+# Telemetry
+/src/telemetry/ @arjunnaha @adenhaus
+/configurations/fake_config.json @arjunnaha @adenhaus
+
+# Utilities
+/src/utils/ @MiltFra

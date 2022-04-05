@@ -43,7 +43,7 @@ class CanReceiver : public utils::io::CanProccesor, public ICanReceiver {
   utils::io::Can &can_;
   IController &controller_;
 
-  static constexpr uint64_t kTimeout = 70000;  // us
+  static constexpr uint32_t kTimeout = 70000;  // us
 };
 
 }  // namespace hyped::propulsion

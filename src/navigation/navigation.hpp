@@ -36,6 +36,12 @@ class Navigation {
    */
   explicit Navigation(const std::uint32_t axis = 0);
   /**
+   * @brief Get the current wheel encoder displacement
+   *
+   * @return encoder_displacement_ the current wheel encoder displacement
+   */
+  data::nav_t getEncoderDisplacement() const;
+  /**
    * @brief Get the current state of the navigation module
    *
    * @return ModuleStatus the current state of the navigation module
@@ -47,19 +53,19 @@ class Navigation {
    * @return nav_t Returns the forward component of acceleration vector (negative when
    *                        decelerating) [m/s^2]
    */
-  data::nav_t getAcceleration() const;
+  data::nav_t getImuAcceleration() const;
   /**
    * @brief Get the measured velocity [m/s]
    *
    * @return nav_t Returns the forward component of velocity vector [m/s]
    */
-  data::nav_t getVelocity() const;
+  data::nav_t getImuVelocity() const;
   /**
    * @brief Get the measured displacement [m]
    *
    * @return nav_t Returns the forward component of displacement vector [m]
    */
-  data::nav_t getDisplacement() const;
+  data::nav_t getImuDisplacement() const;
   /**
    * @brief Get the emergency braking distance [m]
    *
@@ -120,7 +126,6 @@ class Navigation {
    * @brief Set initialisation of timestamps to true
    */
   void setHasInit();
-
   /**
    * @brief Enable writing to file nav_data.csv
    */
@@ -183,6 +188,7 @@ class Navigation {
 
   // To store estimated values
   ImuDataPointArray sensor_readings_;
+  data::DataPoint<data::nav_t> encoder_displacement_;
   data::DataPoint<data::nav_t> acceleration_;
   data::DataPoint<data::nav_t> velocity_;
   data::DataPoint<data::nav_t> displacement_;
@@ -206,7 +212,10 @@ class Navigation {
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
   utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
-
+  /**
+   * @brief Query sensors to determine velocity and distance
+   */
+  void queryWheelEncoders();
   /**
    * @brief Query sensors to determine acceleration, velocity and distance
    */
@@ -219,6 +228,10 @@ class Navigation {
    * @brief Check for vibrations
    */
   void checkVibration();
+  /**
+   * @brief Compare keyence estimate and imu estimate for velocity
+   */
+  void compareEncoderImu();
 };
 
 }  // namespace hyped::navigation

@@ -198,8 +198,8 @@ void Navigation::calibrateGravity()
 
 void Navigation::queryWheelEncoders()
 {
-  const auto encoder_data = data_.getSensorsWheelEncoderData();
   NavigationArray encoder_data_array;
+  const auto encoder_data = data_.getSensorsWheelEncoderData();
 
   data::nav_t sum                = 0;
   data::nav_t encoder_data_value = 0;
@@ -439,11 +439,12 @@ void Navigation::wheelEncoderOutlierDetection(NavigationArray &data_array,
   for (std::size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
     const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_encoder_reliable_.at(i)) {
-      log_.debug("Outlier detected in Encoder %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
-                 i + 1, data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
+      log_.debug(
+        "Outlier detected in Encoder %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f", i + 1,
+        data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
       data_array.at(i) = quartile_bounds.at(1);
       encoder_outlier_counter_.at(i)++;
-      // If this counter exceeds some threshold then that IMU is deemed unreliable
+      // If this counter exceeds some threshold then that encoder is deemed unreliable
       if (encoder_outlier_counter_.at(i) > 1000 && is_encoder_reliable_.at(i)) {
         is_encoder_reliable_.at(i) = false;
         ++num_outlier_encoders_;

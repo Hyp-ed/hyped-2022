@@ -18,6 +18,10 @@ Navigation::Navigation(const std::uint32_t axis /*=0*/)
       current_measurements_(0),
       is_imu_reliable_{{true, true, true, true}},
       num_outlier_imus_(0),
+      imu_outlier_counter_{{0, 0, 0, 0}},
+      is_encoder_reliable_{{true, true, true, true}},
+      num_outlier_encoders_(0),
+      encoder_outlier_counter_{{0, 0, 0, 0}},
       acceleration_(0, 0.),
       velocity_(0, 0.),
       displacement_(0, 0.),
@@ -334,35 +338,58 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-Navigation::QuartileBounds Navigation::calculateImuQuartiles(NavigationArray &data_array)
+Navigation::QuartileBounds Navigation::calculateQuartiles(NavigationArray &data_array,
+                                                          bool imu_quartiles)
 {
   std::vector<data::nav_t> data_vector;
-
-  for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
-    if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
-  }
-  std::sort(data_vector.begin(), data_vector.end());
   std::array<data::nav_t, 3> quartile_bounds;
 
-  quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
-  quartile_bounds.at(2)
-    = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
-  if (num_outlier_imus_ == 0) {
-    quartile_bounds.at(1) = (data_vector.at(1) + data_vector.at(2)) / 2.;
-  } else if (num_outlier_imus_ == 1) {
-    quartile_bounds.at(1) = data_vector.at(1);
-  } else {
-    auto navigation_data          = data_.getNavigationData();
-    navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
-    data_.setNavigationData(navigation_data);
-    log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
+  if (imu_quartiles == true) {
+    for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
+      if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
+    }
+    std::sort(data_vector.begin(), data_vector.end());
+
+    quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
+    quartile_bounds.at(2)
+      = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
+    if (num_outlier_imus_ == 0) {
+      quartile_bounds.at(1) = (data_vector.at(1) + data_vector.at(2)) / 2.;
+    } else if (num_outlier_imus_ == 1) {
+      quartile_bounds.at(1) = data_vector.at(1);
+    } else {
+      auto navigation_data          = data_.getNavigationData();
+      navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setNavigationData(navigation_data);
+      log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
+    }
+  } else if (imu_quartiles == false) {
+    for (size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
+      if (is_encoder_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
+    }
+    std::sort(data_vector.begin(), data_vector.end());
+
+    quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
+    quartile_bounds.at(2)
+      = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
+    if (num_outlier_encoders_ == 0) {
+      quartile_bounds.at(1) = (data_vector.at(1) + data_vector.at(2)) / 2.;
+    } else if (num_outlier_encoders_ == 1) {
+      quartile_bounds.at(1) = data_vector.at(1);
+    } else {
+      auto navigation_data          = data_.getNavigationData();
+      navigation_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setNavigationData(navigation_data);
+      log_.error("At least two Wheel Encoders no longer reliable, entering CriticalFailure.");
+    }
   }
+
   return quartile_bounds;
 }
 
 void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold)
 {
-  std::array<data::nav_t, 3> quartile_bounds = calculateImuQuartiles(data_array);
+  std::array<data::nav_t, 3> quartile_bounds = calculateQuartiles(data_array, true);
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
@@ -388,6 +415,39 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::na
       }
     } else {
       imu_outlier_counter_.at(i) = 0;
+    }
+  }
+}
+
+void Navigation::wheelEncoderOutlierDetection(NavigationArray &data_array,
+                                              const data::nav_t threshold)
+{
+  std::array<data::nav_t, 3> quartile_bounds = calculateQuartiles(data_array, false);
+
+  // find the thresholds
+  // clip IQR to upper bound to avoid issues with very large outliers
+  const auto iqr = std::min(quartile_bounds.at(2) - quartile_bounds.at(0), kMaxInterQuartileRange);
+  const auto upper_limit = quartile_bounds.at(2) + threshold * iqr;
+  const auto lower_limit = quartile_bounds.at(0) - threshold * iqr;
+  // replace any outliers with the median
+  for (std::size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
+    const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
+    if (exceeds_limits && is_encoder_reliable_.at(i)) {
+      log_.debug("Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
+                 i + 1, data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
+      data_array.at(i) = quartile_bounds.at(1);
+      encoder_outlier_counter_.at(i)++;
+      // If this counter exceeds some threshold then that IMU is deemed unreliable
+      if (encoder_outlier_counter_.at(i) > 1000 && is_encoder_reliable_.at(i)) {
+        is_encoder_reliable_.at(i) = false;
+        ++num_outlier_encoders_;
+      }
+      if (num_outlier_encoders_ > 1) {
+        status_ = data::ModuleStatus::kCriticalFailure;
+        log_.error("At least two Wheel Encoders no longer reliable, entering CriticalFailure.");
+      }
+    } else {
+      encoder_outlier_counter_.at(i) = 0;
     }
   }
 }

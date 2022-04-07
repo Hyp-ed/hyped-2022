@@ -95,7 +95,7 @@ class Navigation {
    *
    * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
    */
-  QuartileBounds calculateImuQuartiles(NavigationArray &data_array);
+  QuartileBounds calculateQuartiles(NavigationArray &data_array, bool imu_quartiles);
   /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *
@@ -103,6 +103,13 @@ class Navigation {
    * @param threshold value
    */
   void imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold);
+  /**
+   * @brief Apply scaled interquartile range bounds on an array of readings
+   *
+   * @param pointer to array of original encoder readings
+   * @param threshold value
+   */
+  void wheelEncoderOutlierDetection(NavigationArray &data_array, const data::nav_t threshold);
   /**
    * @brief Update central data structure
    */
@@ -185,6 +192,13 @@ class Navigation {
   std::array<bool, data::Sensors::kNumImus> is_imu_reliable_;
   // Counter of how many IMUs have failed
   uint32_t num_outlier_imus_;
+
+  // Counter for consecutive outlier output from each wheel encoder
+  std::array<uint32_t, data::Sensors::kNumEncoders> encoder_outlier_counter_;
+  // Array of booleans to signify which encoders are reliable or faulty
+  std::array<bool, data::Sensors::kNumEncoders> is_encoder_reliable_;
+  // Counter of how many encoders have failed
+  uint32_t num_outlier_encoders_;
 
   // To store estimated values
   ImuDataPointArray sensor_readings_;

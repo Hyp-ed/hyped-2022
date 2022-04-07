@@ -95,7 +95,7 @@ class Navigation {
    *
    * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
    */
-  QuartileBounds calculateQuartiles(NavigationArray &data_array, bool imu_quartiles);
+  QuartileBounds calculateQuartiles(const auto data_array, const bool imu_quartiles);
   /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *

@@ -199,14 +199,20 @@ void Navigation::calibrateGravity()
 void Navigation::queryWheelEncoders()
 {
   const auto encoder_data = data_.getSensorsWheelEncoderData();
+  NavigationArray encoder_data_array;
 
-  data::nav_t sum = 0;
+  data::nav_t sum                = 0;
+  data::nav_t encoder_data_value = 0;
+
   for (size_t i = 0; i < encoder_data.size(); ++i) {
-    sum += static_cast<data::nav_t>(encoder_data.at(i).value);
+    encoder_data_value = static_cast<data::nav_t>(encoder_data.at(i).value);
+    sum += encoder_data_value;
+    encoder_data_array.at(i) = encoder_data_value;
   }
 
   const data::nav_t average   = sum / encoder_data.size();
   encoder_displacement_.value = average * data::Navigation::kWheelCircumfrence;
+  wheelEncoderOutlierDetection(encoder_data_array, kInterQuartileScaler);
 }
 
 void Navigation::queryImus()
@@ -338,8 +344,8 @@ void Navigation::logWrite()
   write_to_file_ = true;
 }
 
-Navigation::QuartileBounds Navigation::calculateQuartiles(NavigationArray &data_array,
-                                                          bool imu_quartiles)
+Navigation::QuartileBounds Navigation::calculateQuartiles(const auto data_array,
+                                                          const bool imu_quartiles)
 {
   std::vector<data::nav_t> data_vector;
   std::array<data::nav_t, 3> quartile_bounds;
@@ -389,7 +395,7 @@ Navigation::QuartileBounds Navigation::calculateQuartiles(NavigationArray &data_
 
 void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold)
 {
-  std::array<data::nav_t, 3> quartile_bounds = calculateQuartiles(data_array, true);
+  const std::array<data::nav_t, 3> quartile_bounds = calculateQuartiles(data_array, true);
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
@@ -422,7 +428,7 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::na
 void Navigation::wheelEncoderOutlierDetection(NavigationArray &data_array,
                                               const data::nav_t threshold)
 {
-  std::array<data::nav_t, 3> quartile_bounds = calculateQuartiles(data_array, false);
+  const std::array<data::nav_t, 3> quartile_bounds = calculateQuartiles(data_array, false);
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
@@ -433,7 +439,7 @@ void Navigation::wheelEncoderOutlierDetection(NavigationArray &data_array,
   for (std::size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
     const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_encoder_reliable_.at(i)) {
-      log_.debug("Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
+      log_.debug("Outlier detected in Encoder %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
                  i + 1, data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
       data_array.at(i) = quartile_bounds.at(1);
       encoder_outlier_counter_.at(i)++;

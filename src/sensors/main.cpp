@@ -132,6 +132,19 @@ void Main::checkTemperature()
   }
 }
 
+void Main::checkSuspensionTemperature()
+{
+  Temperature_susp_->run();  // not a thread
+
+  const auto temperature_susp = temperature_susp_->getData();  // *C
+  if (temperature_susp > 85) {
+    log_.info("Suspension Temperature (%u) exceeds maximum value (%d)", temperature_susp, 85);
+    auto sensors_data          = data_.getSensorsData();
+    sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+    data_.setSensorsData(sensors_data);
+  }
+}
+
 void Main::checkAmbientPressure()
 {
   ambient_pressure_->run();  // not a thread

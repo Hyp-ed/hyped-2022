@@ -31,7 +31,7 @@ I2c::~I2c()
   close(fd_);
 }
 
-void I2c::setSensorAddress(uint32_t address)
+void I2c::setSensorAddress(const uint32_t address)
 {
   if (fd_ < 0) {
     log_.error("Could not find i2c device");

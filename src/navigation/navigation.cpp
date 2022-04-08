@@ -345,12 +345,12 @@ void Navigation::logWrite()
 }
 
 Navigation::QuartileBounds Navigation::calculateQuartiles(const auto data_array,
-                                                          const bool imu_quartiles)
+                                                          const bool get_imu_quartiles)
 {
   std::vector<data::nav_t> data_vector;
   std::array<data::nav_t, 3> quartile_bounds;
 
-  if (imu_quartiles == true) {
+  if (get_imu_quartiles) {
     for (size_t i = 0; i < data::Sensors::kNumImus; ++i) {
       if (is_imu_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
     }
@@ -369,7 +369,7 @@ Navigation::QuartileBounds Navigation::calculateQuartiles(const auto data_array,
       data_.setNavigationData(navigation_data);
       log_.error("At least two IMUs no longer reliable, entering CriticalFailure.");
     }
-  } else if (imu_quartiles == false) {
+  } else {
     for (size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
       if (is_encoder_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
     }
@@ -404,7 +404,7 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array, const data::na
   const auto lower_limit = quartile_bounds.at(0) - threshold * iqr;
   // replace any outliers with the median
   for (std::size_t i = 0; i < data::Sensors::kNumImus; ++i) {
-    const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
+    const bool exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_imu_reliable_.at(i)) {
       log_.debug("Outlier detected in IMU %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f",
                  i + 1, data_array.at(i), lower_limit, upper_limit, quartile_bounds.at(1));
@@ -437,7 +437,7 @@ void Navigation::wheelEncoderOutlierDetection(NavigationArray &data_array,
   const auto lower_limit = quartile_bounds.at(0) - threshold * iqr;
   // replace any outliers with the median
   for (std::size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
-    const auto exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
+    const bool exceeds_limits = data_array.at(i) < lower_limit || data_array.at(i) > upper_limit;
     if (exceeds_limits && is_encoder_reliable_.at(i)) {
       log_.debug(
         "Outlier detected in Encoder %d, reading: %.3f not in [%.3f, %.3f]. Updated to %.3f", i + 1,

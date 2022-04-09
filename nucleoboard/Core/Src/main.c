@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include <math.h>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -94,8 +94,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-  uint32_t DAC_OUT[4] = {0, 1241, 2482, 3723};
-      uint8_t i = 0;
+  uint32_t DAC_OUT[100];
+  for (int i=0;i<100;i++)
+  	{
+	  DAC_OUT[i] = ((sin(i*2*M_PI/100) + 1)*(4096/2));
+  	}
+
+  uint8_t i = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,12 +108,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  DAC1->DHR12R1 = DAC_OUT[i++];
-	          if(i == 4)
-	          {
-	              i = 0;
-	          }
-	          HAL_Delay(500);
+
+	  DAC1->DHR12R1 = ((sin(i%100*2*M_PI/100) + 1)*(4094/2));
+	  i++;
+	  HAL_Delay(50);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

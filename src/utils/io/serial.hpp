@@ -11,6 +11,7 @@
 namespace hyped::utils::io {
 
 enum class BaudRate { kB300, kB600, kB1200, kB2400, kB4800, kB9600, kB14400, kB19200, kB28800 };
+
 class SerialProtocol {
  public:
   SerialProtocol(const std::string &serial, BaudRate baud_rate);

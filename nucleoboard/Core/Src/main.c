@@ -88,31 +88,28 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_CAN1_Init();
-  MX_DAC_Init();
-  /* USER CODE BEGIN 2 */
+    MX_GPIO_Init();
+    MX_CAN1_Init();
+    MX_DAC_Init();
+    /* USER CODE BEGIN 2 */
 
-  HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-  uint32_t DAC_OUT[100];
-  for (int i=0;i<100;i++)
-  	{
-	  DAC_OUT[i] = ((sin(i*2*M_PI/100) + 1)*(4096/2));
-  	}
+    HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+    uint8_t i = 0;
+    /* USER CODE END 2 */
 
-  uint8_t i = 0;
-  /* USER CODE END 2 */
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+      /* USER CODE END WHILE */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+      /* USER CODE BEGIN 3 */
+  	DAC1->DHR12R1 = ((sin(i%100*2*M_PI/100) + 1)*(4094/2));
+  	i++;
+  	HAL_Delay(50);
+    }
+    /* USER CODE END 3 */
   }
-  /* USER CODE END 3 */
-}
 
 /**
   * @brief System Clock Configuration

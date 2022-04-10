@@ -9,8 +9,8 @@ namespace hyped::sensors {
 
 class IBrakePressure {
  public:
-  virtual uint8_t getData() const = 0;
-  virtual void run()              = 0;
+  virtual uint16_t getData() const = 0;
+  virtual void run()               = 0;
   virtual ~IBrakePressure() {}
 };
 class BrakePressure : public IBrakePressure {
@@ -23,7 +23,7 @@ class BrakePressure : public IBrakePressure {
   BrakePressure(const uint8_t pin);
   ~BrakePressure() {}
 
-  uint8_t getData() const override;
+  uint16_t getData() const override;
 
   /**
    * @brief one interation of checking sensors
@@ -37,7 +37,7 @@ class BrakePressure : public IBrakePressure {
    * @param raw_value input voltage
    * @return int representation of pressure
    */
-  static int8_t scaleData(uint8_t raw_value);
+  static uint16_t scaleData(uint8_t raw_value);
 
   utils::io::Adc pin_;
   utils::Logger log_;

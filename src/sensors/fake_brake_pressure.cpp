@@ -52,7 +52,7 @@ void FakeBrakePressure::checkFailure()
   }
 }
 
-uint8_t FakeBrakePressure::getData() const
+uint16_t FakeBrakePressure::getData() const
 {
   return pressure_data_.brake_pressure;
 }

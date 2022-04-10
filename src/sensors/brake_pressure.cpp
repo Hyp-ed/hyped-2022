@@ -21,15 +21,15 @@ void BrakePressure::run()
   pressure_data_.operational = true;
 }
 
-int8_t BrakePressure::scaleData(const uint8_t raw_value)
+uint16_t BrakePressure::scaleData(const uint8_t raw_value)
 {
   // TODO: Talk to Electronics to confirm the wiring diagram as scale changes based on that
   // DO NOT MERGE UNTIL THIS IS FIXED
   const float pressure = static_cast<float>(raw_value) / 4095;
-  return static_cast<int8_t>(pressure);
+  return static_cast<uint16_t>(pressure);
 }
 
-uint8_t BrakePressure::getData() const
+uint16_t BrakePressure::getData() const
 {
   return pressure_data_.brake_pressure;
 }

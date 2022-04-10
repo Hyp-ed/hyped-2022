@@ -23,7 +23,7 @@ class FakeBrakePressure : public IBrakePressure {
    *
    * @return int pressure mBars
    */
-  uint8_t getData() const override;
+  uint16_t getData() const override;
 
   /**
    * @brief waits for acceleration, generate random time for failure

@@ -21,13 +21,6 @@ namespace hyped::sensors {
  */
 class Main : public utils::concurrent::Thread {
  public:
-  using KeyencePins       = std::array<uint32_t, data::Sensors::kNumKeyence>;
-  using ImuPins           = std::array<uint32_t, data::Sensors::kNumImus>;
-  using BrakePressurePins = std::array<uint32_t, data::Sensors::kNumBrakePressure>;
-  struct AmbientPressurePins {
-    uint8_t pressure_pin;
-    uint8_t temperature_pin;
-  };
   Main();
   void run() override;  // from thread
 
@@ -39,8 +32,9 @@ class Main : public utils::concurrent::Thread {
                                                                           const std::string &path);
   static std::optional<AmbientPressurePins> ambientPressurePinsFromFile(utils::Logger &log,
                                                                         const std::string &path);
-  static std::optional<BrakePressurePins> brakePressurePinsFromFile(utils::Logger &log,
-                                                                    const std::string &path);
+
+  static std::optional<std::vector<uint8_t>> brakePressurePinsFromFile(utils::Logger &log,
+                                                                       const std::string &path);
 
  private:
   /**

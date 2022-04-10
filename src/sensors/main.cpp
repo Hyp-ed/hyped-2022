@@ -360,8 +360,8 @@ std::optional<AmbientPressurePins> Main::ambientPressurePinsFromFile(utils::Logg
   return ambient_pressure_pins;
 }
 
-std::optional<Main::BrakePressurePins> Main::brakePressurePinsFromFile(utils::Logger &log,
-                                                                       const std::string &path)
+std::optional<std::vector<uint8_t>> Main::brakePressurePinsFromFile(utils::Logger &log,
+                                                                    const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -390,7 +390,7 @@ std::optional<Main::BrakePressurePins> Main::brakePressurePinsFromFile(utils::Lo
     log.error("Found %d brake sensor pins but %d were expected in configuration file at %s",
               brake_pressure_pin_array.Size(), data::Sensors::kNumBrakePressure, path.c_str());
   }
-  BrakePressurePins brake_pressure_pins;
+  std::vector<uint8_t> brake_pressure_pins;
   std::size_t i = 0;
   for (auto &brake_pressure_pin : brake_pressure_pin_array) {
     brake_pressure_pins.at(i) = static_cast<uint32_t>(brake_pressure_pin.GetUint());

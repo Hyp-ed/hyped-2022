@@ -189,7 +189,7 @@ void Main::checkBrakePressure()
       sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setSensorsData(sensors_data);
     } else if (brake_pressure < 5600) {
-      log_.info("Brake pressure (%u) exceeds minimum value (%d)", brake_pressure, 5600);
+      log_.info("Brake pressure (%u) below minimum value (%d)", brake_pressure, 5600);
       auto sensors_data          = data_.getSensorsData();
       sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setSensorsData(sensors_data);

@@ -84,7 +84,6 @@ class Main : public utils::concurrent::Thread {
   std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brake_temperatures_;
 
   data::TemperatureData temperature_data_;
-  std::unique_ptr<ITemperature> temperature_;
 
   std::unique_ptr<IAmbientPressure> ambient_pressure_;
   data::AmbientPressureData pressure_data_;

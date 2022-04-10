@@ -37,7 +37,7 @@ class BrakePressure : public IBrakePressure {
    * @param raw_value input voltage
    * @return int representation of pressure
    */
-  static uint16_t scaleData(uint8_t raw_value);
+  static uint16_t scaleData(const uint8_t raw_value);
 
   utils::io::Adc pin_;
   utils::Logger log_;

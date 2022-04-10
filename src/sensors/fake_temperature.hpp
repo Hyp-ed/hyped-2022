@@ -2,8 +2,6 @@
 
 #include "temperature.hpp"
 
-#include <string>
-
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {

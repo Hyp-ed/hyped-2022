@@ -2,8 +2,6 @@
 
 #include "brake_pressure.hpp"
 
-#include <string>
-
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {

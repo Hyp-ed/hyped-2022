@@ -16,7 +16,7 @@ State::State() : data_(data::Data::getInstance())
 
 void State::updateModuleData()
 {
-  brakes_data_    = data_.getEmergencyBrakesData();
+  brakes_data_    = data_.getBrakesData();
   nav_data_       = data_.getNavigationData();
   batteries_data_ = data_.getBatteriesData();
   telemetry_data_ = data_.getTelemetryData();
@@ -272,7 +272,7 @@ State *FailurePreBraking::checkTransition(Logger &)
 //--------------------------------------------------------------------------------------
 
 FailureBraking FailureBraking::instance_;
-data::State FailureBraking::enum_value_       = data::State::kEmergencyBraking;
+data::State FailureBraking::enum_value_       = data::State::kFailureBraking;
 char FailureBraking::string_representation_[] = "FailureBraking";
 
 State *FailureBraking::checkTransition(Logger &log)

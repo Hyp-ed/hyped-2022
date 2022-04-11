@@ -23,9 +23,9 @@ class DemoRunTest : public Test {
 
   data::Data &data_ = data::Data::getInstance();
 
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   data::Navigation nav_data_;
-  data::Batteries batteries_data_;
+  data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;
@@ -56,7 +56,7 @@ class DemoRunTest : public Test {
    */
   void writeData()
   {
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
@@ -69,7 +69,7 @@ class DemoRunTest : public Test {
    */
   void readData()
   {
-    brakes_data_    = data_.getEmergencyBrakesData();
+    brakes_data_    = data_.getBrakesData();
     stm_data_       = data_.getStateMachineData();
     nav_data_       = data_.getNavigationData();
     telemetry_data_ = data_.getTelemetryData();
@@ -605,6 +605,7 @@ class DemoRunTest : public Test {
 
     // Enforcing Accelerating -> PreBraking
     telemetry_data_.emergency_stop_command = true;
+    nav_data_.velocity                     = 69;
 
     // Prevent PreBraking -> NominalBraking
     sensors_data_.high_power_off = false;
@@ -1000,7 +1001,7 @@ class DemoRunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in NominalBraking";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking)
       << "failed to transition from NominalBraking to EmergencyBraking";
   }
 
@@ -1068,7 +1069,7 @@ class DemoRunTest : public Test {
 
     // Check result
     ASSERT_EQ(stm_data_.critical_failure, false) << "encountered failure in FailurePreBraking";
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking)
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking)
       << "failed to transition from FailurePreBraking to FailureBraking";
   }
 
@@ -1080,7 +1081,7 @@ class DemoRunTest : public Test {
   {
     // Check initial state
     readData();
-    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kEmergencyBraking);
+    ASSERT_EQ(stm_data_.current_state, hyped::data::State::kFailureBraking);
 
     // Randomise data
     randomiseInternally();

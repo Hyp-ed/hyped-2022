@@ -32,9 +32,9 @@ class StateTest : public hyped::testing::Test {
   data::Data &data_ = data::Data::getInstance();
 
  protected:
-  data::EmergencyBrakes brakes_data_;
+  data::Brakes brakes_data_;
   data::Navigation nav_data_;
-  data::Batteries batteries_data_;
+  data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
   data::Motors motors_data_;
@@ -58,7 +58,7 @@ class StateTest : public hyped::testing::Test {
     Randomiser::randomiseSensorsData(sensors_data_);
     Randomiser::randomiseBatteriesData(batteries_data_);
 
-    data_.setEmergencyBrakesData(brakes_data_);
+    data_.setBrakesData(brakes_data_);
     data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);

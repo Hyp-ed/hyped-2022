@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 #include <iostream>
 #include <string>
@@ -61,7 +61,7 @@ float calculateNorm(Quaternion<int> quat)
 {
   float sumSquare = 0;
   for (size_t i = 0; i < 4; ++i) {
-    sumSquare += pow(quat[i], 2);
+    sumSquare += std::pow(quat[i], 2);
   }
   return sqrt(sumSquare);
 }

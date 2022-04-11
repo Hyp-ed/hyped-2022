@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #include <data/data.hpp>
 #include <utils/io/adc.hpp>
 #include <utils/logger.hpp>

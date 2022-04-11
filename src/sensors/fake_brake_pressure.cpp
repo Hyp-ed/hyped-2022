@@ -1,7 +1,5 @@
 #include "fake_brake_pressure.hpp"
 
-#include <stdlib.h>
-
 #include <utils/system.hpp>
 #include <utils/timer.hpp>
 

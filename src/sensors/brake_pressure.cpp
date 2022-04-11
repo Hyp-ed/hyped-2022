@@ -1,7 +1,5 @@
 #include "brake_pressure.hpp"
 
-#include <stdio.h>
-
 #include <utils/system.hpp>
 
 namespace hyped::sensors {

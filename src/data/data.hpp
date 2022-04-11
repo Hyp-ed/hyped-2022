@@ -76,7 +76,6 @@ struct BrakePressureData : public SensorData {
 struct Sensors : public Module {
   static constexpr size_t kNumImus          = 4;
   static constexpr size_t kNumEncoders      = 4;
-  static constexpr size_t kNumKeyence       = 2;
   static constexpr size_t kNumBrakePressure = 2;
   static constexpr size_t kNumBrakeTemp     = 2;
   static constexpr size_t kNumAmbientTemp   = 4;
@@ -89,7 +88,6 @@ struct Sensors : public Module {
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
-  std::array<CounterData, kNumKeyence> keyence_stripe_counters;
   std::array<BrakePressureData, kNumBrakePressure> brake_pressures;
 
   bool high_power_off = false;  // true if all SSRs are not in HP

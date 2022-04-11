@@ -23,6 +23,7 @@
     "bms_startup_time_micros": 5000000,
     "imu_pins": [22, 27, 47, 86],
     "temperature_pins": [13],
+    "brake_pressure_pins": [15, 16],
     "ambient_pressure_pins": {
       "pressure_pin": 10,
       "temperature_pin": 11

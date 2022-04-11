@@ -391,10 +391,13 @@ std::optional<std::vector<uint8_t>> Main::brakePressurePinsFromFile(utils::Logge
               brake_pressure_pin_array.Size(), data::Sensors::kNumBrakePressure, path.c_str());
   }
   std::vector<uint8_t> brake_pressure_pins;
-  std::size_t i = 0;
-  for (auto &brake_pressure_pin : brake_pressure_pin_array) {
-    brake_pressure_pins.at(i) = static_cast<uint32_t>(brake_pressure_pin.GetUint());
-    ++i;
+  for (const auto &brake_pressure_pin : brake_pressure_pin_array) {
+    const auto pin = brake_pressure_pin.GetUint();
+    if (pin > UINT8_MAX) {
+      log.error("brake pressure pin value %u is too large", pin);
+      return std::nullopt;
+    }
+    brake_pressure_pins.push_back(static_cast<uint8_t>(pin));
   }
   return brake_pressure_pins;
 }

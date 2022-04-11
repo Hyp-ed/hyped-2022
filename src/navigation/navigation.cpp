@@ -198,7 +198,7 @@ void Navigation::calibrateGravity()
 
 void Navigation::queryWheelEncoders()
 {
-  std::array<hyped::data::nav_t, data::Sensors::kNumEncoders> encoder_data_array;
+  EncoderArray encoder_data_array;
   const auto encoder_data = data_.getSensorsWheelEncoderData();
 
   uint32_t sum                   = 0;

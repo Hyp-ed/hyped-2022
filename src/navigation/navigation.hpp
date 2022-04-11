@@ -27,6 +27,7 @@ class Navigation {
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
   using QuartileBounds           = std::array<data::nav_t, 3>;
+  using EncoderArray             = std::array<data::nav_t, data::Sensors::kNumEncoders>;
 
   /**
    * @brief Construct a new Navigation object
@@ -95,21 +96,27 @@ class Navigation {
    *
    * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
    */
-  QuartileBounds calculateQuartiles(const auto data_array, const bool imu_quartiles);
+  QuartileBounds calculateImuQuartiles(const NavigationArray &data_array);
+  /**
+   * @brief Calculate quartiles for an array of readings. Updates quartile_bounds array
+   *
+   * @param pointer to array of original acceleration readings
+   *
+   * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
+   */
+  QuartileBounds calculateEncoderQuartiles(const EncoderArray &data_array);
   /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *
    * @param pointer to array of original acceleration readings
-   * @param threshold value
    */
-  void imuOutlierDetection(NavigationArray &data_array, const data::nav_t threshold);
+  void imuOutlierDetection(NavigationArray &data_array);
   /**
    * @brief Apply scaled interquartile range bounds on an array of readings
    *
    * @param pointer to array of original encoder readings
-   * @param threshold value
    */
-  void wheelEncoderOutlierDetection(NavigationArray &data_array, const data::nav_t threshold);
+  void wheelEncoderOutlierDetection(NavigationArray &data_array);
   /**
    * @brief Update central data structure
    */

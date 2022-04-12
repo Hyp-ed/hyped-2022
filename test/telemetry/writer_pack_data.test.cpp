@@ -104,7 +104,7 @@ TEST_F(WriterPackData, packsSensorsData)
     batteries_data.high_power_batteries[i].low_voltage_cell                   = 5;
     batteries_data.high_power_batteries[i].voltage                            = 12;
   }
-  for (size_t i = 0; i < batteries_data.kNumHPBatteries; ++i) {
+  for (size_t i = 0; i < batteries_data.kNumLPBatteries; ++i) {
     batteries_data.low_power_batteries[i].average_temperature                = 8;
     batteries_data.low_power_batteries[i].charge                             = 3;
     batteries_data.low_power_batteries[i].current                            = 10;
@@ -128,9 +128,9 @@ TEST_F(WriterPackData, packsSensorsData)
   const std::string expected_json
     = "{\"sensors\":{\"lp_batteries\":[{\"average_temp\":8,\"voltage\":12,\"current\":10,"
       "\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":"
-      "24,\"insulation_monitoring_device_fault\":false},{\"average_temp\":43,\"voltage\":436,"
-      "\"current\":238,\"charge\":21,\"low_temp\":32,\"high_temp\":13,\"low_voltage_cell\":6900,"
-      "\"high_voltage_cell\":8600,\"insulation_monitoring_device_fault\":false}],\"hp_batteries\":["
+      "24,\"insulation_monitoring_device_fault\":false},{\"average_temp\":8,\"voltage\":12,"
+      "\"current\":10,\"charge\":3,\"low_temp\":13,\"high_temp\":16,\"low_voltage_cell\":5,"
+      "\"high_voltage_cell\":24,\"insulation_monitoring_device_fault\":false}],\"hp_batteries\":["
       "{\"average_temp\":8,\"voltage\":12,\"current\":10,\"charge\":3,\"low_temp\":13,\"high_"
       "temp\":16,\"low_voltage_cell\":5,\"high_voltage_cell\":24,\"insulation_monitoring_device_"
       "fault\":false}],\"brakes_retracted\":[true,true],\"temperature\":20,\"pressure\":400,"

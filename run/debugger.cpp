@@ -1,7 +1,7 @@
 #include <debugging/observer.hpp>
 #include <debugging/repl.hpp>
-#include <utils/system.hpp>
 #include <utils/concurrent/thread.hpp>
+#include <utils/system.hpp>
 
 int main(const int argc, const char **argv)
 {

@@ -7,6 +7,7 @@ ExternalProject_Add(
     TIMEOUT 10
     CMAKE_ARGS ""
     CONFIGURE_COMMAND ""
+    GIT_TAG "0fd6b4f7" # release 3.3.4
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
     UPDATE_COMMAND ""

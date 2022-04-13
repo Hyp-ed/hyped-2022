@@ -270,6 +270,29 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_ambient_pressure_fail = false;
   }
 
+  // Use fake brake_pressure?
+  if (config_object.HasMember("use_fake_brake_pressure")) {
+    config.use_fake_brake_pressure = config_object["use_fake_brake_pressure"].GetBool();
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.use_fake_brake_pressure' in config filet at %s; using "
+      "default "
+      "value",
+      argv[0]);
+    config.use_fake_brake_pressure = false;
+  }
+  // Use fake brake_pressure with fail?
+  if (config_object.HasMember("use_fake_brake_pressure_fail")) {
+    config.use_fake_ambient_pressure_fail = config_object["use_fake_brake_pressure_fail"].GetBool();
+  } else {
+    kInitialisationErrorLogger.info(
+      "could not find field 'system.use_fake_brake_pressure_fail' in config filet at %s; using "
+      "default "
+      "value",
+      argv[0]);
+    config.use_fake_brake_pressure_fail = false;
+  }
+
   // Use fake brakes?
   if (config_object.HasMember("use_fake_brakes")) {
     config.use_fake_brakes = config_object["use_fake_brakes"].GetBool();

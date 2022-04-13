@@ -7,7 +7,9 @@
 #include <rapidjson/stringbuffer.h>
 
 #include <sensors/ambient_pressure.hpp>
+#include <sensors/brake_pressure.hpp>
 #include <sensors/fake_ambient_pressure.hpp>
+#include <sensors/fake_brake_pressure.hpp>
 #include <sensors/fake_temperature.hpp>
 #include <sensors/temperature.hpp>
 
@@ -103,6 +105,27 @@ Main::Main()
                                                           ambient_pressure_pins->temperature_pin);
   }
 
+  // BrakePressure
+  if (sys_.config_.use_fake_brake_pressure_fail) {
+    for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
+      brake_pressures_.at(i) = std::make_unique<FakeBrakePressure>(true);
+    }
+  } else if (sys_.config_.use_fake_brake_pressure) {
+    for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
+      brake_pressures_.at(i) = std::make_unique<FakeBrakePressure>(false);
+    }
+  } else {
+    const auto brake_pressure_pins
+      = brakePressurePinsFromFile(log_, sys_.config_.pressure_config_path);
+    if (!brake_pressure_pins) {
+      log_.error("failed to initialise brake pressure sensor");
+      sys_.stop();
+      return;
+    }
+    for (size_t i = 0; i < data::Sensors::kNumBrakePressure; ++i) {
+      brake_pressures_.at(i) = std::make_unique<BrakePressure>(brake_pressure_pins->at(i));
+    }
+  }
   // kReady for state machine transition
   sensors_               = data_.getSensorsData();
   sensors_.module_status = data::ModuleStatus::kReady;
@@ -152,6 +175,25 @@ void Main::checkAmbientPressure()
     auto sensors_data          = data_.getSensorsData();
     sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
     data_.setSensorsData(sensors_data);
+  }
+}
+
+void Main::checkBrakePressure()
+{
+  for (size_t i = 0; i < brake_pressures_.size(); ++i) {
+    brake_pressures_[i]->run();
+    const auto brake_pressure = brake_pressures_[i]->getData();
+    if (brake_pressure > 9000) {
+      log_.info("Brake pressure (%u) exceeds maximum value (%d)", brake_pressure, 9000);
+      auto sensors_data          = data_.getSensorsData();
+      sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setSensorsData(sensors_data);
+    } else if (brake_pressure < 5600) {
+      log_.info("Brake pressure (%u) below minimum value (%d)", brake_pressure, 5600);
+      auto sensors_data          = data_.getSensorsData();
+      sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
+      data_.setSensorsData(sensors_data);
+    }
   }
 }
 
@@ -318,6 +360,48 @@ std::optional<AmbientPressurePins> Main::ambientPressurePinsFromFile(utils::Logg
   return ambient_pressure_pins;
 }
 
+std::optional<std::vector<uint8_t>> Main::brakePressurePinsFromFile(utils::Logger &log,
+                                                                    const std::string &path)
+{
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("Failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("Failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("sensors")) {
+    log.error("Missing required field 'sensors' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  const auto config_object = document["sensors"].GetObject();
+  if (!config_object.HasMember("brake_pressure_pins")) {
+    log.error("Missing required field 'sensors.brake_pressure_pins' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  const auto brake_pressure_pin_array = config_object["brake_pressure_pins"].GetArray();
+  if (brake_pressure_pin_array.Size() != data::Sensors::kNumBrakePressure) {
+    log.error("Found %d brake sensor pins but %d were expected in configuration file at %s",
+              brake_pressure_pin_array.Size(), data::Sensors::kNumBrakePressure, path.c_str());
+  }
+  std::vector<uint8_t> brake_pressure_pins;
+  for (const auto &brake_pressure_pin : brake_pressure_pin_array) {
+    const auto pin = brake_pressure_pin.GetUint();
+    if (pin > UINT8_MAX) {
+      log.error("brake pressure pin value %u is too large", pin);
+      return std::nullopt;
+    }
+    brake_pressure_pins.push_back(static_cast<uint8_t>(pin));
+  }
+  return brake_pressure_pins;
+}
+
 void Main::run()
 {
   battery_manager_->start();
@@ -326,8 +410,10 @@ void Main::run()
   while (sys_.isRunning()) {
     checkAmbientTemperature();
     checkAmbientPressure();
+    checkBrakePressure();
     Thread::sleep(200);
   }
+
   imu_manager_->join();
   battery_manager_->join();
 }

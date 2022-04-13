@@ -2,6 +2,7 @@
 
 #include "ambient_pressure.hpp"
 #include "bms_manager.hpp"
+#include "brake_pressure.hpp"
 #include "imu_manager.hpp"
 #include "sensor.hpp"
 #include "temperature.hpp"
@@ -32,6 +33,9 @@ class Main : public utils::concurrent::Thread {
   static std::optional<AmbientPressurePins> ambientPressurePinsFromFile(utils::Logger &log,
                                                                         const std::string &path);
 
+  static std::optional<std::vector<uint8_t>> brakePressurePinsFromFile(utils::Logger &log,
+                                                                       const std::string &path);
+
  private:
   /**
    * @brief checks range of pod temperature
@@ -59,6 +63,12 @@ class Main : public utils::concurrent::Thread {
    */
   void checkAmbientPressure();
 
+  /**
+   * @brief used to check the brake pressure every twenty times in the main loop,
+   *        similar to temperature;
+   */
+  void checkBrakePressure();
+
   utils::System &sys_;
   data::Data &data_;
 
@@ -72,10 +82,14 @@ class Main : public utils::concurrent::Thread {
 
   std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> ambient_temperatures_;
   std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brake_temperatures_;
-  std::unique_ptr<IAmbientPressure> ambient_pressure_;
 
   data::TemperatureData temperature_data_;
+
+  std::unique_ptr<IAmbientPressure> ambient_pressure_;
   data::AmbientPressureData pressure_data_;
+
+  std::array<std::unique_ptr<IBrakePressure>, data::Sensors::kNumBrakePressure> brake_pressures_;
+  std::array<data::BrakePressureData, data::Sensors::kNumBrakePressure> brake_pressure_data_;
 };
 
 }  // namespace hyped::sensors

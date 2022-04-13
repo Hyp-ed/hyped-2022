@@ -1,25 +1,27 @@
 #pragma once
 
-#include "temperature.hpp"
+#include "brake_pressure.hpp"
 
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {
 
-class FakeTemperature : public ITemperature {
+class FakeBrakePressure : public IBrakePressure {
  public:
   /**
-   * @brief Construct a new Fake Temperature object
+   * @brief Construct a new Fake Brake Pressure object
+   *
+   * @param log
    * @param is_fail
    */
-  FakeTemperature(const bool is_fail);
+  FakeBrakePressure(const bool is_fail);
 
   /**
    * @brief returns int representation
    *
-   * @return int temperature degrees C
+   * @return int pressure mBars
    */
-  uint8_t getData() const override;
+  uint16_t getData() const override;
 
   /**
    * @brief waits for acceleration, generate random time for failure
@@ -35,12 +37,12 @@ class FakeTemperature : public ITemperature {
    */
   void checkFailure();
 
-  // values degrees C
+  // values bars
   int failure_;
   int success_;
-  data::TemperatureData temperature_data_;
+  data::BrakePressureData pressure_data_;
 
-  const bool is_fail_;
+  bool is_fail_;
 
   uint64_t acc_start_time_;
   bool acc_started_;

@@ -7,6 +7,7 @@
 #include <propulsion/main.hpp>
 #include <sensors/main.hpp>
 #include <demo_state_machine/main.hpp>
+#include <demo_state_machine/UI.hpp>
 #include <telemetry/main.hpp>
 #include <utils/system.hpp>
 
@@ -36,6 +37,9 @@ int main(int argc, char *argv[])
   sensors.start();
   demo_state_machine.start();
   telemetry.start();
+
+  hyped::demo_state_machine::UI UI; 
+  UI.run(); 
 
   // Join the threads here
   brakes.join();

@@ -62,13 +62,13 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
     log.error("failed to parse config file at %s", path.c_str());
     return std::nullopt;
   }
-  if (!document.HasMember("observer")) {
-    log.error("missing required field 'observer' in configuration file at %s", path.c_str());
+  if (!document.HasMember("debugger")) {
+    log.error("missing required field 'debugger' in configuration file at %s", path.c_str());
     return std::nullopt;
   }
-  const auto config_object = document["observer"].GetObject();
+  const auto config_object = document["debugger"].GetObject();
   if (!config_object.HasMember("output_path")) {
-    log.error("missing required field 'observer.output_path' in configuration file at %s",
+    log.error("missing required field 'debugger.output_path' in configuration file at %s",
               path.c_str());
     return std::nullopt;
   }
@@ -76,7 +76,7 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
   const auto output_path = config_object["output_path"].GetString();
   auto observer          = std::make_unique<Observer>(output_path);
   if (!config_object.HasMember("use_imu_manager")) {
-    log.error("missing required field 'observer.use_imu_manager' in configuration file at %s",
+    log.error("missing required field 'debugger.use_imu_manager' in configuration file at %s",
               path.c_str());
     return std::nullopt;
   }

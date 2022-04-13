@@ -11,7 +11,7 @@
     "use_fake_high_power": false,
     "axis": 0
   },
-  "observer": {
+  "debugger": {
     "output_path": "readings.json",
     "use_imu_manager": false
   },

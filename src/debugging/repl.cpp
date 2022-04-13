@@ -1,3 +1,4 @@
+#include "can_listener.hpp"
 #include "observer.hpp"
 #include "repl.hpp"
 
@@ -10,6 +11,7 @@
 #include <rapidjson/stringbuffer.h>
 
 #include <sensors/main.hpp>
+#include <utils/io/can.hpp>
 
 namespace hyped::debugging {
 
@@ -30,11 +32,35 @@ void Repl::run()
   }
 }
 
-std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &)
+std::optional<std::unique_ptr<Repl>> Repl::fromFile(const std::string &path)
 {
   const auto &system = utils::System::getSystem();
   utils::Logger log("REPL", system.config_.log_level);
-  auto repl                   = std::make_unique<Repl>();
+  std::ifstream input_stream(path);
+  if (!input_stream.is_open()) {
+    log.error("failed to open config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  rapidjson::IStreamWrapper input_stream_wrapper(input_stream);
+  rapidjson::Document document;
+  document.ParseStream(input_stream_wrapper);
+  if (document.HasParseError()) {
+    log.error("failed to parse config file at %s", path.c_str());
+    return std::nullopt;
+  }
+  if (!document.HasMember("debugger")) {
+    log.error("missing required field 'debugger' in configuration file at %s", path.c_str());
+    return std::nullopt;
+  }
+  const auto config_object = document["debugger"].GetObject();
+  if (!config_object.HasMember("use_direct_can")) {
+    log.error("missing required field 'debugger.use_direct_can' in configuration file at %s",
+              path.c_str());
+    return std::nullopt;
+  }
+  const auto use_direct_can = config_object["use_direct_can"].GetBool();
+  auto repl                 = std::make_unique<Repl>();
+  if (use_direct_can) { repl->addDirectCanCommands(); }
   const auto brake_pin_vector = brakes::Main::pinsFromFile(log, system.config_.brakes_config_path);
   if (!brake_pin_vector) {
     log.error("failed to read Brake pins");
@@ -179,6 +205,71 @@ void Repl::addFakeBrakeCommands(const uint32_t id)
       }
     };
     addCommand(command);
+  }
+}
+
+void Repl::addDirectCanCommands()
+{
+  auto &can = utils::io::Can::getInstance();
+  can.start();
+  {
+    Command can_send_command;
+    can_send_command.identifier = "can send";
+    can_send_command.description
+      = "Send an aribtrary message, to be specified after, to the CAN bus";
+    can_send_command.handler = [this, &can]() {
+      utils::io::can::Frame frame;
+      frame.extended = false;
+      std::cout << "CAN id (e.g. `3fx'):" << std::endl;
+      std::cin >> std::hex >> frame.id;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "Number of bytes to send (e.g. `7'):" << std::endl;
+      uint32_t len;
+      std::cin >> std::dec >> len;
+      if (len > 8) {
+        log_.error("found can message length %u which exceeds the maximum of 8 bytes", len);
+        return;
+      }
+      frame.len = static_cast<uint32_t>(len);
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "Bytes to send (e.g. `ff";
+      for (uint8_t i = 1; i < frame.len; ++i) {
+        std::cout << " ff";
+      }
+      std::cout << "':" << std::endl;
+      for (uint8_t i = 0; i < frame.len; ++i) {
+        uint32_t value;
+        std::cin >> std::hex >> value;
+        if (value > UINT8_MAX) {
+          log_.error("found value %u which exceeds the maximum of 255 for a single byte", value);
+        }
+        frame.data[i] = static_cast<uint8_t>(value);
+      }
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      can.send(frame);
+    };
+    addCommand(can_send_command);
+  }
+  {
+    Command can_subscribe_command;
+    can_subscribe_command.identifier  = "can subscribe";
+    can_subscribe_command.description = "Subscribe to a node_id on the base CAN bus";
+    const auto can_listener           = std::make_shared<CanListener>();
+    can.registerProcessor(can_listener.get());
+    can_subscribe_command.handler = [this, can_listener]() {
+      std::cout << "CAN id (e.g. `3fx'):" << std::endl;
+      uint32_t node_id;
+      std::cin >> std::hex >> node_id;
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      constexpr uint32_t kMaximumNodeId = (1 << 11) - 1;
+      if (node_id > kMaximumNodeId) {
+        log_.error("found node id 0x%x which exceeds the maximum 0x%x", node_id, kMaximumNodeId);
+        return;
+      }
+      log_.info("subscribed to CAN node_id 0x%x", node_id);
+      can_listener->subscribe(node_id);
+    };
+    addCommand(can_subscribe_command);
   }
 }
 

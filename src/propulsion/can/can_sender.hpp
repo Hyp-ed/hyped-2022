@@ -12,7 +12,7 @@
 
 namespace hyped::propulsion {
 
-class CanSender : public utils::io::CanProccesor, public ISender {
+class CanSender : public utils::io::ICanProcessor, public ISender {
  public:
   /**
    * @brief Initialise the CanSender with the logger, the id and the controller as an attribute,

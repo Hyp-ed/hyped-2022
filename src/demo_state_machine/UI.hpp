@@ -11,7 +11,7 @@
 
 namespace hyped::demo_state_machine {
 
-class UI {
+class Ui {
  public:
   using Handler = std::function<void(void)>;
   void printAvailableCommands();
@@ -24,7 +24,7 @@ class UI {
     Handler handler;
   };
 
-  UI();
+  Ui();
 
   void run();
 

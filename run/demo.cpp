@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
   demo_state_machine.start();
   telemetry.start();
 
-  hyped::demo_state_machine::UI UI; 
-  UI.run(); 
+  hyped::demo_state_machine::Ui Ui; 
+  Ui.run(); 
 
   // Join the threads here
   brakes.join();

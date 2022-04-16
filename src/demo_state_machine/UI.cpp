@@ -30,7 +30,7 @@ void Ui::run()
 
 void Ui::printCurrentState()
 {
-  auto const current_state = data_.getStateMachineData().current_state;
+  const auto current_state = data_.getStateMachineData().current_state;
   std::cout << "Current State: " << ::hyped::data::stateToString(current_state)->c_str()
             << std::endl;
   std::cout << "------------------------------" << std::endl;
@@ -48,7 +48,7 @@ void Ui::printAvailableCommands()
 
 void Ui::readAndHandleCommand()
 {
-  auto const current_state = data_.getStateMachineData().current_state;
+  const auto current_state = data_.getStateMachineData().current_state;
   if (current_state == data::State::kPreCalibrating || current_state == data::State::kReady
       || current_state == data::State::kAccelerating || current_state == data::State::kCruising
       || current_state == data::State::kFinished) {

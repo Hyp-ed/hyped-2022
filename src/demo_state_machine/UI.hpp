@@ -15,7 +15,6 @@ class Ui {
  public:
   using Handler = std::function<void(void)>;
   void printAvailableCommands();
-  void printCurrentState();
   void readAndHandleCommand();
 
   struct Command {

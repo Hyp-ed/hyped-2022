@@ -23,27 +23,20 @@ void Ui::run()
 {
   printAvailableCommands();
   while (system_.isRunning()) {
-    printCurrentState();
     readAndHandleCommand();
   }
 }
 
-void Ui::printCurrentState()
-{
-  const auto current_state = data_.getStateMachineData().current_state;
-  std::cout << "Current State: " << ::hyped::data::stateToString(current_state)->c_str()
-            << std::endl;
-  std::cout << "------------------------------" << std::endl;
-}
-
 void Ui::printAvailableCommands()
 {
+  std::cout << "------------------------------" << std::endl;
   std::cout << "Available options:" << std::endl;
   for (auto &option : commands_) {
     std::cout << " * `" << option.identifier;
     std::cout << "' - " << option.description;
     std::cout << std::endl;
   }
+  std::cout << "------------------------------" << std::endl;
 }
 
 void Ui::readAndHandleCommand()

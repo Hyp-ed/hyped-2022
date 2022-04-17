@@ -1,11 +1,6 @@
 {
-  "fake_trajectory": {
-    "maximum_acceleration": 1000.0,
-    "braking_deceleration": 2000.0,
-    "cruising_deceleration": 0.01
-  },
   "system": {
-    "log_level": 0,
+    "log_level": 2,
     "use_fake_trajectory": true,
     "use_fake_batteries": true,
     "use_fake_batteries_fail": false,
@@ -16,6 +11,8 @@
     "use_fake_brakes": true,
     "use_fake_controller": true,
     "use_fake_high_power": true,
+    "use_fake_ambient_pressure" : true,
+    "use_fake_brake_pressure" : true,
     "axis": 0
   },
   "brakes": {
@@ -42,6 +39,11 @@
   "telemetry": {
     "server_ip": "127.0.01",
     "server_port": "9090"
+  },
+  "fake_trajectory": {
+    "maximum_acceleration": 1000.0,
+    "braking_deceleration": 2000.0,
+    "cruising_deceleration": 0.01
   },
   "fake_imu": [
     {

@@ -198,12 +198,10 @@ void Navigation::calibrateGravity()
 
 void Navigation::queryWheelEncoders()
 {
-  EncoderArray encoder_data_array;
   const auto encoder_data = data_.getSensorsWheelEncoderData();
 
-  uint32_t sum                   = 0;
-  data::nav_t encoder_data_value = 0;
-
+  EncoderArray encoder_data_array;
+  uint32_t sum = 0;
   for (size_t i = 0; i < encoder_data.size(); ++i) {
     sum += encoder_data.at(i).value;
     encoder_data_array.at(i) = encoder_data.at(i).value;
@@ -372,14 +370,14 @@ Navigation::QuartileBounds Navigation::calculateImuQuartiles(const NavigationArr
 
 Navigation::QuartileBounds Navigation::calculateEncoderQuartiles(const EncoderArray &data_array)
 {
-  std::vector<data::nav_t> data_vector;
-  std::array<data::nav_t, 3> quartile_bounds;
+  std::vector<uint32_t> data_vector;
 
   for (size_t i = 0; i < data::Sensors::kNumEncoders; ++i) {
     if (is_encoder_reliable_.at(i)) { data_vector.push_back(data_array.at(i)); }
   }
   std::sort(data_vector.begin(), data_vector.end());
 
+  std::array<data::nav_t, 3> quartile_bounds;
   quartile_bounds.at(0) = (data_vector.at(0) + data_vector.at(1)) / 2.;
   quartile_bounds.at(2)
     = (data_vector.at(data_vector.size() - 2) + data_vector.at(data_vector.size() - 1)) / 2.;
@@ -398,8 +396,8 @@ Navigation::QuartileBounds Navigation::calculateEncoderQuartiles(const EncoderAr
 
 void Navigation::imuOutlierDetection(NavigationArray &data_array)
 {
-  const std::array<data::nav_t, 3> quartile_bounds = calculateImuQuartiles(data_array);
-  static constexpr uint8_t threshold               = kInterQuartileScaler;
+  const QuartileBounds quartile_bounds = calculateImuQuartiles(data_array);
+  static constexpr uint8_t threshold   = kInterQuartileScaler;
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers
@@ -429,10 +427,10 @@ void Navigation::imuOutlierDetection(NavigationArray &data_array)
   }
 }
 
-void Navigation::wheelEncoderOutlierDetection(NavigationArray &data_array)
+void Navigation::wheelEncoderOutlierDetection(EncoderArray &data_array)
 {
-  const std::array<data::nav_t, 3> quartile_bounds = calculateEncoderQuartiles(data_array);
-  static constexpr uint8_t threshold               = kInterQuartileScaler;
+  const QuartileBounds quartile_bounds = calculateEncoderQuartiles(data_array);
+  static constexpr uint8_t threshold   = kInterQuartileScaler;
 
   // find the thresholds
   // clip IQR to upper bound to avoid issues with very large outliers

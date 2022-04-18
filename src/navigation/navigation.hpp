@@ -27,7 +27,7 @@ class Navigation {
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
   using QuartileBounds           = std::array<data::nav_t, 3>;
-  using EncoderArray             = std::array<data::nav_t, data::Sensors::kNumEncoders>;
+  using EncoderArray             = std::array<uint32_t, data::Sensors::kNumEncoders>;
 
   /**
    * @brief Construct a new Navigation object
@@ -116,7 +116,7 @@ class Navigation {
    *
    * @param pointer to array of original encoder readings
    */
-  void wheelEncoderOutlierDetection(NavigationArray &data_array);
+  void wheelEncoderOutlierDetection(EncoderArray &data_array);
   /**
    * @brief Update central data structure
    */

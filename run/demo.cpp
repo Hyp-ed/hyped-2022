@@ -28,7 +28,6 @@ int main(int argc, char *argv[])
   hyped::propulsion::Main propulsion;
   hyped::sensors::Main sensors;
   hyped::demo_state_machine::Main demo_state_machine;
-  hyped::telemetry::Main telemetry;
 
   // Start the threads here
   brakes.start();
@@ -36,7 +35,6 @@ int main(int argc, char *argv[])
   propulsion.start();
   sensors.start();
   demo_state_machine.start();
-  telemetry.start();
 
   hyped::demo_state_machine::Ui Ui; 
   Ui.run(); 
@@ -47,7 +45,6 @@ int main(int argc, char *argv[])
   propulsion.join();
   sensors.join();
   demo_state_machine.join();
-  telemetry.join();
 
   return 0;
 }

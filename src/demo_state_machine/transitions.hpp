@@ -27,8 +27,7 @@ class State;  // Forward declaration
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
 bool checkEmergency(Logger &log, const data::Brakes &brakes_data, const data::Navigation &nav_data,
-                    const data::FullBatteryData &batteries_data,
-                    const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
+                    const data::FullBatteryData &batteries_data, const data::Sensors &sensors_data,
                     const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
@@ -42,7 +41,6 @@ bool checkEmergency(Logger &log, const data::Brakes &brakes_data, const data::Na
 bool checkModulesInitialised(Logger &log, const data::Brakes &brakes_data,
                              const data::Navigation &nav_data,
                              const data::FullBatteryData &batteries_data,
-                             const data::Telemetry &telemetry_data,
                              const data::Sensors &sensors_data, const data::Motors &motors_data);
 
 /*
@@ -51,8 +49,7 @@ bool checkModulesInitialised(Logger &log, const data::Brakes &brakes_data,
 bool checkModulesReady(Logger &log, const data::Brakes &brakes_data,
                        const data::Navigation &nav_data,
                        const data::FullBatteryData &batteries_data,
-                       const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
-                       const data::Motors &motors_data);
+                       const data::Sensors &sensors_data, const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Sensors Command

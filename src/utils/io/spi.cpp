@@ -12,7 +12,7 @@
 #if LINUX
 #include <linux/spi/spidev.h>
 #else
-#define _IOW(type, nr, size) 10  // random demo functionality
+#define _IOC_SIZEBITS 13
 #define SPI_IOC_MAGIC 'k'
 #define SPI_IOC_WR_MODE _IOW(SPI_IOC_MAGIC, 1, uint8_t)
 #define SPI_IOC_WR_MAX_SPEED_HZ _IOW(SPI_IOC_MAGIC, 4, uint32_t)
@@ -217,7 +217,7 @@ void Spi::transfer(uint8_t *tx, uint8_t *, uint16_t len)
   }
 
 #endif
-}
+}  // namespace io
 
 void Spi::read(uint8_t addr, uint8_t *rx, uint16_t len)
 {

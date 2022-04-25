@@ -7,11 +7,11 @@ namespace hyped::propulsion {
 
 class FakeCanEndpoint : public utils::concurrent::Thread {
  public:
-  explicit FakeCanEndpoint(utils::io::CanProccesor &sender);
+  explicit FakeCanEndpoint(utils::io::ICanProcessor &sender);
   void run() override;
 
  private:
-  utils::io::CanProccesor &sender_;
+  utils::io::ICanProcessor &sender_;
 };
 
 }  // namespace hyped::propulsion

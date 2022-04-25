@@ -3,11 +3,12 @@
     "imu_pins": [],
     "temperature_pins": []
   },
-  "observer": {
+  "debugger": {
     "output_path": "readings.json",
-    "use_imu_manager": true
+    "use_imu_manager": false,
+    "use_direct_can": false,
+    "can_ids": []
   },
-  "debugger": {},
   "brakes": {
     "pins": [
       {
@@ -18,12 +19,12 @@
   },
   "system": {
     "log_level": 2,
-    "use_fake_trajectory": true,
+    "use_fake_trajectory": false,
     "use_fake_batteries": false,
     "use_fake_batteries_fail": false,
-    "use_fake_temperature": false,
+    "use_fake_temperature": true,
     "use_fake_temperature_fail": false,
-    "use_fake_brakes": true,
+    "use_fake_brakes": false,
     "use_fake_controller": false,
     "use_fake_high_power": false,
     "axis": 0

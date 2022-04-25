@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 #include <cstdlib>
 #include <iostream>
@@ -44,7 +44,7 @@ std::vector<T> linspace(T a, T b, size_t n)
  */
 TEST(IntegratorFunctionalityTest, handlesInitializationTest)
 {
-  DataPoint<float> firstPoint  = DataPoint<float>(pow(10, 6), 10);
+  DataPoint<float> firstPoint  = DataPoint<float>(std::pow(10, 6), 10);
   DataPoint<float> output      = DataPoint<float>(0, 0);
   Integrator<float> integrator = Integrator<float>(&output);
   integrator.update(firstPoint);
@@ -55,7 +55,7 @@ TEST(IntegratorFunctionalityTest, handlesInitializationTest)
   std::string message_two
     = "The timeStep should change to the one given by "
       "the first point, Plese review implementation";
-  ASSERT_EQ(pow(10, 6), output.timestamp) << message_two;
+  ASSERT_EQ(std::pow(10, 6), output.timestamp) << message_two;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -85,10 +85,10 @@ class IntegratorPropertyTest : public ::testing::Test {
   void SetUp()
   {
     for (size_t i = 0; i < kNumPoints; ++i) {
-      function         = DataPoint<float>(i * pow(10, 6), i * i * i + i * i + i);
-      cubeterm         = DataPoint<float>(i * pow(10, 6), i * i * i);
-      quadraticterm    = DataPoint<float>(i * pow(10, 6), i * i);
-      linerarterm      = DataPoint<float>(i * pow(10, 6), i);
+      function         = DataPoint<float>(i * std::pow(10, 6), i * i * i + i * i + i);
+      cubeterm         = DataPoint<float>(i * std::pow(10, 6), i * i * i);
+      quadraticterm    = DataPoint<float>(i * std::pow(10, 6), i * i);
+      linerarterm      = DataPoint<float>(i * std::pow(10, 6), i);
       datafunction[i]  = function;
       dataquadratic[i] = quadraticterm;
       dataxcube[i]     = cubeterm;
@@ -169,7 +169,7 @@ TEST_F(IntegratorPropertyTest, ConstantMultiplyTest)
   DataPoint<float> data_function_by_constant[101];
   for (size_t i = 0; i < 101; ++i) {
     float value                  = datafunction[i].value;
-    data_function_by_constant[i] = DataPoint<float>(i * pow(10, 6), constant * value);
+    data_function_by_constant[i] = DataPoint<float>(i * std::pow(10, 6), constant * value);
   }
   for (size_t i = 0; i < 101; ++i) {
     function_integrator.update(datafunction[i]);
@@ -197,11 +197,11 @@ class IntegratorTestLinear : public ::testing::Test {
   void SetUp()
   {
     for (size_t i = 0; i < 101; ++i) {
-      data_time_and_acceleration = DataPoint<float>(i * pow(10, 6), i);
+      data_time_and_acceleration = DataPoint<float>(i * std::pow(10, 6), i);
       datatry[i]                 = data_time_and_acceleration;
     }
     for (int j = 0; j < 101; ++j) {
-      data_time_and_acceleration = DataPoint<float>(j * pow(10, 6), kConstant * j);
+      data_time_and_acceleration = DataPoint<float>(j * std::pow(10, 6), kConstant * j);
       datatry2[j]                = data_time_and_acceleration;
     }
   }

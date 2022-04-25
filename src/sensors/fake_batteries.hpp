@@ -2,7 +2,6 @@
 
 #include "bms.hpp"
 
-#include <string>
 #include <vector>
 
 #include <data/data.hpp>

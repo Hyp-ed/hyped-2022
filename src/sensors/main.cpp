@@ -77,14 +77,36 @@ Main::Main()
       return;
     }
     if (ambient_temperature_pins->size() != data::Sensors::kNumAmbientTemp) {
-      log_.error("found %u temperature pins but %u were expected",
+      log_.error("found %u ambient temperature pins but %u were expected",
                  static_cast<uint32_t>(ambient_temperature_pins->size()),
                  static_cast<uint32_t>(data::Sensors::kNumAmbientTemp));
       sys_.stop();
       return;
     }
     for (size_t i = 0; i < data::Sensors::kNumAmbientTemp; ++i) {
-      ambient_temperatures_.at(i) = std::make_unique<Temperature>(ambient_temperature_pins->at(i));
+      ambient_temperatures_.at(i)
+        = std::make_unique<AmbientTemperature>(ambient_temperature_pins->at(i));
+    }
+
+    const auto brakes_and_suspension_temperature_pins
+      = brakeSuspensionTemperaturePinsFromFile(log_, sys_.config_.temperature_config_path);
+    if (!brakes_and_suspension_temperature_pins) {
+      log_.error("failed to initialise brakes and suspension temperature sensor");
+      sys_.stop();
+      return;
+    }
+
+    if (brakes_and_suspension_temperature_pins->size() != data::Sensors::kNumBrakeSuspensionTemp) {
+      log_.error("found %u brake/suspension temperature pins but %u were expected",
+                 static_cast<uint32_t>(brakes_and_suspension_temperature_pins->size()),
+                 static_cast<uint32_t>(data::Sensors::kNumBrakeSuspensionTemp));
+      sys_.stop();
+      return;
+    }
+
+    for (size_t i = 0; i < data::Sensors::kNumBrakeSuspensionTemp; ++i) {
+      brakes_and_suspension_temperatures_.at(i) = std::make_unique<BrakesAndSuspensionTemperature>(
+        brakes_and_suspension_temperature_pins->at(i));
     }
   }
 
@@ -142,7 +164,7 @@ void Main::checkAmbientTemperature()
     ambient_temperature_data.at(i).temperature = ambient_temperatures_[i]->getData();
     if ((ambient_temperature_data.at(i).temperature > 75
          || ambient_temperature_data.at(i).temperature < 1)) {
-      log_.info("PCB temperature is getting a wee high...sorry Cheng");
+      log_.info("Ambient Temperature is higher than 75 degrees");
       auto sensors_data          = data_.getSensorsData();
       sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setSensorsData(sensors_data);
@@ -150,15 +172,17 @@ void Main::checkAmbientTemperature()
   }
 }
 
-void Main::checkBrakeTemperature()
+void Main::checkBrakeAndSuspensionTemperature()
 {
-  auto brakes_temperature_data = data_.getSensorsData().brake_temperature_array;
-  for (size_t i = 0; i < data::Sensors::kNumBrakeTemp; ++i) {
-    brake_temperatures_[i]->run();  // not a thread
-    brakes_temperature_data.at(i).temperature = brake_temperatures_[i]->getData();
-    if ((brakes_temperature_data.at(i).temperature > 75
-         || brakes_temperature_data.at(i).temperature < 0)) {
-      log_.info("PCB temperature is getting a wee high...sorry Cheng");
+  auto brakes_and_suspension_temperature_data
+    = data_.getSensorsData().brake_suspension_temperature_array;
+  for (size_t i = 0; i < data::Sensors::kNumBrakeSuspensionTemp; ++i) {
+    brakes_and_suspension_temperatures_[i]->run();  // not a thread
+    brakes_and_suspension_temperature_data.at(i).temperature
+      = brakes_and_suspension_temperatures_[i]->getData();
+    if ((brakes_and_suspension_temperature_data.at(i).temperature > 85
+         || brakes_and_suspension_temperature_data.at(i).temperature < 0)) {
+      log_.info("A Brake or Suspension pcb is hotter than 85 degrees");
       auto sensors_data          = data_.getSensorsData();
       sensors_data.module_status = data::ModuleStatus::kCriticalFailure;
       data_.setSensorsData(sensors_data);
@@ -272,8 +296,8 @@ std::optional<std::vector<uint8_t>> Main::ambientTemperaturePinsFromFile(utils::
   return ambient_temperature_pins;
 }
 
-std::optional<std::vector<uint8_t>> Main::brakeTemperaturePinsFromFile(utils::Logger &log,
-                                                                       const std::string &path)
+std::optional<std::vector<uint8_t>> Main::brakeSuspensionTemperaturePinsFromFile(
+  utils::Logger &log, const std::string &path)
 {
   std::ifstream input_stream(path);
   if (!input_stream.is_open()) {
@@ -292,21 +316,25 @@ std::optional<std::vector<uint8_t>> Main::brakeTemperaturePinsFromFile(utils::Lo
     return std::nullopt;
   }
   auto config_object = document["sensors"].GetObject();
-  if (!config_object.HasMember("temperature_pins")) {
-    log.error("Missing required field 'sensors.temperature_pins' in configuration file at %s",
-              path.c_str());
+  if (!config_object.HasMember("brakes_suspension_temperature_pins")) {
+    log.error(
+      "Missing required field 'sensors.brakes_suspension_temperature_pins' in configuration file "
+      "at %s",
+      path.c_str());
     return std::nullopt;
   }
-  const auto brake_temperature_pin_array = config_object["temperature_pins"].GetArray();
-  if (brake_temperature_pin_array.Size() != data::Sensors::kNumAmbientTemp) {
-    log.error("Found %d brake temperature pins but %d were expected in configuration file at %s",
-              brake_temperature_pin_array.Size(), data::Sensors::kNumBrakeTemp, path.c_str());
+  const auto brake_temperature_pin_array
+    = config_object["brakes_suspension_temperature_pins"].GetArray();
+  if (brake_temperature_pin_array.Size() != data::Sensors::kNumBrakeSuspensionTemp) {
+    log.error(
+      "Found %d brake/suspension temperature pins but %d were expected in configuration file at %s",
+      brake_temperature_pin_array.Size(), data::Sensors::kNumBrakeSuspensionTemp, path.c_str());
   }
   std::vector<uint8_t> brake_temperature_pins;
   for (const auto &brake_temperature_pin : brake_temperature_pin_array) {
     const auto pin = brake_temperature_pin.GetUint();
     if (pin > UINT8_MAX) {
-      log.error("brake temperature pin value %u is too large", pin);
+      log.error("brake/suspension temperature pin value %u is too large", pin);
       return std::nullopt;
     }
     brake_temperature_pins.push_back(static_cast<uint8_t>(pin));
@@ -409,6 +437,7 @@ void Main::run()
 
   while (sys_.isRunning()) {
     checkAmbientTemperature();
+    checkBrakeAndSuspensionTemperature();
     checkAmbientPressure();
     checkBrakePressure();
     Thread::sleep(200);

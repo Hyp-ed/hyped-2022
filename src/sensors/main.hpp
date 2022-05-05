@@ -28,8 +28,8 @@ class Main : public utils::concurrent::Thread {
                                                              const std::string &path);
   static std::optional<std::vector<uint8_t>> ambientTemperaturePinsFromFile(
     utils::Logger &log, const std::string &path);
-  static std::optional<std::vector<uint8_t>> brakeTemperaturePinsFromFile(utils::Logger &log,
-                                                                          const std::string &path);
+  static std::optional<std::vector<uint8_t>> brakeSuspensionTemperaturePinsFromFile(
+    utils::Logger &log, const std::string &path);
   static std::optional<AmbientPressurePins> ambientPressurePinsFromFile(utils::Logger &log,
                                                                         const std::string &path);
 
@@ -52,10 +52,10 @@ class Main : public utils::concurrent::Thread {
   void checkAmbientTemperature();
 
   /**
-   * @brief used to check the temperature of the brake temperature sensors
+   * @brief used to check the temperature of the brake and suspension temperature sensors
    *        infrequently in main loop, unnecessary to constantly check temperature;
    */
-  void checkBrakeTemperature();
+  void checkBrakeAndSuspensionTemperature();
 
   /**
    * @brief used to check the pressure every twenty times in the main loop,
@@ -81,9 +81,7 @@ class Main : public utils::concurrent::Thread {
   std::unique_ptr<BmsManager> battery_manager_;
 
   std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumAmbientTemp> ambient_temperatures_;
-  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeTemp> brake_temperatures_;
-
-  data::TemperatureData temperature_data_;
+  std::array<std::unique_ptr<ITemperature>, data::Sensors::kNumBrakeSuspensionTemp> brakes_and_suspension_temperatures_;
 
   std::unique_ptr<IAmbientPressure> ambient_pressure_;
   data::AmbientPressureData pressure_data_;

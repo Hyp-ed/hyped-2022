@@ -256,7 +256,7 @@ void Observer::addFakeImuManagerTask(std::shared_ptr<sensors::FakeTrajectory> fa
 
 void Observer::addTemperatureTask(const uint8_t pin)
 {
-  auto temperature = std::make_shared<sensors::Temperature>(pin);
+  auto temperature = std::make_shared<sensors::AmbientTemperature>(pin);
   std::stringstream name;
   name << "temperature-" << static_cast<uint32_t>(pin);
   Task temperature_task;

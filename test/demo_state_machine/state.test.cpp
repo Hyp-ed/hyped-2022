@@ -90,7 +90,7 @@ TEST_F(DemoIdleTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -115,11 +115,11 @@ TEST_F(DemoIdleTest, demoHandlesAllInitialised)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool all_initialised = demo_state_machine::checkModulesInitialised(
-        log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+        log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
       if (all_initialised) {
@@ -154,7 +154,7 @@ TEST_F(DemoPreCalibratingTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -181,7 +181,7 @@ TEST_F(DemoPreCalibratingTest, demoHandlesCalibrateCommand)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool calibrate_command = demo_state_machine::checkCalibrateCommand(telemetry_data_);
@@ -223,7 +223,7 @@ TEST_F(DemoCalibratingTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -248,12 +248,12 @@ TEST_F(DemoCalibratingTest, demoHandlesAllReady)
     state->enter(log_);
     randomiseData();
 
-    bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+    bool has_emergency = demo_state_machine::checkEmergency(log_, brakes_data_, batteries_data_,
+                                                            sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool all_ready = demo_state_machine::checkModulesReady(
-        log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+        log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
       const auto new_state = state->checkTransition(log_);
 
       if (all_ready) {
@@ -293,7 +293,7 @@ TEST_F(DemoPreReadyTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -320,7 +320,7 @@ TEST_F(DemoPreReadyTest, demoHandlesHighPowerOn)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool has_high_power_on = !demo_state_machine::checkHighPowerOff(sensors_data_);
@@ -363,7 +363,7 @@ TEST_F(DemoReadyTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -391,7 +391,7 @@ TEST_F(DemoReadyTest, demoHandlesLaunchCommand)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool received_launch_command = demo_state_machine::checkLaunchCommand(telemetry_data_);
@@ -441,7 +441,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesEmergency)
     data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -476,7 +476,7 @@ TEST_F(DemoAcceleratingTest, handlesBrakingCommand)
     data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool has_received_braking_command
@@ -520,7 +520,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
     data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const auto new_state = state->checkTransition(log_);
@@ -563,7 +563,7 @@ TEST_F(DemoCruisingTest, demoHandlesEmergency)
     data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -598,7 +598,7 @@ TEST_F(DemoCruisingTest, demoHandlesBrakingCommand)
     data_.setTelemetryData(telemetry_data_);
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool has_received_braking_command
@@ -641,7 +641,7 @@ TEST_F(DemoPreBrakingTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -668,7 +668,7 @@ TEST_F(DemoPreBrakingTest, demoHandlesHighPowerOff)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
@@ -711,7 +711,7 @@ TEST_F(DemoNominalBrakingTest, demoHandlesEmergency)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (has_emergency) {
@@ -738,7 +738,7 @@ TEST_F(DemoNominalBrakingTest, demoHandlesStopped)
     randomiseData();
 
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     if (!has_emergency) {
       const bool stopped   = demo_state_machine::checkPodStopped(log_, nav_data_);

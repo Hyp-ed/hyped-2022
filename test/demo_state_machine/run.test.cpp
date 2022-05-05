@@ -114,10 +114,10 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_calibrate_command   = demo_state_machine::checkCalibrateCommand(telemetry_data_);
     const bool has_modules_initialised = demo_state_machine::checkModulesInitialised(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_calibrate_command);
@@ -157,12 +157,12 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_calibrating_command = demo_state_machine::checkCalibrateCommand(telemetry_data_);
     const bool has_modules_initialised = demo_state_machine::checkModulesInitialised(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_modules_ready = demo_state_machine::checkModulesReady(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(false, has_calibrating_command);
@@ -201,7 +201,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -249,12 +249,12 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_calibrating_command = demo_state_machine::checkCalibrateCommand(telemetry_data_);
     const bool has_modules_initialised = demo_state_machine::checkModulesInitialised(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_modules_ready = demo_state_machine::checkModulesReady(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
     ASSERT_EQ(false, has_emergency);
     ASSERT_EQ(true, has_calibrating_command);
@@ -293,7 +293,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -339,9 +339,9 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_modules_ready = demo_state_machine::checkModulesReady(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_high_power_on = !demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
@@ -380,7 +380,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -429,9 +429,9 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_modules_ready = demo_state_machine::checkModulesReady(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_launch_command = demo_state_machine::checkLaunchCommand(telemetry_data_);
     const bool has_high_power_on  = !demo_state_machine::checkHighPowerOff(sensors_data_);
 
@@ -472,7 +472,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -520,7 +520,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_launch_command = demo_state_machine::checkLaunchCommand(telemetry_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
@@ -566,7 +566,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -612,7 +612,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
@@ -664,7 +664,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
@@ -708,7 +708,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
@@ -759,7 +759,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
@@ -805,7 +805,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
@@ -845,7 +845,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
@@ -896,7 +896,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_entered_braking_zone
       = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
     const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
@@ -948,7 +948,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_stopped          = demo_state_machine::checkPodStopped(log_, nav_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
@@ -988,7 +988,7 @@ class DemoRunTest : public Test {
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
-      log_, brakes_data_, nav_data_, batteries_data_, sensors_data_, motors_data_);
+      log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_stopped = demo_state_machine::checkPodStopped(log_, nav_data_);
 
     ASSERT_EQ(true, has_emergency);

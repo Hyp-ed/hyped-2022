@@ -10,13 +10,10 @@ namespace hyped::demo_state_machine {
  * @brief   Local function that determines whether or not there is an emergency.
  */
 bool checkEmergency(utils::Logger &log, const data::Brakes &brakes_data,
-                    const data::Navigation &nav_data, const data::FullBatteryData &batteries_data,
+                    const data::FullBatteryData &batteries_data,
                     const data::Sensors &sensors_data, const data::Motors &motors_data)
 {
-  if (nav_data.module_status == data::ModuleStatus::kCriticalFailure) {
-    log.error("critical failure in navigation");
-    return true;
-  } else if (motors_data.module_status == data::ModuleStatus::kCriticalFailure) {
+    if (motors_data.module_status == data::ModuleStatus::kCriticalFailure) {
     log.error("critical failure in motors");
     return true;
   } else if (brakes_data.module_status == data::ModuleStatus::kCriticalFailure) {
@@ -37,12 +34,10 @@ bool checkEmergency(utils::Logger &log, const data::Brakes &brakes_data,
 //--------------------------------------------------------------------------------------
 
 bool checkModulesInitialised(utils::Logger &log, const data::Brakes &brakes_data,
-                             const data::Navigation &nav_data,
                              const data::FullBatteryData &batteries_data,
                              const data::Sensors &sensors_data, const data::Motors &motors_data)
 {
   if (brakes_data.module_status < data::ModuleStatus::kInit) return false;
-  if (nav_data.module_status < data::ModuleStatus::kInit) return false;
   if (batteries_data.module_status < data::ModuleStatus::kInit) return false;
   if (sensors_data.module_status < data::ModuleStatus::kInit) return false;
   if (motors_data.module_status < data::ModuleStatus::kInit) return false;
@@ -52,12 +47,10 @@ bool checkModulesInitialised(utils::Logger &log, const data::Brakes &brakes_data
 }
 
 bool checkModulesReady(utils::Logger &log, const data::Brakes &brakes_data,
-                       const data::Navigation &nav_data,
                        const data::FullBatteryData &batteries_data,
                        const data::Sensors &sensors_data, const data::Motors &motors_data)
 {
   if (brakes_data.module_status != data::ModuleStatus::kReady) return false;
-  if (nav_data.module_status != data::ModuleStatus::kReady) return false;
   if (batteries_data.module_status != data::ModuleStatus::kReady) return false;
   if (sensors_data.module_status != data::ModuleStatus::kReady) return false;
   if (motors_data.module_status != data::ModuleStatus::kReady) return false;

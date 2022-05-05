@@ -67,7 +67,7 @@ int32_t FakeController::getVelocity()
 
 void FakeController::quickStop()
 {
-  log_.debug("Controller %d: sending quick stop command", id_);
+  // log_.debug("Controller %d: sending quick stop command", id_);
 }
 
 void FakeController::healthCheck()

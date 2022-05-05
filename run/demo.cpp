@@ -24,14 +24,12 @@ int main(int argc, char *argv[])
 
   // Initalise the threads here
   hyped::brakes::Main brakes;
-  hyped::navigation::Main navigation;
   hyped::propulsion::Main propulsion;
   hyped::sensors::Main sensors;
   hyped::demo_state_machine::Main demo_state_machine;
 
   // Start the threads here
   brakes.start();
-  navigation.start();
   propulsion.start();
   sensors.start();
   demo_state_machine.start();
@@ -41,7 +39,6 @@ int main(int argc, char *argv[])
 
   // Join the threads here
   brakes.join();
-  navigation.join();
   propulsion.join();
   sensors.join();
   demo_state_machine.join();

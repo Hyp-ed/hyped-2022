@@ -35,6 +35,7 @@ class Ui {
   std::unordered_map<std::string, Handler> handlers_by_identifier_;
 
   data::Telemetry telemetry_data_;
+  data::Sensors sensors_data_;
 
   void addCommand(const Command &command);
   void addQuitCommand();
@@ -43,10 +44,12 @@ class Ui {
   void addLaunchCommand();
   void addBrakingCommand();
   void addShutDownCommand();
+  void addHighPowerOffCommand();
 
   void giveCalibrationCommand();
   void giveLaunchCommand();
   void giveBrakingCommand();
+  void giveHighPowerOffCommand(); 
   void giveShutDownCommand();
 };
 

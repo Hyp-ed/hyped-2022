@@ -14,6 +14,7 @@ Ui::Ui()
   addCalibrationCommand();
   addLaunchCommand();
   addBrakingCommand();
+  addHighPowerOffCommand();
   addShutDownCommand();
   addHelpCommand();
   addQuitCommand();
@@ -108,6 +109,18 @@ void Ui::giveBrakingCommand()
 void Ui::addBrakingCommand()
 {
   addCommand({"brake", "Allows pod to enter Pre-Braking", [this]() { giveBrakingCommand(); }});
+}
+
+void Ui::giveHighPowerOffCommand()
+{
+  sensors_data_                = data_.getSensorsData();
+  sensors_data_.high_power_off = true;
+  data_.setSensorsData(sensors_data_);
+}
+
+void Ui::addHighPowerOffCommand()
+{
+  addCommand({"hpoff", "Allows pod to enter Nominal Braking", [this]() { giveHighPowerOffCommand(); }});
 }
 
 void Ui::giveShutDownCommand()

@@ -7,7 +7,7 @@
 #include <propulsion/main.hpp>
 #include <sensors/main.hpp>
 #include <demo_state_machine/main.hpp>
-#include <demo_state_machine/UI.hpp>
+#include <demo_state_machine/ui.hpp>
 #include <telemetry/main.hpp>
 #include <utils/system.hpp>
 

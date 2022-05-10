@@ -33,17 +33,18 @@ struct Module {
 using nav_t            = float;
 using NavigationVector = utils::math::Vector<nav_t, 3>;
 struct Navigation : public Module {
-  static constexpr nav_t kMaximumVelocity   = 100;     // m/s
-  static constexpr nav_t kRunLength         = 1250.0;  // m
-  static constexpr nav_t kBrakingBuffer     = 20.0;    // m
-  static constexpr nav_t kPi                = 3.14159265359;
-  static constexpr nav_t kWheelCircumfrence = kPi * 0.1;  // m
-  static constexpr nav_t kStripeDistance    = 15;         // m
-  nav_t displacement;                                     // m
-  nav_t velocity;                                         // m/s
-  nav_t acceleration;                                     // m/s^2
-  nav_t emergency_braking_distance;                       // m
-  nav_t braking_distance = 750;                           // m
+  static constexpr nav_t kMaximumVelocity    = 100;     // m/s
+  static constexpr nav_t kRunLength          = 1250.0;  // m
+  static constexpr nav_t kBrakingBuffer      = 20.0;    // m
+  static constexpr nav_t kImuEncoderMaxError = 2.0;     // m
+  static constexpr nav_t kPi                 = 3.14159265359;
+  static constexpr nav_t kWheelCircumfrence  = kPi * 0.1;  // m
+  static constexpr nav_t kStripeDistance     = 15;         // m
+  nav_t displacement;                                      // m
+  nav_t velocity;                                          // m/s
+  nav_t acceleration;                                      // m/s^2
+  nav_t emergency_braking_distance;                        // m
+  nav_t braking_distance = 750;                            // m
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -69,11 +70,16 @@ struct AmbientPressureData : public SensorData {
   uint16_t ambient_pressure;  // mbar
 };
 
+struct BrakePressureData : public SensorData {
+  uint16_t brake_pressure;  // bar
+};
+
 struct Sensors : public Module {
-  static constexpr size_t kNumImus        = 4;
-  static constexpr size_t kNumEncoders    = 4;
-  static constexpr size_t kNumBrakeTemp   = 2;
-  static constexpr size_t kNumAmbientTemp = 4;
+  static constexpr size_t kNumImus          = 4;
+  static constexpr size_t kNumEncoders      = 4;
+  static constexpr size_t kNumBrakePressure = 2;
+  static constexpr size_t kNumBrakeTemp     = 2;
+  static constexpr size_t kNumAmbientTemp   = 4;
 
   TemperatureData temperature;
   AmbientPressureData ambient_pressure;
@@ -83,6 +89,8 @@ struct Sensors : public Module {
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
   std::array<CounterData, kNumEncoders> wheel_encoders;
+  std::array<BrakePressureData, kNumBrakePressure> brake_pressures;
+
   bool high_power_off = false;  // true if all SSRs are not in HP
 };
 

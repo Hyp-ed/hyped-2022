@@ -1,4 +1,4 @@
-#include <math.h>
+#include <cmath>
 
 #include <iostream>
 
@@ -141,9 +141,9 @@ class SpecialCases : public ::testing::Test {
   void SetUp()
   {
     for (size_t i = 0; i < 100; ++i) {
-      linear_data_point    = DataPoint<float>(i * pow(10, 6), i);
+      linear_data_point    = DataPoint<float>(i * std::pow(10, 6), i);
       linear_data[i]       = linear_data_point;
-      constant_data_point  = DataPoint<float>(i * pow(10, 6), kConstant);
+      constant_data_point  = DataPoint<float>(i * std::pow(10, 6), kConstant);
       function_constant[i] = constant_data_point;
     }
   }
@@ -198,13 +198,13 @@ class DifferentiatorProperty : public ::testing::Test {
   void SetUp()
   {
     for (size_t i = 0; i < 100; ++i) {
-      data_point             = DataPoint<float>(i * pow(10, 6), i);
+      data_point             = DataPoint<float>(i * std::pow(10, 6), i);
       linear_data[i]         = data_point;
-      data_point             = DataPoint<float>(i * pow(10, 6), i * i);
+      data_point             = DataPoint<float>(i * std::pow(10, 6), i * i);
       quadratic_data[i]      = data_point;
-      data_point             = DataPoint<float>(i * pow(10, 6), i * i + i);
+      data_point             = DataPoint<float>(i * std::pow(10, 6), i * i + i);
       function_data[i]       = data_point;
-      data_point             = DataPoint<float>(i * pow(10, 6), i * i - i);
+      data_point             = DataPoint<float>(i * std::pow(10, 6), i * i - i);
       difference_function[i] = data_point;
     }
   }
@@ -257,7 +257,7 @@ TEST(DifferentiatorChainRule, differentiatorChainRule)
 
   // Populates the array of datapoints with the output of functions
   for (size_t i = 0; i < 100; ++i) {
-    data_point        = DataPoint<float>(i * 1e6, pow(2 * i + 1, 2));
+    data_point        = DataPoint<float>(i * 1e6, std::pow(2 * i + 1, 2));
     inner_function[i] = data_point;
     data_point        = DataPoint<float>(i * 1e6, 3 * inner_function[i].value);
     outer_function[i] = data_point;

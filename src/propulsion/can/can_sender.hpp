@@ -6,7 +6,8 @@
 #include <utils/logger.hpp>
 
 namespace hyped::propulsion {
-class CanSender : public ICanSender {
+
+class CanSender : public utils::io::ICanProcessor, public ICanSender {
  public:
   CanSender();
 

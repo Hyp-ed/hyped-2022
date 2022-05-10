@@ -12,7 +12,7 @@
 
 namespace hyped::propulsion {
 
-class FakeCanReceiver : public utils::io::CanProccesor, public ICanReceiver {
+class FakeCanReceiver : public utils::io::ICanProccessor, public ICanReceiver {
  public:
   FakeCanReceiver();
 

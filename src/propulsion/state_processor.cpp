@@ -9,7 +9,6 @@ StateProcessor::StateProcessor()
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
       is_initialised_(false),
-      rpm_regulator_(),
       nucleo_manager_(std::make_unique<NucleoManager>())
 {
   if (sys_.config_.use_fake_controller) {
@@ -94,7 +93,7 @@ void StateProcessor::accelerate()
     previous_acceleration_time_ = now;
     const data::nav_t velocity  = data_.getNavigationData().velocity;
     const uint32_t act_rpm      = calculateAverageRpm();
-    const uint32_t rpm          = rpm_regulator_.calculateRpm(velocity, act_rpm);
+    const uint32_t rpm          = RpmRegulator::calculateRpm(velocity, act_rpm);
     log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);

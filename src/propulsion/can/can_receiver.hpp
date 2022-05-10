@@ -14,7 +14,7 @@
 
 namespace hyped::propulsion {
 
-class CanReceiver : public utils::io::ICanProccesor, public ICanReceiver {
+class CanReceiver : public utils::io::ICanProcessor, public ICanReceiver {
  public:
   /**
    * @brief Initialise the CanReceiver with the id and the controller as an

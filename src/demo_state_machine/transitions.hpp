@@ -5,14 +5,11 @@
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-namespace demo_state_machine {
+namespace hyped::demo_state_machine {
 
 using hyped::data::Brakes;
 using hyped::data::FullBatteryData;
 using hyped::data::Motors;
-using hyped::data::Navigation;
 using hyped::data::Sensors;
 using hyped::data::Telemetry;
 using utils::Logger;
@@ -82,25 +79,9 @@ bool checkShutdownCommand(const data::Telemetry &telemetry_data);
  */
 bool checkBrakingCommand(const data::Telemetry &telemetry_data);
 
-//--------------------------------------------------------------------------------------
-// Navigation Data Events
-//--------------------------------------------------------------------------------------
-
 /*
- * @brief   Returns true iff the pod is close enough to the end of the track.
+ * @brief   Returns true iff the stop command has been received. 
  */
-bool checkEnteredBrakingZone(Logger &log, const data::Navigation &nav_data);
+bool checkStopCommand(Logger &log, const data::Telemetry &telemetry_data);
 
-/*
- * @brief   Returns true iff the pod has reached the maximum velocity.
- */
-bool checkReachedMaxVelocity(Logger &log, const data::Navigation &nav_data);
-
-/*
- * @brief   Returns true iff the pod has reached zero velocity.
- */
-bool checkPodStopped(Logger &log, const data::Navigation &nav_data);
-
-}  // namespace demo_state_machine
-
-}  // namespace hyped
+}  // namespace hyped::demo_state_machine

@@ -2,9 +2,7 @@
 
 #include <chrono>
 
-namespace hyped {
-
-namespace demo_state_machine {
+namespace hyped::demo_state_machine {
 
 //--------------------------------------------------------------------------------------
 //  General State
@@ -17,7 +15,6 @@ State::State() : data_(data::Data::getInstance())
 void State::updateModuleData()
 {
   brakes_data_    = data_.getBrakesData();
-  nav_data_       = data_.getNavigationData();
   batteries_data_ = data_.getBatteriesData();
   telemetry_data_ = data_.getTelemetryData();
   sensors_data_   = data_.getSensorsData();
@@ -223,7 +220,7 @@ State *NominalBraking::checkTransition(Logger &log)
   bool emergency = checkEmergency(log, brakes_data_, batteries_data_, sensors_data_, motors_data_);
   if (emergency) { return FailureBraking::getInstance(); }
 
-  bool stopped = checkPodStopped(log, nav_data_);
+  bool stopped = checkStopCommand(log, telemetry_data_);
   if (stopped) { return Finished::getInstance(); }
   return nullptr;
 }
@@ -273,10 +270,10 @@ char FailureBraking::string_representation_[] = "FailureBraking";
 
 State *FailureBraking::checkTransition(Logger &log)
 {
-  // We only need to update navigation data.
-  nav_data_ = data_.getNavigationData();
+  // We only need to update telemetry data.
+  telemetry_data_ = data_.getTelemetryData();
 
-  bool stopped = checkPodStopped(log, nav_data_);
+  bool stopped = checkStopCommand(log, telemetry_data_);
   if (stopped) { return FailureStopped::getInstance(); }
   return nullptr;
 }
@@ -311,5 +308,4 @@ State *Off::checkTransition(Logger &log)
   return nullptr;
 }
 
-}  // namespace demo_state_machine
-}  // namespace hyped
+}  // namespace hyped::demo_state_machine

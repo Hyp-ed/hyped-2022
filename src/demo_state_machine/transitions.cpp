@@ -102,31 +102,9 @@ bool checkBrakingCommand(const data::Telemetry &telemetry_data)
   return true;
 }
 
-//--------------------------------------------------------------------------------------
-// Navigation Data Events
-//--------------------------------------------------------------------------------------
-
-bool checkEnteredBrakingZone(utils::Logger &log, const data::Navigation &nav_data)
+bool checkStopCommand(utils::Logger &log, const data::Telemetry &telemetry_data)
 {
-  data::nav_t remaining_distance = Navigation::kRunLength - nav_data.displacement;
-  data::nav_t required_distance  = nav_data.braking_distance + Navigation::kBrakingBuffer;
-  if (remaining_distance > required_distance) return false;
-
-  log.info("entered braking zone");
-  return true;
-}
-
-bool checkReachedMaxVelocity(utils::Logger &log, const data::Navigation &nav_data)
-{
-  if (nav_data.velocity < Navigation::kMaximumVelocity) return false;
-
-  log.info("reached maximum velocity");
-  return true;
-}
-
-bool checkPodStopped(utils::Logger &log, const data::Navigation &nav_data)
-{
-  if (nav_data.velocity > 0) return false;
+  if (!telemetry_data.stop_command) return false;
 
   log.info("pod has stopped");
   return true;

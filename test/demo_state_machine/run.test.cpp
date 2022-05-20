@@ -24,7 +24,6 @@ class DemoRunTest : public Test {
   data::Data &data_ = data::Data::getInstance();
 
   data::Brakes brakes_data_;
-  data::Navigation nav_data_;
   data::FullBatteryData batteries_data_;
   data::Telemetry telemetry_data_;
   data::Sensors sensors_data_;
@@ -34,7 +33,6 @@ class DemoRunTest : public Test {
   void randomiseInternally()
   {
     Randomiser::randomiseBrakes(brakes_data_);
-    Randomiser::randomiseNavigation(nav_data_);
     Randomiser::randomiseTelemetry(telemetry_data_);
     Randomiser::randomiseMotors(motors_data_);
     Randomiser::randomiseSensorsData(sensors_data_);
@@ -57,7 +55,6 @@ class DemoRunTest : public Test {
   void writeData()
   {
     data_.setBrakesData(brakes_data_);
-    data_.setNavigationData(nav_data_);
     data_.setTelemetryData(telemetry_data_);
     data_.setMotorData(motors_data_);
     data_.setSensorsData(sensors_data_);
@@ -71,7 +68,6 @@ class DemoRunTest : public Test {
   {
     brakes_data_    = data_.getBrakesData();
     stm_data_       = data_.getStateMachineData();
-    nav_data_       = data_.getNavigationData();
     telemetry_data_ = data_.getTelemetryData();
     motors_data_    = data_.getMotorData();
     sensors_data_   = data_.getSensorsData();
@@ -105,7 +101,6 @@ class DemoRunTest : public Test {
 
     // Prevent Idle -> Calibrating
     brakes_data_.module_status        = data::ModuleStatus::kStart;
-    nav_data_.module_status           = data::ModuleStatus::kStart;
     telemetry_data_.module_status     = data::ModuleStatus::kStart;
     motors_data_.module_status        = data::ModuleStatus::kStart;
     sensors_data_.module_status       = data::ModuleStatus::kStart;
@@ -149,7 +144,6 @@ class DemoRunTest : public Test {
     // Enforce Idle -> PreCalibrating
     telemetry_data_.calibrate_command = false;
     brakes_data_.module_status        = data::ModuleStatus::kInit;
-    nav_data_.module_status           = data::ModuleStatus::kInit;
     telemetry_data_.module_status     = data::ModuleStatus::kInit;
     motors_data_.module_status        = data::ModuleStatus::kInit;
     sensors_data_.module_status       = data::ModuleStatus::kInit;
@@ -238,7 +232,6 @@ class DemoRunTest : public Test {
     // Enforce Idle -> PreCalibrating
     telemetry_data_.calibrate_command = true;
     brakes_data_.module_status        = data::ModuleStatus::kInit;
-    nav_data_.module_status           = data::ModuleStatus::kInit;
     telemetry_data_.module_status     = data::ModuleStatus::kInit;
     motors_data_.module_status        = data::ModuleStatus::kInit;
     sensors_data_.module_status       = data::ModuleStatus::kInit;
@@ -328,7 +321,6 @@ class DemoRunTest : public Test {
 
     // Enforce Calibrating -> PreReady
     brakes_data_.module_status    = data::ModuleStatus::kReady;
-    nav_data_.module_status       = data::ModuleStatus::kReady;
     telemetry_data_.module_status = data::ModuleStatus::kReady;
     motors_data_.module_status    = data::ModuleStatus::kReady;
     sensors_data_.module_status   = data::ModuleStatus::kReady;
@@ -415,7 +407,6 @@ class DemoRunTest : public Test {
 
     // Enforce PreReady-> Ready
     brakes_data_.module_status    = data::ModuleStatus::kReady;
-    nav_data_.module_status       = data::ModuleStatus::kReady;
     telemetry_data_.module_status = data::ModuleStatus::kReady;
     motors_data_.module_status    = data::ModuleStatus::kReady;
     sensors_data_.module_status   = data::ModuleStatus::kReady;
@@ -504,7 +495,6 @@ class DemoRunTest : public Test {
 
     // Prevent Ready -> FailureStopped
     brakes_data_.module_status             = data::ModuleStatus::kReady;
-    nav_data_.module_status                = data::ModuleStatus::kReady;
     telemetry_data_.module_status          = data::ModuleStatus::kReady;
     motors_data_.module_status             = data::ModuleStatus::kReady;
     sensors_data_.module_status            = data::ModuleStatus::kReady;
@@ -597,7 +587,6 @@ class DemoRunTest : public Test {
 
     // Prevent Accelerating -> FailureBraking
     brakes_data_.module_status    = data::ModuleStatus::kReady;
-    nav_data_.module_status       = data::ModuleStatus::kReady;
     telemetry_data_.module_status = data::ModuleStatus::kReady;
     motors_data_.module_status    = data::ModuleStatus::kReady;
     sensors_data_.module_status   = data::ModuleStatus::kReady;
@@ -605,17 +594,19 @@ class DemoRunTest : public Test {
 
     // Enforcing Accelerating -> PreBraking
     telemetry_data_.emergency_stop_command = true;
-    nav_data_.velocity                     = 69;
 
     // Prevent PreBraking -> NominalBraking
     sensors_data_.high_power_off = false;
+
+    // Prevent PreBraking -> Finished
+    telemetry_data_.stop_command = false;
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
@@ -649,7 +640,6 @@ class DemoRunTest : public Test {
 
     // Prevent Accelerating -> FailureBraking
     brakes_data_.module_status             = data::ModuleStatus::kReady;
-    nav_data_.module_status                = data::ModuleStatus::kReady;
     telemetry_data_.module_status          = data::ModuleStatus::kReady;
     motors_data_.module_status             = data::ModuleStatus::kReady;
     sensors_data_.module_status            = data::ModuleStatus::kReady;
@@ -700,16 +690,16 @@ class DemoRunTest : public Test {
     // Enforce Accelerating -> FailurePreBraking
     forceEmergency();
 
-    // Prevent FailurePreBraking -> FailureStopped
-    nav_data_.velocity = 100;
-
     // Preventing Accelerating -> PreBraking
     telemetry_data_.emergency_stop_command = false;
+
+    // Enforce Accelerating -> FailurePreBraking
+    telemetry_data_.stop_command = false;
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -742,7 +732,6 @@ class DemoRunTest : public Test {
 
     // Prevent Cruising -> FailureBraking
     brakes_data_.module_status    = data::ModuleStatus::kReady;
-    nav_data_.module_status       = data::ModuleStatus::kReady;
     telemetry_data_.module_status = data::ModuleStatus::kReady;
     motors_data_.module_status    = data::ModuleStatus::kReady;
     sensors_data_.module_status   = data::ModuleStatus::kReady;
@@ -755,14 +744,14 @@ class DemoRunTest : public Test {
     sensors_data_.high_power_off = false;
 
     // Prevent PreBraking -> Finished
-    nav_data_.velocity = 100;
+    telemetry_data_.stop_command = false;
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
     const bool has_received_braking_command
       = demo_state_machine::checkBrakingCommand(telemetry_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
@@ -797,16 +786,13 @@ class DemoRunTest : public Test {
     // Enforce Cruising -> FailurePreBraking
     forceEmergency();
 
-    // Prevent FailurePreBraking -> FailureStopped
-    nav_data_.velocity = 100;
-
     // Preventing Calibrating -> PreBraking
-    telemetry_data_.emergency_stop_command = false;
+    telemetry_data_.stop_command = false;
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -840,13 +826,10 @@ class DemoRunTest : public Test {
     // Enforce PreBraking -> FailurePreBraking
     forceEmergency();
 
-    // Prevent FailurePreBraking -> FailureStopped
-    nav_data_.velocity = 100;
-
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(true, has_emergency);
@@ -879,7 +862,6 @@ class DemoRunTest : public Test {
 
     // Prevent PreBraking -> FailureBraking
     brakes_data_.module_status             = data::ModuleStatus::kReady;
-    nav_data_.module_status                = data::ModuleStatus::kReady;
     telemetry_data_.module_status          = data::ModuleStatus::kReady;
     motors_data_.module_status             = data::ModuleStatus::kReady;
     sensors_data_.module_status            = data::ModuleStatus::kReady;
@@ -887,23 +869,15 @@ class DemoRunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce PreBraking -> NominalBraking
-    nav_data_.braking_distance   = 1000;
-    nav_data_.displacement       = data::Navigation::kRunLength - nav_data_.braking_distance;
     sensors_data_.high_power_off = true;
-
-    // Prevent NominalBraking -> Finished
-    nav_data_.velocity = 100;
 
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
-    const bool has_entered_braking_zone
-      = demo_state_machine::checkEnteredBrakingZone(log_, nav_data_);
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_emergency);
-    ASSERT_EQ(true, has_entered_braking_zone);
     ASSERT_EQ(false, has_stopped);
     ASSERT_EQ(true, has_high_power_off);
 
@@ -933,7 +907,6 @@ class DemoRunTest : public Test {
 
     // Prevent NominalBraking -> FailureBraking
     brakes_data_.module_status             = data::ModuleStatus::kReady;
-    nav_data_.module_status                = data::ModuleStatus::kReady;
     telemetry_data_.module_status          = data::ModuleStatus::kReady;
     motors_data_.module_status             = data::ModuleStatus::kReady;
     sensors_data_.module_status            = data::ModuleStatus::kReady;
@@ -941,7 +914,7 @@ class DemoRunTest : public Test {
     telemetry_data_.emergency_stop_command = false;
 
     // Enforce NominalBraking -> Finished
-    nav_data_.velocity = 0;
+    telemetry_data_.stop_command = true;
 
     // Prevent Finished -> Off
     telemetry_data_.shutdown_command = false;
@@ -949,7 +922,7 @@ class DemoRunTest : public Test {
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
-    const bool has_stopped          = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped          = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(false, has_emergency);
@@ -983,13 +956,10 @@ class DemoRunTest : public Test {
     // Enforce NominalBraking -> FailureBraking
     forceEmergency();
 
-    // Prevent FailureBraking -> FailureStopped
-    nav_data_.velocity = 100;
-
     // Verify transition conditions are as intended
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
-    const bool has_stopped = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped = demo_state_machine::checkStopCommand(log_, telemetry_data_);
 
     ASSERT_EQ(true, has_emergency);
     ASSERT_EQ(false, has_stopped);
@@ -1049,14 +1019,11 @@ class DemoRunTest : public Test {
     // Randomise data
     randomiseInternally();
 
-    // Prevent FailureBraking -> FailureStopped
-    nav_data_.velocity = 100;
-
     // Enforce FailurePreBraking -> FailureBraking
     sensors_data_.high_power_off = true;
 
     // Verify transition conditions are as intended
-    const bool has_stopped        = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped        = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_high_power_off = demo_state_machine::checkHighPowerOff(sensors_data_);
 
     ASSERT_EQ(false, has_stopped);
@@ -1087,13 +1054,13 @@ class DemoRunTest : public Test {
     randomiseInternally();
 
     // Enforce FailureBraking -> FailureStopped
-    nav_data_.velocity = 0;
+    telemetry_data_.stop_command = true;
 
     // Prevent FailureStopped -> Off
     telemetry_data_.shutdown_command = false;
 
     // Verify transition conditions are as intended
-    const bool has_stopped          = demo_state_machine::checkPodStopped(log_, nav_data_);
+    const bool has_stopped          = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const bool has_shutdown_command = demo_state_machine::checkShutdownCommand(telemetry_data_);
 
     ASSERT_EQ(true, has_stopped);

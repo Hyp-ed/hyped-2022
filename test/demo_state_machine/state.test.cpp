@@ -515,7 +515,7 @@ TEST_F(DemoAcceleratingTest, demoHandlesAcceleratingTimePassed)
     // Asserting sufficient time has passed
     utils::concurrent::Thread::sleep(120);  // 0.12s
 
-    // reading and writing to the CDS directly to update navigation data
+    // reading and writing to the CDS directly to update telemetry data
     auto &data_ = data::Data::getInstance();
     data_.setTelemetryData(telemetry_data_);
 
@@ -740,8 +740,13 @@ TEST_F(DemoNominalBrakingTest, demoHandlesStopped)
     const bool has_emergency = demo_state_machine::checkEmergency(
       log_, brakes_data_, batteries_data_, sensors_data_, motors_data_);
 
+    // asserting nominal braking -> finished
+    auto &data_                  = data::Data::getInstance();
+    telemetry_data_.stop_command = true;
+    data_.setTelemetryData(telemetry_data_);
+
     if (!has_emergency) {
-      const bool stopped   = demo_state_machine::checkPodStopped(log_, nav_data_);
+      const bool stopped   = demo_state_machine::checkStopCommand(log_, telemetry_data_);
       const auto new_state = state->checkTransition(log_);
 
       if (stopped) {
@@ -858,7 +863,12 @@ TEST_F(DemoFailureBrakingTest, demoHandlesStopped)
     state->enter(log_);
     randomiseData();
 
-    const bool stopped   = demo_state_machine::checkPodStopped(log_, nav_data_);
+    // asserting nominal braking -> finished
+    auto &data_                  = data::Data::getInstance();
+    telemetry_data_.stop_command = true;
+    data_.setTelemetryData(telemetry_data_);
+
+    const bool stopped   = demo_state_machine::checkStopCommand(log_, telemetry_data_);
     const auto new_state = state->checkTransition(log_);
 
     if (stopped) {

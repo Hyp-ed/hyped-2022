@@ -5,9 +5,7 @@
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped {
-
-namespace state_machine {
+namespace hyped::state_machine {
 
 using hyped::data::Brakes;
 using hyped::data::FullBatteryData;
@@ -100,6 +98,6 @@ bool checkReachedMaxVelocity(Logger &log, const data::Navigation &nav_data);
  * @brief   Returns true iff the pod has reached zero velocity.
  */
 bool checkPodStopped(Logger &log, const data::Navigation &nav_data);
-}  // namespace state_machine
 
-}  // namespace hyped
+}  // namespace hyped::state_machine
+

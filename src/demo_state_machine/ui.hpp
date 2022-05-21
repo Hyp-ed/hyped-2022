@@ -45,12 +45,14 @@ class Ui {
   void addBrakingCommand();
   void addShutDownCommand();
   void addHighPowerOffCommand();
+  void addStopCommand(); 
 
   void giveCalibrationCommand();
   void giveLaunchCommand();
   void giveBrakingCommand();
   void giveHighPowerOffCommand(); 
   void giveShutDownCommand();
+  void giveStopCommand();
 };
 
 }  // namespace hyped::demo_state_machine

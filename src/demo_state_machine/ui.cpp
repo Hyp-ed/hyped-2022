@@ -16,6 +16,7 @@ Ui::Ui()
   addBrakingCommand();
   addHighPowerOffCommand();
   addShutDownCommand();
+  addStopCommand(); 
   addHelpCommand();
   addQuitCommand();
 }
@@ -43,8 +44,9 @@ void Ui::printAvailableCommands()
 void Ui::readAndHandleCommand()
 {
   const auto current_state = data_.getStateMachineData().current_state;
-  if (current_state == data::State::kPreCalibrating || current_state == data::State::kReady
-      || current_state == data::State::kAccelerating || current_state == data::State::kCruising
+  if (   current_state == data::State::kPreCalibrating || current_state == data::State::kReady
+      || current_state == data::State::kAccelerating   || current_state == data::State::kCruising 
+      || current_state == data::State::kNominalBraking 
       || current_state == data::State::kFinished) {
     std::cout << "> ";
     std::string command;
@@ -121,6 +123,18 @@ void Ui::giveHighPowerOffCommand()
 void Ui::addHighPowerOffCommand()
 {
   addCommand({"hpoff", "Allows pod to enter Nominal Braking", [this]() { giveHighPowerOffCommand(); }});
+}
+
+void Ui::giveStopCommand()
+{
+  telemetry_data_                  = data_.getTelemetryData();
+  telemetry_data_.stop_command     = true;
+  data_.setTelemetryData(telemetry_data_);
+}
+
+void Ui::addStopCommand()
+{
+  addCommand({"stop", "Allows pod to enter Finished", [this]() { giveStopCommand(); }});
 }
 
 void Ui::giveShutDownCommand()

@@ -8,15 +8,17 @@ namespace hyped::utils::math {
 class Regression {
  public:
   Regression();
-  void GetCoeffs(std::vector<double> x_data, std::vector<double> y_data);
 
-  struct Coefficients {
-    double beta0;
-    double beta1;
-  };
-  Coefficients coefficients;
+  /**
+   * @brief calculates regressed coefficients using basic x-y linear regression.
+   * only works for straight lines!
+   *
+   * @param x_data vector of x-data points
+   * @param y_data vector of y-data points
+   */
+  void CaulculateCoefficients(std::vector<double> x_data, std::vector<double> y_data);
 
- private:
+  // calculated coefficients from regression function
   std::vector<double> coefficients_;
 };
 }  // namespace hyped::utils::math

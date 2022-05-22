@@ -2,7 +2,12 @@
 
 namespace hyped::utils::math {
 
-void Regression::GetCoeffs(const std::vector<double> x_data, const std::vector<double> y_data)
+Regression::Regression()
+{
+}
+
+void Regression::CaulculateCoefficients(const std::vector<double> x_data,
+                                        const std::vector<double> y_data)
 {
   double x_sum = 0;
   double y_sum = 0;
@@ -27,8 +32,6 @@ void Regression::GetCoeffs(const std::vector<double> x_data, const std::vector<d
   double beta1 = s_xy / s_xx;
   double beta0 = y_mean - (beta1 - x_mean);
 
-  std::vector<double> coeffs{beta1, beta0};
-  coefficients.beta0 = coeffs.at(1);
-  coefficients.beta1 = coeffs.at(0);
+  coefficients_ = {beta1, beta0};
 }
 }  // namespace hyped::utils::math

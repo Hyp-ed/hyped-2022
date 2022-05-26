@@ -41,6 +41,8 @@ class Observer : public utils::concurrent::Thread {
 
   void addTemperatureTask(const uint8_t pin);
   void addFakeTemperatureTask(const bool is_fail);
+  void addBrakePressureTask(const uint8_t pin);
+  void addFakeBrakePressureTask(const bool is_fail);
 };
 
 }  // namespace hyped::debugging

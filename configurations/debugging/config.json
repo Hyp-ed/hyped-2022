@@ -1,7 +1,8 @@
 {
   "sensors": {
     "imu_pins": [],
-    "temperature_pins": []
+    "temperature_pins": [],
+    "brake_pressure_pins": []
   },
   "debugger": {
     "output_path": "readings.json",
@@ -27,6 +28,8 @@
     "use_fake_brakes": false,
     "use_fake_controller": false,
     "use_fake_high_power": false,
+    "use_fake_brake_pressure": false,
+    "use_fake_brake_pressure_fail": false,
     "axis": 0
   },
   "fake_trajectory": {

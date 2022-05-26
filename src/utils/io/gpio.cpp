@@ -20,7 +20,7 @@ namespace hyped {
 namespace utils {
 namespace io {
 
-#define GPIOFS 0  // used to swtich to file system method for set(), clear(), and read()
+#define GPIOFS 0  // used to switch to file system method for set(), clear(), and read()
 
 // workaround to avoid conflict with GPIO::read()
 static uint8_t readHelper(int file)

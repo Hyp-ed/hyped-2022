@@ -155,8 +155,6 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
       observer->addBrakePressureTask(pin);
     }
   }
-
-
   return observer;
 }
 
@@ -304,7 +302,6 @@ void Observer::addFakeTemperatureTask(const bool is_fail)
   tasks_.push_back(temperature_task);
 }
 
-
 void Observer::addBrakePressureTask(const uint8_t pin)
 {
   auto brake_pressure = std::make_shared<sensors::BrakePressure>(pin);
@@ -313,7 +310,7 @@ void Observer::addBrakePressureTask(const uint8_t pin)
   Task brake_pressure_task;
   brake_pressure_task.name    = name.str();
   brake_pressure_task.handler = [brake_pressure](JsonWriter &json_writer) {
-     brake_pressure->run();
+    brake_pressure->run();
     json_writer.Key("value");
     json_writer.Uint(brake_pressure->getData());
   };

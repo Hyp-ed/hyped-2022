@@ -17,11 +17,12 @@ class System {
   struct Config {
     std::string client_config_path;
     std::string imu_config_path;
-    std::string keyence_config_path;
     std::string temperature_config_path;
+    std::string pressure_config_path;
     std::string fake_trajectory_config_path;
     std::string bms_config_path;
     std::string brakes_config_path;
+    std::string debugger_config_path;
     Logger::Level log_level;
     Logger::Level log_level_brakes;
     Logger::Level log_level_navigation;
@@ -29,14 +30,18 @@ class System {
     Logger::Level log_level_sensors;
     Logger::Level log_level_state_machine;
     Logger::Level log_level_telemetry;
+    Logger::Level log_level_debugger;
     bool use_fake_trajectory;
     bool use_fake_batteries;
     bool use_fake_batteries_fail;
     bool use_fake_temperature;
     bool use_fake_temperature_fail;
+    bool use_fake_ambient_pressure;
+    bool use_fake_ambient_pressure_fail;
+    bool use_fake_brake_pressure;
+    bool use_fake_brake_pressure_fail;
     bool use_fake_brakes;
     bool use_fake_controller;
-    bool use_fake_high_power;
     std::uint8_t axis;
     std::uint64_t run_id;
   };

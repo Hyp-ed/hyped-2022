@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 #include <thread>
 
@@ -24,6 +25,8 @@ class Thread {
    */
   void join();
 
+  void stop();
+
   /**
    * @brief      Thread entry point
    */
@@ -41,14 +44,8 @@ class Thread {
   std::thread *thread_;
 
  protected:
+  std::atomic<bool> is_running_ = true;
   Logger log_;
-};
-
-class BusyThread : public Thread {
- public:
-  ~BusyThread();
-  void run() override;
-  bool running_ = true;
 };
 
 }  // namespace concurrent

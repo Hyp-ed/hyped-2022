@@ -89,7 +89,10 @@ void Can::start()
 
 int Can::send(const can::Frame &frame)
 {
-  if (socket_ < 0) return 0;  // early exit if no can device present
+  if (socket_ < 0) {
+    log_.error("tried to send message but no CAN device was found");
+    return 0;
+  }
 
   can_frame can;
   log_.debug("trying to send something");
@@ -102,7 +105,7 @@ int Can::send(const can::Frame &frame)
   can.can_id = frame.id;
   can.can_id |= frame.extended ? can::Frame::kExtendedMask : 0;  // add extended id flag
   can.can_dlc = frame.len;
-  for (int i = 0; i < frame.len; i++) {
+  for (size_t i = 0; i < frame.len; ++i) {
     can.data[i] = frame.data[i];
   }
 
@@ -120,12 +123,14 @@ int Can::send(const can::Frame &frame)
 
 void Can::run()
 {
-  /* these settings are static and can be held out of the hot path */
-  can::Frame data;
-
   log_.info("starting continuous reading");
   while (running_ && socket_ >= 0) {
-    receive(&data);
+    can::Frame data;
+    const auto success = receive(&data);
+    if (!success) {
+      log_.error("failed to receive data; trying again");
+      continue;
+    }
     processNewData(&data);
   }
   log_.info("stopped continuous reading");
@@ -148,7 +153,7 @@ int Can::receive(can::Frame *frame)
   frame->id       = raw_data.can_id & ~can::Frame::kExtendedMask;
   frame->extended = raw_data.can_id & can::Frame::kExtendedMask;
   frame->len      = raw_data.can_dlc;
-  for (int i = 0; i < frame->len; i++) {
+  for (size_t i = 0; i < frame->len; ++i) {
     frame->data[i] = raw_data.data[i];
   }
   log_.debug("received %u %u, extended %d", raw_data.can_id, frame->id, frame->extended);
@@ -157,25 +162,19 @@ int Can::receive(can::Frame *frame)
 
 void Can::processNewData(can::Frame *message)
 {
-  CanProccesor *owner = 0;
-
-  for (CanProccesor *processor : processors_) {
-    if (processor->hasId(message->id, message->extended)) {
-      owner = processor;
-      break;
-    }
-  }
-
-  if (owner) {
-    owner->processNewData(*message);
-  } else {
-    log_.error("did not find owner of received CAN message with id %d", message->id);
+  for (auto &processor : processors_) {
+    if (processor->hasId(message->id, message->extended)) { processor->processNewData(*message); }
   }
 }
 
-void Can::registerProcessor(CanProccesor *processor)
+void Can::registerProcessor(ICanProcessor *processor)
 {
-  processors_.push_back(processor);
+  if (!processor) {
+    log_.error("tried to register a nullptr as a processor");
+    utils::System::getSystem().stop();
+    return;
+  }
+  processors_.push_back(std::move(processor));
 }
 
 }  // namespace io

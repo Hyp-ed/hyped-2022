@@ -177,10 +177,9 @@ void Controller::throwCriticalFailure()
 
 void Controller::requestStateTransition(utils::io::can::Frame &message, ControllerState state)
 {
-  uint8_t state_count;
   // Wait for max of 3 seconds, checking if the state has changed every second
   // If it hasn't changed by the end then throw critical failure.
-  for (state_count = 0; state_count < 3; state_count++) {
+  for (uint8_t state_count = 0; state_count < 3; ++state_count) {
     sender_.sendMessage(message);
     utils::concurrent::Thread::sleep(1000);
     checkState();

@@ -1,10 +1,11 @@
 #pragma once
 
-#include "interface.hpp"
+#include "sensor.hpp"
 
 #include <cstdint>
 #include <vector>
 
+#include <data/data.hpp>
 #include <utils/concurrent/thread.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
@@ -12,6 +13,20 @@
 #include <utils/utils.hpp>
 
 namespace hyped::sensors {
+
+class IBms : public ISensor {
+ public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IBms() {}
+
+  /**
+   * @brief Get Battery data
+   * @param battery - output pointer to be filled by this sensor
+   */
+  virtual data::BatteryData getData() = 0;
+};
 
 namespace bms {
 // how often shall request messages be sent
@@ -50,7 +65,7 @@ struct Data {
 
 }  // namespace bms
 
-class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, public IBms {
+class Bms : public utils::concurrent::Thread, public utils::io::ICanProcessor, public IBms {
   friend utils::io::Can;
 
  public:
@@ -106,7 +121,7 @@ class Bms : public utils::concurrent::Thread, public utils::io::CanProccesor, pu
   NO_COPY_ASSIGN(Bms)
 };
 
-class HighPowerBms : public utils::io::CanProccesor, public IBms {
+class HighPowerBms : public utils::io::ICanProcessor, public IBms {
   friend utils::io::Can;
 
  public:

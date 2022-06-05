@@ -1,7 +1,6 @@
 #pragma once
 
 #include "kalman_filter.hpp"
-#include "stripe_handler.hpp"
 
 #include <math.h>
 
@@ -27,6 +26,8 @@ class Navigation {
   using NavigationArray          = std::array<data::nav_t, data::Sensors::kNumImus>;
   using NavigationArrayOneFaulty = std::array<data::nav_t, data::Sensors::kNumImus - 1>;
   using FilterArray              = std::array<KalmanFilter, data::Sensors::kNumImus>;
+  using QuartileBounds           = std::array<data::nav_t, 3>;
+  using EncoderArray             = std::array<uint32_t, data::Sensors::kNumEncoders>;
 
   /**
    * @brief Construct a new Navigation object
@@ -35,6 +36,12 @@ class Navigation {
    * @param axis Axis used of acceleration measurements
    */
   explicit Navigation(const std::uint32_t axis = 0);
+  /**
+   * @brief Get the current wheel encoder displacement
+   *
+   * @return encoder_displacement_ the current wheel encoder displacement
+   */
+  data::nav_t getEncoderDisplacement() const;
   /**
    * @brief Get the current state of the navigation module
    *
@@ -47,19 +54,19 @@ class Navigation {
    * @return nav_t Returns the forward component of acceleration vector (negative when
    *                        decelerating) [m/s^2]
    */
-  data::nav_t getAcceleration() const;
+  data::nav_t getImuAcceleration() const;
   /**
    * @brief Get the measured velocity [m/s]
    *
    * @return nav_t Returns the forward component of velocity vector [m/s]
    */
-  data::nav_t getVelocity() const;
+  data::nav_t getImuVelocity() const;
   /**
    * @brief Get the measured displacement [m]
    *
    * @return nav_t Returns the forward component of displacement vector [m]
    */
-  data::nav_t getDisplacement() const;
+  data::nav_t getImuDisplacement() const;
   /**
    * @brief Get the emergency braking distance [m]
    *
@@ -83,12 +90,33 @@ class Navigation {
    */
   void calibrateGravity();
   /**
-   * @brief Apply Tukey's fences to an array of readings
+   * @brief Calculate quartiles for an array of readings. Updates quartile_bounds array
    *
    * @param pointer to array of original acceleration readings
-   * @param threshold value
+   *
+   * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
    */
-  void tukeyFences(NavigationArray &data_array, const data::nav_t threshold);
+  QuartileBounds calculateImuQuartiles(const NavigationArray &data_array);
+  /**
+   * @brief Calculate quartiles for an array of readings. Updates quartile_bounds array
+   *
+   * @param pointer to array of original acceleration readings
+   *
+   * @return quartiles of reliable IMU readings of form (q1, q2(median), q3)
+   */
+  QuartileBounds calculateEncoderQuartiles(const EncoderArray &data_array);
+  /**
+   * @brief Apply scaled interquartile range bounds on an array of readings
+   *
+   * @param pointer to array of original acceleration readings
+   */
+  void imuOutlierDetection(NavigationArray &data_array);
+  /**
+   * @brief Apply scaled interquartile range bounds on an array of readings
+   *
+   * @param pointer to array of original encoder readings
+   */
+  void wheelEncoderOutlierDetection(EncoderArray &data_array);
   /**
    * @brief Update central data structure
    */
@@ -113,14 +141,6 @@ class Navigation {
    */
   void setHasInit();
   /**
-   * @brief Disable keyence readings to have any impact on the run.
-   */
-  void disableKeyenceUsage();
-  /**
-   * @brief Set the keyence used to fake, so the system knows to use central timestamps.
-   */
-  void setKeyenceFake();
-  /**
    * @brief Enable writing to file nav_data.csv
    */
   void logWrite();
@@ -136,8 +156,8 @@ class Navigation {
 
   static constexpr int kPrintFreq                     = 1;
   static constexpr data::nav_t kEmergencyDeceleration = 24;
-  static constexpr data::nav_t kTukeyThreshold        = 1;  // 0.75
-  static constexpr data::nav_t kTukeyIQRBound         = 3;
+  static constexpr data::nav_t kInterQuartileScaler   = 1;
+  static constexpr data::nav_t kMaxInterQuartileRange = 3;
 
   static constexpr data::nav_t kPodMass              = 250;   // kg
   static constexpr data::nav_t kMomentOfInertiaWheel = 0.04;  // kgm²
@@ -158,7 +178,7 @@ class Navigation {
   // acceptable variances for calibration measurements: {x, y, z}
   std::array<data::nav_t, 3> calibration_limits_;
   // Calibration variances in each dimension, necessary for vibration checking
-  std::array<data::nav_t, 3> calibration_variance_;
+  std::array<data::nav_t, data::Sensors::kNumImus> calibration_variance_;
 
   // Array of previous measurements
   std::array<ImuAxisData, kPreviousMeasurements> previous_measurements_;
@@ -180,8 +200,16 @@ class Navigation {
   // Counter of how many IMUs have failed
   uint32_t num_outlier_imus_;
 
+  // Counter for consecutive outlier output from each wheel encoder
+  std::array<uint32_t, data::Sensors::kNumEncoders> encoder_outlier_counter_;
+  // Array of booleans to signify which encoders are reliable or faulty
+  std::array<bool, data::Sensors::kNumEncoders> is_encoder_reliable_;
+  // Counter of how many encoders have failed
+  uint32_t num_outlier_encoders_;
+
   // To store estimated values
   ImuDataPointArray sensor_readings_;
+  data::DataPoint<data::nav_t> encoder_displacement_;
   data::DataPoint<data::nav_t> acceleration_;
   data::DataPoint<data::nav_t> velocity_;
   data::DataPoint<data::nav_t> displacement_;
@@ -202,24 +230,17 @@ class Navigation {
   // Have initial timestamps been set?
   bool has_initial_time_;
 
-  // Stripe counter object
-  StripeHandler stripe_counter_;
-  // Flags if keyences are used and if real
-  bool is_keyence_used_;
-
   // To convert acceleration -> velocity -> distance
   utils::math::Integrator<data::nav_t> acceleration_integrator_;  // acceleration to velocity
   utils::math::Integrator<data::nav_t> velocity_integrator_;      // velocity to distance
-
+  /**
+   * @brief Query sensors to determine velocity and distance
+   */
+  void queryWheelEncoders();
   /**
    * @brief Query sensors to determine acceleration, velocity and distance
    */
   void queryImus();
-  /**
-   * @brief Query Keyence sensors to determine whether a stripe is found, update stripe_counter_
-   * accordingly
-   */
-  void queryKeyence();
   /**
    * @brief Update uncertainty in distance obtained through IMU measurements.
    */
@@ -228,6 +249,10 @@ class Navigation {
    * @brief Check for vibrations
    */
   void checkVibration();
+  /**
+   * @brief Compare keyence estimate and imu estimate for velocity
+   */
+  void compareEncoderImu();
 };
 
 }  // namespace hyped::navigation

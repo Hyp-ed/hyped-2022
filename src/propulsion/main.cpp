@@ -72,6 +72,8 @@ void Main::run()
           if (!state_processor_.isInitialised()) { handleCriticalFailure(data, motor_data); }
         }
         break;
+      case data::State::kPreReady:
+        break;
       case data::State::kReady:
         if (encountered_transition) { state_processor_.sendOperationalCommand(); }
         break;
@@ -83,8 +85,10 @@ void Main::run()
         state_processor_.accelerate();
         break;
       case data::State::kCruising:
+      case data::State::kPreBraking:
       case data::State::kNominalBraking:
-      case data::State::kEmergencyBraking:
+      case data::State::kFailurePreBraking:
+      case data::State::kFailureBraking:
         state_processor_.quickStopAll();
         break;
       case data::State::kFailureStopped:

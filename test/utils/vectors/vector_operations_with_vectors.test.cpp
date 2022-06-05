@@ -18,7 +18,7 @@ namespace math {
 std::array<int, 3> createRandomArrayForOperations()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 3; ++i) {
     output[i] = rand() % 1000;
   }
   return output;
@@ -32,7 +32,7 @@ std::array<int, 3> createRandomArrayForOperations()
 std::array<int, 3> RandomNonZeroArrayForOperations()
 {
   std::array<int, 3> output = std::array<int, 3>();
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 3; ++i) {
     output[i] = rand() % 1000;
     while (output[i] == 0) {
       output[i] = rand() % 1000;
@@ -49,7 +49,7 @@ std::array<int, 3> RandomNonZeroArrayForOperations()
  */
 class OperationsTest : public ::testing::Test {
  protected:
-  const int dimension = 3;
+  static constexpr size_t kDimension = 3;
   std::array<int, 3> array_one;
   std::array<int, 3> array_two;
   Vector<int, 3> vector_one;
@@ -91,7 +91,7 @@ TEST_F(OperationsTest, allowsAccessAndModification)
 TEST_F(OperationsTest, allowsAddition)
 {
   vector_one += vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
   }
 }
@@ -104,7 +104,7 @@ TEST_F(OperationsTest, allowsAddition)
 TEST_F(OperationsTest, allowsAutoAddition)
 {
   vector_one = vector_one + vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], vector_two[i] + array_one[i]);
   }
 }
@@ -118,7 +118,7 @@ TEST_F(OperationsTest, allowsAutoAddition)
 TEST_F(OperationsTest, allowsSubstraction)
 {
   vector_one -= vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
@@ -132,7 +132,7 @@ TEST_F(OperationsTest, allowsSubstraction)
 TEST_F(OperationsTest, allowsAutoSubstraction)
 {
   vector_one = vector_one - vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], -vector_two[i] + array_one[i]);
   }
 }
@@ -146,7 +146,7 @@ TEST_F(OperationsTest, allowsAutoSubstraction)
 TEST_F(OperationsTest, allowsMultiplication)
 {
   vector_one *= vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], vector_two[i] * array_one[i]);
   }
 }
@@ -160,7 +160,7 @@ TEST_F(OperationsTest, allowsMultiplication)
 TEST_F(OperationsTest, allowsAutoMultiplication)
 {
   vector_one = vector_one * vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], vector_two[i] * array_one[i]);
   }
 }
@@ -174,7 +174,7 @@ TEST_F(OperationsTest, allowsAutoMultiplication)
 TEST_F(OperationsTest, allowsAutoDivision)
 {
   vector_one = vector_one / vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
   }
 }
@@ -188,7 +188,7 @@ TEST_F(OperationsTest, allowsAutoDivision)
 TEST_F(OperationsTest, allowsDivision)
 {
   vector_one /= vector_two;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], static_cast<int>(array_one[i] / vector_two[i]));
   }
 }
@@ -199,7 +199,7 @@ TEST_F(OperationsTest, allowsDivision)
 TEST_F(OperationsTest, allowsSqrt)
 {
   Vector<int, 3> result_one = vector_one.sqrt();
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(static_cast<int>(std::sqrt(vector_one[i])), result_one[i]);
   }
 }
@@ -211,7 +211,7 @@ TEST_F(OperationsTest, allowsNorm)
 {
   double norm   = vector_one.norm();
   double result = 0;
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     result += vector_one[i] * vector_one[i];
   }
   result = std::sqrt(result);
@@ -226,7 +226,7 @@ TEST_F(OperationsTest, allowsToUnitVector)
 {
   Vector<int, 3> result_one = vector_one.toUnitVector();
   double norm               = vector_one.norm();
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(result_one[i], static_cast<int>(vector_one[i] / norm));
   }
 }
@@ -236,7 +236,7 @@ TEST_F(OperationsTest, allowsToUnitVector)
  */
 class EqualityOperation : public ::testing::Test {
  protected:
-  const int dimension = 3;
+  static constexpr size_t kDimension = 3;
   std::array<int, 3> values;
   Vector<int, 3> vector_one;
   Vector<int, 3> vector_two;
@@ -267,7 +267,7 @@ TEST_F(EqualityOperation, handlesEqualityIdentity)
  */
 TEST_F(EqualityOperation, handlesEquality)
 {
-  for (int i = 0; i < dimension; i++) {
+  for (size_t i = 0; i < kDimension; ++i) {
     ASSERT_EQ(vector_one[i], vector_two[i]);
   }
   ASSERT_TRUE(vector_one == vector_two);

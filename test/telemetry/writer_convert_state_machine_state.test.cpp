@@ -64,7 +64,7 @@ TEST_F(WriterConvertStateMachineState, convertsNominalBrakingState)
 TEST_F(WriterConvertStateMachineState, convertsEmergencyBrakingState)
 {
   std::string convertedState
-    = telemetry::Writer::convertStateMachineState(data::State::kEmergencyBraking);
+    = telemetry::Writer::convertStateMachineState(data::State::kFailureBraking);
   ASSERT_EQ(convertedState, "EMERGENCY_BRAKING") << "Should convert Emergency Braking state.";
 }
 

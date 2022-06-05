@@ -12,7 +12,7 @@
 #if LINUX
 #include <linux/spi/spidev.h>
 #else
-#define _IOW(type, nr, size) 10  // random demo functionality
+#define _IOC_SIZEBITS 13
 #define SPI_IOC_MAGIC 'k'
 #define SPI_IOC_WR_MODE _IOW(SPI_IOC_MAGIC, 1, uint8_t)
 #define SPI_IOC_WR_MAX_SPEED_HZ _IOW(SPI_IOC_MAGIC, 4, uint32_t)
@@ -88,13 +88,13 @@ struct SPI_HW {          // offset
   uint32_t xferlevel;    // 0x17c
 };
 
-SPI &SPI::getInstance()
+Spi &Spi::getInstance()
 {
-  static SPI spi(System::getLogger());
+  static Spi spi(System::getLogger());
   return spi;
 }
 
-SPI::SPI(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
+Spi::Spi(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
 {
   const char device[] = "/dev/spidev1.0";  // spidev1.0 for SPI0
   spi_fd_             = open(device, O_RDWR, 0);
@@ -128,7 +128,7 @@ SPI::SPI(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
   }
 }
 
-bool SPI::initialise()
+bool Spi::initialise()
 {
   int fd;
   void *base;
@@ -153,7 +153,7 @@ bool SPI::initialise()
   return true;
 }
 
-void SPI::setClock(Clock clk)
+void Spi::setClock(Clock clk)
 {
   uint32_t data;
   switch (clk) {
@@ -191,7 +191,7 @@ void SPI::transfer(uint8_t *tx, uint8_t *rx, uint16_t len)
   }
 }
 #else
-void SPI::transfer(uint8_t *tx, uint8_t *, uint16_t len)
+void Spi::transfer(uint8_t *tx, uint8_t *, uint16_t len)
 {
   if (hw_ == 0) return;  // early exit if no spi mapped
 
@@ -219,7 +219,7 @@ void SPI::transfer(uint8_t *tx, uint8_t *, uint16_t len)
 #endif
 }  // namespace io
 
-void SPI::read(uint8_t addr, uint8_t *rx, uint16_t len)
+void Spi::read(uint8_t addr, uint8_t *rx, uint16_t len)
 {
   if (spi_fd_ < 0) return;  // early exit if no spi device present
 
@@ -240,7 +240,7 @@ void SPI::read(uint8_t addr, uint8_t *rx, uint16_t len)
   }
 }
 
-void SPI::write(uint8_t addr, uint8_t *tx, uint16_t len)
+void Spi::write(uint8_t addr, uint8_t *tx, uint16_t len)
 {
   if (spi_fd_ < 0) return;  // early exit if no spi device present
 
@@ -260,7 +260,7 @@ void SPI::write(uint8_t addr, uint8_t *tx, uint16_t len)
   }
 }
 
-SPI::~SPI()
+Spi::~Spi()
 {
   if (spi_fd_ < 0) return;  // early exit if no spi device present
 

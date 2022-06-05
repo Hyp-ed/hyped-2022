@@ -1,18 +1,33 @@
 #pragma once
 
-#include "interface.hpp"
+#include "sensor.hpp"
 
 #include <vector>
 
+#include <data/data.hpp>
 #include <utils/io/gpio.hpp>
 #include <utils/io/spi.hpp>
 #include <utils/logger.hpp>
 
 namespace hyped::sensors {
 
+class IImu : public ISensor {
+ public:
+  /**
+   * @brief empty virtual deconstructor for proper deletion of derived classes
+   */
+  virtual ~IImu() {}
+
+  /**
+   * @brief Get IMU data
+   * @param imu - output pointer to be filled by this sensor
+   */
+  virtual data::ImuData getData() = 0;
+};
+
 class Imu : public IImu {
  public:
-  Imu(utils::Logger &log, const uint32_t pin, const bool is_fifo);
+  Imu(const uint32_t pin, const bool is_fifo);
   ~Imu();
   /*
    *  @brief Returns if the sensor is online
@@ -94,16 +109,16 @@ class Imu : public IImu {
   void readBytes(const uint8_t read_reg, uint8_t *read_buff, const uint8_t length);
 
  private:
-  utils::io::SPI &spi_;
-  utils::Logger &log_;
-  utils::io::GPIO gpio_;
+  utils::io::Spi &spi_;
+  utils::Logger log_;
+  utils::io::Gpio gpio_;
   uint32_t pin_;
   bool is_fifo_;
   double acc_divider_;
   bool is_online_;
   uint8_t user_bank_;
   static const uint64_t time_start;
-  size_t kFrameSize_;  // initialised as 6 in enableFifo()
+  static constexpr size_t kFrameSize = 6;
 };
 
 }  // namespace hyped::sensors

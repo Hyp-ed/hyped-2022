@@ -1,8 +1,6 @@
 #pragma once
 
-#include "interface.hpp"
-
-#include <string>
+#include "temperature.hpp"
 
 #include <utils/logger.hpp>
 
@@ -12,18 +10,16 @@ class FakeTemperature : public ITemperature {
  public:
   /**
    * @brief Construct a new Fake Temperature object
-   *
-   * @param log
    * @param is_fail
    */
-  FakeTemperature(utils::Logger &log, bool is_fail);
+  FakeTemperature(const bool is_fail);
 
   /**
    * @brief returns int representation
    *
    * @return int temperature degrees C
    */
-  int getData() override;
+  uint8_t getData() const override;
 
   /**
    * @brief waits for acceleration, generate random time for failure
@@ -32,7 +28,7 @@ class FakeTemperature : public ITemperature {
 
  private:
   data::Data &data_;
-  utils::Logger &log_;
+  utils::Logger log_;
 
   /**
    * @brief dependent on is_fail_, set to fail value
@@ -42,9 +38,9 @@ class FakeTemperature : public ITemperature {
   // values degrees C
   int failure_;
   int success_;
-  data::TemperatureData temp_;
+  data::TemperatureData temperature_data_;
 
-  bool is_fail_;
+  const bool is_fail_;
 
   uint64_t acc_start_time_;
   bool acc_started_;

@@ -11,15 +11,23 @@
     "use_fake_high_power": false,
     "axis": 0
   },
+  "debugger": {
+    "output_path": "readings.json",
+    "use_imu_manager": false
+  },
   "brakes": {
     "command_pins": [0, 0],
     "button_pins": [1, 1]
   },
   "sensors": {
     "bms_startup_time_micros": 5000000,
-    "keyence_pins": [67, 68],
     "imu_pins": [22, 27, 47, 86],
-    "temperature_pin": 158
+    "temperature_pins": [13],
+    "brake_pressure_pins": [15, 16],
+    "ambient_pressure_pins": {
+      "pressure_pin": 10,
+      "temperature_pin": 11
+    }
   },
   "telemetry": {
     "server_ip": "192.168.5.3",
@@ -42,14 +50,6 @@
     },
     {
       "noise": 0.01
-    }
-  ],
-  "fake_keyence": [
-    {
-      "noise": 0.1
-    },
-    {
-      "noise": 0.2
     }
   ],
   "fake_imu": [

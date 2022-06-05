@@ -54,7 +54,6 @@ const FakeWheelEncoder::Config &FakeWheelEncoder::getConfig() const
 std::optional<std::array<FakeWheelEncoder, data::Sensors::kNumEncoders>> FakeWheelEncoder::fromFile(
   const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory)
 {
-  auto &system = utils::System::getSystem();
   utils::Logger log("FAKE-WHEEL-ENCODER");
   const auto configs = readConfigs(log, path);
   if (!configs) {

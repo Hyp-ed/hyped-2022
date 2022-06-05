@@ -69,14 +69,14 @@ int TransitionFunctionality::randomInRange(int min, int max)
  */
 TEST_F(TransitionFunctionality, handlesNoEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -87,7 +87,7 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, false) << "falsely detected emergency";
   }
 }
@@ -100,14 +100,14 @@ TEST_F(TransitionFunctionality, handlesNoEmergency)
  */
 TEST_F(TransitionFunctionality, handlesBrakeEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = data::ModuleStatus::kCriticalFailure;
@@ -118,7 +118,7 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect brake emergency";
   }
 }
@@ -131,14 +131,14 @@ TEST_F(TransitionFunctionality, handlesBrakeEmergency)
  */
 TEST_F(TransitionFunctionality, handlesNavEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -149,7 +149,7 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Navigation";
   }
 }
@@ -162,14 +162,14 @@ TEST_F(TransitionFunctionality, handlesNavEmergency)
  */
 TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -180,7 +180,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Batteries";
   }
 }
@@ -193,14 +193,14 @@ TEST_F(TransitionFunctionality, handlesBatteriesEmergency)
  */
 TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -211,7 +211,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Telemetry";
   }
 }
@@ -224,14 +224,14 @@ TEST_F(TransitionFunctionality, handlesTelemetryEmergency)
  */
 TEST_F(TransitionFunctionality, handlesSensorsEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -242,7 +242,7 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in Sensors";
   }
 }
@@ -255,14 +255,14 @@ TEST_F(TransitionFunctionality, handlesSensorsEmergency)
  */
 TEST_F(TransitionFunctionality, handlesMotorsEmergency)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -273,7 +273,7 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
     motors_data.module_status             = data::ModuleStatus::kCriticalFailure;
     telemetry_data.emergency_stop_command = false;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to detect emergency in motors";
   }
 }
@@ -286,14 +286,14 @@ TEST_F(TransitionFunctionality, handlesMotorsEmergency)
  */
 TEST_F(TransitionFunctionality, handlesStopCommand)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kNoEmergencyFirst; i <= kLast; i++) {
+  for (int i = kNoEmergencyFirst; i <= kLast; ++i) {
     // Making sure checkEmergency is unaffected by status of other values.
     const auto other                      = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status             = other;
@@ -304,7 +304,7 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
     motors_data.module_status             = other;
     telemetry_data.emergency_stop_command = true;
     const bool has_emergency              = state_machine::checkEmergency(
-                   log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(has_emergency, true) << "failed to register stop command";
   }
 }
@@ -321,14 +321,14 @@ TEST_F(TransitionFunctionality, handlesStopCommand)
  */
 TEST_F(TransitionFunctionality, handlesAllInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kInitFirst; i <= kLast; i++) {
+  for (int i = kInitFirst; i <= kLast; ++i) {
     const auto goal              = static_cast<data::ModuleStatus>(i);
     brakes_data.module_status    = goal;
     nav_data.module_status       = goal;
@@ -337,7 +337,7 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
     sensors_data.module_status   = goal;
     motors_data.module_status    = goal;
     const bool all_initialised   = state_machine::checkModulesInitialised(
-        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_initialised, true) << "failed to detect all modules being initialised";
   }
 }
@@ -350,17 +350,17 @@ TEST_F(TransitionFunctionality, handlesAllInitialised)
  */
 TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
-    for (int j = kInitFirst; j <= kLast; j++) {
+    for (int j = kInitFirst; j <= kLast; ++j) {
       const auto goal              = static_cast<data::ModuleStatus>(j);
       brakes_data.module_status    = other;
       nav_data.module_status       = goal;
@@ -369,7 +369,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect uninitialised brakes";
     }
   }
@@ -383,17 +383,17 @@ TEST_F(TransitionFunctionality, handlesBrakesNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
-    for (int j = kInitFirst; j <= kLast; j++) {
+    for (int j = kInitFirst; j <= kLast; ++j) {
       const auto goal              = static_cast<data::ModuleStatus>(j);
       brakes_data.module_status    = goal;
       nav_data.module_status       = other;
@@ -402,7 +402,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Navigation not being initialised";
     }
   }
@@ -416,17 +416,17 @@ TEST_F(TransitionFunctionality, handlesNavigationNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
-    for (int j = kInitFirst; j <= kLast; j++) {
+    for (int j = kInitFirst; j <= kLast; ++j) {
       const auto goal = static_cast<data::ModuleStatus>(j);
 
       brakes_data.module_status    = goal;
@@ -436,7 +436,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Batteries not being initialised";
     }
   }
@@ -450,17 +450,17 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
-    for (int j = kInitFirst; j <= kLast; j++) {
+    for (int j = kInitFirst; j <= kLast; ++j) {
       const auto goal = static_cast<data::ModuleStatus>(j);
 
       brakes_data.module_status    = goal;
@@ -470,7 +470,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Telemetry not being initialised";
     }
   }
@@ -484,17 +484,17 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
-    for (int j = kInitFirst; j <= kLast; j++) {
+    for (int j = kInitFirst; j <= kLast; ++j) {
       const auto goal = static_cast<data::ModuleStatus>(j);
 
       brakes_data.module_status    = goal;
@@ -504,7 +504,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
       sensors_data.module_status   = other;
       motors_data.module_status    = goal;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Sensors not being initialised";
     }
   }
@@ -518,17 +518,17 @@ TEST_F(TransitionFunctionality, handlesSensorsNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kInitFirst; i++) {
+  for (int i = kFirst; i < kInitFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
-    for (int j = kInitFirst; j <= kLast; j++) {
+    for (int j = kInitFirst; j <= kLast; ++j) {
       const auto goal = static_cast<data::ModuleStatus>(j);
 
       brakes_data.module_status    = goal;
@@ -538,7 +538,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
       sensors_data.module_status   = goal;
       motors_data.module_status    = other;
       const bool all_initialised   = state_machine::checkModulesInitialised(
-          log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+        log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
       ASSERT_EQ(all_initialised, false) << "failed to detect Motors not being initialise";
     }
   }
@@ -552,9 +552,9 @@ TEST_F(TransitionFunctionality, handlesMotorsNotInitialised)
  */
 TEST_F(TransitionFunctionality, handlesAllReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
@@ -566,7 +566,7 @@ TEST_F(TransitionFunctionality, handlesAllReady)
   sensors_data.module_status   = data::ModuleStatus::kReady;
   motors_data.module_status    = data::ModuleStatus::kReady;
   const auto all_ready         = state_machine::checkModulesReady(
-            log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+    log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
   ASSERT_EQ(all_ready, true) << "failed to detect that all modules are ready";
 }
 
@@ -578,14 +578,14 @@ TEST_F(TransitionFunctionality, handlesAllReady)
  */
 TEST_F(TransitionFunctionality, handlesBrakesNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = other;
@@ -595,7 +595,7 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Brakes not being ready";
   }
 }
@@ -608,14 +608,14 @@ TEST_F(TransitionFunctionality, handlesBrakesNotReady)
  */
 TEST_F(TransitionFunctionality, handlesNavigationNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -625,7 +625,7 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Navigation not being ready";
   }
 }
@@ -638,14 +638,14 @@ TEST_F(TransitionFunctionality, handlesNavigationNotReady)
  */
 TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -655,7 +655,7 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Batteries not being ready";
   }
 }
@@ -667,14 +667,14 @@ TEST_F(TransitionFunctionality, handlesBatteriesNotReady)
  */
 TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -684,7 +684,7 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Telemetry not being ready";
   }
 }
@@ -697,14 +697,14 @@ TEST_F(TransitionFunctionality, handlesTelemetryNotReady)
  */
 TEST_F(TransitionFunctionality, handlesSensorsNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -714,7 +714,7 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
     sensors_data.module_status   = other;
     motors_data.module_status    = data::ModuleStatus::kReady;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Sensors not being ready";
   }
 }
@@ -727,14 +727,14 @@ TEST_F(TransitionFunctionality, handlesSensorsNotReady)
  */
 TEST_F(TransitionFunctionality, handlesMotorsNotReady)
 {
-  data::EmergencyBrakes brakes_data;
+  data::Brakes brakes_data;
   data::Navigation nav_data;
-  data::Batteries batteries_data;
+  data::FullBatteryData batteries_data;
   data::Telemetry telemetry_data;
   data::Sensors sensors_data;
   data::Motors motors_data;
 
-  for (int i = kFirst; i < kReadyFirst; i++) {
+  for (int i = kFirst; i < kReadyFirst; ++i) {
     const auto other = static_cast<data::ModuleStatus>(i);
 
     brakes_data.module_status    = data::ModuleStatus::kReady;
@@ -744,7 +744,7 @@ TEST_F(TransitionFunctionality, handlesMotorsNotReady)
     sensors_data.module_status   = data::ModuleStatus::kReady;
     motors_data.module_status    = other;
     const bool all_ready         = state_machine::checkModulesReady(
-              log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
+      log_, brakes_data, nav_data, batteries_data, telemetry_data, sensors_data, motors_data);
     ASSERT_EQ(all_ready, false) << "failed to detect Motors not being ready";
   }
 }
@@ -763,7 +763,7 @@ TEST_F(TransitionFunctionality, handlesAllTelemetryCommands)
 {
   data::Telemetry telemetry_data;
   static constexpr int kNumCommands = 3;
-  for (int i = 0; i < 1 << kNumCommands; i++) {  // 2^num_commands posssible setups
+  for (size_t i = 0; i < 1 << kNumCommands; ++i) {  // 2^num_commands posssible setups
     // extracting bits
     telemetry_data.calibrate_command = static_cast<bool>(i & 1);
     telemetry_data.launch_command    = static_cast<bool>((i >> 1) & 1);
@@ -798,7 +798,7 @@ TEST_F(TransitionFunctionality, handlesEnoughSpaceLeft)
   constexpr int kMaxBrakingDistance
     = static_cast<int>(data::Navigation::kRunLength - data::Navigation::kBrakingBuffer);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t max_displacement
@@ -827,7 +827,7 @@ TEST_F(TransitionFunctionality, handlesNotEnoughSpaceLeft)
   constexpr int kMinBrakingDistance = 0;
   constexpr int kMaxBrakingDistance = data::Navigation::kRunLength;
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t min_displacement
@@ -859,13 +859,13 @@ TEST_F(TransitionFunctionality, handlesDisplacementOnEdgeOfBrakingZone)
   constexpr int kMaxBrakingDistance = data::Navigation::kRunLength;
   constexpr data::nav_t kStepSize   = 1.0 / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.braking_distance
       = static_cast<data::nav_t>(randomInRange(kMinBrakingDistance, kMaxBrakingDistance));
     const data::nav_t critical_displacement
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.braking_distance;
 
-    for (int j = 0; j < kTestSize; j++) {
+    for (int j = 0; j < kTestSize; ++j) {
       nav_data.displacement = critical_displacement - 0.5 + kStepSize * static_cast<data::nav_t>(j);
       if (j < kTestSize / 2) {
         ASSERT_EQ(false, state_machine::checkEnteredBrakingZone(log_, nav_data))
@@ -897,13 +897,13 @@ TEST_F(TransitionFunctionality, handlesBrakingDistanceOnEdgeOfBrakingZone)
     = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - 1;
   constexpr data::nav_t kStepSize = 1.0 / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.displacement
       = static_cast<data::nav_t>(randomInRange(kMinDisplacement, kMaxDisplacement));
     critical_braking_distance
       = data::Navigation::kRunLength - data::Navigation::kBrakingBuffer - nav_data.displacement;
 
-    for (int j = 0; j < kTestSize; j++) {
+    for (int j = 0; j < kTestSize; ++j) {
       nav_data.braking_distance
         = critical_braking_distance - 0.5 + kStepSize * static_cast<data::nav_t>(j);
       if (j < kTestSize / 2) {
@@ -931,7 +931,7 @@ TEST_F(TransitionFunctionality, handlesPositiveVelocity)
   constexpr data::nav_t kStepSize
     = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 1; i <= kTestSize; i++) {
+  for (int i = 1; i <= kTestSize; ++i) {
     nav_data.velocity                   = kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.displacement               = static_cast<data::nav_t>(rand());
@@ -956,7 +956,7 @@ TEST_F(TransitionFunctionality, handlesNonpositiveVelocity)
   constexpr data::nav_t kStepSize
     = static_cast<data::nav_t>(kMaxVelocity) / static_cast<data::nav_t>(kTestSize);
 
-  for (int i = 0; i < kTestSize; i++) {
+  for (size_t i = 0; i < kTestSize; ++i) {
     nav_data.velocity                   = -1.0 * kStepSize * static_cast<data::nav_t>(i);
     nav_data.acceleration               = static_cast<data::nav_t>(rand());
     nav_data.displacement               = static_cast<data::nav_t>(rand());

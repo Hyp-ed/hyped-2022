@@ -15,22 +15,14 @@ namespace io {
 namespace adc {
 }  // namespace adc
 
-class ADC {
+class Adc {
  public:
   /**
    * @brief Construct a new ADC object when logger no initialised
    *
    * @param pin
    */
-  explicit ADC(uint32_t pin);
-
-  /**
-   * @brief Construct a new ADC object with logger for debugging purposes
-   *
-   * @param pin
-   * @param log
-   */
-  ADC(uint32_t pin, Logger &log);
+  explicit Adc(const uint32_t pin);
 
   /**
    * @brief reads AIN value from file system
@@ -40,9 +32,9 @@ class ADC {
   uint16_t read();
 
  private:
+  Logger log_;
   uint32_t pin_;
-  Logger &log_;
-  int fd_;
+  int file_;
 };
 }  // namespace io
 }  // namespace utils

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fake_trajectory.hpp"
-#include "interface.hpp"
+#include "imu.hpp"
 
 #include <memory>
 #include <string>
@@ -17,21 +17,23 @@ class FakeImu : public IImu {
     std::optional<data::State> failure_in_state;
     data::nav_t noise;
   };
+  FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
+  ~FakeImu();
   data::ImuData getData() override;
   bool isOnline() override { return true; }
   const Config &getConfig() const;
-  static std::optional<std::array<FakeImu, data::Sensors::kNumImus>> fromFile(
+  static std::optional<std::vector<std::unique_ptr<FakeImu>>> fromFile(
     const std::string &path, std::shared_ptr<FakeTrajectory> fake_trajectory);
 
  private:
   const Config config_;
+  utils::Logger log_;
   data::Data &data_;
   std::shared_ptr<FakeTrajectory> fake_trajectory_;
   bool is_operational_;
 
-  FakeImu(const Config &config, std::shared_ptr<FakeTrajectory> fake_trajectory);
-  static std::optional<std::array<Config, data::Sensors::kNumImus>> readConfigs(
-    utils::Logger &log, const std::string &path);
+  static std::optional<std::vector<Config>> readConfigs(utils::Logger &log,
+                                                        const std::string &path);
 
   data::NavigationVector getAccurateAcceleration();
   data::NavigationVector addNoiseToAcceleration(const data::NavigationVector acceleration) const;

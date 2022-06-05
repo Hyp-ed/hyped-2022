@@ -11,9 +11,9 @@ namespace io {
 struct SPI_HW;
 struct SPI_CH;
 
-class SPI {
+class Spi {
  public:
-  static SPI &getInstance();
+  static Spi &getInstance();
 
   enum class Clock { k1MHz, k4MHz, k16MHz, k20MHz };
 
@@ -44,8 +44,8 @@ class SPI {
   void write(uint8_t addr, uint8_t *tx, uint16_t len);
 
  private:
-  explicit SPI(Logger &log);
-  ~SPI();
+  explicit Spi(Logger &log);
+  ~Spi();
   /**
    * @brief Fill in base_mapping_ with pointers to mmap-ed /dev/spidev1.0
    * to 2 SPI banks/ports.
@@ -58,7 +58,7 @@ class SPI {
   SPI_CH *ch_;
   Logger &log_;
 
-  NO_COPY_ASSIGN(SPI)
+  NO_COPY_ASSIGN(Spi)
 };
 
 }  // namespace io

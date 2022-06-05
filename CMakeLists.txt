@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
 
 # -------------------------------------------------- #
 # LIB HELPER                                         #
@@ -16,10 +16,6 @@ function(make_lib target, include_path)
     set(link_libs ${ALL_LIBS})
     list(REMOVE_ITEM link_libs "${target}")
     target_link_libraries(${target} ${link_libs})
-    add_custom_target("${target}-format"
-        COMMAND clang-format -i -style=file ${code} ${headers}
-    )
-    add_dependencies(${target} "${target}-format")
 endfunction()
 
 
@@ -51,7 +47,7 @@ endif()
 option(PEDANTIC "Enable pedantic warnings" ON)
 if(PEDANTIC)
   message("pedantic:  ON")
-  set(WARN_FLAGS "-Wall -Wextra -Wpedantic")
+  set(WARN_FLAGS "-Werror -Wextra -Wpedantic")
 else()
   message("pedantic:  OFF")
   set(WARN_FLAGS "")
@@ -69,15 +65,6 @@ option(CROSS "Cross compile for the BBB")
 if(CROSS)
   message("cross:     ON")
   set(CMAKE_SYSTEM_NAME "Linux")
-  if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-    message("Cross compiling from x86 Linux to BBB")
-    set(CC "arm-none-linux-gnueabihf")
-    set(CC_DIRECTORY "${CMAKE_BINARY_DIR}/gcc-arm-10.3-2021.07-x86_64-${CC}")
-    set(CMAKE_CXX_COMPILER "${CC_DIRECTORY}/bin/${CC}-c++")
-    set(CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -static")
-  elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
-    message(FATAL_ERROR "Cross compilation is not supported for MacOS")
-  endif()
 else()
   message("cross:     OFF")
   set(CMAKE_SYSTEM_NAME "${CMAKE_HOST_SYSTEM_NAME}")
@@ -86,6 +73,14 @@ endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DLINUX")
+endif()
+
+option(FORMAT "Enables automatic formatting" ON)
+if (FORMAT)
+  file(GLOB_RECURSE all_headers "${CMAKE_SOURCE_DIR}/src/*.hpp" "${CMAKE_SOURCE_DIR}/test/*.hpp" "${CMAKE_SOURCE_DIR}/run/*.hpp")
+  file(GLOB_RECURSE all_sources "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/test/*.cpp" "${CMAKE_SOURCE_DIR}/run/*.cpp")
+  message(alll)
+  add_custom_target("format" ALL COMMAND clang-format -i -style=file ${all_headers} ${all_sources})
 endif()
 
 message("host system:    ${CMAKE_HOST_SYSTEM_NAME}")
@@ -115,14 +110,7 @@ include_directories(
 )
 
 # building all the libraries and tests
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/data)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/brakes)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/navigation)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/propulsion)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/sensors)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/state_machine)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/telemetry)
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/utils)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 if (CROSS)
 else()
@@ -148,3 +136,22 @@ target_link_libraries(${target}
     utils_io
     utils_math
 )
+
+set(target "debugger")
+add_executable(${target} ${CMAKE_SOURCE_DIR}/run/debugger.cpp)
+target_link_libraries(${target}
+    data
+    debugging
+    brakes
+    navigation
+    propulsion
+    propulsion_can
+    sensors
+    state_machine
+    telemetry
+    utils
+    utils_concurrent
+    utils_io
+    utils_math
+)
+

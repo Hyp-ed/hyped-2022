@@ -22,7 +22,7 @@ class GpioManager : public utils::concurrent::Thread {
  public:
   struct Config {
     uint32_t master_switch_pin;
-    std::array<uint32_t, data::Batteries::kNumHPBatteries> high_power_ssr_pins;
+    std::array<uint32_t, data::FullBatteryData::kNumHPBatteries> high_power_ssr_pins;
   };
   void run() override;
   static std::unique_ptr<GpioManager> fromFile(const std::string &path);
@@ -38,13 +38,13 @@ class GpioManager : public utils::concurrent::Thread {
   /**
    * @brief master switch to keep pod on, signal held high at startup
    */
-  std::unique_ptr<utils::io::GPIO> master_;
+  std::unique_ptr<utils::io::Gpio> master_;
 
   /**
    * @brief SSR switches for HP battery packs
    *
    */
-  std::vector<std::unique_ptr<utils::io::GPIO>> high_power_ssr_;
+  std::vector<std::unique_ptr<utils::io::Gpio>> high_power_ssr_;
 
   /**
    * @brief stores the previous state when switch statement checks state machine

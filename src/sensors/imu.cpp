@@ -29,7 +29,7 @@ static constexpr uint8_t kPwrMgmt1 = 0x06;  // userbank 0
 static constexpr uint8_t kPwrMgmt2 = 0x07;  // userbank 0
 
 // Configuration
-static constexpr uint8_t kReadFlag = 0x80;  // unable to find in datasheet
+static constexpr uint8_t kReadFlag = 0x80;  // msb is 1 which signifies a read operation for SPI
 
 // Configuration bits Imu
 // constexpr uint8_t kBitsFs250Dps             = 0x00;
@@ -286,12 +286,13 @@ data::ImuData Imu::getData()
       }
     } else {
       log_.debug("Getting Imu data");
-      uint8_t response[8];
+      uint8_t response[6];
       int16_t bit_data;
       float value;
       std::array<float, 3> acceleration_data;
 
-      readBytes(kAccelXoutH, response, 8);
+      // Reading six bytes - first two give x-acceleration, next two give y-acceleration, last two give z-acceleration (high and low byte pairs)
+      readBytes(kAccelXoutH, response, 6); 
       for (size_t i = 0; i < 3; ++i) {
         bit_data                = ((int16_t)response[i * 2] << 8) | response[i * 2 + 1];
         value                   = static_cast<float>(bit_data);

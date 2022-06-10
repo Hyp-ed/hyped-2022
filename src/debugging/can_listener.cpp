@@ -21,7 +21,7 @@ bool CanListener::hasId(uint32_t id, bool extended)
     log_.debug("received extended CAN message; skipping");
     return false;
   }
-  return ids_.contains(id);
+  return ids_.find(id) != ids_.end();
 }
 
 void CanListener::subscribe(const uint32_t id)
@@ -31,7 +31,7 @@ void CanListener::subscribe(const uint32_t id)
 
 void CanListener::unsubscribe(const uint32_t id)
 {
-  if (!ids_.contains(id)) {
+  if (ids_.find(id) == ids_.end()) {
     log_.error("tried to unsubscribe from unknown node_id");
     return;
   }

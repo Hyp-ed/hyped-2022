@@ -96,7 +96,7 @@ Spi &Spi::getInstance()
 
 Spi::Spi(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
 {
-  const char device[] = "/dev/spidev0.0";  // spidev1.0 for SPI0
+  const char device[] = "/dev/spidev0.0";  // spidev0.0 for SPI0
   spi_fd_             = open(device, O_RDWR, 0);
 
   if (spi_fd_ < 0) {

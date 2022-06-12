@@ -1,5 +1,7 @@
 #include "main.hpp"
 
+#include "utils/math/regression.hpp"
+
 namespace hyped::propulsion {
 
 Main::Main()
@@ -53,6 +55,14 @@ void Main::run()
         break;
       case data::State::kCalibrating:
         if (state_processor_.isInitialised()) {
+          // set coefficients for rpm regulator
+          utils::math::Regression regression;
+          // TODO:find actual x and y data (and probably get from json or something)
+          regression.CaulculateCoefficients({1, 2, 3}, {1, 2, 3});
+          std::vector<double> coefficients = regression.coefficients_;
+          RpmRegulator rpm_regulator;
+          rpm_regulator.setCoefficients(coefficients);
+
           if (motor_data.module_status != data::ModuleStatus::kReady) {
             motor_data.module_status = data::ModuleStatus::kReady;
             data.setMotorData(motor_data);

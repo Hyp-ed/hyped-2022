@@ -16,6 +16,14 @@ class RpmRegulator {
    */
   static int32_t calculateRpm(const data::nav_t actual_velocity, const int32_t actual_rpm);
 
+  /**
+   * @brief sets the coefficients calculated on startup in utils to be stored
+   * as private class members.
+   *
+   * @param actual_velocity
+   */
+  void setCoefficients(std::vector<double> coeffients);
+
  private:
   /*
    * @brief Construct a new rpm regulator object
@@ -36,7 +44,11 @@ class RpmRegulator {
    * @param actual_rpm - the rpm of the motor
    * @return int32_t - the step with which to increase the rpm
    */
-  static int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);
+  int32_t step(const int32_t optimal_rpm, const int32_t actual_rpm);
+
+  // coefficients vector of form {beta1, beta0}
+  std::vector<double> coefficients_;
+
 };
 
 }  // namespace hyped::propulsion

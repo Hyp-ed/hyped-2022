@@ -91,7 +91,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.log_level_brakes = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level_brakes' in config filet at %s; using default value",
+      "could not find field 'system.log_level_brakes' in config file at %s; using default value",
       argv[1]);
     config.log_level_brakes = config.log_level;
   }
@@ -107,7 +107,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.log_level_navigation = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level_navigation' in config filet at %s; using default "
+      "could not find field 'system.log_level_navigation' in config file at %s; using default "
       "value",
       argv[1]);
     config.log_level_navigation = config.log_level;
@@ -124,7 +124,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.log_level_propulsion = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level_propulsion' in config filet at %s; using default "
+      "could not find field 'system.log_level_propulsion' in config file at %s; using default "
       "value",
       argv[1]);
     config.log_level_propulsion = config.log_level;
@@ -141,7 +141,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.log_level_sensors = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level_sensors' in config filet at %s; using default value",
+      "could not find field 'system.log_level_sensors' in config file at %s; using default value",
       argv[1]);
     config.log_level_sensors = config.log_level;
   }
@@ -157,7 +157,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.log_level_state_machine = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level_state_machine' in config filet at %s; using default "
+      "could not find field 'system.log_level_state_machine' in config file at %s; using default "
       "value",
       argv[1]);
     config.log_level_state_machine = config.log_level;
@@ -174,7 +174,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.log_level_telemetry = *log_level;
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.log_level_telemetry' in config filet at %s; using default "
+      "could not find field 'system.log_level_telemetry' in config file at %s; using default "
       "value",
       argv[1]);
     config.log_level_telemetry = config.log_level;
@@ -199,7 +199,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_trajectory = config_object["use_fake_trajectory"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_trajectory' in config filet at %s; using default "
+      "could not find field 'system.use_fake_trajectory' in config file at %s; using default "
       "value",
       argv[1]);
     config.use_fake_trajectory = false;
@@ -209,7 +209,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_batteries = config_object["use_fake_batteries"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_batteries' in config filet at %s; using default "
+      "could not find field 'system.use_fake_batteries' in config file at %s; using default "
       "value",
       argv[0]);
     config.use_fake_batteries = false;
@@ -219,7 +219,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_batteries_fail = config_object["use_fake_batteries_fail"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_batteries_fail' in config filet at %s; using default "
+      "could not find field 'system.use_fake_batteries_fail' in config file at %s; using default "
       "value",
       argv[0]);
     config.use_fake_batteries_fail = false;
@@ -229,7 +229,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_temperature = config_object["use_fake_temperature"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_temperature' in config filet at %s; using default "
+      "could not find field 'system.use_fake_temperature' in config file at %s; using default "
       "value",
       argv[0]);
     config.use_fake_temperature = false;
@@ -239,7 +239,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_temperature_fail = config_object["use_fake_temperature_fail"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_temperature_fail' in config filet at %s; using "
+      "could not find field 'system.use_fake_temperature_fail' in config file at %s; using "
       "default "
       "value",
       argv[0]);
@@ -251,7 +251,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_ambient_pressure = config_object["use_fake_ambient_pressure"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_ambient_pressure' in config filet at %s; using "
+      "could not find field 'system.use_fake_ambient_pressure' in config file at %s; using "
       "default "
       "value",
       argv[0]);
@@ -263,7 +263,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
       = config_object["use_fake_ambient_pressure_fail"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_ambient_pressure_fail' in config filet at %s; using "
+      "could not find field 'system.use_fake_ambient_pressure_fail' in config file at %s; using "
       "default "
       "value",
       argv[0]);
@@ -275,7 +275,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_brake_pressure = config_object["use_fake_brake_pressure"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_brake_pressure' in config filet at %s; using "
+      "could not find field 'system.use_fake_brake_pressure' in config file at %s; using "
       "default "
       "value",
       argv[0]);
@@ -286,7 +286,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_ambient_pressure_fail = config_object["use_fake_brake_pressure_fail"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_brake_pressure_fail' in config filet at %s; using "
+      "could not find field 'system.use_fake_brake_pressure_fail' in config file at %s; using "
       "default "
       "value",
       argv[0]);
@@ -298,7 +298,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_brakes = config_object["use_fake_brakes"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_brakes' in config filet at %s; using default "
+      "could not find field 'system.use_fake_brakes' in config file at %s; using default "
       "value",
       argv[0]);
     config.use_fake_brakes = false;
@@ -308,7 +308,7 @@ void System::parseArgs(const int argc, const char *const *const argv)
     config.use_fake_controller = config_object["use_fake_controller"].GetBool();
   } else {
     kInitialisationErrorLogger.info(
-      "could not find field 'system.use_fake_controller' in config filet at %s; using default "
+      "could not find field 'system.use_fake_controller' in config file at %s; using default "
       "value",
       argv[0]);
     config.use_fake_controller = false;

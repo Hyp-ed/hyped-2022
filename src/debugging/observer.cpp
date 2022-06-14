@@ -5,6 +5,7 @@
 #include <rapidjson/istreamwrapper.h>
 
 #include <sensors/fake_temperature.hpp>
+#include <sensors/fake_brake_pressure.hpp>
 #include <sensors/imu.hpp>
 #include <sensors/main.hpp>
 #include <utils/logger.hpp>
@@ -136,6 +137,22 @@ std::optional<std::unique_ptr<Observer>> Observer::fromFile(const std::string &p
     }
     for (const auto pin : *pins) {
       observer->addTemperatureTask(pin);
+    }
+  }
+  // BRAKE_PRESSURE
+  if (system.config_.use_fake_brake_pressure) {
+    observer->addFakeBrakePressureTask(false);
+  } else if (system.config_.use_fake_brake_pressure_fail) {
+    observer->addFakeBrakePressureTask(true);
+  } else {
+    const auto pins
+      = sensors::Main::brakePressurePinsFromFile(log, system.config_.pressure_config_path);
+    if (!pins) {
+      log.error("failed to read brake pressure pin from file");
+      return std::nullopt;
+    }
+    for (const auto pin : *pins) {
+      observer->addBrakePressureTask(pin);
     }
   }
   return observer;
@@ -283,6 +300,37 @@ void Observer::addFakeTemperatureTask(const bool is_fail)
     json_writer.Uint(temperature->getData());
   };
   tasks_.push_back(temperature_task);
+}
+
+void Observer::addBrakePressureTask(const uint8_t pin)
+{
+  auto brake_pressure = std::make_shared<sensors::BrakePressure>(pin);
+  std::stringstream name;
+  name << "brake_pressure-" << static_cast<uint32_t>(pin);
+  Task brake_pressure_task;
+  brake_pressure_task.name    = name.str();
+  brake_pressure_task.handler = [brake_pressure](JsonWriter &json_writer) {
+    brake_pressure->run();
+    json_writer.Key("value");
+    json_writer.Uint(brake_pressure->getData());
+  };
+  tasks_.push_back(brake_pressure_task);
+}
+
+void Observer::addFakeBrakePressureTask(const bool is_fail)
+{
+  static uint32_t fake_brake_pressure_id = 0;
+  auto brake_pressure                   = std::make_shared<sensors::FakeBrakePressure>(is_fail);
+  std::stringstream name;
+  name << "fake_brake_pressure-" << fake_brake_pressure_id++;
+  Task brake_pressure_task;
+  brake_pressure_task.name    = name.str();
+  brake_pressure_task.handler = [brake_pressure](JsonWriter &json_writer) {
+    brake_pressure->run();
+    json_writer.Key("value");
+    json_writer.Uint(brake_pressure->getData());
+  };
+  tasks_.push_back(brake_pressure_task);
 }
 
 }  // namespace hyped::debugging

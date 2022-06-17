@@ -266,6 +266,6 @@ Spi::~Spi()
 
   close(spi_fd_);
 }
-}  // namespace io
 }  // namespace utils
+}  // namespace hyped
 }  // namespace hyped

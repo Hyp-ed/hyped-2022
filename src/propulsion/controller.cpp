@@ -2,8 +2,8 @@
 
 namespace hyped::propulsion {
 
-Controller::Controller(utils::Logger &log, uint8_t id)
-    : log_(log),
+Controller::Controller(const uint8_t id)
+    : log_("CONTROLLER", utils::System::getSystem().config_.log_level_propulsion),
       data_(data::Data::getInstance()),
       motor_data_(data_.getMotorData()),
       state_(kNotReadyToSwitchOn),
@@ -13,7 +13,8 @@ Controller::Controller(utils::Logger &log, uint8_t id)
       actual_torque_(0),
       motor_temperature_(0),
       controller_temperature_(0),
-      sender_(log, node_id_, *this)
+      receiver_(node_id_, *this),
+      sender_()
 {
   sdo_message_.id       = kSdoReceive + node_id_;
   sdo_message_.extended = false;
@@ -33,7 +34,7 @@ bool Controller::sendControllerMessage(const ControllerMessage message_template)
 
 void Controller::registerController()
 {
-  sender_.registerController();
+  receiver_.registerController();
 }
 
 void Controller::configure()

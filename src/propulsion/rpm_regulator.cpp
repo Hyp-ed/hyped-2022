@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <utils/system.hpp>
+
 namespace hyped::propulsion {
 
 RpmRegulator::RpmRegulator()
@@ -19,8 +21,8 @@ int32_t RpmRegulator::calculateRpm(const data::nav_t actual_velocity, const int3
 int32_t RpmRegulator::calculateOptimalRpm(const data::nav_t actual_velocity)
 {
   // polynomial values from simulation
-  return std::round(0.32047 * actual_velocity * actual_velocity + 297.72578 * actual_velocity
-                    + 1024.30824);
+  return static_cast<uint32_t>(std::round(0.32047 * actual_velocity * actual_velocity
+                                          + 297.72578 * actual_velocity + 1024.30824));
 }
 
 int32_t RpmRegulator::step(const int32_t optimal_rpm, const int32_t actual_rpm)

@@ -1,14 +1,14 @@
 #include "fake_can_sender.hpp"
 
 namespace hyped::propulsion {
-FakeCanSender::FakeCanSender(utils::Logger &log_, uint8_t)
-    : log_(log_),
+FakeCanSender::FakeCanSender()
+    : log_("FAKE-CAN-SENDER", utils::System::getSystem().config_.log_level_propulsion),
       is_sending_(false),
       can_endpoint_(*this)
 {
 }
 
-bool FakeCanSender::sendMessage(utils::io::can::Frame &)
+bool FakeCanSender::sendMessage(const utils::io::can::Frame &)
 {
   log_.info("sending");
   is_sending_ = true;
@@ -16,21 +16,6 @@ bool FakeCanSender::sendMessage(utils::io::can::Frame &)
   while (is_sending_) {
     utils::concurrent::Thread::yield();
   }
-  return true;
-}
-
-void FakeCanSender::registerController()
-{
-}
-
-void FakeCanSender::processNewData(utils::io::can::Frame &)
-{
-  log_.info("processNewData");
-  is_sending_ = false;
-}
-
-bool FakeCanSender::hasId(uint32_t, bool)
-{
   return true;
 }
 

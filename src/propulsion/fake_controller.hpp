@@ -4,6 +4,7 @@
 
 #include <data/data.hpp>
 #include <utils/logger.hpp>
+#include <utils/system.hpp>
 #include <utils/timer.hpp>
 
 namespace hyped::propulsion {
@@ -13,7 +14,7 @@ class FakeController : public IController {
   /**
    * @brief  Construct a new Fake Controller object
    */
-  FakeController(utils::Logger &log, const uint8_t id, const bool is_faulty);
+  FakeController(const uint8_t id, const bool is_faulty);
   /**
    * @brief  Registers controller to recieve and transmit CAN messages.
    *         note: empty implementation.
@@ -96,7 +97,7 @@ class FakeController : public IController {
    * @brief Times the duration of the run. Starts when we enter the accelerating state.
    */
   void startTimer();
-  utils::Logger &log_;
+  utils::Logger log_;
   data::Data &data_;
   ControllerState state_;
   utils::Timer timer_;

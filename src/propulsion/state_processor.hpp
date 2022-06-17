@@ -1,6 +1,7 @@
 #pragma once
 
 #include "controller_interface.hpp"
+#include "nucleo_manager.hpp"
 #include "rpm_regulator.hpp"
 
 #include <array>
@@ -15,9 +16,9 @@ namespace hyped::propulsion {
 class StateProcessor {
  public:
   /**
-   * @brief Initializes the state processors with the amount of motors and the logger
+   * @brief Initializes the state processors with the amount of motors
    * */
-  StateProcessor(utils::Logger &log);
+  StateProcessor();
 
   /**
    * @brief Sends the desired settings to the motors
@@ -84,7 +85,7 @@ class StateProcessor {
    * @brief Calculate the Average rpm of all motors
    * @return int32_t
    */
-  int32_t calculateAverageRpm();
+  uint32_t calculateAverageRpm();
 
   /**
    * @brief calculate the max Current drawn out of all the motors
@@ -101,12 +102,13 @@ class StateProcessor {
 
   int32_t calculateMaximumTemperature();
 
-  utils::Logger &log_;
+  utils::Logger log_;
   utils::System &sys_;
   data::Data &data_;
   bool is_initialised_;
   std::array<std::unique_ptr<IController>, data::Motors::kNumMotors> controllers_;
   uint64_t previous_acceleration_time_;
+  std::unique_ptr<NucleoManager> nucleo_manager_;
 };
 
 }  // namespace hyped::propulsion

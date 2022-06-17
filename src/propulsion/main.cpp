@@ -6,7 +6,7 @@ Main::Main()
     : utils::concurrent::Thread(
       utils::Logger("PROPULSION", utils::System::getSystem().config_.log_level_propulsion)),
       is_running_(true),
-      state_processor_(log_)
+      state_processor_()
 {
 }
 

@@ -4,21 +4,22 @@
 
 namespace hyped::propulsion {
 
-StateProcessor::StateProcessor(utils::Logger &log)
-    : log_(log),
+StateProcessor::StateProcessor()
+    : log_("PROPULSION-STATE-PROCESSOR", utils::System::getSystem().config_.log_level_propulsion),
       sys_(utils::System::getSystem()),
       data_(data::Data::getInstance()),
-      is_initialised_(false)
+      is_initialised_(false),
+      nucleo_manager_(std::make_unique<NucleoManager>())
 {
   if (sys_.config_.use_fake_controller) {
     log_.info("constructing with fake controllers");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
-      controllers_.at(i) = std::make_unique<FakeController>(log_, i, false);
+      controllers_.at(i) = std::make_unique<FakeController>(i, false);
     }
   } else {  // Use real controllers
     log_.info("constructing with real controllers");
     for (size_t i = 0; i < data::Motors::kNumMotors; ++i) {
-      controllers_.at(i) = std::make_unique<Controller>(log_, i);
+      controllers_.at(i) = std::make_unique<Controller>(i);
     }
   }
 }
@@ -62,6 +63,7 @@ void StateProcessor::prepareMotors()
   for (auto &controller : controllers_) {
     controller->enterOperational();
   }
+  nucleo_manager_->sendNucleoFrequency(0);  // Might not be correct value
   previous_acceleration_time_ = 0;
 }
 
@@ -89,13 +91,14 @@ void StateProcessor::accelerate()
   const auto now = utils::Timer::getTimeMicros();
   if (now - previous_acceleration_time_ > 5000) {
     previous_acceleration_time_ = now;
-    const auto velocity         = data_.getNavigationData().velocity;
-    const auto act_rpm          = calculateAverageRpm();
-    const auto rpm              = RpmRegulator::calculateRpm(velocity, act_rpm);
+    const data::nav_t velocity  = data_.getNavigationData().velocity;
+    const uint32_t act_rpm      = calculateAverageRpm();
+    const uint32_t rpm          = RpmRegulator::calculateRpm(velocity, act_rpm);
     log_.info("sending %d rpm as target", rpm);
     for (auto &controller : controllers_) {
       controller->sendTargetVelocity(rpm);
     }
+    nucleo_manager_->sendNucleoFrequency(std::round(static_cast<double>(rpm) / 60.0));
   }
 }
 
@@ -115,7 +118,7 @@ bool StateProcessor::isOverLimits()
   return over_limits;
 }
 
-int32_t StateProcessor::calculateAverageRpm()
+uint32_t StateProcessor::calculateAverageRpm()
 {
   int32_t total = 0;
   for (auto &controller : controllers_) {

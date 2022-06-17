@@ -6,6 +6,7 @@
 #include <atomic>
 
 #include <data/data.hpp>
+#include <propulsion/can/can_receiver.hpp>
 #include <propulsion/can/can_sender.hpp>
 #include <utils/io/can.hpp>
 #include <utils/logger.hpp>
@@ -18,10 +19,9 @@ class Controller : public IController {
  public:
   /**
    * @brief Construct a new Controller object
-   * @param log
    * @param id
    */
-  Controller(utils::Logger &log, uint8_t id);
+  Controller(const uint8_t id);
   /**
    * @brief Registers controller to recieve and transmit CAN messages.
    */
@@ -48,13 +48,14 @@ class Controller : public IController {
    * @brief Send the target velocity to the motor controller.
    * @param target_velocity - in rpm (calculated in speed calculator)
    */
-  void sendTargetVelocity(int32_t target_velocity) override;
+  void sendTargetVelocity(const int32_t target_velocity) override;
+
   /**
    * @brief Send the target torque to the motor controller.
    *
    * @param target_torque
    */
-  void sendTargetTorque(int16_t target_torque);
+  void sendTargetTorque(const int16_t target_torque);
   /**
    * @brief Send a request to the motor controller to get the actual velocity.
    *
@@ -164,7 +165,7 @@ class Controller : public IController {
    */
   void throwCriticalFailure();
 
-  utils::Logger &log_;
+  utils::Logger log_;
   data::Data &data_;
   data::Motors motor_data_;
   std::atomic<ControllerState> state_;
@@ -174,6 +175,7 @@ class Controller : public IController {
   std::atomic<int16_t> actual_torque_;
   std::atomic<uint8_t> motor_temperature_;
   std::atomic<uint8_t> controller_temperature_;
+  CanReceiver receiver_;
   CanSender sender_;
   utils::io::can::Frame sdo_message_;
   utils::io::can::Frame nmt_message_;

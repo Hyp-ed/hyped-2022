@@ -146,6 +146,7 @@ struct Telemetry : public Module {
   bool service_propulsion_go   = false;
   bool emergency_stop_command  = false;
   bool nominal_braking_command = true;
+  bool stop_command            = false; 
 };
 
 // -------------------------------------------------------------------------------------------------
@@ -174,6 +175,7 @@ std::optional<State> stateFromString(const std::string &state_name);
 struct StateMachine {
   bool critical_failure;
   State current_state;
+  static constexpr int64_t kAccelerationTime = 0.12e+06;  // microseconds
 };
 
 // -------------------------------------------------------------------------------------------------

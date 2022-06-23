@@ -1,0 +1,61 @@
+{
+  "system": {
+    "log_level": 2,
+    "use_fake_trajectory": true,
+    "use_fake_batteries": true,
+    "use_fake_batteries_fail": false,
+    "use_fake_temperature": true,
+    "use_fake_temperature_fail": false,
+    "use_fake_pressure": true,
+    "use_fake_pressure_fail": false,
+    "use_fake_brakes": true,
+    "use_fake_controller": true,
+    "use_fake_high_power": true,
+    "use_fake_ambient_pressure" : true,
+    "use_fake_brake_pressure" : true,
+    "axis": 0
+  },
+  "brakes": {
+    "pins": [
+      {
+        "command_pin": 87,
+        "button_pin": 66
+      },
+      {
+        "command_pin": 10,
+        "button_pin": 69
+      }
+    ]
+  },
+  "sensors": {
+    "bms_startup_time_micros": 5000000,
+    "imu_pins": [22, 27, 47, 86],
+    "temperature_pins": [3, 4, 5, 6],
+    "ambient_pressure_pins": {
+      "pressure_pin": 10,
+      "temperature_pin": 11
+    }
+  },
+  "telemetry": {
+    "server_ip": "127.0.01",
+    "server_port": "9090"
+  },
+  "fake_trajectory": {
+    "maximum_acceleration": 1000.0,
+    "braking_deceleration": 2000.0,
+    "cruising_deceleration": 0.01
+  },
+  "fake_imu": [
+    {
+      "noise": 0.01
+    },
+    {
+      "noise": 0.02
+    },
+    {
+      "noise": 0.005
+    },
+    {
+      "noise": 0.001
+    } ]
+}

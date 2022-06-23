@@ -29,6 +29,7 @@ class System {
     Logger::Level log_level_propulsion;
     Logger::Level log_level_sensors;
     Logger::Level log_level_state_machine;
+    Logger::Level log_level_demo_state_machine;
     Logger::Level log_level_telemetry;
     Logger::Level log_level_debugger;
     bool use_fake_trajectory;

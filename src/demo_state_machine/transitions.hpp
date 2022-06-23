@@ -5,12 +5,11 @@
 #include <data/data.hpp>
 #include <utils/logger.hpp>
 
-namespace hyped::state_machine {
+namespace hyped::demo_state_machine {
 
 using hyped::data::Brakes;
 using hyped::data::FullBatteryData;
 using hyped::data::Motors;
-using hyped::data::Navigation;
 using hyped::data::Sensors;
 using hyped::data::Telemetry;
 using utils::Logger;
@@ -24,9 +23,8 @@ class State;  // Forward declaration
 /*
  * @brief   Returns the FailureStopped if there's an emergency and nullptr otherwise.
  */
-bool checkEmergency(Logger &log, const data::Brakes &brakes_data, const data::Navigation &nav_data,
-                    const data::FullBatteryData &batteries_data,
-                    const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
+bool checkEmergency(Logger &log, const data::Brakes &brakes_data,  const data::FullBatteryData &batteries_data, 
+                    const data::Sensors &sensors_data,
                     const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
@@ -38,19 +36,15 @@ bool checkEmergency(Logger &log, const data::Brakes &brakes_data, const data::Na
  *          initialised.
  */
 bool checkModulesInitialised(Logger &log, const data::Brakes &brakes_data,
-                             const data::Navigation &nav_data,
                              const data::FullBatteryData &batteries_data,
-                             const data::Telemetry &telemetry_data,
                              const data::Sensors &sensors_data, const data::Motors &motors_data);
 
 /*
  * @brief    Returns true iff all modules are ready.
  */
 bool checkModulesReady(Logger &log, const data::Brakes &brakes_data,
-                       const data::Navigation &nav_data,
                        const data::FullBatteryData &batteries_data,
-                       const data::Telemetry &telemetry_data, const data::Sensors &sensors_data,
-                       const data::Motors &motors_data);
+                       const data::Sensors &sensors_data, const data::Motors &motors_data);
 
 //--------------------------------------------------------------------------------------
 // Sensors Command
@@ -80,24 +74,14 @@ bool checkLaunchCommand(const data::Telemetry &telemetry_data);
  */
 bool checkShutdownCommand(const data::Telemetry &telemetry_data);
 
-//--------------------------------------------------------------------------------------
-// Navigation Data Events
-//--------------------------------------------------------------------------------------
+/*
+ * @brief    Returns true iff the braking command has been received.
+ */
+bool checkBrakingCommand(const data::Telemetry &telemetry_data);
 
 /*
- * @brief   Returns true iff the pod is close enough to the end of the track.
+ * @brief   Returns true iff the stop command has been received. 
  */
-bool checkEnteredBrakingZone(Logger &log, const data::Navigation &nav_data);
+bool checkStopCommand(Logger &log, const data::Telemetry &telemetry_data);
 
-/*
- * @brief   Returns true iff the pod has reached the maximum velocity.
- */
-bool checkReachedMaxVelocity(Logger &log, const data::Navigation &nav_data);
-
-/*
- * @brief   Returns true iff the pod has reached zero velocity.
- */
-bool checkPodStopped(Logger &log, const data::Navigation &nav_data);
-
-}  // namespace hyped::state_machine
-
+}  // namespace hyped::demo_state_machine

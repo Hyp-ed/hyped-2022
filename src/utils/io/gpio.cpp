@@ -123,7 +123,7 @@ void Gpio::uninitialise()
 void Gpio::exportGPIO()
 {
   if (!initialised_) {
-    log_.error("servise has not been initialised");
+    log_.error("service has not been initialised");
     return;
   }
 

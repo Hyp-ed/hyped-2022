@@ -149,7 +149,6 @@ bool Spi::initialise()
   ch_ = &hw_->ch0;
 
   log_.info("Mapping successfully created %d", sizeof(SPI_HW));
-  //log_.info("revision 0x%x", hw_->revision);
   return true;
 }
 

@@ -387,7 +387,7 @@ std::optional<std::vector<uint8_t>> Main::brakePressurePinsFromFile(utils::Logge
   }
   const auto brake_pressure_pin_array = config_object["brake_pressure_pins"].GetArray();
   if (brake_pressure_pin_array.Size() != data::Sensors::kNumBrakePressure) {
-    log.error("Found %d brake sensor pins but %d were expected in configuration file at %s",
+    log.error("Found %d brake pressure pins but %d were expected in configuration file at %s",
               brake_pressure_pin_array.Size(), data::Sensors::kNumBrakePressure, path.c_str());
   }
   std::vector<uint8_t> brake_pressure_pins;

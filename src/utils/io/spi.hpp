@@ -15,7 +15,7 @@ class Spi {
  public:
   static Spi &getInstance();
 
-  enum class Clock { k1MHz, k4MHz, k16MHz, k20MHz };
+  enum class Clock { k500KHz, k1MHz, k4MHz, k16MHz, k20MHz };
 
   void setClock(Clock clk);
 

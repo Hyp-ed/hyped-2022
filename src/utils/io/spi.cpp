@@ -96,7 +96,7 @@ Spi &Spi::getInstance()
 
 Spi::Spi(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
 {
-  const char device[] = "/dev/spidev1.0";  // spidev1.0 for SPI0
+  const char device[] = "/dev/spidev0.0";  // spidev0.0 for SPI0
   spi_fd_             = open(device, O_RDWR, 0);
 
   if (spi_fd_ < 0) {
@@ -105,7 +105,7 @@ Spi::Spi(Logger &log) : spi_fd_(-1), hw_(0), ch_(0), log_(log)
   }
 
   // set clock frequency
-  setClock(Clock::k1MHz);
+  setClock(Clock::k500KHz);
 
   uint8_t bits = SPI_BITS;  // need to change this value
   if (ioctl(spi_fd_, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0) {
@@ -149,7 +149,6 @@ bool Spi::initialise()
   ch_ = &hw_->ch0;
 
   log_.info("Mapping successfully created %d", sizeof(SPI_HW));
-  log_.info("revision 0x%x", hw_->revision);
   return true;
 }
 
@@ -157,6 +156,9 @@ void Spi::setClock(Clock clk)
 {
   uint32_t data;
   switch (clk) {
+    case Clock::k500KHz:
+      data = 500000;
+      break;
     case Clock::k1MHz:
       data = 1000000;
       break;

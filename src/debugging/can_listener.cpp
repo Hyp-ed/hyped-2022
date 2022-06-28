@@ -21,7 +21,6 @@ bool CanListener::hasId(uint32_t id, bool extended)
     log_.debug("received extended CAN message; skipping");
     return false;
   }
-
   return ids_.find(id) != ids_.end(); 
 }
 

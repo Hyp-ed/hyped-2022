@@ -133,7 +133,7 @@ void Gpio::exportGPIO()
   // let the kernel know we are using this pin
   int fd;
   uint32_t len;
-  fd = open("/sys/class/gpio/export", O_WRONLY);
+  fd = open("/sys/class/gpio/export", O_RDWR);
   if (fd < 0) {
     log_.error("could not open export file");
     return;

@@ -75,16 +75,16 @@ struct BrakePressureData : public SensorData {
 };
 
 struct Sensors : public Module {
-  static constexpr size_t kNumImus          = 4;
-  static constexpr size_t kNumEncoders      = 4;
-  static constexpr size_t kNumBrakePressure = 2;
-  static constexpr size_t kNumBrakeTemp     = 2;
-  static constexpr size_t kNumAmbientTemp   = 4;
+  static constexpr size_t kNumImus                = 4;
+  static constexpr size_t kNumEncoders            = 4;
+  static constexpr size_t kNumBrakePressure       = 2;
+  static constexpr size_t kNumBrakeSuspensionTemp = 4;
+  static constexpr size_t kNumAmbientTemp         = 1;
 
   TemperatureData temperature;
   AmbientPressureData ambient_pressure;
 
-  std::array<TemperatureData, kNumBrakeTemp> brake_temperature_array;
+  std::array<TemperatureData, kNumBrakeSuspensionTemp> brake_suspension_temperature_array;
   std::array<TemperatureData, kNumAmbientTemp> ambient_temperature_array;
 
   DataPoint<std::array<ImuData, kNumImus>> imu;
